@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "changes-stream": "^2.2.0",
+    "normalize-registry-metadata": "^1.1.2",
+    "request": "^2.88.2",
+    "yargs": "^17.4.1"
+  }
+}

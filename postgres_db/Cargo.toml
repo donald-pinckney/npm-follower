@@ -1,0 +1,18 @@
+[package]
+name = "postgres_db"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.136", features = ["derive"] }
+serde_json = { version = "1.0.79", features = ["preserve_order"] }
+chrono = { version = "0.4.19", features = ["serde"] }
+regex = "1"
+lazy_static = "1.4.0"
+diesel = { version = "1.4.4", features = ["postgres", "serde_json", "chrono"] }
+dotenv = "0.15.0"
+sha2 = "0.10.2"
+base16ct = { version = "0.1.1", features = ["std"] }
+url = "2.2.2"
