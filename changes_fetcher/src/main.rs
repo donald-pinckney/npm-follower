@@ -5,7 +5,8 @@ use changes_stream2::{ChangesStream, Event};
 use futures_util::stream::StreamExt;
 use postgres_db::{change_log, DbConnection};
 use utils::check_no_concurrent_processes;
-
+use async_std::task;
+use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
@@ -13,8 +14,11 @@ async fn main() {
 
     let conn = postgres_db::connect();
 
-    // _insert_saved_log_file(&conn);
-    listen_for_npm_changes_forever(&conn).await;
+    loop {
+        listen_for_npm_changes_forever(&conn).await;
+        println!("NPM changes streamer ended. Sleeping for 300 seconds before restarting...");
+        task::sleep(Duration::from_secs(300)).await;
+    }
 }
 
 

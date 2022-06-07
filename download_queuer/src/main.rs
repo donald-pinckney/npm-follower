@@ -30,7 +30,6 @@ fn main() {
         
         let downloads_to_enqueue: Vec<_> = changes.into_iter()
             .flat_map(|c| download_tasks_for_change(c))
-            .map(|ndt| ndt.prepare_enqueue())
             .collect();
 
         download_queue::enqueue_downloads(downloads_to_enqueue, &conn);
@@ -72,7 +71,7 @@ impl<T, R> BetterUnwrap for Result<T, R> where R: std::fmt::Debug {
 
 
 
-pub fn download_tasks_for_change(change: Change) -> Vec<download_queue::NewDownloadTask> {
+pub fn download_tasks_for_change(change: Change) -> Vec<download_queue::DownloadTask> {
     let seq = change.seq;
     let seq_debug_print = |note| { move || { format!("{} (seq = {})", note, seq) } };
 
@@ -124,7 +123,7 @@ pub fn download_tasks_for_change(change: Change) -> Vec<download_queue::NewDownl
         None => &empty_map
     };
 
-    versions.iter().map(|(v_version, v_data)| {
+    versions.iter().map(|(_v_version, v_data)| {
         let dist = v_data
             .get("dist")
             .unwrap_debug(seq_debug_print("Expected dist field"))
@@ -141,53 +140,42 @@ pub fn download_tasks_for_change(change: Change) -> Vec<download_queue::NewDownl
                     .map(|s| 
                         s.as_object().unwrap_debug(seq_debug_print("signature must be an object"))));
 
-        download_queue::NewDownloadTask {
-            url: 
-                dist.get("tarball")
-                    .unwrap_debug(seq_debug_print("Missing tarball field"))
-                    .as_str()
-                    .unwrap_debug(seq_debug_print("Tarball field must be a string"))
-                    .to_owned(),
-            change_seq: seq,
-            package: package.to_owned(),
-            version: v_version.to_owned(),
-            shasum: 
-                dist.get("shasum")
-                    .map(|s| s.as_str()
-                              .unwrap_debug(seq_debug_print("shasum must be a string"))
-                              .to_owned()),
-            unpacked_size: 
-                dist.get("unpackedSize")
-                    .map(|s| s.as_i64()
-                              .unwrap_debug(seq_debug_print("unpackedSize must be a number"))),
-            file_count: 
-                dist.get("fileCount")
-                    .map(|s| s.as_i64()
-                              .unwrap_debug(seq_debug_print("fileCount must be a number"))
-                              .try_into()
-                              .unwrap_debug(seq_debug_print("too many files to fit in i32"))),
-            integrity: 
-                dist.get("integrity")
-                    .map(|s| s.as_str()
-                              .unwrap_debug(seq_debug_print("integrity must be a string"))
-                              .to_owned()),
-            signature0_sig: 
-                sig0.map(|s| s.get("sig")
-                              .unwrap_debug(seq_debug_print("Missing sig field"))
-                              .as_str()
-                              .unwrap_debug(seq_debug_print("sig must be a string"))
-                              .to_owned()),
-            signature0_keyid: 
-                sig0.map(|s| s.get("keyid")
-                              .unwrap_debug(seq_debug_print("Missing keyid field"))
-                              .as_str()
-                              .unwrap_debug(seq_debug_print("keyid must be a string"))
-                              .to_owned()),
-            npm_signature: 
-                dist.get("npm-signature")
-                    .map(|s| s.as_str()
-                              .unwrap_debug(seq_debug_print("npm-signature must be a string"))
-                              .to_owned()),
-        }
+        download_queue::DownloadTask::fresh_task(
+            dist.get("tarball")
+                .unwrap_debug(seq_debug_print("Missing tarball field"))
+                .as_str()
+                .unwrap_debug(seq_debug_print("Tarball field must be a string"))
+                .to_owned(),
+            dist.get("shasum")
+                .map(|s| s.as_str()
+                            .unwrap_debug(seq_debug_print("shasum must be a string"))
+                            .to_owned()),
+            dist.get("unpackedSize")
+                .map(|s| s.as_i64()
+                            .unwrap_debug(seq_debug_print("unpackedSize must be a number"))),
+            dist.get("fileCount")
+                .map(|s| s.as_i64()
+                            .unwrap_debug(seq_debug_print("fileCount must be a number"))
+                            .try_into()
+                            .unwrap_debug(seq_debug_print("too many files to fit in i32"))),
+            dist.get("integrity")
+                .map(|s| s.as_str()
+                            .unwrap_debug(seq_debug_print("integrity must be a string"))
+                            .to_owned()),
+            sig0.map(|s| s.get("sig")
+                            .unwrap_debug(seq_debug_print("Missing sig field"))
+                            .as_str()
+                            .unwrap_debug(seq_debug_print("sig must be a string"))
+                            .to_owned()),
+            sig0.map(|s| s.get("keyid")
+                            .unwrap_debug(seq_debug_print("Missing keyid field"))
+                            .as_str()
+                            .unwrap_debug(seq_debug_print("keyid must be a string"))
+                            .to_owned()),
+            dist.get("npm-signature")
+                .map(|s| s.as_str()
+                            .unwrap_debug(seq_debug_print("npm-signature must be a string"))
+                            .to_owned())
+        )
     }).collect()
 }

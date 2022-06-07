@@ -6,11 +6,8 @@ table! {
 }
 
 table! {
-    download_tasks (package, version) {
-        package -> Varchar,
-        version -> Varchar,
+    download_tasks (url) {
         url -> Varchar,
-        change_seq -> Int8,
         shasum -> Nullable<Text>,
         unpacked_size -> Nullable<Int8>,
         file_count -> Nullable<Int4>,
@@ -31,8 +28,6 @@ table! {
         value -> Int8,
     }
 }
-
-joinable!(download_tasks -> change_log (change_seq));
 
 allow_tables_to_appear_in_same_query!(
     change_log,
