@@ -1,0 +1,1 @@
+*/15 * * * * cd ~/supply-chain-project/npm-follower && ~/.cargo/bin/cargo run --release --bin download_queuer && date > ~/download_queuer.last_completed
