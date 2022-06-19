@@ -6,6 +6,7 @@ pub mod internal_state;
 pub mod download_queue;
 
 mod schema;
+mod custom_types;
 
 
 use diesel::pg::PgConnection;
