@@ -3,6 +3,14 @@ use super::DbConnection;
 use super::schema;
 
 
+pub fn query_relational_processed_seq(conn: &DbConnection) -> Option<i64> {
+    query_key_value_state("relational_processed_seq", conn)
+}
+
+pub fn set_relational_processed_seq(seq: i64, conn: &DbConnection) {
+    set_key_value_state("relational_processed_seq", seq, conn);
+}
+
 
 pub fn query_queued_downloads_seq(conn: &DbConnection) -> Option<i64> {
     query_key_value_state("queued_downloads_seq", conn)
