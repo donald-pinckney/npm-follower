@@ -1,4 +1,7 @@
 table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     change_log (seq) {
         seq -> Int8,
         raw_json -> Jsonb,
@@ -6,6 +9,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     dependencies (id) {
         id -> Int8,
         dst_package_name -> Text,
@@ -16,6 +22,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     download_tasks (url) {
         url -> Varchar,
         shasum -> Nullable<Text>,
@@ -33,6 +42,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     downloaded_tarballs (tarball_url, downloaded_at) {
         tarball_url -> Text,
         downloaded_at -> Timestamptz,
@@ -48,6 +60,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     internal_state (key) {
         key -> Varchar,
         value -> Int8,
@@ -55,6 +70,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     packages (id) {
         id -> Int8,
         name -> Text,
@@ -66,6 +84,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     versions (id) {
         id -> Int8,
         package_id -> Int8,
