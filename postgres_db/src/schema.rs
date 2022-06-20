@@ -79,6 +79,7 @@ table! {
         dist_tag_latest_version -> Int8,
         created -> Timestamptz,
         modified -> Timestamptz,
+        deleted -> Bool,
         other_dist_tags -> Jsonb,
     }
 }
@@ -95,6 +96,7 @@ table! {
         description -> Nullable<Text>,
         repository -> Nullable<Repository_struct>,
         created -> Timestamptz,
+        deleted -> Bool,
         extra_metadata -> Jsonb,
         prod_dependencies -> Array<Int8>,
         dev_dependencies -> Array<Int8>,

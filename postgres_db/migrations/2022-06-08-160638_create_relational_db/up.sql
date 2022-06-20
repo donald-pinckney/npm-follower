@@ -74,6 +74,7 @@ CREATE TABLE packages (
   dist_tag_latest_version     BIGINT NOT NULL, -- not sure if NOT NULL is right here
   created                     TIMESTAMP WITH TIME ZONE NOT NULL,
   modified                    TIMESTAMP WITH TIME ZONE NOT NULL,
+  deleted                     BOOLEAN NOT NULL,
   other_dist_tags             JSONB NOT NULL
 );
 
@@ -92,6 +93,7 @@ CREATE TABLE versions (
   description             TEXT,
   repository              repository,
   created                 TIMESTAMP WITH TIME ZONE NOT NULL,
+  deleted                     BOOLEAN NOT NULL,
   extra_metadata JSONB    NOT NULL,
 
   -- These are all foreign keys to the dependencies(id),
