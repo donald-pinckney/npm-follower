@@ -63,3 +63,75 @@ impl FromSql<RepositoryTypeSql, Pg> for RepositoryType {
 
 
 
+// Unit tests
+#[cfg(test)]
+mod tests {
+    use diesel::prelude::*;
+    use diesel::RunQueryDsl;
+    use crate::custom_types::Repository;
+    use crate::testing;
+
+    table! {
+        use diesel::sql_types::*;
+        use crate::custom_types::sql_type_names::Repository_struct;
+
+        test_repository_to_sql {
+            id -> Integer,
+            repo -> Nullable<Repository_struct>,
+        }
+    }
+
+    #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
+    #[table_name = "test_repository_to_sql"]
+    struct TestRepositoryToSql {
+        id: i32,
+        repo: Option<Repository>,
+    }
+
+    #[test]
+    fn test_repository_to_sql_fn() {
+        use self::test_repository_to_sql::dsl::*;
+
+        let data = vec![
+            TestRepositoryToSql {
+                id: 1,
+                repo: Some(Repository::Git("here is a git url".into()))
+            },
+            TestRepositoryToSql {
+                id: 2,
+                repo: None
+            },
+            TestRepositoryToSql {
+                id: 3,
+                repo: Some(Repository::Git("another url".into()))
+            }
+        ];
+
+        let conn = testing::test_connect();
+        let _temp_table = testing::TempTable::new(&conn, "test_repository_to_sql", "id SERIAL PRIMARY KEY, repo repository");
+
+        let inserted = diesel::insert_into(test_repository_to_sql).values(&data).get_results(&conn.conn).unwrap();
+        assert_eq!(data, inserted);
+
+        let filter_all = test_repository_to_sql
+            .filter(id.ge(1))
+            .load(&conn.conn)
+            .unwrap();
+        assert_eq!(data, filter_all);
+
+
+        let filter_eq_data = vec![
+            TestRepositoryToSql {
+                id: 1,
+                repo: Some(Repository::Git("here is a git url".into()))
+            }
+        ];
+        let filter_eq = test_repository_to_sql
+            .filter(repo.eq(Some(Repository::Git("here is a git url".into()))))
+            .load(&conn.conn)
+            .unwrap();
+        assert_eq!(filter_eq_data, filter_eq);
+    }
+}
+
+

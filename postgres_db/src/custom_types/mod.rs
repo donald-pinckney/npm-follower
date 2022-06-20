@@ -7,7 +7,7 @@ pub enum Repository {
     Git(String)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
 #[sql_type = "SemverSql"]
 pub struct Semver {
     major: i32,
@@ -17,7 +17,7 @@ pub struct Semver {
     build: Vec<PrereleaseTag>
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
@@ -37,11 +37,11 @@ pub enum VersionComparator {
 
 
 pub mod sql_types {
-    #[derive(SqlType)]
+    #[derive(SqlType, QueryId)]
     #[postgres(type_name = "repository_struct")] // or should it be repository (domain)?
     pub struct RepositorySql;
 
-    #[derive(SqlType)]
+    #[derive(SqlType, QueryId)]
     #[postgres(type_name = "semver_struct")] // or should it be semver (domain)?
     pub struct SemverSql;
 
@@ -49,7 +49,7 @@ pub mod sql_types {
     #[postgres(type_name = "prerelease_tag_struct")] // or should it be prerelease_tag (domain)?
     pub struct PrereleaseTagStructSql;
 
-    #[derive(SqlType)]
+    #[derive(SqlType, QueryId)]
     #[postgres(type_name = "version_comparator_struct")] // or should it be version_comparator (domain)?
     pub struct VersionComparatorSql;
 }

@@ -8,6 +8,9 @@ pub mod download_queue;
 mod schema;
 mod custom_types;
 
+#[cfg(test)]
+mod testing;
+
 
 use diesel::pg::PgConnection;
 use diesel::prelude::*;

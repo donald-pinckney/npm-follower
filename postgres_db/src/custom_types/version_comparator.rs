@@ -91,3 +91,127 @@ impl FromSql<VersionOperatorEnumSql, Pg> for VersionOperatorEnum {
 }
 
 
+
+
+// Unit tests
+#[cfg(test)]
+mod tests {
+    use diesel::prelude::*;
+    use diesel::RunQueryDsl;
+    use crate::custom_types::{Semver, VersionComparator, PrereleaseTag};
+    use crate::testing;
+
+    table! {
+        use diesel::sql_types::*;
+        use crate::custom_types::sql_type_names::Version_comparator;
+
+        test_version_comparator_to_sql {
+            id -> Integer,
+            vc -> Version_comparator,
+        }
+    }
+
+    #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
+    #[table_name = "test_version_comparator_to_sql"]
+    struct TestVersionComparatorToSql {
+        id: i32,
+        vc: VersionComparator,
+    }
+
+    #[test]
+    fn test_version_comparator_to_sql_fn() {
+        use self::test_version_comparator_to_sql::dsl::*;
+
+        let v1 = Semver { 
+            major: 3, 
+            minor: 4, 
+            bug: 5, 
+            prerelease: vec![PrereleaseTag::Int(8)], 
+            build: vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(1)] 
+        };
+
+        let v2 = Semver { 
+            major: 8, 
+            minor: 9, 
+            bug: 12, 
+            prerelease: vec![],
+            build: vec![]
+        };
+
+
+        let data = vec![
+            TestVersionComparatorToSql {
+                id: 1,
+                vc: VersionComparator::Any
+            },
+            TestVersionComparatorToSql {
+                id: 2,
+                vc: VersionComparator::Eq(v1.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 3,
+                vc: VersionComparator::Gt(v1.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 4,
+                vc: VersionComparator::Gte(v1.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 5,
+                vc: VersionComparator::Lt(v1.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 6,
+                vc: VersionComparator::Lte(v1)
+            },
+            TestVersionComparatorToSql {
+                id: 7,
+                vc: VersionComparator::Eq(v2.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 8,
+                vc: VersionComparator::Gt(v2.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 9,
+                vc: VersionComparator::Gte(v2.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 10,
+                vc: VersionComparator::Lt(v2.clone())
+            },
+            TestVersionComparatorToSql {
+                id: 11,
+                vc: VersionComparator::Lte(v2.clone())
+            },
+        ];
+
+        let conn = testing::test_connect();
+        let _temp_table = testing::TempTable::new(&conn, "test_version_comparator_to_sql", "id SERIAL PRIMARY KEY, vc version_comparator");
+
+        let q_str = diesel::debug_query::<diesel::pg::Pg, _>(&diesel::insert_into(test_version_comparator_to_sql).values(&data)).to_string();
+        println!("query string: {}\n\n", q_str);
+
+        let inserted = diesel::insert_into(test_version_comparator_to_sql).values(&data).get_results(&conn.conn).unwrap();
+        assert_eq!(data, inserted);
+
+        let filter_all = test_version_comparator_to_sql
+            .filter(id.ge(1))
+            .load(&conn.conn)
+            .unwrap();
+        assert_eq!(data, filter_all);
+
+
+        let filter_eq_data = vec![
+            TestVersionComparatorToSql {
+                id: 10,
+                vc: VersionComparator::Lt(v2.clone())
+            },
+        ];
+        let filter_eq = test_version_comparator_to_sql
+            .filter(vc.eq(VersionComparator::Lt(v2)))
+            .load(&conn.conn)
+            .unwrap();
+        assert_eq!(filter_eq_data, filter_eq);
+    }
+}

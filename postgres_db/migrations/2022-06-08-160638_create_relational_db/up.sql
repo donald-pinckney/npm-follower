@@ -11,9 +11,10 @@ CREATE TYPE prerelease_tag_struct AS (
   int_case          INTEGER
 ); 
 CREATE DOMAIN prerelease_tag AS prerelease_tag_struct CHECK (
-  ((VALUE).tag_type = 'string' AND (VALUE).string_case IS NOT NULL AND (VALUE).int_case IS NULL) 
+  (NOT VALUE IS NULL) AND
+  (((VALUE).tag_type = 'string' AND (VALUE).string_case IS NOT NULL AND (VALUE).int_case IS NULL) 
     OR 
-  ((VALUE).tag_type = 'int' AND (VALUE).string_case IS NULL AND (VALUE).int_case IS NOT NULL)
+  ((VALUE).tag_type = 'int' AND (VALUE).string_case IS NULL AND (VALUE).int_case IS NOT NULL))
 );
 
 
@@ -25,11 +26,12 @@ CREATE TYPE semver_struct AS (
   build                   prerelease_tag[]
 );
 CREATE DOMAIN semver AS semver_struct CHECK (
+  VALUE IS NULL OR (
   (VALUE).major IS NOT NULL AND 
   (VALUE).minor IS NOT NULL AND
   (VALUE).bug IS NOT NULL AND
   (VALUE).prerelease IS NOT NULL AND
-  (VALUE).build IS NOT NULL
+  (VALUE).build IS NOT NULL)
 );
 
 
@@ -39,19 +41,21 @@ CREATE TYPE repository_struct AS (
   url                     TEXT
 );
 CREATE DOMAIN repository AS repository_struct CHECK (
-  (VALUE).repo_type IS NOT NULL AND 
-  (VALUE).url IS NOT NULL
+  VALUE IS NULL OR 
+  ((VALUE).repo_type IS NOT NULL AND 
+  (VALUE).url IS NOT NULL)
 );
 
 
 CREATE TYPE version_operator_enum AS ENUM ('*', '=', '>', '>=', '<', '<=');
 CREATE TYPE version_comparator_struct AS (
   operator      version_operator_enum,
-  semver        SemVer
+  semver        semver
 );
 CREATE DOMAIN version_comparator AS version_comparator_struct CHECK (
+  (NOT VALUE IS NULL) AND (
   (VALUE).operator IS NOT NULL AND 
-  (((VALUE).operator = '*' AND (VALUE).semver IS NULL) OR ((VALUE).operator <> '*' AND (VALUE).semver IS NOT NULL))
+  (((VALUE).operator = '*' AND (VALUE).semver IS NULL) OR ((VALUE).operator <> '*' AND (VALUE).semver IS NOT NULL)))
 );
 
 
@@ -79,7 +83,7 @@ CREATE TABLE packages (
 CREATE TABLE versions (
   id                      BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   package_id              BIGINT NOT NULL,
-  semver                  SemVer NOT NULL,
+  semver                  semver NOT NULL,
   -- tarball_url references downloaded_tarballs(tarball_url), but note that that table allows 
   -- multiple downloads at different points in time, so the key is not unique.
   -- In addition, the tarball_url may not yet exist in downloaded_tarballs,
