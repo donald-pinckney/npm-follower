@@ -5,7 +5,9 @@ pub mod change_log;
 pub mod internal_state;
 pub mod download_queue;
 
+#[allow(unused_imports)]
 mod schema;
+
 mod custom_types;
 
 #[cfg(test)]
