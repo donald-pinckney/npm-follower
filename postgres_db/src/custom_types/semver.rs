@@ -138,9 +138,6 @@ mod tests {
         let conn = testing::test_connect();
         let _temp_table = testing::TempTable::new(&conn, "test_semver_to_sql", "id SERIAL PRIMARY KEY, v semver");
 
-        let q_str = diesel::debug_query::<diesel::pg::Pg, _>(&diesel::insert_into(test_semver_to_sql).values(&data)).to_string();
-        println!("query string: {}\n\n", q_str);
-
         let inserted = diesel::insert_into(test_semver_to_sql).values(&data).get_results(&conn.conn).unwrap();
         assert_eq!(data, inserted);
 

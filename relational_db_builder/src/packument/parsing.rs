@@ -1,22 +1,33 @@
 use chrono::{DateTime, Utc};
-use serde_json::Value;
+use serde_json::{Map, Value};
 use std::collections::HashMap;
 
 use postgres_db::custom_types::Semver;
-use super::{Packument, VersionPackument, PackumentDependencies};
+use super::{Packument, VersionPackument, Dist};
 
-fn process_version(mut version_blob: serde_json::Map<String, Value>) -> Option<VersionPackument> {
-    // version_blob.remove("name");
-    // version_blob.remove("version");
-    let description = version_blob.remove("description").and_then(|x| unwrap_string(x).ok());
-    let prod_dependencies_raw = unwrap_object(version_blob.remove("dependencies").unwrap_or(empty_object())).unwrap_or_default();
-    let dev_dependencies_raw = unwrap_object(version_blob.remove("devDependencies").unwrap_or(empty_object())).unwrap_or_default();
-    let peer_dependencies_raw = unwrap_object(version_blob.remove("peerDependencies").unwrap_or(empty_object())).unwrap_or_default();
-    let optional_dependencies_raw = unwrap_object(version_blob.remove("optionalDependencies").unwrap_or(empty_object())).unwrap_or_default();
-    let mut dist = unwrap_object(version_blob.remove("dist").unwrap()).unwrap();
-    let shasum = unwrap_string(dist.remove("shasum")?).expect(&format!("Expected a string. Blob = {:?}", version_blob));
-    let tarball = unwrap_string(dist.remove("tarball").unwrap()).unwrap();
+fn process_version(mut version_blob: Map<String, Value>) -> VersionPackument {
+    let description = version_blob.remove_key_unwrap_type::<String>("description");
+    let prod_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dependencies").unwrap_or_default();
+    let dev_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("devDependencies").unwrap_or_default();
+    let peer_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("peerDependencies").unwrap_or_default();
+    let optional_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("optionalDependencies").unwrap_or_default();
 
+    let mut dist = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dist").unwrap();
+
+    let mut sigs_maybe = version_blob.remove_key_unwrap_type::<Vec<Value>>("signatures");
+    let mut sig0: Option<Map<String, Value>> = sigs_maybe.map(|mut sigs| 
+        serde_json::from_value(sigs.remove(0)).unwrap()
+    );
+    let sig0_sig_keyid = sig0.map(|mut s| 
+        (s.remove_key_unwrap_type::<String>("sig").unwrap(), s.remove_key_unwrap_type::<String>("keyid").unwrap())
+    );
+    let (sig0_sig, sig0_keyid) = match sig0_sig_keyid {
+        Some((x, y)) => (Some(x), Some(y)),
+        None => (None, None)
+    };
+
+
+    
     let prod_dependencies = prod_dependencies_raw.into_iter().map(|(p, c)|
         (p, unwrap_string(c).unwrap().parse().unwrap())
     ).collect();
@@ -33,20 +44,30 @@ fn process_version(mut version_blob: serde_json::Map<String, Value>) -> Option<V
         (p, unwrap_string(c).unwrap().parse().unwrap())
     ).collect();
     
+    let dist = Dist {
+        tarball_url: dist.remove_key_unwrap_type::<String>("tarball").unwrap(),
+        shasum: dist.remove_key_unwrap_type::<String>("shasum"),
+        unpacked_size: dist.remove_key_unwrap_type::<i64>("unpackedSize"),
+        file_count: dist.remove_key_unwrap_type::<i64>("fileCount").map(|x| x.try_into().unwrap()),
+        integrity: dist.remove_key_unwrap_type::<String>("integrity"),
+        signature0_sig: sig0_sig,
+        signature0_keyid: sig0_keyid,
+        npm_signature: dist.remove_key_unwrap_type::<String>("npm-signature"),
+    };
+
+    let repository = todo!();
 
 
-    Some(VersionPackument {
-        description: description,
-        shasum: shasum,
-        tarball: tarball,
-        dependencies: PackumentDependencies {
-            prod_dependencies: prod_dependencies,
-            dev_dependencies: dev_dependencies,
-            peer_dependencies: peer_dependencies,
-            optional_dependencies: optional_dependencies,
-        },
+    VersionPackument {
+        prod_dependencies,
+        dev_dependencies,
+        peer_dependencies,
+        optional_dependencies,
+        dist,
+        description,
+        repository,
         extra_metadata: version_blob.into_iter().collect()
-    })
+    }
 }
 
 fn process_packument_blob(v: Value, _pkg_name: String) -> Result<Packument, String> {
@@ -77,8 +98,8 @@ fn process_packument_blob(v: Value, _pkg_name: String) -> Result<Packument, Stri
     ).collect();
 
     let version_packuments_map = j.remove("versions").map(|x| unwrap_object(x).unwrap()).unwrap_or_default(); //unwrap_object(j.remove("versions").unwrap());
-    let version_packuments = version_packuments_map.into_iter().flat_map(|(v_str, blob)|
-        Some((v_str.parse().unwrap(), process_version(unwrap_object(blob).unwrap())?))
+    let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
+        (v_str.parse().unwrap(), process_version(unwrap_object(blob).unwrap()))
     ).collect();
     Ok(Packument {
         latest: latest,
@@ -98,7 +119,7 @@ fn parse_datetime(x: String) -> DateTime<Utc> {
 }
 
 fn empty_object() -> Value {
-    Value::Object(serde_json::Map::new())
+    Value::Object(Map::new())
 }
 
 fn unwrap_array(v: Value) -> Vec<Value> {
@@ -115,7 +136,7 @@ fn unwrap_string(v: Value) -> Result<String, String> {
     }
 }
 
-fn unwrap_object(v: Value) -> Result<serde_json::Map<String, Value>, String> {
+fn unwrap_object(v: Value) -> Result<Map<String, Value>, String> {
     match v {
         Value::Object(o) => Ok(o),
         _ => Err(format!("Expected object, got: {:?}", v))
@@ -126,5 +147,20 @@ fn unwrap_number(v: Value) -> serde_json::Number {
     match v {
         Value::Number(n) => n,
         _ => panic!()
+    }
+}
+
+
+trait RemoveInto {
+    fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de>;
+
+    fn remove_key_unwrap_type<T>(&mut self, key: &'static str) -> Option<T> where T: for<'de> serde::de::Deserialize<'de> {
+        self.remove_key(key).map(|x| x.unwrap())
+    }
+}
+
+impl RemoveInto for Map<String, Value> {
+    fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de> { 
+        self.remove(key).map(|x| serde_json::from_value(x))
     }
 }

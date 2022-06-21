@@ -1,7 +1,7 @@
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-use super::{Semver, VersionComparator};
+use super::{Semver, VersionComparator, VersionConstraint};
 
 
 #[derive(Debug)]
@@ -20,13 +20,13 @@ impl FromStr for Semver {
 
 
 #[derive(Debug)]
-pub enum ParseVersionComparatorError {
+pub enum ParseVersionConstraintError {
     UnknownOp(String),
     Other
 }
 
-impl FromStr for VersionComparator {
-    type Err = ParseVersionComparatorError;
+impl FromStr for VersionConstraint {
+    type Err = ParseVersionConstraintError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         todo!()

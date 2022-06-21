@@ -59,6 +59,16 @@ CREATE DOMAIN version_comparator AS version_comparator_struct CHECK (
 );
 
 
+CREATE TYPE constraint_conjuncts AS (
+  conjuncts      version_comparator[]
+);
+-- CREATE DOMAIN constraint_conjuncts AS constraint_conjuncts_struct CHECK (
+--   (NOT VALUE IS NULL) AND (
+--   (VALUE).operator IS NOT NULL AND 
+--   (((VALUE).operator = '*' AND (VALUE).semver IS NULL) OR ((VALUE).operator <> '*' AND (VALUE).semver IS NOT NULL)))
+-- );
+
+
 
 ------------------------------------------
 -----                              -------
@@ -93,7 +103,7 @@ CREATE TABLE versions (
   description             TEXT,
   repository              repository,
   created                 TIMESTAMP WITH TIME ZONE NOT NULL,
-  deleted                     BOOLEAN NOT NULL,
+  deleted                 BOOLEAN NOT NULL,
   extra_metadata JSONB    NOT NULL,
 
   -- These are all foreign keys to the dependencies(id),
@@ -118,7 +128,7 @@ CREATE TABLE dependencies (
   dst_package_id_if_exists    BIGINT,
 
   version_constraint_raw      TEXT NOT NULL,
-  disjuncts_conjuncts         version_comparator[][] NOT NULL,
+  disjuncts                   constraint_conjuncts[] NOT NULL,
   
   FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id)
 );

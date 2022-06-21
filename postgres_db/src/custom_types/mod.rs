@@ -1,5 +1,5 @@
 use sql_types::*;
-
+use diesel::sql_types::Array;
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
 #[sql_type = "RepositorySql"]
@@ -24,7 +24,7 @@ pub enum PrereleaseTag {
     Int(i32)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
 #[sql_type = "VersionComparatorSql"]
 pub enum VersionComparator {
     Any,
@@ -34,6 +34,10 @@ pub enum VersionComparator {
     Lt(Semver),
     Lte(Semver)
 }
+
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[sql_type = "Array<ConstraintConjunctsSql>"]
+pub struct VersionConstraint(Vec<Vec<VersionComparator>>);
 
 
 pub mod sql_types {
@@ -52,6 +56,10 @@ pub mod sql_types {
     #[derive(SqlType, QueryId)]
     #[postgres(type_name = "version_comparator_struct")] // or should it be version_comparator (domain)?
     pub struct VersionComparatorSql;
+
+    #[derive(SqlType)]
+    #[postgres(type_name = "constraint_conjuncts")] // or should it be prerelease_tag (domain)?
+    pub struct ConstraintConjunctsSql;
 }
 
 
@@ -60,10 +68,12 @@ pub mod sql_type_names {
     pub type Repository_struct = super::sql_types::RepositorySql;
     pub type Semver_struct = super::sql_types::SemverSql;
     pub type Version_comparator = super::sql_types::VersionComparatorSql;
+    pub type Constraint_conjuncts = super::sql_types::ConstraintConjunctsSql;
 }
 
 
 mod repository;
 mod semver;
 mod version_comparator;
+mod version_constraint;
 mod parsing;

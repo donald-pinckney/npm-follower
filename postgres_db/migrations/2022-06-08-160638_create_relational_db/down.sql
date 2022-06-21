@@ -14,6 +14,7 @@ DROP TABLE packages;
 DROP TABLE versions;
 DROP TABLE dependencies;
 
+DROP TYPE       constraint_conjuncts;
 DROP DOMAIN     version_comparator;
 DROP TYPE       version_comparator_struct;
 DROP TYPE       version_operator_enum;

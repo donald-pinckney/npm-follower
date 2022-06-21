@@ -17,7 +17,7 @@ table! {
         dst_package_name -> Text,
         dst_package_id_if_exists -> Nullable<Int8>,
         version_constraint_raw -> Text,
-        disjuncts_conjuncts -> Array<Version_comparator>,
+        disjuncts -> Array<Constraint_conjuncts>,
     }
 }
 

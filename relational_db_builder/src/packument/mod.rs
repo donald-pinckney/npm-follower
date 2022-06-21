@@ -1,6 +1,6 @@
 use chrono::Utc;
 use chrono::DateTime;
-use postgres_db::custom_types::{Semver, VersionComparator};
+use postgres_db::custom_types::{Semver, VersionConstraint, Repository};
 use serde_json::Value;
 use std::collections::HashMap;
 
@@ -17,19 +17,26 @@ pub struct Packument {
 
 #[derive(Debug)]
 pub struct VersionPackument {
+    pub prod_dependencies: Vec<(String, VersionConstraint)>,
+    pub dev_dependencies: Vec<(String, VersionConstraint)>,
+    pub peer_dependencies: Vec<(String, VersionConstraint)>,
+    pub optional_dependencies: Vec<(String, VersionConstraint)>,
+    pub dist: Dist,
     pub description: Option<String>,
-    pub shasum: String,
-    pub tarball: String,
-    pub dependencies: PackumentDependencies,
+    pub repository: Option<Repository>,
     pub extra_metadata: HashMap<String, Value>
 }
 
 #[derive(Debug)]
-pub struct PackumentDependencies {
-    pub prod_dependencies: Vec<(String, VersionComparator)>,
-    pub dev_dependencies: Vec<(String, VersionComparator)>,
-    pub peer_dependencies: Vec<(String, VersionComparator)>,
-    pub optional_dependencies: Vec<(String, VersionComparator)>
+pub struct Dist {
+    pub tarball_url: String,
+    pub shasum: Option<String>,
+    pub unpacked_size: Option<i64>,
+    pub file_count: Option<i32>,
+    pub integrity: Option<String>,
+    pub signature0_sig: Option<String>,
+    pub signature0_keyid: Option<String>,
+    pub npm_signature: Option<String>,
 }
 
 pub mod parsing;
