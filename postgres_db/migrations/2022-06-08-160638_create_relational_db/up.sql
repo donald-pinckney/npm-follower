@@ -104,11 +104,11 @@ CREATE TABLE versions (
   peer_dependencies       BIGINT[] NOT NULL,
   optional_dependencies   BIGINT[] NOT NULL,
 
-  FOREIGN KEY(package_id) REFERENCES packages(id)
+  FOREIGN KEY(package_id) REFERENCES packages(id),
+  UNIQUE(package_id, semver)
 );
 
 ALTER TABLE packages ADD FOREIGN KEY(dist_tag_latest_version) REFERENCES versions(id);
-
 
 
 CREATE TABLE dependencies (
