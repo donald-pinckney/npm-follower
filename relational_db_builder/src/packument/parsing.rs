@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
 use std::collections::HashMap;
 
-use postgres_db::custom_types::Semver;
+use postgres_db::custom_types::{Semver, Repository};
 use super::{Packument, VersionPackument, Dist};
 
 fn process_version(mut version_blob: Map<String, Value>) -> VersionPackument {
@@ -14,8 +14,8 @@ fn process_version(mut version_blob: Map<String, Value>) -> VersionPackument {
 
     let mut dist = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dist").unwrap();
 
-    let mut sigs_maybe = version_blob.remove_key_unwrap_type::<Vec<Value>>("signatures");
-    let mut sig0: Option<Map<String, Value>> = sigs_maybe.map(|mut sigs| 
+    let sigs_maybe = version_blob.remove_key_unwrap_type::<Vec<Value>>("signatures");
+    let sig0: Option<Map<String, Value>> = sigs_maybe.map(|mut sigs| 
         serde_json::from_value(sigs.remove(0)).unwrap()
     );
     let sig0_sig_keyid = sig0.map(|mut s| 
@@ -55,8 +55,18 @@ fn process_version(mut version_blob: Map<String, Value>) -> VersionPackument {
         npm_signature: dist.remove_key_unwrap_type::<String>("npm-signature"),
     };
 
-    let repository = todo!();
-
+    let repository_map = version_blob.remove_key_unwrap_type::<Map<String, Value>>("repository");
+    let repository = repository_map.map(|mut m| { 
+        let t = m.remove_key_unwrap_type::<String>("type").unwrap();
+        match t.as_str() {
+            "git" => {
+                Repository::Git(m.remove_key_unwrap_type::<String>("url").unwrap())
+            },
+            _ => {
+                panic!("Unknown repository type: {}", t)
+            }
+        }
+    });
 
     VersionPackument {
         prod_dependencies,
