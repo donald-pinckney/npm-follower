@@ -8,7 +8,7 @@ pub mod download_queue;
 #[allow(unused_imports)]
 mod schema;
 
-mod custom_types;
+pub mod custom_types;
 
 #[cfg(test)]
 mod testing;

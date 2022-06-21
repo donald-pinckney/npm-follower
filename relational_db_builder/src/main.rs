@@ -1,3 +1,5 @@
+mod packument;
+
 use postgres_db::DbConnection;
 use postgres_db::internal_state;
 use postgres_db::change_log;

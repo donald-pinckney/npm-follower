@@ -7,7 +7,7 @@ pub enum Repository {
     Git(String)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash)]
 #[sql_type = "SemverSql"]
 pub struct Semver {
     major: i32,
@@ -17,7 +17,7 @@ pub struct Semver {
     build: Vec<PrereleaseTag>
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash)]
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
@@ -66,3 +66,4 @@ pub mod sql_type_names {
 mod repository;
 mod semver;
 mod version_comparator;
+mod parsing;
