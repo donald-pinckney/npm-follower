@@ -39,4 +39,4 @@ pub struct Dist {
     pub npm_signature: Option<String>,
 }
 
-pub mod parsing;
+pub mod deserialize;

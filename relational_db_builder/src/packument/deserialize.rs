@@ -5,7 +5,9 @@ use std::collections::HashMap;
 use postgres_db::custom_types::{Semver, Repository};
 use super::{Packument, VersionPackument, Dist};
 
-fn process_version(mut version_blob: Map<String, Value>) -> VersionPackument {
+use utils::RemoveInto;
+
+fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPackument {
     let description = version_blob.remove_key_unwrap_type::<String>("description");
     let prod_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dependencies").unwrap_or_default();
     let dev_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("devDependencies").unwrap_or_default();
@@ -80,8 +82,7 @@ fn process_version(mut version_blob: Map<String, Value>) -> VersionPackument {
     }
 }
 
-fn process_packument_blob(v: Value, _pkg_name: String) -> Result<Packument, String> {
-    let mut j = unwrap_object(v).unwrap();
+pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Result<Packument, String> {
     
     let dist_tags_raw_maybe = j.remove("dist-tags").map(|dt| unwrap_object(dt).unwrap());
     let mut dist_tags: Option<HashMap<String, Semver>> = dist_tags_raw_maybe.map(|dist_tags_raw| 
@@ -109,7 +110,7 @@ fn process_packument_blob(v: Value, _pkg_name: String) -> Result<Packument, Stri
 
     let version_packuments_map = j.remove("versions").map(|x| unwrap_object(x).unwrap()).unwrap_or_default(); //unwrap_object(j.remove("versions").unwrap());
     let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
-        (v_str.parse().unwrap(), process_version(unwrap_object(blob).unwrap()))
+        (v_str.parse().unwrap(), deserialize_version_blob(unwrap_object(blob).unwrap()))
     ).collect();
     Ok(Packument {
         latest: latest,
@@ -128,17 +129,6 @@ fn parse_datetime(x: String) -> DateTime<Utc> {
     dt.with_timezone(&Utc)
 }
 
-fn empty_object() -> Value {
-    Value::Object(Map::new())
-}
-
-fn unwrap_array(v: Value) -> Vec<Value> {
-    match v {
-        Value::Array(a) => a,
-        _ => panic!()
-    }
-}
-
 fn unwrap_string(v: Value) -> Result<String, String> {
     match v {
         Value::String(s) => Ok(s),
@@ -150,27 +140,5 @@ fn unwrap_object(v: Value) -> Result<Map<String, Value>, String> {
     match v {
         Value::Object(o) => Ok(o),
         _ => Err(format!("Expected object, got: {:?}", v))
-    }
-}
-
-fn unwrap_number(v: Value) -> serde_json::Number {
-    match v {
-        Value::Number(n) => n,
-        _ => panic!()
-    }
-}
-
-
-trait RemoveInto {
-    fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de>;
-
-    fn remove_key_unwrap_type<T>(&mut self, key: &'static str) -> Option<T> where T: for<'de> serde::de::Deserialize<'de> {
-        self.remove_key(key).map(|x| x.unwrap())
-    }
-}
-
-impl RemoveInto for Map<String, Value> {
-    fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de> { 
-        self.remove(key).map(|x| serde_json::from_value(x))
     }
 }

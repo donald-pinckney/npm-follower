@@ -1,4 +1,4 @@
-
+use serde_json::{Map, Value};
 
 pub fn check_no_concurrent_processes(name: &str) {
     use std::collections::HashSet;
@@ -24,5 +24,21 @@ pub fn check_no_concurrent_processes(name: &str) {
                 .collect::<Vec<_>>()
                 .join(" "));
         std::process::exit(1);
+    }
+}
+
+
+
+pub trait RemoveInto {
+    fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de>;
+
+    fn remove_key_unwrap_type<T>(&mut self, key: &'static str) -> Option<T> where T: for<'de> serde::de::Deserialize<'de> {
+        self.remove_key(key).map(|x| x.unwrap())
+    }
+}
+
+impl RemoveInto for Map<String, Value> {
+    fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de> { 
+        self.remove(key).map(|x| serde_json::from_value(x))
     }
 }
