@@ -58,7 +58,7 @@ pub mod sql_types {
     pub struct VersionComparatorSql;
 
     #[derive(SqlType)]
-    #[postgres(type_name = "constraint_conjuncts")] // or should it be prerelease_tag (domain)?
+    #[postgres(type_name = "constraint_conjuncts_struct")] // or should it be constraint_conjuncts (domain)?
     pub struct ConstraintConjunctsSql;
 }
 
@@ -68,7 +68,7 @@ pub mod sql_type_names {
     pub type Repository_struct = super::sql_types::RepositorySql;
     pub type Semver_struct = super::sql_types::SemverSql;
     pub type Version_comparator = super::sql_types::VersionComparatorSql;
-    pub type Constraint_conjuncts = super::sql_types::ConstraintConjunctsSql;
+    pub type Constraint_conjuncts_struct = super::sql_types::ConstraintConjunctsSql;
 }
 
 

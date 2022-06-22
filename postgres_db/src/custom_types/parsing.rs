@@ -1,7 +1,7 @@
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-use super::{Semver, VersionComparator, VersionConstraint};
+use super::{Semver, VersionConstraint};
 
 
 #[derive(Debug)]

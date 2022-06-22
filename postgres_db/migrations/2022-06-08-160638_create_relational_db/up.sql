@@ -59,9 +59,17 @@ CREATE DOMAIN version_comparator AS version_comparator_struct CHECK (
 );
 
 
-CREATE TYPE constraint_conjuncts AS (
+CREATE DOMAIN constraint_conjuncts AS version_comparator[] CHECK (
+  array_length(VALUE, 1) IS NOT NULL -- an empty array has `array_length` NULL.
+);
+
+CREATE TYPE constraint_conjuncts_struct AS (
   -- Note: conjucts is restricted to be non-empty.
-  conjuncts      version_comparator[]
+  conjuncts      constraint_conjuncts
+);
+
+CREATE DOMAIN constraint_disjuncts AS constraint_conjuncts_struct[] CHECK (
+  array_length(VALUE, 1) IS NOT NULL -- an empty array has `array_length` NULL.
 );
 
 
@@ -126,7 +134,7 @@ CREATE TABLE dependencies (
   version_constraint_raw      TEXT NOT NULL,
   -- Note: disjuncts is restricted to be non-empty, and every disjunct is also 
   -- restricted to be non-empty (see constraint_conjuncts)
-  disjuncts                   constraint_conjuncts[] NOT NULL,
+  disjuncts                   constraint_disjuncts NOT NULL,
   
   FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id)
 );

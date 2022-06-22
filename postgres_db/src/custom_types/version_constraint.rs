@@ -1,11 +1,11 @@
 use diesel::pg::Pg;
 use diesel::types::{ToSql, FromSql};
 use diesel::deserialize;
-use diesel::serialize::{self, Output, WriteTuple, IsNull};
-use diesel::sql_types::{Record, Nullable, Array, Integer};
+use diesel::serialize::{self, Output, WriteTuple};
+use diesel::sql_types::{Record, Array};
 use std::io::Write;
 use super::sql_types::*;
-use super::{Semver, VersionComparator, VersionConstraint};
+use super::{VersionComparator, VersionConstraint};
 
 
 
@@ -65,11 +65,11 @@ mod tests {
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Constraint_conjuncts;
+        use crate::custom_types::sql_type_names::Constraint_conjuncts_struct;
 
         test_version_constraint_to_sql {
             id -> Integer,
-            c -> Array<Constraint_conjuncts>,
+            c -> Array<Constraint_conjuncts_struct>,
         }
     }
 
@@ -106,32 +106,31 @@ mod tests {
         let data = vec![
             TestVersionConstraintToSql {
                 id: 1,
-                c: VersionConstraint(vec![])
-            },
-            TestVersionConstraintToSql {
-                id: 2,
                 c: VersionConstraint(vec![vec![c1.clone()]])
             },
             TestVersionConstraintToSql {
-                id: 3,
+                id: 2,
                 c: VersionConstraint(vec![vec![c1.clone(), c2.clone()]])
             },
             TestVersionConstraintToSql {
-                id: 4,
-                c: VersionConstraint(vec![vec![c1.clone(), c2.clone()], vec![c2.clone(), c1.clone()]])
+                id: 3,
+                c: VersionConstraint(vec![vec![c1.clone(), c3.clone()], vec![c2.clone(), c1.clone()]])
             },
             TestVersionConstraintToSql {
-                id: 5,
+                id: 4,
                 c: VersionConstraint(vec![vec![c1.clone(), c2.clone()], vec![c2.clone()]])
             },
             TestVersionConstraintToSql {
-                id: 6,
-                c: VersionConstraint(vec![vec![c2.clone()], vec![c1.clone(), c2.clone()]])
+                id: 5,
+                c: VersionConstraint(vec![vec![c3], vec![c1.clone(), c2.clone()]])
             },
+            
         ];
 
+
+
         let conn = testing::test_connect();
-        let _temp_table = testing::TempTable::new(&conn, "test_version_constraint_to_sql", "id SERIAL PRIMARY KEY, c constraint_conjuncts[] NOT NULL");
+        let _temp_table = testing::TempTable::new(&conn, "test_version_constraint_to_sql", "id SERIAL PRIMARY KEY, c constraint_disjuncts NOT NULL");
 
         let inserted = diesel::insert_into(test_version_constraint_to_sql).values(&data).get_results(&conn.conn).unwrap();
         assert_eq!(data, inserted);
@@ -141,5 +140,71 @@ mod tests {
             .load(&conn.conn)
             .unwrap();
         assert_eq!(data, filter_all);
+
+
+
+
+        let bad_data1 = vec![
+            TestVersionConstraintToSql {
+                id: 6,
+                c: VersionConstraint(vec![])
+            },
+        ];
+        let (_, info) = unwrap_db_error(
+            diesel::insert_into(test_version_constraint_to_sql)
+                .values(&bad_data1)
+                .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                .unwrap_err());
+        assert!(info.message().contains(r#"violates check constraint "constraint_disjuncts_check""#));
+
+
+        let bad_data2 = vec![
+            TestVersionConstraintToSql {
+                id: 6,
+                c: VersionConstraint(vec![vec![]])
+            },
+        ];
+        let (_, info) = unwrap_db_error(
+            diesel::insert_into(test_version_constraint_to_sql)
+                .values(&bad_data2)
+                .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                .unwrap_err());
+        assert!(info.message().contains(r#"violates check constraint "constraint_conjuncts_check""#));
+        
+
+        let bad_data3 = vec![
+            TestVersionConstraintToSql {
+                id: 6,
+                c: VersionConstraint(vec![vec![c2.clone()], vec![]])
+            },
+        ];
+        let (_, info) = unwrap_db_error(
+            diesel::insert_into(test_version_constraint_to_sql)
+                .values(&bad_data3)
+                .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                .unwrap_err());
+        assert!(info.message().contains(r#"violates check constraint "constraint_conjuncts_check""#));
+
+
+        let bad_data4 = vec![
+            TestVersionConstraintToSql {
+                id: 6,
+                c: VersionConstraint(vec![vec![], vec![c2.clone()]])
+            },
+        ];
+        let (_, info) = unwrap_db_error(
+            diesel::insert_into(test_version_constraint_to_sql)
+                .values(&bad_data4)
+                .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                .unwrap_err());
+        assert!(info.message().contains(r#"violates check constraint "constraint_conjuncts_check""#)); 
+    }
+
+
+    fn unwrap_db_error(err: diesel::result::Error) -> (diesel::result::DatabaseErrorKind, Box<dyn diesel::result::DatabaseErrorInformation + Send + Sync>) {
+        match err {
+            diesel::result::Error::DatabaseError(x, y) => (x, y),
+            _ => panic!("Expected DatabaseError, got: {}", err)
+        }
     }
 }
