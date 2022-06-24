@@ -61,6 +61,7 @@ fn process_change(conn: &DbConnection, c: Change) {
     }
 
     let doc = change_json.remove_key_unwrap_type::<Map<String, Value>>("doc").unwrap();
-    let packument = packument::deserialize::deserialize_packument_blob(doc).unwrap();
+    let packument = packument::deserialize::deserialize_packument_blob(doc);
+    println!("parsed packument: {:#?}", packument);
 
 }

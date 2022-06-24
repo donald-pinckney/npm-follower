@@ -84,12 +84,12 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
     }
 }
 
-pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Result<Packument, String> {
+pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Packument {
     
-    let dist_tags_raw_maybe = j.remove("dist-tags").map(|dt| unwrap_object(dt).unwrap());
+    let dist_tags_raw_maybe = Some(j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap());
     let mut dist_tags: Option<HashMap<String, Semver>> = dist_tags_raw_maybe.map(|dist_tags_raw| 
         dist_tags_raw.into_iter().map(|(tag, v_str)| 
-            (tag, semver_spec_parser::parse_semver(&unwrap_string(v_str).unwrap()).unwrap())
+            (tag, semver_spec_parser::parse_semver(&serde_json::from_value::<String>(v_str).unwrap()).unwrap())
         ).collect()
     );
     
@@ -98,30 +98,32 @@ pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Result<Packument
         None => None
     };
 
-    let time_raw = unwrap_object(j.remove("time").ok_or(format!("Expected time field: {:#?}", j))?).unwrap();
-    // let time_raw = unwrap_object(j.remove("time").expect(&format!("Expected time field: {:#?}, pkg_name = {}", j, _pkg_name)));
+    let time_raw = j.remove_key_unwrap_type::<Map<String, Value>>("time").unwrap();
     let mut times: HashMap<_, _> = time_raw.into_iter().flat_map(|(k, t_str)| 
-        Some((k, parse_datetime(unwrap_string(t_str).ok()?)))
+        Some((k, parse_datetime(serde_json::from_value::<String>(t_str).unwrap())))
     ).collect();
     let modified = times.remove("modified").unwrap();
     let created = times.remove("created").unwrap();
 
     let version_times: HashMap<Semver, _> = times.into_iter().map(|(v_str, t)| 
-        (semver_spec_parser::parse_semver(&v_str.clone()).unwrap(), t)
+        (semver_spec_parser::parse_semver(&v_str).unwrap(), t)
     ).collect();
 
-    let version_packuments_map = j.remove("versions").map(|x| unwrap_object(x).unwrap()).unwrap_or_default(); //unwrap_object(j.remove("versions").unwrap());
+    let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
     let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
-        (semver_spec_parser::parse_semver(&v_str).unwrap(), deserialize_version_blob(unwrap_object(blob).unwrap()))
+        (
+            semver_spec_parser::parse_semver(&v_str).unwrap(), 
+            deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap())
+        )
     ).collect();
-    Ok(Packument {
+    Packument {
         latest: latest,
         created: created,
         modified: modified,
         version_times: version_times,
         other_dist_tags: dist_tags,
         versions: version_packuments
-    })
+    }
 }
 
 
