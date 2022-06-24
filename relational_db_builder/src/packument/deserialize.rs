@@ -33,19 +33,19 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
 
     
     let prod_dependencies = prod_dependencies_raw.into_iter().map(|(p, c)|
-        (p, unwrap_string(c).unwrap().parse().unwrap())
+        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
     ).collect();
 
     let dev_dependencies = dev_dependencies_raw.into_iter().map(|(p, c)|
-        (p, unwrap_string(c).unwrap().parse().unwrap())
+        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
     ).collect();
 
     let peer_dependencies = peer_dependencies_raw.into_iter().map(|(p, c)|
-        (p, unwrap_string(c).unwrap().parse().unwrap())
+        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
     ).collect();
 
     let optional_dependencies = optional_dependencies_raw.into_iter().map(|(p, c)|
-        (p, unwrap_string(c).unwrap().parse().unwrap())
+        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
     ).collect();
     
     let dist = Dist {
@@ -133,26 +133,15 @@ fn parse_datetime(x: String) -> DateTime<Utc> {
     dt.with_timezone(&Utc)
 }
 
-fn unwrap_string(v: Value) -> Result<String, String> {
-    match v {
-        Value::String(s) => Ok(s),
-        _ => Err(format!("Expected string, got: {:?}", v))
-    }
-}
-
-fn unwrap_object(v: Value) -> Result<Map<String, Value>, String> {
-    match v {
-        Value::Object(o) => Ok(o),
-        _ => Err(format!("Expected object, got: {:?}", v))
-    }
-}
-
-
 
 impl FromStr for Spec {
     type Err = semver_spec_parser::ParseSpecError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
+        let parsed = semver_spec_parser::parse_spec(s)?;
+        Ok(Spec {
+            raw: s.into(),
+            parsed: parsed
+        })
     }
 }
