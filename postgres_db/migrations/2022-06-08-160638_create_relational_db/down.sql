@@ -1,20 +1,11 @@
 -- This file should undo anything in `up.sql`
 
-ALTER TABLE versions
-DROP CONSTRAINT versions_package_id_fkey;
+DROP TABLE packages, versions, dependencies CASCADE;
 
-ALTER TABLE packages
-DROP CONSTRAINT packages_dist_tag_latest_version_fkey;
-
-ALTER TABLE dependencies
-DROP CONSTRAINT dependencies_dst_package_id_if_exists_fkey;
-
-
-DROP TABLE packages;
-DROP TABLE versions;
-DROP TABLE dependencies;
-
-
+DROP DOMAIN     parsed_spec;
+DROP TYPE       parsed_spec_struct;
+DROP TYPE       dependency_type_enum;
+DROP TYPE       alias_subdependency_type_enum;
 DROP DOMAIN     constraint_disjuncts;
 DROP TYPE       constraint_conjuncts_struct;
 DROP DOMAIN     constraint_conjuncts;

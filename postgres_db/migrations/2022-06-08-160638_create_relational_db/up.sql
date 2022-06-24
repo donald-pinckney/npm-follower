@@ -60,17 +60,109 @@ CREATE DOMAIN version_comparator AS version_comparator_struct CHECK (
 
 
 CREATE DOMAIN constraint_conjuncts AS version_comparator[] CHECK (
-  array_length(VALUE, 1) IS NOT NULL -- an empty array has `array_length` NULL.
+  -- The list of conjuncts must be non-empty.
+  -- An empty array has `array_length` NULL.
+  array_length(VALUE, 1) IS NOT NULL
 );
 
 CREATE TYPE constraint_conjuncts_struct AS (
-  -- Note: conjucts is restricted to be non-empty.
   conjuncts      constraint_conjuncts
 );
 
 CREATE DOMAIN constraint_disjuncts AS constraint_conjuncts_struct[] CHECK (
-  array_length(VALUE, 1) IS NOT NULL -- an empty array has `array_length` NULL.
+  -- The list of disjuncts must be non-empty.
+  -- An empty array has `array_length` NULL.
+  -- However, we explicitely allow the entire value to be NULL (otherwise that gets caught by the array_length check)
+  VALUE IS NULL OR
+  array_length(VALUE, 1) IS NOT NULL
 );
+
+
+CREATE TYPE dependency_type_enum AS ENUM (
+  'range', 
+  'tag', 
+  'git', 
+  'remote', 
+  'alias', 
+  'file', 
+  'directory'
+);
+
+CREATE TYPE alias_subdependency_type_enum AS ENUM (
+  'range', 
+  'tag'
+);
+
+
+CREATE TYPE parsed_spec_struct AS (
+  dep_type                      dependency_type_enum,
+
+  range_disjuncts               constraint_disjuncts,
+  tag_name                      TEXT,
+  git_spec                      TEXT,
+  remote_url                    TEXT,
+  alias_package_name            TEXT,
+  alias_package_id_if_exists    BIGINT, -- REFERENCES packages(id), but we can' specify this
+  alias_subdep_type             alias_subdependency_type_enum,
+  alias_subdep_range_disjuncts  constraint_disjuncts,
+  alias_subdep_tag_name         TEXT,
+  file_path                     TEXT,
+  directory_path                TEXT
+);
+
+CREATE DOMAIN parsed_spec AS parsed_spec_struct
+  CHECK(
+    -- false
+    (VALUE).dep_type IS NOT NULL
+  )
+
+  -- CHECK(
+  --   false
+  -- )
+
+  CHECK(
+    ((VALUE).dep_type = 'range' AND (VALUE).range_disjuncts IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'range' AND (VALUE).range_disjuncts IS NULL)
+  )
+
+  CHECK(
+    ((VALUE).dep_type = 'tag' AND (VALUE).tag_name IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'tag' AND (VALUE).tag_name IS NULL)
+  )
+
+  CHECK(
+    ((VALUE).dep_type = 'git' AND (VALUE).git_spec IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'git' AND (VALUE).git_spec IS NULL)
+  )
+  
+  CHECK(
+    ((VALUE).dep_type = 'remote' AND (VALUE).remote_url IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'remote' AND (VALUE).remote_url IS NULL)
+  )
+
+  CHECK(
+    ((VALUE).dep_type = 'alias' AND 
+      (VALUE).alias_package_name IS NOT NULL AND
+      (VALUE).alias_subdep_type IS NOT NULL AND (
+        ((VALUE).alias_subdep_type = 'range' AND (VALUE).alias_subdep_range_disjuncts IS NOT NULL AND (VALUE).alias_subdep_tag_name IS NULL) OR 
+        ((VALUE).alias_subdep_type = 'tag' AND (VALUE).alias_subdep_range_disjuncts IS NULL AND (VALUE).alias_subdep_tag_name IS NOT NULL))) OR 
+    ((VALUE).dep_type <> 'alias' AND 
+      (VALUE).alias_package_name IS NULL AND
+      (VALUE).alias_package_id_if_exists IS NULL AND
+      (VALUE).alias_subdep_type IS NULL AND
+      (VALUE).alias_subdep_range_disjuncts IS NULL AND
+      (VALUE).alias_subdep_tag_name IS NULL)
+  )
+
+  CHECK(
+    ((VALUE).dep_type = 'file' AND (VALUE).file_path IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'file' AND (VALUE).file_path IS NULL)
+  )
+
+  CHECK(
+    ((VALUE).dep_type = 'directory' AND (VALUE).directory_path IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'directory' AND (VALUE).directory_path IS NULL)
+  );
 
 
 
@@ -126,15 +218,15 @@ ALTER TABLE packages ADD FOREIGN KEY(dist_tag_latest_version) REFERENCES version
 
 
 CREATE TABLE dependencies (
-  id                          BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  id                            BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 
-  dst_package_name            TEXT NOT NULL,
-  dst_package_id_if_exists    BIGINT,
+  dst_package_name              TEXT NOT NULL,
+  dst_package_id_if_exists      BIGINT,
 
-  version_constraint_raw      TEXT NOT NULL,
-  -- Note: disjuncts is restricted to be non-empty, and every disjunct is also 
-  -- restricted to be non-empty (see constraint_conjuncts)
-  disjuncts                   constraint_disjuncts NOT NULL,
-  
+  raw_spec                      TEXT NOT NULL,
+  spec                          parsed_spec NOT NULL,
+
   FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id)
+  -- We would like to specify this, but we can't
+  -- FOREIGN KEY((spec).alias_package_id_if_exists) REFERENCES packages(id)
 );
