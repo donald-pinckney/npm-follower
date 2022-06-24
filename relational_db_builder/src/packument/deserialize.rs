@@ -1,9 +1,11 @@
+use std::str::FromStr;
 use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
 use std::collections::HashMap;
 
 use postgres_db::custom_types::{Semver, Repository};
-use super::{Packument, VersionPackument, Dist};
+use semver_spec_parser;
+use super::{Packument, VersionPackument, Dist, Spec};
 
 use utils::RemoveInto;
 
@@ -87,7 +89,7 @@ pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Result<Packument
     let dist_tags_raw_maybe = j.remove("dist-tags").map(|dt| unwrap_object(dt).unwrap());
     let mut dist_tags: Option<HashMap<String, Semver>> = dist_tags_raw_maybe.map(|dist_tags_raw| 
         dist_tags_raw.into_iter().map(|(tag, v_str)| 
-            (tag, unwrap_string(v_str).unwrap().parse().unwrap())
+            (tag, semver_spec_parser::parse_semver(&unwrap_string(v_str).unwrap()).unwrap())
         ).collect()
     );
     
@@ -105,12 +107,12 @@ pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Result<Packument
     let created = times.remove("created").unwrap();
 
     let version_times: HashMap<Semver, _> = times.into_iter().map(|(v_str, t)| 
-        (v_str.clone().parse().unwrap(), t)
+        (semver_spec_parser::parse_semver(&v_str.clone()).unwrap(), t)
     ).collect();
 
     let version_packuments_map = j.remove("versions").map(|x| unwrap_object(x).unwrap()).unwrap_or_default(); //unwrap_object(j.remove("versions").unwrap());
     let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
-        (v_str.parse().unwrap(), deserialize_version_blob(unwrap_object(blob).unwrap()))
+        (semver_spec_parser::parse_semver(&v_str).unwrap(), deserialize_version_blob(unwrap_object(blob).unwrap()))
     ).collect();
     Ok(Packument {
         latest: latest,
@@ -140,5 +142,15 @@ fn unwrap_object(v: Value) -> Result<Map<String, Value>, String> {
     match v {
         Value::Object(o) => Ok(o),
         _ => Err(format!("Expected object, got: {:?}", v))
+    }
+}
+
+
+
+impl FromStr for Spec {
+    type Err = semver_spec_parser::ParseSpecError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        todo!()
     }
 }

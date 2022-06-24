@@ -100,5 +100,4 @@ mod repository;
 mod semver;
 mod version_comparator;
 mod version_constraint;
-mod parsing;
 mod parsed_spec;

@@ -1,5 +1,5 @@
 [package]
-name = "relational_db_builder"
+name = "semver_spec_parser"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,10 +7,6 @@ edition = "2021"
 
 [dependencies]
 postgres_db = { path = "../postgres_db" }
-semver_spec_parser = { path = "../semver_spec_parser" }
-utils = { path = "../utils" }
 
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
-indicatif = "0.16.2"
-chrono = { version = "0.4.19", features = ["serde"] }
