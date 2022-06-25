@@ -240,3 +240,6 @@ CREATE TABLE dependencies (
   -- We would like to specify this, but we can't
   -- FOREIGN KEY((spec).alias_package_id_if_exists) REFERENCES packages(id)
 );
+
+CREATE INDEX dependencies_dst_package_name_idx ON dependencies (dst_package_name) WHERE dst_package_id_if_exists IS NULL;
+CREATE INDEX dependencies_alias_package_name_idx ON dependencies (((spec).alias_package_name)) WHERE (spec).dep_type = 'alias' AND (spec).alias_package_id_if_exists IS NULL;

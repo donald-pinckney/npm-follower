@@ -1,5 +1,7 @@
 -- This file should undo anything in `up.sql`
 
+DROP INDEX dependencies_dst_package_name_idx;
+DROP INDEX dependencies_alias_package_name_idx;
 DROP TABLE packages, versions, dependencies CASCADE;
 
 DROP DOMAIN     package_metadata;
