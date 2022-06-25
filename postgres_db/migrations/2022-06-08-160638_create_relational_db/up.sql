@@ -102,7 +102,7 @@ CREATE TYPE parsed_spec_struct AS (
   git_spec                      TEXT,
   remote_url                    TEXT,
   alias_package_name            TEXT,
-  alias_package_id_if_exists    BIGINT, -- REFERENCES packages(id), but we can' specify this
+  alias_package_id_if_exists    BIGINT, -- REFERENCES packages(id), but we can't specify this
   alias_subdep_type             alias_subdependency_type_enum,
   alias_subdep_range_disjuncts  constraint_disjuncts,
   alias_subdep_tag_name         TEXT,
@@ -112,13 +112,8 @@ CREATE TYPE parsed_spec_struct AS (
 
 CREATE DOMAIN parsed_spec AS parsed_spec_struct
   CHECK(
-    -- false
     (VALUE).dep_type IS NOT NULL
   )
-
-  -- CHECK(
-  --   false
-  -- )
 
   CHECK(
     ((VALUE).dep_type = 'range' AND (VALUE).range_disjuncts IS NOT NULL) OR 
@@ -166,6 +161,27 @@ CREATE DOMAIN parsed_spec AS parsed_spec_struct
 
 
 
+CREATE TYPE package_metadata_struct AS (
+  deleted                     BOOLEAN,
+  dist_tag_latest_version     BIGINT, -- REFERENCES versions(id), but we can't specify this
+  created                     TIMESTAMP WITH TIME ZONE,
+  modified                    TIMESTAMP WITH TIME ZONE,
+  other_dist_tags             JSONB
+);
+
+CREATE DOMAIN package_metadata AS package_metadata_struct
+  CHECK(
+    (VALUE).deleted OR (
+      (VALUE).dist_tag_latest_version IS NOT NULL AND  -- not sure if IS NOT NULL is right here
+      (VALUE).created IS NOT NULL AND 
+      (VALUE).modified IS NOT NULL AND 
+      (VALUE).dist_tag_latest_version IS NOT NULL
+    )
+  )
+  CHECK((VALUE).other_dist_tags IS NOT NULL);
+
+
+
 ------------------------------------------
 -----                              -------
 -----       TABLE DEFINITIONS      -------
@@ -177,11 +193,7 @@ CREATE DOMAIN parsed_spec AS parsed_spec_struct
 CREATE TABLE packages (
   id                          BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name                        TEXT NOT NULL UNIQUE,
-  dist_tag_latest_version     BIGINT NOT NULL, -- not sure if NOT NULL is right here
-  created                     TIMESTAMP WITH TIME ZONE NOT NULL,
-  modified                    TIMESTAMP WITH TIME ZONE NOT NULL,
-  deleted                     BOOLEAN NOT NULL,
-  other_dist_tags             JSONB NOT NULL
+  metadata                    package_metadata NOT NULL
 );
 
 
@@ -213,8 +225,6 @@ CREATE TABLE versions (
   FOREIGN KEY(package_id) REFERENCES packages(id),
   UNIQUE(package_id, semver)
 );
-
-ALTER TABLE packages ADD FOREIGN KEY(dist_tag_latest_version) REFERENCES versions(id);
 
 
 CREATE TABLE dependencies (

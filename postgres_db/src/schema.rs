@@ -76,11 +76,7 @@ table! {
     packages (id) {
         id -> Int8,
         name -> Text,
-        dist_tag_latest_version -> Int8,
-        created -> Timestamptz,
-        modified -> Timestamptz,
-        deleted -> Bool,
-        other_dist_tags -> Jsonb,
+        metadata -> Package_metadata_struct,
     }
 }
 
@@ -106,6 +102,7 @@ table! {
 }
 
 joinable!(dependencies -> packages (dst_package_id_if_exists));
+joinable!(versions -> packages (package_id));
 
 allow_tables_to_appear_in_same_query!(
     change_log,

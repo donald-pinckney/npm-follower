@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+
+use chrono::{DateTime, Utc};
 use sql_types::*;
 use diesel::sql_types::Array;
 
@@ -59,6 +62,23 @@ pub enum VersionComparator {
 pub struct VersionConstraint(Vec<Vec<VersionComparator>>);
 
 
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
+#[sql_type = "PackageMetadataStructSql"]
+pub enum PackageMetadata {
+    NotDeleted { 
+        dist_tag_latest_version: i64, 
+        created: DateTime<Utc>, 
+        modified: DateTime<Utc>, 
+        other_dist_tags: HashMap<String, String> 
+    },
+    Deleted { 
+        dist_tag_latest_version: Option<i64>, 
+        created: Option<DateTime<Utc>>, 
+        modified: Option<DateTime<Utc>>, 
+        other_dist_tags: HashMap<String, String> 
+    },
+}
+
 pub mod sql_types {
     #[derive(SqlType, QueryId)]
     #[postgres(type_name = "repository_struct")] // or should it be repository (domain)?
@@ -83,6 +103,10 @@ pub mod sql_types {
     #[derive(SqlType)]
     #[postgres(type_name = "parsed_spec_struct")] // or should it be parsed_spec (domain)?
     pub struct ParsedSpecStructSql;
+
+    #[derive(SqlType)]
+    #[postgres(type_name = "package_metadata_struct")] // or should it be package_metadata (domain)?
+    pub struct PackageMetadataStructSql;
 }
 
 
@@ -93,6 +117,8 @@ pub mod sql_type_names {
     pub type Version_comparator = super::sql_types::VersionComparatorSql;
     pub type Constraint_conjuncts_struct = super::sql_types::ConstraintConjunctsSql;
     pub type Parsed_spec_struct = super::sql_types::ParsedSpecStructSql;
+    pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
+
 }
 
 
@@ -101,3 +127,4 @@ mod semver;
 mod version_comparator;
 mod version_constraint;
 mod parsed_spec;
+mod package_metadata;
