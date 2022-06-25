@@ -23,7 +23,7 @@ CREATE TYPE semver_struct AS (
   minor                   INTEGER,
   bug                     INTEGER,
   prerelease              prerelease_tag[],
-  build                   prerelease_tag[]
+  build                   TEXT[]
 );
 CREATE DOMAIN semver AS semver_struct CHECK (
   VALUE IS NULL OR (

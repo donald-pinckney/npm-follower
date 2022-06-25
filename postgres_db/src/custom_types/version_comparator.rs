@@ -127,7 +127,7 @@ mod tests {
             minor: 4, 
             bug: 5, 
             prerelease: vec![PrereleaseTag::Int(8)], 
-            build: vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(1)] 
+            build: vec!["alpha".into(), "1".into()] 
         };
 
         let v2 = Semver { 

@@ -4,7 +4,6 @@ use serde_json::{Map, Value};
 use std::collections::HashMap;
 
 use postgres_db::custom_types::{Semver, Repository};
-use semver_spec_parser;
 use super::{Packument, VersionPackument, Dist, Spec};
 
 use utils::RemoveInto;
@@ -89,7 +88,7 @@ pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Packument {
     let dist_tags_raw_maybe = Some(j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap());
     let mut dist_tags: Option<HashMap<String, Semver>> = dist_tags_raw_maybe.map(|dist_tags_raw| 
         dist_tags_raw.into_iter().map(|(tag, v_str)| 
-            (tag, semver_spec_parser::parse_semver(&serde_json::from_value::<String>(v_str).unwrap()).unwrap())
+            (tag, semver_spec_serialization::parse_semver(&serde_json::from_value::<String>(v_str).unwrap()).unwrap())
         ).collect()
     );
     
@@ -106,13 +105,13 @@ pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Packument {
     let created = times.remove("created").unwrap();
 
     let version_times: HashMap<Semver, _> = times.into_iter().map(|(v_str, t)| 
-        (semver_spec_parser::parse_semver(&v_str).unwrap(), t)
+        (semver_spec_serialization::parse_semver(&v_str).unwrap(), t)
     ).collect();
 
     let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
     let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
         (
-            semver_spec_parser::parse_semver(&v_str).unwrap(), 
+            semver_spec_serialization::parse_semver(&v_str).unwrap(), 
             deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap())
         )
     ).collect();
@@ -135,10 +134,10 @@ fn parse_datetime(x: String) -> DateTime<Utc> {
 
 
 impl FromStr for Spec {
-    type Err = semver_spec_parser::ParseSpecError;
+    type Err = semver_spec_serialization::ParseSpecError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parsed = semver_spec_parser::parse_spec(s)?;
+        let parsed = semver_spec_serialization::parse_spec(s)?;
         Ok(Spec {
             raw: s.into(),
             parsed: parsed

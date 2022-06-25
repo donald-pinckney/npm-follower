@@ -13,11 +13,11 @@ pub enum Repository {
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash)]
 #[sql_type = "SemverSql"]
 pub struct Semver {
-    major: i32,
-    minor: i32,
-    bug: i32,
-    prerelease: Vec<PrereleaseTag>,
-    build: Vec<PrereleaseTag>
+    pub major: i32,
+    pub minor: i32,
+    pub bug: i32,
+    pub prerelease: Vec<PrereleaseTag>,
+    pub build: Vec<String>
 }
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash)]

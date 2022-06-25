@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 postgres_db = { path = "../postgres_db" }
-semver_spec_parser = { path = "../semver_spec_parser" }
+semver_spec_serialization = { path = "../semver_spec_serialization" }
 utils = { path = "../utils" }
 
 serde = { version = "1.0.136", features = ["derive"] }

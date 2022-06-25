@@ -69,7 +69,7 @@ impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 
 impl FromSql<SemverSql, Pg> for Semver {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let (major, minor, bug, prerelease, build) = FromSql::<Record<(Integer, Integer, Integer, Array<PrereleaseTagStructSql>, Array<PrereleaseTagStructSql>)>, Pg>::from_sql(bytes)?;
+        let (major, minor, bug, prerelease, build) = FromSql::<Record<(Integer, Integer, Integer, Array<PrereleaseTagStructSql>, Array<Text>)>, Pg>::from_sql(bytes)?;
         Ok(Semver {
             major,
             minor,
@@ -82,7 +82,7 @@ impl FromSql<SemverSql, Pg> for Semver {
 
 impl ToSql<SemverSql, Pg> for Semver {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        WriteTuple::<(Integer, Integer, Integer, Array<PrereleaseTagStructSql>, Array<PrereleaseTagStructSql>)>::write_tuple(&(self.major, self.minor, self.bug, &self.prerelease, &self.build), out)
+        WriteTuple::<(Integer, Integer, Integer, Array<PrereleaseTagStructSql>, Array<Text>)>::write_tuple(&(self.major, self.minor, self.bug, &self.prerelease, &self.build), out)
     }
 }
 
@@ -130,7 +130,7 @@ mod tests {
                     minor: 4, 
                     bug: 5, 
                     prerelease: vec![PrereleaseTag::Int(8)], 
-                    build: vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(1)] 
+                    build: vec!["alpha".into(), "1".into()] 
                 }
             },
         ];
