@@ -100,6 +100,7 @@ impl<'a> FromSql<PackageMetadataStructSql, Pg> for PackageMetadata {
 mod tests {
     use std::collections::HashMap;
 
+    use chrono::NaiveTime;
     use chrono::Utc;
     use diesel::prelude::*;
     use diesel::RunQueryDsl;
@@ -127,7 +128,9 @@ mod tests {
     fn test_package_metadata_to_sql_fn() {
         use self::test_package_metadata_to_sql::dsl::*;
 
-        let now = Utc::now();
+        let today = Utc::today();
+        let now = today.and_time(NaiveTime::from_hms(1, 2, 28)).unwrap();
+        
         let empty_odts = HashMap::new();
         let some_odts = HashMap::from([("cats".into(), "1.3.5".into()), ("old".into(), "0.3.1".into())]);
 
