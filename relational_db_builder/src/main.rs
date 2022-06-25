@@ -49,18 +49,18 @@ fn main() {
 fn process_change(conn: &DbConnection, c: Change) {
     let mut change_json = serde_json::from_value::<Map<String, Value>>(c.raw_json).unwrap();
     let del = change_json.remove_key_unwrap_type::<bool>("deleted").unwrap();
-
+    let package_name = change_json.remove_key_unwrap_type::<String>("id").unwrap();
+    
+    if package_name == "_design/app" || package_name == "_design/scratch" {
+        return
+    }
+    
+    let doc = change_json.remove_key_unwrap_type::<Map<String, Value>>("doc").unwrap();
+    
     if del {
         panic!("Don't yet know how to handle deleted things");
     }
 
-    let package_name = change_json.remove_key_unwrap_type::<String>("id").unwrap();
-
-    if package_name == "_design/app" || package_name == "_design/scratch" {
-        return
-    }
-
-    let doc = change_json.remove_key_unwrap_type::<Map<String, Value>>("doc").unwrap();
     let packument = packument::deserialize::deserialize_packument_blob(doc);
     println!("parsed packument: {:#?}", packument);
 

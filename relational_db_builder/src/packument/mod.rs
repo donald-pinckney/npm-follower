@@ -6,13 +6,16 @@ use std::collections::HashMap;
 
 
 #[derive(Debug)]
-pub struct Packument {
-    pub latest: Option<Semver>,
-    pub created: DateTime<Utc>,
-    pub modified: DateTime<Utc>,
-    pub version_times: HashMap<Semver, DateTime<Utc>>,
-    pub versions: HashMap<Semver, VersionPackument>,
-    pub other_dist_tags: Option<HashMap<String, Semver>>
+pub enum Packument {
+    Deleted,
+    NotDeleted {
+        latest: Option<Semver>,
+        created: DateTime<Utc>,
+        modified: DateTime<Utc>,
+        version_times: HashMap<Semver, DateTime<Utc>>,
+        versions: HashMap<Semver, VersionPackument>,
+        other_dist_tags: Option<HashMap<String, Semver>>
+    }
 }
 
 #[derive(Debug)]

@@ -116,7 +116,7 @@ pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Packument {
             deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap())
         )
     ).collect();
-    Packument {
+    Packument::NotDeleted {
         latest: latest,
         created: created,
         modified: modified,
