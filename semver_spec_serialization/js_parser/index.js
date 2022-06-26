@@ -57,10 +57,10 @@ function remove_prefix(s, p) {
 
 function parse_range(s) {
     const r = new semver.Range(s);
-    return r.set.map(conjuncts => conjuncts.map(comp => parse_comparator(comp)));
+    return r.set.map(conjuncts => conjuncts.map(comp => serialize_comparator(comp)));
 }
 
-function parse_comparator(c) {
+function serialize_comparator(c) {
     // console.log(c);
     const op = c.operator;
     const sv = c.semver;
@@ -91,11 +91,11 @@ function parse_comparator(c) {
     if(key == 'Any') {
         return key
     } else {
-        return {[key]: parse_semver(sv)}
+        return {[key]: serialize_semver(sv)}
     }
 }
 
-function parse_semver(v) {
+function serialize_semver(v) {
     const prerelease = v.prerelease.map(pre => {
         if(Number.isInteger(pre)) {
             return {'Int': pre}
@@ -112,29 +112,3 @@ function parse_semver(v) {
         build: v.build
     }
 }
-
-/*
-type = git:
-    use saveSpec
-type = version:
-    use fetchSpec, parse Range
-type = range:
-    use fetchSpec, parse Range
-type = tag:
-    use fetchSpec
-type = file:
-    use rawSpec, remove file: prefix if exists
-type = directory:
-    use rawSpec, remove file: prefix if exists
-type = remote:
-    use rawSpec
-type = alias:
-    use name = subSpec.name, sub_type = subSpec.type
-    sub_type = tag:
-        use fetchSpec
-    sub_type = version:
-        use fetchSpec, parse Range
-    sub_type = range:
-        use fetchSpec, parse Range
-*/
-
