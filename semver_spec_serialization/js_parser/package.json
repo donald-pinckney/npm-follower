@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "npm-package-arg": "^9.1.0",
+    "semver": "^7.3.7"
+  }
+}

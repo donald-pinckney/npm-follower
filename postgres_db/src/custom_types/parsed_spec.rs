@@ -221,8 +221,6 @@ mod tests {
         let vc = VersionConstraint(vec![vec![c1.clone(), c2.clone(), c3.clone()]]);
 
 
-
-
         let data = vec![
             TestParsedSpecToSql {
                 id: 1,

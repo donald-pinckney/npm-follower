@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
+use serde::{Serialize, Deserialize};
 use sql_types::*;
 use diesel::sql_types::Array;
 
@@ -10,7 +11,7 @@ pub enum Repository {
     Git(String)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "SemverSql"]
 pub struct Semver {
     pub major: i32,
@@ -20,7 +21,7 @@ pub struct Semver {
     pub build: Vec<String>
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
@@ -28,7 +29,7 @@ pub enum PrereleaseTag {
 }
 
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Serialize, Deserialize)]
 #[sql_type = "ParsedSpecStructSql"]
 pub enum ParsedSpec {
     Range(VersionConstraint),
@@ -40,13 +41,13 @@ pub enum ParsedSpec {
     Directory(String)
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum AliasSubspec {
     Range(VersionConstraint),
     Tag(String)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Serialize, Deserialize)]
 #[sql_type = "VersionComparatorSql"]
 pub enum VersionComparator {
     Any,
@@ -57,9 +58,9 @@ pub enum VersionComparator {
     Lte(Semver)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Serialize, Deserialize)]
 #[sql_type = "Array<ConstraintConjunctsSql>"]
-pub struct VersionConstraint(Vec<Vec<VersionComparator>>);
+pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
