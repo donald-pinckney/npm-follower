@@ -14,6 +14,8 @@ fn main() {
 }
 
 fn generate_deserialize_seq_tests() {
+    println!("cargo:rerun-if-changed=\"resources/\"");
+
     let out_dir = env::var("OUT_DIR").unwrap();
     let destination = Path::new(&out_dir).join("deserialize_seq_tests.rs");
     let mut test_file = File::create(&destination).unwrap();
@@ -57,7 +59,6 @@ fn write_header(test_file: &mut File) {
         test_file,
         r#"
 use postgres_db::change_log::Change;
-use serde_json::Value;
 use relational_db_builder::deserialize_change;
 "#
     )
