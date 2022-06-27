@@ -1,10 +1,10 @@
-mod packument;
-
 use postgres_db::DbConnection;
 use postgres_db::internal_state;
 use postgres_db::change_log;
 use postgres_db::change_log::Change;
 use utils::check_no_concurrent_processes;
+
+use relational_db_builder::*;
 
 const PAGE_SIZE: i64 = 1024;
 
@@ -50,12 +50,12 @@ fn process_change(conn: &DbConnection, c: Change) {
     let seq = c.seq;
     println!("\nparsing seq: {}", seq);
     
-    if let Some((name, pack)) = relational_db_builder::deserialize_change(c) {
+    if let Some((name, pack)) = deserialize_change(c) {
         apply_packument_change(conn, name, pack)
     }   
 }
 
 
-fn apply_packument_change(conn: &DbConnection, package_name: String, pack: relational_db_builder::packument::Packument) {
+fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packument::Packument) {
     println!("parsed change: name = {}, packument = {:#?}", package_name, pack);
 }
