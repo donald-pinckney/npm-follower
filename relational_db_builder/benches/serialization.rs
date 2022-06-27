@@ -19,8 +19,6 @@ fn clone_change(c: &Change) -> Change {
     Change { seq: c.seq, raw_json: c.raw_json.clone() }
 }
 
-// criterion_group!(benches, bench_parse_semver, bench_parse_spec);
-
 criterion_group!{
     name = benches;
     config = Criterion::default().sample_size(10);//.measurement_time(Duration::from_secs(20));

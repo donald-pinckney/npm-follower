@@ -29,7 +29,7 @@ pub enum PrereleaseTag {
 }
 
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Serialize, Deserialize, Clone)]
 #[sql_type = "ParsedSpecStructSql"]
 pub enum ParsedSpec {
     Range(VersionConstraint),
@@ -41,7 +41,7 @@ pub enum ParsedSpec {
     Directory(String)
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub enum AliasSubspec {
     Range(VersionConstraint),
     Tag(String)

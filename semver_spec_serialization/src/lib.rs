@@ -1,6 +1,9 @@
 use std::string::FromUtf8Error;
 use std::num::ParseIntError;
 
+use cached::proc_macro::cached;
+use cached::Return;
+
 use lazy_regex::regex;
 
 use postgres_db::custom_types::{Semver, ParsedSpec, PrereleaseTag};
@@ -88,8 +91,8 @@ impl From<std::io::Error> for ParseSpecError {
 
 
 
-
-pub fn parse_spec(s: &str) -> Result<ParsedSpec, ParseSpecError> {
+#[cached(size=500_000, result = true, with_cached_flag = true, key = "String", convert = r#"{ String::from(s) }"#)]
+pub fn parse_spec_cached(s: &str) -> Result<Return<ParsedSpec>, ParseSpecError> {
     use std::process::Command;
 
     println!("parsing: {}", s);
@@ -117,10 +120,21 @@ pub fn parse_spec(s: &str) -> Result<ParsedSpec, ParseSpecError> {
 
     let parsed: ParsedSpec = serde_json::from_slice(&output.stdout)?;
 
-    Ok(parsed)
+    Ok(Return::new(parsed))
 }
 
 
+pub fn parse_spec(s: &str, log_hits: bool) -> Result<ParsedSpec, ParseSpecError> {
+    let ret = parse_spec_cached(s)?;
+    if log_hits {
+        if ret.was_cached {
+            println!("hit")
+        } else {
+            println!("miss")
+        }
+    }
+    Ok(ret.value)
+}
 
 #[cfg(test)]
 mod tests {
@@ -169,7 +183,7 @@ mod tests {
 
     #[test_case("1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver_simple(1, 2, 3))]])))]
     fn test_parse_spec_success(spec_str: &str, answer: ParsedSpec) {
-        assert_eq!(parse_spec(spec_str).unwrap(), answer)
+        assert_eq!(parse_spec(spec_str, false).unwrap(), answer)
     }
 
 

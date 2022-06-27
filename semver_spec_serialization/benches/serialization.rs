@@ -9,7 +9,7 @@ pub fn bench_parse_semver(c: &mut Criterion) {
 }
 
 pub fn bench_parse_spec(c: &mut Criterion) {
-    c.bench_function("parse spec ^1.2.3", |b| b.iter(|| parse_spec(black_box("^1.2.3"))));
+    c.bench_function("parse spec ^1.2.3", |b| b.iter(|| parse_spec(black_box("^1.2.3"), false)));
 }
 
 // criterion_group!(benches, bench_parse_semver, bench_parse_spec);
