@@ -9,9 +9,6 @@ use packument::Packument;
 
 
 pub fn deserialize_change(c: Change) -> Option<(String, Packument)> {
-    let seq = c.seq;
-    println!("\nparsing seq: {}", seq);
-    
     let mut change_json = serde_json::from_value::<Map<String, Value>>(c.raw_json).unwrap();
     let del = change_json.remove_key_unwrap_type::<bool>("deleted").unwrap();
 

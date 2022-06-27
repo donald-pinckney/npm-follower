@@ -95,8 +95,6 @@ impl From<std::io::Error> for ParseSpecError {
 pub fn parse_spec_cached(s: &str) -> Result<Return<ParsedSpec>, ParseSpecError> {
     use std::process::Command;
 
-    println!("parsing: {}", s);
-
     let mut js_dir = std::env::current_dir()?;
     if js_dir.ends_with("semver_spec_serialization/") {
         js_dir.push("js_parser");

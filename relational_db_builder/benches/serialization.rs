@@ -7,12 +7,20 @@ use relational_db_builder::deserialize_change;
 
 
 const SMALL_CHANGE_JSON_STR: &'static str = include_str!("test_change_small.json");
+const BIG_CHANGE_JSON_STR: &'static str = include_str!("test_change_big.json");
 
-pub fn bench_parse_change(c: &mut Criterion) {
+pub fn bench_parse_small_change(c: &mut Criterion) {
     let v: Value = serde_json::from_str(SMALL_CHANGE_JSON_STR).unwrap();
     let change = Change { seq: 1, raw_json: v };
 
-    c.bench_function("parse test_change.json", |b| b.iter(|| deserialize_change(black_box(clone_change(&change)))));
+    c.bench_function("parse test_change_small.json", |b| b.iter(|| deserialize_change(black_box(clone_change(&change)))));
+}
+
+pub fn bench_parse_big_change(c: &mut Criterion) {
+    let v: Value = serde_json::from_str(BIG_CHANGE_JSON_STR).unwrap();
+    let change = Change { seq: 1, raw_json: v };
+
+    c.bench_function("parse test_change_big.json", |b| b.iter(|| deserialize_change(black_box(clone_change(&change)))));
 }
 
 fn clone_change(c: &Change) -> Change {
@@ -21,8 +29,8 @@ fn clone_change(c: &Change) -> Change {
 
 criterion_group!{
     name = benches;
-    config = Criterion::default().sample_size(10);//.measurement_time(Duration::from_secs(20));
-    targets = bench_parse_change
+    config = Criterion::default().sample_size(10).measurement_time(Duration::from_secs(60));
+    targets = bench_parse_small_change, bench_parse_big_change
 }
 
 criterion_main!(benches);

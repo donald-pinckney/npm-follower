@@ -47,6 +47,9 @@ fn main() {
 
 
 fn process_change(conn: &DbConnection, c: Change) {
+    let seq = c.seq;
+    println!("\nparsing seq: {}", seq);
+    
     if let Some((name, pack)) = relational_db_builder::deserialize_change(c) {
         apply_packument_change(conn, name, pack)
     }   
