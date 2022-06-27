@@ -1,1 +1,36 @@
-{"id": "@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-firns", "doc": {"_id": "@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-firns", "_rev": "2-548a31544137977dfe4de6291529bd31", "name": "@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-firns", "time": {"1.0.0": "2021-04-16T00:33:09.197Z", "created": "2021-04-16T00:33:08.979Z", "modified": "2021-04-16T00:33:20.455Z", "unpublished": {"name": "npm-support", "tags": {"latest": "1.0.0"}, "time": "2021-04-16T00:33:20.454Z", "versions": ["1.0.0"], "maintainers": [{"name": "dsr-user-dormy-noops-grout-firns", "email": "devnull+dsr-user-dormy-noops-grout-firns@npmjs.com"}]}}}, "seq": 1783991, "changes": [{"rev": "2-548a31544137977dfe4de6291529bd31"}], "deleted": false}
+{
+    "changes": [
+        {
+            "rev": "2-548a31544137977dfe4de6291529bd31"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-firns",
+        "_rev": "2-548a31544137977dfe4de6291529bd31",
+        "name": "@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-firns",
+        "time": {
+            "1.0.0": "2021-04-16T00:33:09.197Z",
+            "created": "2021-04-16T00:33:08.979Z",
+            "modified": "2021-04-16T00:33:20.455Z",
+            "unpublished": {
+                "maintainers": [
+                    {
+                        "email": "devnull+dsr-user-dormy-noops-grout-firns@npmjs.com",
+                        "name": "dsr-user-dormy-noops-grout-firns"
+                    }
+                ],
+                "name": "npm-support",
+                "tags": {
+                    "latest": "1.0.0"
+                },
+                "time": "2021-04-16T00:33:20.454Z",
+                "versions": [
+                    "1.0.0"
+                ]
+            }
+        }
+    },
+    "id": "@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-firns",
+    "seq": 1783991
+}
