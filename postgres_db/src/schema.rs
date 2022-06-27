@@ -18,6 +18,7 @@ table! {
         dst_package_id_if_exists -> Nullable<Int8>,
         raw_spec -> Text,
         spec -> Parsed_spec_struct,
+        secret -> Bool,
     }
 }
 
@@ -77,6 +78,7 @@ table! {
         id -> Int8,
         name -> Text,
         metadata -> Package_metadata_struct,
+        secret -> Bool,
     }
 }
 
@@ -98,6 +100,7 @@ table! {
         dev_dependencies -> Array<Int8>,
         peer_dependencies -> Array<Int8>,
         optional_dependencies -> Array<Int8>,
+        secret -> Bool,
     }
 }
 

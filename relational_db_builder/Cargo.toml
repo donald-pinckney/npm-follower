@@ -25,6 +25,7 @@ indicatif = "0.16.2"
 chrono = { version = "0.4.19", features = ["serde"] }
 
 [dev-dependencies]
+test-case = "2.1.0"
 criterion = { version = "0.3", features = ["html_reports"] }
 
 [[bench]]

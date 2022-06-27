@@ -193,7 +193,8 @@ CREATE DOMAIN package_metadata AS package_metadata_struct
 CREATE TABLE packages (
   id                          BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name                        TEXT NOT NULL UNIQUE,
-  metadata                    package_metadata NOT NULL
+  metadata                    package_metadata NOT NULL,
+  secret                      BOOLEAN NOT NULL
 );
 
 
@@ -222,6 +223,8 @@ CREATE TABLE versions (
   peer_dependencies       BIGINT[] NOT NULL,
   optional_dependencies   BIGINT[] NOT NULL,
 
+  secret                  BOOLEAN NOT NULL,
+
   FOREIGN KEY(package_id) REFERENCES packages(id),
   UNIQUE(package_id, semver)
 );
@@ -235,6 +238,8 @@ CREATE TABLE dependencies (
 
   raw_spec                      TEXT NOT NULL,
   spec                          parsed_spec NOT NULL,
+
+  secret                        BOOLEAN NOT NULL,
 
   FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id)
   -- We would like to specify this, but we can't
