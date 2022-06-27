@@ -5,8 +5,8 @@ use serde_json::Value;
 use relational_db_builder::deserialize_change;
 
 
-const BIG_CHANGE_JSON_STR: &'static str = include_str!("../test_data/seq_832853_cleaned.json");
-const SMALL_CHANGE_JSON_STR: &'static str = include_str!("../test_data/seq_1166950.json");
+const BIG_CHANGE_JSON_STR: &'static str = include_str!("../resources/test_changes/seq_832853_cleaned.json");
+const SMALL_CHANGE_JSON_STR: &'static str = include_str!("../resources/test_changes/seq_1166950.json");
 
 
 pub fn bench_parse_big_change(c: &mut Criterion) {
