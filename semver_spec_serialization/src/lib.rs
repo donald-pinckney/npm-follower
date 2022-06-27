@@ -92,8 +92,14 @@ impl From<std::io::Error> for ParseSpecError {
 pub fn parse_spec(s: &str) -> Result<ParsedSpec, ParseSpecError> {
     use std::process::Command;
 
+    println!("parsing: {}", s);
+
     let mut js_dir = std::env::current_dir()?;
     if js_dir.ends_with("semver_spec_serialization/") {
+        js_dir.push("js_parser");
+    } else if js_dir.ends_with("relational_db_builder/") {
+        js_dir.push("..");
+        js_dir.push("semver_spec_serialization");
         js_dir.push("js_parser");
     } else {
         js_dir.push("semver_spec_serialization");
@@ -106,7 +112,7 @@ pub fn parse_spec(s: &str) -> Result<ParsedSpec, ParseSpecError> {
                                  .output()
                                  .expect("failed to execute parser subprocess");
     if !output.status.success() {
-        return Err(ParseSpecError::Other(String::from_utf8(output.stdout)?));
+        return Err(ParseSpecError::Other(format!("stdout:\n{}\n\nstderr:\n{}", String::from_utf8(output.stdout)?, String::from_utf8(output.stderr)?)));
     }
 
     let parsed: ParsedSpec = serde_json::from_slice(&output.stdout)?;

@@ -1,15 +1,10 @@
 mod packument;
 
-use serde_json::{Map, Value};
 use postgres_db::DbConnection;
 use postgres_db::internal_state;
 use postgres_db::change_log;
 use postgres_db::change_log::Change;
 use utils::check_no_concurrent_processes;
-
-use utils::RemoveInto;
-
-use packument::Packument;
 
 const PAGE_SIZE: i64 = 1024;
 
@@ -48,45 +43,16 @@ fn main() {
     }
 }
 
+
+
+
 fn process_change(conn: &DbConnection, c: Change) {
-    let seq = c.seq;
-    println!("\nparsing seq: {}", seq);
-    
-    let mut change_json = serde_json::from_value::<Map<String, Value>>(c.raw_json).unwrap();
-    let del = change_json.remove_key_unwrap_type::<bool>("deleted").unwrap();
-
-    let package_name = change_json.remove_key_unwrap_type::<String>("id").unwrap();
-    
-    if package_name == "_design/app" || package_name == "_design/scratch" {
-        return
-    }
-    
-    let mut doc = change_json.remove_key_unwrap_type::<Map<String, Value>>("doc").unwrap();
-    let doc_id = doc.remove_key_unwrap_type::<String>("_id").unwrap();
-    let doc_deleted = doc.remove_key_unwrap_type::<bool>("_deleted").unwrap_or(false);
-    doc.remove_key_unwrap_type::<String>("_rev").unwrap();
-
-    if del != doc_deleted {
-        panic!("ERROR: mismatched del and del_deleted");
-    }
-
-    if package_name != doc_id {
-        panic!("ERROR: mismatched package_name and doc_id");
-    }
-
-    if del {
-        if doc.len() != 0 {
-            panic!("ERROR: extra keys in deleted doc");
-        }
-
-        apply_packument_change(conn, package_name, Packument::Deleted);
-    } else {
-        let packument = packument::deserialize::deserialize_packument_blob(doc);
-        apply_packument_change(conn, package_name, packument);
-    }    
+    if let Some((name, pack)) = relational_db_builder::deserialize_change(c) {
+        apply_packument_change(conn, name, pack)
+    }   
 }
 
 
-fn apply_packument_change(conn: &DbConnection, package_name: String, pack: Packument) {
+fn apply_packument_change(conn: &DbConnection, package_name: String, pack: relational_db_builder::packument::Packument) {
     println!("parsed change: name = {}, packument = {:#?}", package_name, pack);
 }
