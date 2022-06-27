@@ -57,5 +57,6 @@ fn process_change(conn: &DbConnection, c: Change) {
 
 
 fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packument::Packument) {
-    println!("parsed change: name = {}, packument = {:#?}", package_name, pack);
+    let pack_str = format!("{:?}", pack);
+    println!("parsed change: name = {}, packument = {}...", package_name, &pack_str[..std::cmp::min(100, pack_str.len())]);
 }
