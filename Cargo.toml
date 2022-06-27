@@ -1,2 +1,2 @@
 [workspace]
-members = ["changes_fetcher", "postgres_db", "download_queuer", "utils"]
+members = ["changes_fetcher", "postgres_db", "download_queuer", "relational_db_builder", "semver_spec_serialization", "utils"]

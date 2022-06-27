@@ -1,0 +1,8 @@
+#[test]
+fn {name}() {{
+    let seq_json_str = include_str!("{path}");
+    
+    let change = Change {{ seq: 1, raw_json: serde_json::from_str(seq_json_str).unwrap() }};
+
+    deserialize_change(change).unwrap();
+}}

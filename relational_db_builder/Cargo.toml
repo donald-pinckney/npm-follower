@@ -1,0 +1,33 @@
+[package]
+name = "relational_db_builder"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "relational_db_builder"
+path = "src/lib.rs"
+
+[[bin]]
+name = "relational_db_builder"
+path = "src/main.rs"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+postgres_db = { path = "../postgres_db" }
+semver_spec_serialization = { path = "../semver_spec_serialization" }
+utils = { path = "../utils" }
+
+serde = { version = "1.0.136", features = ["derive"] }
+serde_json = { version = "1.0.79", features = ["preserve_order"] }
+indicatif = "0.16.2"
+chrono = { version = "0.4.19", features = ["serde"] }
+
+[dev-dependencies]
+test-case = "2.1.0"
+criterion = { version = "0.3", features = ["html_reports"] }
+
+[[bench]]
+name = "serialization"
+harness = false

@@ -5,7 +5,13 @@ pub mod change_log;
 pub mod internal_state;
 pub mod download_queue;
 
+#[allow(unused_imports)]
 mod schema;
+
+pub mod custom_types;
+
+#[cfg(test)]
+mod testing;
 
 
 use diesel::pg::PgConnection;

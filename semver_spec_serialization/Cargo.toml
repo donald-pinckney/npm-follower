@@ -1,10 +1,21 @@
 [package]
-name = "utils"
+name = "semver_spec_serialization"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+postgres_db = { path = "../postgres_db" }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
+lazy-regex = "2.3.0"
+cached = "0.34"
+
+[dev-dependencies]
+test-case = "2.1.0"
+criterion = { version = "0.3", features = ["html_reports"] }
+
+[[bench]]
+name = "serialization"
+harness = false
