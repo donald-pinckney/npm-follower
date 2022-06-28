@@ -137,7 +137,7 @@ impl FromStr for Spec {
     type Err = semver_spec_serialization::ParseSpecError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parsed = semver_spec_serialization::parse_spec(s, false)?;
+        let parsed = semver_spec_serialization::parse_spec_via_node_cached(s)?;
         Ok(Spec {
             raw: s.into(),
             parsed: parsed

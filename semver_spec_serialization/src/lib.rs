@@ -2,7 +2,6 @@ use std::string::FromUtf8Error;
 use std::num::ParseIntError;
 
 use cached::proc_macro::cached;
-use cached::Return;
 
 use lazy_regex::regex;
 
@@ -91,8 +90,7 @@ impl From<std::io::Error> for ParseSpecError {
 
 
 
-#[cached(size=500_000, result = true, with_cached_flag = true, key = "String", convert = r#"{ String::from(s) }"#)]
-pub fn parse_spec_cached(s: &str) -> Result<Return<ParsedSpec>, ParseSpecError> {
+pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
     use std::process::Command;
 
     let mut js_dir = std::env::current_dir()?;
@@ -110,26 +108,26 @@ pub fn parse_spec_cached(s: &str) -> Result<Return<ParsedSpec>, ParseSpecError> 
     let output = Command::new("node")
                                  .arg(js_dir)
                                  .arg(s)
-                                 .output()
-                                 .expect("failed to execute parser subprocess");
+                                 .output()?;
+
     if !output.status.success() {
         return Err(ParseSpecError::Other(format!("stdout:\n{}\n\nstderr:\n{}", String::from_utf8(output.stdout)?, String::from_utf8(output.stderr)?)));
     }
 
     let parsed: ParsedSpec = serde_json::from_slice(&output.stdout)?;
 
-    Ok(Return::new(parsed))
+    Ok(parsed)
 }
 
 
-pub fn parse_spec(s: &str, log_hits: bool) -> Result<ParsedSpec, ParseSpecError> {
-    let ret = parse_spec_cached(s)?;
-    if log_hits {
-        if ret.was_cached {
-            println!("hit")
-        } else {
-            println!("miss")
-        }
-    }
-    Ok(ret.value)
+#[cached(size=500_000, result = true, key = "String", convert = r#"{ String::from(s) }"#)]
+pub fn parse_spec_via_node_cached(s: &str) -> Result<ParsedSpec, ParseSpecError> {
+    parse_spec_via_node(s)
 }
+
+
+
+pub fn parse_spec_via_rust(s: &str) -> Result<ParsedSpec, ParseSpecError> {
+    Err(ParseSpecError::Other("todo".into()))
+}
+
