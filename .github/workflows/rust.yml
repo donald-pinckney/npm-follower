@@ -31,11 +31,17 @@ jobs:
         #postgresql password: # optional, default is 
     - name: Setup Node.js environment
       uses: actions/setup-node@v3.3.0
+    - name: Install Diesel
+      run: cargo install diesel_cli
+    - name: Setup Diesel
+      run: diesel setup && diesel migration run
+      env:
+        DATABASE_URL: postgres://donald@localhost:5432/npm_data
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
       env:
-        DATABASE_URL: postgres://donald@localhost:5431/npm_data
+        DATABASE_URL: postgres://donald@localhost:5432/npm_data
     - name: Run benchmarks
       run: cargo bench --verbose
