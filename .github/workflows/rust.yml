@@ -8,7 +8,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-
+  DATABASE_URL: postgres://donald:password@localhost/npm_data
+  
 jobs:
   build:
 
@@ -22,26 +23,19 @@ jobs:
       uses: Harmon758/postgresql-action@v1.0.0
       with:
         # Version of PostgreSQL to use
-        #postgresql version: # optional, default is latest
-        # POSTGRES_DB - name for the default database that is created
-        postgresql db: npm_data # optional, default is 
-        # POSTGRES_USER - create the specified user with superuser power
-        postgresql user: donald # optional, default is 
-        # POSTGRES_PASSWORD - superuser password
-        #postgresql password: # optional, default is 
+        postgresql version: 14
+        postgresql db: npm_data
+        postgresql user: donald 
+        postgresql password: password
     - name: Setup Node.js environment
       uses: actions/setup-node@v3.3.0
     - name: Install Diesel
       run: cargo install diesel_cli --no-default-features --features postgres
     - name: Setup Diesel
       run: cd postgres_db && diesel setup && diesel migration run
-      env:
-        DATABASE_URL: postgres://donald@localhost/npm_data
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
-      env:
-        DATABASE_URL: postgres://donald@localhost/npm_data
     - name: Run benchmarks
       run: cargo bench --verbose
