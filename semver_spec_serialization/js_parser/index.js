@@ -56,7 +56,7 @@ function remove_prefix(s, p) {
 }
 
 function parse_range(s) {
-    const r = new semver.Range(s);
+    const r = new semver.Range(s, {loose: true});
     return r.set.map(conjuncts => conjuncts.map(comp => serialize_comparator(comp)));
 }
 
