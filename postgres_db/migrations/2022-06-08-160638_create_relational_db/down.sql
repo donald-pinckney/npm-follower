@@ -22,6 +22,3 @@ DROP TYPE       semver_struct;
 DROP DOMAIN     prerelease_tag;
 DROP TYPE       prerelease_tag_struct;
 DROP TYPE       prerelease_tag_type_enum;
-DROP DOMAIN     repository;
-DROP TYPE       repository_struct;
-DROP TYPE       repository_type_enum;

@@ -1,6 +1,6 @@
 use chrono::Utc;
 use chrono::DateTime;
-use postgres_db::custom_types::{Semver, ParsedSpec, Repository};
+use postgres_db::custom_types::{Semver, ParsedSpec};
 use serde_json::Value;
 use std::collections::HashMap;
 
@@ -32,7 +32,7 @@ pub struct VersionPackument {
     pub optional_dependencies: Vec<(String, Spec)>,
     pub dist: Dist,
     pub description: Option<String>,
-    pub repository: Option<Repository>,
+    pub repository: Option<Value>,
     pub extra_metadata: HashMap<String, Value>
 }
 

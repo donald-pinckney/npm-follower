@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
 use std::collections::HashMap;
 
-use postgres_db::custom_types::{Semver, Repository};
+use postgres_db::custom_types::Semver;
 use super::{Packument, VersionPackument, Dist, Spec};
 
 use utils::RemoveInto;
@@ -58,18 +58,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         npm_signature: dist.remove_key_unwrap_type::<String>("npm-signature"),
     };
 
-    let repository_map = version_blob.remove_key_unwrap_type::<Map<String, Value>>("repository");
-    let repository = repository_map.map(|mut m| { 
-        let t = m.remove_key_unwrap_type::<String>("type").unwrap();
-        match t.as_str() {
-            "git" => {
-                Repository::Git(m.remove_key_unwrap_type::<String>("url").unwrap())
-            },
-            _ => {
-                panic!("Unknown repository type: {}", t)
-            }
-        }
-    });
+    let repository_blob = version_blob.remove_key_unwrap_type::<Value>("repository");
 
     VersionPackument {
         prod_dependencies,
@@ -78,7 +67,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         optional_dependencies,
         dist,
         description,
-        repository,
+        repository: repository_blob,
         extra_metadata: version_blob.into_iter().collect()
     }
 }

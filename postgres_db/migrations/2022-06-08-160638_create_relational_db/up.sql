@@ -35,18 +35,6 @@ CREATE DOMAIN semver AS semver_struct CHECK (
 );
 
 
-CREATE TYPE repository_type_enum AS ENUM ('git');
-CREATE TYPE repository_struct AS (
-  repo_type               repository_type_enum,
-  url                     TEXT
-);
-CREATE DOMAIN repository AS repository_struct CHECK (
-  VALUE IS NULL OR 
-  ((VALUE).repo_type IS NOT NULL AND 
-  (VALUE).url IS NOT NULL)
-);
-
-
 CREATE TYPE version_operator_enum AS ENUM ('*', '=', '>', '>=', '<', '<=');
 CREATE TYPE version_comparator_struct AS (
   operator      version_operator_enum,
@@ -238,7 +226,7 @@ CREATE TABLE versions (
   -- if the tarball hasn't been downloaded yet!
   tarball_url             TEXT NOT NULL,
   description             TEXT,
-  repository              repository,
+  repository              JSONB,
   created                 TIMESTAMP WITH TIME ZONE NOT NULL,
   deleted                 BOOLEAN NOT NULL,
   extra_metadata JSONB    NOT NULL,

@@ -5,11 +5,6 @@ use serde::{Serialize, Deserialize};
 use sql_types::*;
 use diesel::sql_types::Array;
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "RepositorySql"]
-pub enum Repository {
-    Git(String)
-}
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "SemverSql"]
@@ -124,7 +119,6 @@ pub mod sql_type_names {
 }
 
 
-mod repository;
 mod semver;
 mod version_comparator;
 mod version_constraint;
