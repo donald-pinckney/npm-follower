@@ -8,7 +8,7 @@ use std::collections::HashMap;
 #[derive(Debug)]
 pub enum Packument {
     Normal {
-        latest: Semver,
+        latest: Option<Semver>,
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
         other_dist_tags: HashMap<String, Semver>,

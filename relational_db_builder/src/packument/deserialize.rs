@@ -117,7 +117,7 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
         )
     ).collect();
     Packument::Normal {
-        latest: latest.unwrap(),
+        latest: latest,
         created: created,
         modified: modified,
         other_dist_tags: dist_tags.unwrap(),

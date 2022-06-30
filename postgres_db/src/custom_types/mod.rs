@@ -67,7 +67,7 @@ pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 #[sql_type = "PackageMetadataStructSql"]
 pub enum PackageMetadata {
     Normal { 
-        dist_tag_latest_version: i64, 
+        dist_tag_latest_version: Option<i64>, 
         created: DateTime<Utc>, 
         modified: DateTime<Utc>, 
         other_dist_tags: HashMap<String, String> 

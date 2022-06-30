@@ -168,7 +168,7 @@ CREATE TYPE package_state_enum AS ENUM (
 
 CREATE TYPE package_metadata_struct AS (
   package_state               package_state_enum,
-  dist_tag_latest_version     BIGINT, -- REFERENCES versions(id), but we can't specify this
+  dist_tag_latest_version     BIGINT, -- REFERENCES versions(id), but we can't specify this. May be null
   created                     TIMESTAMP WITH TIME ZONE,
   modified                    TIMESTAMP WITH TIME ZONE,
   other_dist_tags             JSONB,
@@ -180,7 +180,7 @@ CREATE DOMAIN package_metadata AS package_metadata_struct
   CHECK(
     (
       (VALUE).package_state = 'normal' AND
-      (VALUE).dist_tag_latest_version IS NOT NULL AND  -- not sure if IS NOT NULL is right here
+      -- (VALUE).dist_tag_latest_version can be null or non-null
       (VALUE).created IS NOT NULL AND 
       (VALUE).modified IS NOT NULL AND
       (VALUE).other_dist_tags IS NOT NULL AND

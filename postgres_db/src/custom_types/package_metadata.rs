@@ -72,7 +72,7 @@ impl<'a> ToSql<PackageMetadataStructSql, Pg> for PackageMetadata {
                 modified: m, 
                 other_dist_tags: odts } => (
                     PackageState::Normal, 
-                    Some(*lv), 
+                    *lv, 
                     Some(*c), 
                     Some(*m), 
                     Some(dist_tag_dict_to_sql(odts.clone())),
@@ -107,7 +107,7 @@ impl<'a> FromSql<PackageMetadataStructSql, Pg> for PackageMetadata {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
         let tup: PackageMetadataStructRecordRust = FromSql::<Record<PackageMetadataStructRecordSql>, Pg>::from_sql(bytes)?;
         match tup {
-            (PackageState::Normal, Some(lv), Some(c), Some(m), Some(odts), None, None) =>
+            (PackageState::Normal, lv, Some(c), Some(m), Some(odts), None, None) =>
                 Ok(PackageMetadata::Normal { dist_tag_latest_version: lv, created: c, modified: m, other_dist_tags: dist_tag_dict_from_sql(odts)? }),
             (PackageState::Unpublished, None, Some(c), Some(m), None, Some(otd), Some(ud)) => 
                 Ok(PackageMetadata::Unpublished { created: c, modified: m, other_time_data: other_times_dict_from_sql(otd)?, unpublished_data: ud }),
@@ -206,11 +206,11 @@ mod tests {
         let data = vec![
             TestPackageMetadataToSql {
                 id: 1,
-                m: PackageMetadata::Normal { dist_tag_latest_version: 5, created: date1, modified: date2, other_dist_tags: empty_odts.clone() }
+                m: PackageMetadata::Normal { dist_tag_latest_version: Some(5), created: date1, modified: date2, other_dist_tags: empty_odts.clone() }
             },
             TestPackageMetadataToSql {
                 id: 2,
-                m: PackageMetadata::Normal { dist_tag_latest_version: 5, created: date2, modified: date1, other_dist_tags: some_odts.clone() }
+                m: PackageMetadata::Normal { dist_tag_latest_version: None, created: date2, modified: date1, other_dist_tags: some_odts.clone() }
             },
             TestPackageMetadataToSql {
                 id: 3,
