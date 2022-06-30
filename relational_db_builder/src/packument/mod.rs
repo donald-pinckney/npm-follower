@@ -7,15 +7,21 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 pub enum Packument {
-    Deleted,
-    NotDeleted {
-        latest: Option<Semver>,
+    Normal {
+        latest: Semver,
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
+        other_dist_tags: HashMap<String, Semver>,
         version_times: HashMap<Semver, DateTime<Utc>>,
         versions: HashMap<Semver, VersionPackument>,
-        other_dist_tags: Option<HashMap<String, Semver>>
-    }
+    },
+    Unpublished {
+        created: DateTime<Utc>,
+        modified: DateTime<Utc>,
+        unpublished_blob: Value,
+        extra_version_times: HashMap<Semver, DateTime<Utc>>
+    },
+    Deleted
 }
 
 #[derive(Debug)]

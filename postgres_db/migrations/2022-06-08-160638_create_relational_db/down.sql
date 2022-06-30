@@ -6,6 +6,7 @@ DROP TABLE packages, versions, dependencies CASCADE;
 
 DROP DOMAIN     package_metadata;
 DROP TYPE       package_metadata_struct;
+DROP TYPE       package_state_enum;
 DROP DOMAIN     parsed_spec;
 DROP TYPE       parsed_spec_struct;
 DROP TYPE       dependency_type_enum;

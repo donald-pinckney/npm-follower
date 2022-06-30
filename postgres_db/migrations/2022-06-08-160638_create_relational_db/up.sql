@@ -160,25 +160,53 @@ CREATE DOMAIN parsed_spec AS parsed_spec_struct
   );
 
 
+CREATE TYPE package_state_enum AS ENUM (
+  'normal', 
+  'unpublished',
+  'deleted'
+);
 
 CREATE TYPE package_metadata_struct AS (
-  deleted                     BOOLEAN,
+  package_state               package_state_enum,
   dist_tag_latest_version     BIGINT, -- REFERENCES versions(id), but we can't specify this
   created                     TIMESTAMP WITH TIME ZONE,
   modified                    TIMESTAMP WITH TIME ZONE,
-  other_dist_tags             JSONB
+  other_dist_tags             JSONB,
+  other_time_data             JSONB,
+  unpublished_data            JSONB
 );
 
 CREATE DOMAIN package_metadata AS package_metadata_struct
   CHECK(
-    (VALUE).deleted OR (
+    (
+      (VALUE).package_state = 'normal' AND
       (VALUE).dist_tag_latest_version IS NOT NULL AND  -- not sure if IS NOT NULL is right here
       (VALUE).created IS NOT NULL AND 
-      (VALUE).modified IS NOT NULL AND 
-      (VALUE).dist_tag_latest_version IS NOT NULL
+      (VALUE).modified IS NOT NULL AND
+      (VALUE).other_dist_tags IS NOT NULL AND
+      (VALUE).other_time_data IS NULL AND
+      (VALUE).unpublished_data IS NULL
+    ) OR
+    (
+      (VALUE).package_state = 'unpublished' AND
+      (VALUE).dist_tag_latest_version IS NULL AND
+      (VALUE).created IS NOT NULL AND 
+      (VALUE).modified IS NOT NULL AND
+      (VALUE).other_dist_tags IS NULL AND
+      (VALUE).other_time_data IS NOT NULL AND
+      (VALUE).unpublished_data IS NOT NULL
+    ) OR 
+    (
+      (VALUE).package_state = 'deleted' AND
+      (VALUE).dist_tag_latest_version IS NULL AND
+      (VALUE).created IS NULL AND 
+      (VALUE).modified IS NULL AND
+      (VALUE).other_dist_tags IS NULL AND
+      (VALUE).other_time_data IS NULL AND
+      (VALUE).unpublished_data IS NULL
     )
   )
-  CHECK((VALUE).other_dist_tags IS NOT NULL);
+  CHECK((VALUE).package_state IS NOT NULL);
 
 
 

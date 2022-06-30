@@ -83,8 +83,9 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
     }
 }
 
-pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Packument {
+pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument {
     
+    // TODO: remove useless optionals here
     let dist_tags_raw_maybe = Some(j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap());
     let mut dist_tags: Option<HashMap<String, Semver>> = dist_tags_raw_maybe.map(|dist_tags_raw| 
         dist_tags_raw.into_iter().map(|(tag, v_str)| 
@@ -115,15 +116,51 @@ pub fn deserialize_packument_blob(mut j: Map<String, Value>) -> Packument {
             deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap())
         )
     ).collect();
-    Packument::NotDeleted {
-        latest: latest,
+    Packument::Normal {
+        latest: latest.unwrap(),
         created: created,
         modified: modified,
+        other_dist_tags: dist_tags.unwrap(),
         version_times: version_times,
-        other_dist_tags: dist_tags,
         versions: version_packuments
     }
 }
+
+
+pub fn deserialize_packument_blob_unpublished(mut j: Map<String, Value>) -> Packument {
+
+    if j.contains_key("dist-tags") {
+        panic!("Unpublished package shouldn't contain key: dist-tags");
+    }
+
+
+
+    let mut time_raw = j.remove_key_unwrap_type::<Map<String, Value>>("time").unwrap();
+    let unpublished_blob = time_raw.remove_key_unwrap_type::<Value>("unpublished").unwrap();
+    
+    let mut times: HashMap<_, _> = time_raw.into_iter().flat_map(|(k, t_str)| 
+        Some((k, parse_datetime(serde_json::from_value::<String>(t_str).unwrap())))
+    ).collect();
+    let modified = times.remove("modified").unwrap();
+    let created = times.remove("created").unwrap();
+
+    let extra_version_times: HashMap<Semver, _> = times.into_iter().map(|(v_str, t)| 
+        (semver_spec_serialization::parse_semver(&v_str).unwrap(), t)
+    ).collect();
+
+    if j.contains_key("versions") {
+        panic!("Unpublished package shouldn't contain key: versions");
+    }
+
+    Packument::Unpublished {
+        created,
+        modified,
+        unpublished_blob,
+        extra_version_times
+    }
+}
+
+
 
 
 fn parse_datetime(x: String) -> DateTime<Utc> {

@@ -66,18 +66,19 @@ pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
 #[sql_type = "PackageMetadataStructSql"]
 pub enum PackageMetadata {
-    NotDeleted { 
+    Normal { 
         dist_tag_latest_version: i64, 
         created: DateTime<Utc>, 
         modified: DateTime<Utc>, 
         other_dist_tags: HashMap<String, String> 
     },
-    Deleted { 
-        dist_tag_latest_version: Option<i64>, 
-        created: Option<DateTime<Utc>>, 
-        modified: Option<DateTime<Utc>>, 
-        other_dist_tags: HashMap<String, String> 
+    Unpublished {
+        created: DateTime<Utc>, 
+        modified: DateTime<Utc>,
+        other_time_data: HashMap<String, DateTime<Utc>>,
+        unpublished_data: serde_json::Value,
     },
+    Deleted,
 }
 
 pub mod sql_types {
