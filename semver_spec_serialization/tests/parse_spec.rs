@@ -242,7 +242,6 @@ fn test_parse_spec_via_node_invalid_cases() {
 
 fn equivalent_results(x: Result<ParsedSpec, ParseSpecError>, y: Result<ParsedSpec, ParseSpecError>, invalid_contains: Option<String>) -> bool {
     match (x, y) {
-        (Ok(xr), Ok(yr)) => xr == yr,
         (Ok(ParsedSpec::Invalid(invalid1)), Ok(ParsedSpec::Invalid(invalid2))) => {
             if let Some(invalid_contains) = invalid_contains {
                 invalid1.contains(&invalid_contains) && invalid2.contains(&invalid_contains)
@@ -250,6 +249,7 @@ fn equivalent_results(x: Result<ParsedSpec, ParseSpecError>, y: Result<ParsedSpe
                 true
             }
         },
+        (Ok(xr), Ok(yr)) => xr == yr,
         (Err(_), Err(_)) => true,
         _ => false
     }
