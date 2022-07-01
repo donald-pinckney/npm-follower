@@ -9,9 +9,9 @@ use diesel::sql_types::Array;
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "SemverSql"]
 pub struct Semver {
-    pub major: i32,
-    pub minor: i32,
-    pub bug: i32,
+    pub major: i64,
+    pub minor: i64,
+    pub bug: i64,
     pub prerelease: Vec<PrereleaseTag>,
     pub build: Vec<String>
 }
@@ -20,7 +20,7 @@ pub struct Semver {
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
-    Int(i32)
+    Int(i64)
 }
 
 

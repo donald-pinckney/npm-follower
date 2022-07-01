@@ -20,7 +20,7 @@ impl From<ParseIntError> for ParseSemverError {
 }
 
 fn parse_prerelease_tag(s: &str) -> PrereleaseTag {
-    match s.parse::<i32>() {
+    match s.parse::<i64>() {
         Ok(n) => PrereleaseTag::Int(n),
         Err(_) => PrereleaseTag::String(s.to_owned())
     }
@@ -44,9 +44,9 @@ pub fn parse_semver(v_str: &str) -> Result<Semver, ParseSemverError> {
     let m_2 = m.get(2).unwrap().as_str();
     let m_3 = m.get(3).unwrap().as_str();
 
-    let m_1: i32 = m_1.parse()?;
-    let m_2: i32 = m_2.parse()?;
-    let m_3: i32 = m_3.parse()?;
+    let m_1: i64 = m_1.parse()?;
+    let m_2: i64 = m_2.parse()?;
+    let m_3: i64 = m_3.parse()?;
 
     let m_4 = m.get(4).map(|x| parse_prerelease_tags(x.as_str())).unwrap_or_default();
     let m_5 = m.get(5).map(|x| parse_build_tags(x.as_str())).unwrap_or_default();

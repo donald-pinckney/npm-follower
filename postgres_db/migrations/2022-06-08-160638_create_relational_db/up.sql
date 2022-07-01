@@ -8,7 +8,7 @@ CREATE TYPE prerelease_tag_type_enum AS ENUM ('string', 'int');
 CREATE TYPE prerelease_tag_struct AS (
   tag_type          prerelease_tag_type_enum,
   string_case       TEXT,
-  int_case          INTEGER
+  int_case          BIGINT
 ); 
 CREATE DOMAIN prerelease_tag AS prerelease_tag_struct CHECK (
   (NOT VALUE IS NULL) AND
@@ -19,9 +19,9 @@ CREATE DOMAIN prerelease_tag AS prerelease_tag_struct CHECK (
 
 
 CREATE TYPE semver_struct AS (
-  major                   INTEGER,
-  minor                   INTEGER,
-  bug                     INTEGER,
+  major                   BIGINT,
+  minor                   BIGINT,
+  bug                     BIGINT,
   prerelease              prerelease_tag[],
   build                   TEXT[]
 );

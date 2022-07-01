@@ -292,10 +292,10 @@ quickcheck! {
 
 
 
-fn semver_simple(major: i32, minor: i32, bug: i32) -> Semver {
+fn semver_simple(major: i64, minor: i64, bug: i64) -> Semver {
     Semver { major, minor, bug, prerelease: vec![], build: vec![] }
 }
 
-fn semver(major: i32, minor: i32, bug: i32, prerelease: Vec<PrereleaseTag>, build: Vec<String>) -> Semver {
+fn semver(major: i64, minor: i64, bug: i64, prerelease: Vec<PrereleaseTag>, build: Vec<String>) -> Semver {
     Semver { major, minor, bug, prerelease, build }
 }
