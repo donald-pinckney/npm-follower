@@ -12,7 +12,7 @@ let parsed_spec = null;
 try {
     parsed_spec = npa.resolve('foo', raw_spec);
 } catch(err) {
-    console.log(JSON.stringify({'Err': err.code + ": " + err.message}))
+    console.log(JSON.stringify({'Invalid': err.code + ": " + err.message}))
     process.exit(0);
 }
 const type = parsed_spec.type;
@@ -50,7 +50,7 @@ if(type == 'git') {
 
 
 // console.log(parsed_spec)
-console.log(JSON.stringify({'Ok': answer}))
+console.log(JSON.stringify(answer))
 
 
 function remove_prefix(s, p) {
