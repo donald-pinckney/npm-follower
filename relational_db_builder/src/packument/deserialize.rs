@@ -168,19 +168,11 @@ fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc
 
 pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument {
     
-    // TODO: remove useless optionals here
-    let dist_tags_raw_maybe = Some(j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap());
-    let mut dist_tags: Option<HashMap<String, Semver>> = dist_tags_raw_maybe.map(|dist_tags_raw| 
-        dist_tags_raw.into_iter().map(|(tag, v_str)| 
-            (tag, semver_spec_serialization::parse_semver(&serde_json::from_value::<String>(v_str).unwrap()).unwrap())
-        ).collect()
-    );
+    let mut dist_tags = j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap();
+    let latest_semver = dist_tags.remove_key_unwrap_type::<String>("latest")
+                                                 .map(|latest_str| 
+                                                    semver_spec_serialization::parse_semver(&latest_str).unwrap());
     
-    let latest = match &mut dist_tags {
-        Some(dt) => dt.remove("latest"),
-        None => None
-    };
-
     let (created, modified, version_times) = deserialize_times(&mut j);
 
     let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
@@ -191,10 +183,10 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
         )
     ).collect();
     Packument::Normal {
-        latest: latest,
+        latest: latest_semver,
         created: created,
         modified: modified,
-        other_dist_tags: dist_tags.unwrap(),
+        other_dist_tags: dist_tags,
         version_times: version_times,
         versions: version_packuments
     }

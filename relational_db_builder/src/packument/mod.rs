@@ -1,7 +1,7 @@
 use chrono::Utc;
 use chrono::DateTime;
 use postgres_db::custom_types::{Semver, ParsedSpec};
-use serde_json::Value;
+use serde_json::{Value, Map};
 use std::collections::HashMap;
 
 
@@ -11,7 +11,7 @@ pub enum Packument {
         latest: Option<Semver>,
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
-        other_dist_tags: HashMap<String, Semver>,
+        other_dist_tags: Map<String, Value>,
         version_times: HashMap<Semver, DateTime<Utc>>,
         versions: HashMap<Semver, VersionPackument>,
     },
