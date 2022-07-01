@@ -73,7 +73,8 @@ CREATE TYPE dependency_type_enum AS ENUM (
   'remote', 
   'alias', 
   'file', 
-  'directory'
+  'directory',
+  'invalid'
 );
 
 CREATE TYPE alias_subdependency_type_enum AS ENUM (
@@ -145,7 +146,11 @@ CREATE DOMAIN parsed_spec AS parsed_spec_struct
   CHECK(
     ((VALUE).dep_type = 'directory' AND (VALUE).directory_path IS NOT NULL) OR 
     ((VALUE).dep_type <> 'directory' AND (VALUE).directory_path IS NULL)
-  );
+  )
+  
+  -- No check needed for dep_type = 'invalid'
+  
+  ;
 
 
 CREATE TYPE package_state_enum AS ENUM (

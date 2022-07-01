@@ -54,7 +54,8 @@ impl<'a> ToSql<ParsedSpecStructSql, Pg> for ParsedSpec {
             ParsedSpec::Alias(a_name, a_id, AliasSubspec::Tag(tag)) => 
                 (SpecTypeEnum::Alias, None, None, None, None, Some(a_name.clone()), *a_id, Some(AliasSubspecTypeEnum::Tag), None, Some(tag.clone()), None, None),
             ParsedSpec::File(path) => (SpecTypeEnum::File, None, None, None, None, None, None, None, None, None, Some(path.clone()), None),
-            ParsedSpec::Directory(path) => (SpecTypeEnum::Directory, None, None, None, None, None, None, None, None, None, None, Some(path.clone()))
+            ParsedSpec::Directory(path) => (SpecTypeEnum::Directory, None, None, None, None, None, None, None, None, None, None, Some(path.clone())),
+            ParsedSpec::Invalid => (SpecTypeEnum::Invalid, None, None, None, None, None, None, None, None, None, None, None),
         };
 
         WriteTuple::<ParsedSpecStructRecordSql>::write_tuple(
@@ -76,6 +77,7 @@ impl<'a> FromSql<ParsedSpecStructSql, Pg> for ParsedSpec {
             (SpecTypeEnum::Alias, None, None, None, None, Some(a_name), a_id, Some(AliasSubspecTypeEnum::Tag), None, Some(tag), None, None) => Ok(ParsedSpec::Alias(a_name, a_id, AliasSubspec::Tag(tag))),
             (SpecTypeEnum::File, None, None, None, None, None, None, None, None, None, Some(path), None) => Ok(ParsedSpec::File(path)),
             (SpecTypeEnum::Directory, None, None, None, None, None, None, None, None, None, None, Some(path)) => Ok(ParsedSpec::Directory(path)),
+            (SpecTypeEnum::Invalid, None, None, None, None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Invalid),
             _ => Err("Unrecognized enum variant".into()),
         }
     }
@@ -95,7 +97,8 @@ enum SpecTypeEnum {
     Remote, 
     Alias, 
     File, 
-    Directory
+    Directory,
+    Invalid
 }
 
 #[derive(SqlType)]
@@ -112,7 +115,8 @@ impl ToSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
             SpecTypeEnum::Remote => out.write_all(b"remote")?,
             SpecTypeEnum::Alias => out.write_all(b"alias")?,
             SpecTypeEnum::File => out.write_all(b"file")?,
-            SpecTypeEnum::Directory => out.write_all(b"directory")?,                        
+            SpecTypeEnum::Directory => out.write_all(b"directory")?,
+            SpecTypeEnum::Invalid => out.write_all(b"invalid")?,
         }
         Ok(IsNull::No)
     }
@@ -128,6 +132,7 @@ impl FromSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
             b"alias" => Ok(SpecTypeEnum::Alias),
             b"file" => Ok(SpecTypeEnum::File),
             b"directory" => Ok(SpecTypeEnum::Directory),
+            b"invalid" => Ok(SpecTypeEnum::Invalid),
             _ => Err("Unrecognized enum variant".into()),
         }
     }
@@ -261,6 +266,10 @@ mod tests {
             TestParsedSpecToSql {
                 id: 10,
                 s: ParsedSpec::Directory("../some/package/directory".into())
+            },
+            TestParsedSpecToSql {
+                id: 11,
+                s: ParsedSpec::Invalid
             },
         ];
 

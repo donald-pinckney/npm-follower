@@ -33,7 +33,8 @@ pub enum ParsedSpec {
     Remote(String),
     Alias(String, Option<i64>, AliasSubspec),
     File(String),
-    Directory(String)
+    Directory(String),
+    Invalid
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
