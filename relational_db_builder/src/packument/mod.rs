@@ -1,21 +1,27 @@
 use chrono::Utc;
 use chrono::DateTime;
-use postgres_db::custom_types::{Semver, ParsedSpec, Repository};
-use serde_json::Value;
+use postgres_db::custom_types::{Semver, ParsedSpec};
+use serde_json::{Value, Map};
 use std::collections::HashMap;
 
 
 #[derive(Debug)]
 pub enum Packument {
-    Deleted,
-    NotDeleted {
+    Normal {
         latest: Option<Semver>,
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
+        other_dist_tags: Map<String, Value>,
         version_times: HashMap<Semver, DateTime<Utc>>,
         versions: HashMap<Semver, VersionPackument>,
-        other_dist_tags: Option<HashMap<String, Semver>>
-    }
+    },
+    Unpublished {
+        created: DateTime<Utc>,
+        modified: DateTime<Utc>,
+        unpublished_blob: Value,
+        extra_version_times: HashMap<Semver, DateTime<Utc>>
+    },
+    Deleted
 }
 
 #[derive(Debug)]
@@ -26,7 +32,7 @@ pub struct VersionPackument {
     pub optional_dependencies: Vec<(String, Spec)>,
     pub dist: Dist,
     pub description: Option<String>,
-    pub repository: Option<Repository>,
+    pub repository: Option<Value>,
     pub extra_metadata: HashMap<String, Value>
 }
 

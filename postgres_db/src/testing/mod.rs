@@ -1,6 +1,7 @@
 use crate::diesel::connection::SimpleConnection;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
+use diesel::result::DatabaseErrorKind;
 use dotenv::dotenv;
 use std::env;
 use crate::DbConnection;
@@ -12,8 +13,22 @@ pub fn test_connect() -> DbConnection {
         .expect("DATABASE_URL must be set");
     let conn = PgConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url));
+
+    match conn.execute("CREATE SCHEMA IF NOT EXISTS testing") {
+        Ok(_) => (),
+        Err(diesel::result::Error::DatabaseError(DatabaseErrorKind::UniqueViolation, err)) => {
+            if err.message().contains("pg_namespace_nspname_index") {
+                // the schema may fail due to race conditions with concurrently created schema.
+                // but that's ok, the schema was still made, by someone else.
+                ()
+            } else {
+                Err(diesel::result::Error::DatabaseError(DatabaseErrorKind::UniqueViolation, err)).unwrap()
+            }
+        },
+        err => { err.unwrap(); () }
+    };
     
-    conn.batch_execute("CREATE SCHEMA IF NOT EXISTS testing; SET search_path TO testing,public").unwrap();
+    conn.execute("SET search_path TO testing,public").unwrap();
     
     DbConnection { conn }
 }
