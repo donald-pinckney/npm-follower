@@ -1,3 +1,5 @@
+use std::panic;
+
 use postgres_db::DbConnection;
 use postgres_db::internal_state;
 use postgres_db::change_log;
@@ -45,18 +47,25 @@ fn main() {
 
 
 
-
 fn process_change(conn: &DbConnection, c: Change) {
     let seq = c.seq;
-    println!("\nparsing seq: {}", seq);
-    
-    if let Some((name, pack)) = deserialize_change(c) {
-        apply_packument_change(conn, name, pack)
-    }   
+    // println!("\nparsing seq: {}", seq);
+
+    let result = panic::catch_unwind(|| {
+        deserialize_change(c)
+    });
+    match result {
+        Err(err) => {
+            println!("Failed on seq: {}", seq);
+            panic::resume_unwind(err);
+        },
+        Ok(Some((name, pack))) => apply_packument_change(conn, name, pack),
+        Ok(None) => ()
+    }
 }
 
 
 fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packument::Packument) {
-    let pack_str = format!("{:?}", pack);
-    println!("parsed change: name = {}, packument = {}...", package_name, &pack_str[..std::cmp::min(100, pack_str.len())]);
+    // let pack_str = format!("{:?}", pack);
+    // println!("parsed change: name = {}, packument = {}...", package_name, &pack_str[..std::cmp::min(100, pack_str.len())]);
 }

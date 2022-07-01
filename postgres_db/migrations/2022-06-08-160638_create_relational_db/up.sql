@@ -8,7 +8,7 @@ CREATE TYPE prerelease_tag_type_enum AS ENUM ('string', 'int');
 CREATE TYPE prerelease_tag_struct AS (
   tag_type          prerelease_tag_type_enum,
   string_case       TEXT,
-  int_case          INTEGER
+  int_case          BIGINT
 ); 
 CREATE DOMAIN prerelease_tag AS prerelease_tag_struct CHECK (
   (NOT VALUE IS NULL) AND
@@ -19,9 +19,9 @@ CREATE DOMAIN prerelease_tag AS prerelease_tag_struct CHECK (
 
 
 CREATE TYPE semver_struct AS (
-  major                   INTEGER,
-  minor                   INTEGER,
-  bug                     INTEGER,
+  major                   BIGINT,
+  minor                   BIGINT,
+  bug                     BIGINT,
   prerelease              prerelease_tag[],
   build                   TEXT[]
 );
@@ -32,18 +32,6 @@ CREATE DOMAIN semver AS semver_struct CHECK (
   (VALUE).bug IS NOT NULL AND
   (VALUE).prerelease IS NOT NULL AND
   (VALUE).build IS NOT NULL)
-);
-
-
-CREATE TYPE repository_type_enum AS ENUM ('git');
-CREATE TYPE repository_struct AS (
-  repo_type               repository_type_enum,
-  url                     TEXT
-);
-CREATE DOMAIN repository AS repository_struct CHECK (
-  VALUE IS NULL OR 
-  ((VALUE).repo_type IS NOT NULL AND 
-  (VALUE).url IS NOT NULL)
 );
 
 
@@ -85,7 +73,8 @@ CREATE TYPE dependency_type_enum AS ENUM (
   'remote', 
   'alias', 
   'file', 
-  'directory'
+  'directory',
+  'invalid'
 );
 
 CREATE TYPE alias_subdependency_type_enum AS ENUM (
@@ -107,7 +96,8 @@ CREATE TYPE parsed_spec_struct AS (
   alias_subdep_range_disjuncts  constraint_disjuncts,
   alias_subdep_tag_name         TEXT,
   file_path                     TEXT,
-  directory_path                TEXT
+  directory_path                TEXT,
+  invalid_message               TEXT
 );
 
 CREATE DOMAIN parsed_spec AS parsed_spec_struct
@@ -157,28 +147,61 @@ CREATE DOMAIN parsed_spec AS parsed_spec_struct
   CHECK(
     ((VALUE).dep_type = 'directory' AND (VALUE).directory_path IS NOT NULL) OR 
     ((VALUE).dep_type <> 'directory' AND (VALUE).directory_path IS NULL)
+  )
+
+  CHECK(
+    ((VALUE).dep_type = 'invalid' AND (VALUE).invalid_message IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'invalid' AND (VALUE).invalid_message IS NULL)
   );
 
 
+CREATE TYPE package_state_enum AS ENUM (
+  'normal', 
+  'unpublished',
+  'deleted'
+);
 
 CREATE TYPE package_metadata_struct AS (
-  deleted                     BOOLEAN,
-  dist_tag_latest_version     BIGINT, -- REFERENCES versions(id), but we can't specify this
+  package_state               package_state_enum,
+  dist_tag_latest_version     BIGINT, -- REFERENCES versions(id), but we can't specify this. May be null
   created                     TIMESTAMP WITH TIME ZONE,
   modified                    TIMESTAMP WITH TIME ZONE,
-  other_dist_tags             JSONB
+  other_dist_tags             JSONB,
+  other_time_data             JSONB,
+  unpublished_data            JSONB
 );
 
 CREATE DOMAIN package_metadata AS package_metadata_struct
   CHECK(
-    (VALUE).deleted OR (
-      (VALUE).dist_tag_latest_version IS NOT NULL AND  -- not sure if IS NOT NULL is right here
+    (
+      (VALUE).package_state = 'normal' AND
+      -- (VALUE).dist_tag_latest_version can be null or non-null
       (VALUE).created IS NOT NULL AND 
-      (VALUE).modified IS NOT NULL AND 
-      (VALUE).dist_tag_latest_version IS NOT NULL
+      (VALUE).modified IS NOT NULL AND
+      (VALUE).other_dist_tags IS NOT NULL AND
+      (VALUE).other_time_data IS NULL AND
+      (VALUE).unpublished_data IS NULL
+    ) OR
+    (
+      (VALUE).package_state = 'unpublished' AND
+      (VALUE).dist_tag_latest_version IS NULL AND
+      (VALUE).created IS NOT NULL AND 
+      (VALUE).modified IS NOT NULL AND
+      (VALUE).other_dist_tags IS NULL AND
+      (VALUE).other_time_data IS NOT NULL AND
+      (VALUE).unpublished_data IS NOT NULL
+    ) OR 
+    (
+      (VALUE).package_state = 'deleted' AND
+      (VALUE).dist_tag_latest_version IS NULL AND
+      (VALUE).created IS NULL AND 
+      (VALUE).modified IS NULL AND
+      (VALUE).other_dist_tags IS NULL AND
+      (VALUE).other_time_data IS NULL AND
+      (VALUE).unpublished_data IS NULL
     )
   )
-  CHECK((VALUE).other_dist_tags IS NOT NULL);
+  CHECK((VALUE).package_state IS NOT NULL);
 
 
 
@@ -210,7 +233,7 @@ CREATE TABLE versions (
   -- if the tarball hasn't been downloaded yet!
   tarball_url             TEXT NOT NULL,
   description             TEXT,
-  repository              repository,
+  repository              JSONB,
   created                 TIMESTAMP WITH TIME ZONE NOT NULL,
   deleted                 BOOLEAN NOT NULL,
   extra_metadata JSONB    NOT NULL,

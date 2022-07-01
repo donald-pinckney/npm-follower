@@ -18,6 +18,8 @@ use semver_spec_serialization::parse_semver;
 #[test_case("1.2.3+9.beta3-7.alpha1", semver(1, 2, 3, vec![], vec!["9".into(), "beta3-7".into(), "alpha1".into()]))]
 #[test_case("1.2.3+-", semver(1, 2, 3, vec![], vec!["-".into()]))]
 #[test_case("1.2.3-beta-1-2-3", semver(1, 2, 3, vec![PrereleaseTag::String("beta-1-2-3".into())], vec![]))]
+#[test_case("4.2.3-", semver(4, 2, 3, vec![PrereleaseTag::String("-".into())], vec![]))]
+#[test_case("4.2.3rc0", semver(4, 2, 3, vec![PrereleaseTag::String("rc0".into())], vec![]))]
 fn test_parse_semver_success(v_str: &str, answer: Semver) {
     assert_eq!(parse_semver(v_str).unwrap(), answer)
 }
@@ -30,7 +32,6 @@ fn test_parse_semver_success(v_str: &str, answer: Semver) {
 #[test_case("-2.2.3")]
 #[test_case("2.-3.3")]
 #[test_case("3.2.-3")]
-#[test_case("4.2.3-")]
 #[test_case("4.2.6+")]
 #[test_case("+" ; "just plus")]
 #[test_case("-" ; "just minus")]
@@ -44,10 +45,10 @@ fn test_parse_semver_err(v_str: &str) {
 
 
 
-fn semver_simple(major: i32, minor: i32, bug: i32) -> Semver {
+fn semver_simple(major: i64, minor: i64, bug: i64) -> Semver {
     Semver { major, minor, bug, prerelease: vec![], build: vec![] }
 }
 
-fn semver(major: i32, minor: i32, bug: i32, prerelease: Vec<PrereleaseTag>, build: Vec<String>) -> Semver {
+fn semver(major: i64, minor: i64, bug: i64, prerelease: Vec<PrereleaseTag>, build: Vec<String>) -> Semver {
     Semver { major, minor, bug, prerelease, build }
 }

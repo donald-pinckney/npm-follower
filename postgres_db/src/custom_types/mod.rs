@@ -5,18 +5,13 @@ use serde::{Serialize, Deserialize};
 use sql_types::*;
 use diesel::sql_types::Array;
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "RepositorySql"]
-pub enum Repository {
-    Git(String)
-}
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "SemverSql"]
 pub struct Semver {
-    pub major: i32,
-    pub minor: i32,
-    pub bug: i32,
+    pub major: i64,
+    pub minor: i64,
+    pub bug: i64,
     pub prerelease: Vec<PrereleaseTag>,
     pub build: Vec<String>
 }
@@ -25,7 +20,7 @@ pub struct Semver {
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
-    Int(i32)
+    Int(i64)
 }
 
 
@@ -38,7 +33,8 @@ pub enum ParsedSpec {
     Remote(String),
     Alias(String, Option<i64>, AliasSubspec),
     File(String),
-    Directory(String)
+    Directory(String),
+    Invalid(String)
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
@@ -66,18 +62,19 @@ pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
 #[sql_type = "PackageMetadataStructSql"]
 pub enum PackageMetadata {
-    NotDeleted { 
-        dist_tag_latest_version: i64, 
+    Normal { 
+        dist_tag_latest_version: Option<i64>, 
         created: DateTime<Utc>, 
         modified: DateTime<Utc>, 
         other_dist_tags: HashMap<String, String> 
     },
-    Deleted { 
-        dist_tag_latest_version: Option<i64>, 
-        created: Option<DateTime<Utc>>, 
-        modified: Option<DateTime<Utc>>, 
-        other_dist_tags: HashMap<String, String> 
+    Unpublished {
+        created: DateTime<Utc>, 
+        modified: DateTime<Utc>,
+        other_time_data: HashMap<String, DateTime<Utc>>,
+        unpublished_data: serde_json::Value,
     },
+    Deleted,
 }
 
 pub mod sql_types {
@@ -123,7 +120,6 @@ pub mod sql_type_names {
 }
 
 
-mod repository;
 mod semver;
 mod version_comparator;
 mod version_constraint;

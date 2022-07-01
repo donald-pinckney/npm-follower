@@ -92,7 +92,7 @@ table! {
         semver -> Semver_struct,
         tarball_url -> Text,
         description -> Nullable<Text>,
-        repository -> Nullable<Repository_struct>,
+        repository -> Nullable<Jsonb>,
         created -> Timestamptz,
         deleted -> Bool,
         extra_metadata -> Jsonb,

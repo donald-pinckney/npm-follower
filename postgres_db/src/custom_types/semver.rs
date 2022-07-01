@@ -2,7 +2,7 @@ use diesel::pg::Pg;
 use diesel::types::{ToSql, FromSql};
 use diesel::deserialize;
 use diesel::serialize::{self, Output, WriteTuple, IsNull};
-use diesel::sql_types::{Record, Text, Nullable, Integer, Array};
+use diesel::sql_types::{Record, Text, Nullable, Array, Int8};
 use std::io::Write;
 use super::sql_types::*;
 use super::{Semver, PrereleaseTag};
@@ -26,10 +26,10 @@ impl ToSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         match self {
             PrereleaseTag::String(s) => {
-                WriteTuple::<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Integer>)>::write_tuple(&(PrereleaseTagTypeEnum::String, Some(s.as_str()), None as Option<i32>), out)
+                WriteTuple::<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>::write_tuple(&(PrereleaseTagTypeEnum::String, Some(s.as_str()), None as Option<i64>), out)
             },
             PrereleaseTag::Int(i) => {
-                WriteTuple::<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Integer>)>::write_tuple(&(PrereleaseTagTypeEnum::Int, None as Option<String>, Some(i)), out)
+                WriteTuple::<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>::write_tuple(&(PrereleaseTagTypeEnum::Int, None as Option<String>, Some(i)), out)
             }
         }
     }
@@ -48,7 +48,7 @@ impl ToSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 
 impl FromSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let (tag_type, str_case, int_case) = FromSql::<Record<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Integer>)>, Pg>::from_sql(bytes)?;
+        let (tag_type, str_case, int_case) = FromSql::<Record<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>, Pg>::from_sql(bytes)?;
         match tag_type {
             PrereleaseTagTypeEnum::String => Ok(PrereleaseTag::String(not_none!(str_case))),
             PrereleaseTagTypeEnum::Int => Ok(PrereleaseTag::Int(not_none!(int_case))),
@@ -69,7 +69,7 @@ impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 
 impl FromSql<SemverSql, Pg> for Semver {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let (major, minor, bug, prerelease, build) = FromSql::<Record<(Integer, Integer, Integer, Array<PrereleaseTagStructSql>, Array<Text>)>, Pg>::from_sql(bytes)?;
+        let (major, minor, bug, prerelease, build) = FromSql::<Record<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>, Pg>::from_sql(bytes)?;
         Ok(Semver {
             major,
             minor,
@@ -82,7 +82,7 @@ impl FromSql<SemverSql, Pg> for Semver {
 
 impl ToSql<SemverSql, Pg> for Semver {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        WriteTuple::<(Integer, Integer, Integer, Array<PrereleaseTagStructSql>, Array<Text>)>::write_tuple(&(self.major, self.minor, self.bug, &self.prerelease, &self.build), out)
+        WriteTuple::<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>::write_tuple(&(self.major, self.minor, self.bug, &self.prerelease, &self.build), out)
     }
 }
 
@@ -131,6 +131,16 @@ mod tests {
                     bug: 5, 
                     prerelease: vec![PrereleaseTag::Int(8)], 
                     build: vec!["alpha".into(), "1".into()] 
+                }
+            },
+            TestSemverToSql {
+                id: 3,
+                v: Semver { 
+                    major: 111111111111111, 
+                    minor: 222222222222222, 
+                    bug:   333333333333333, 
+                    prerelease: vec![PrereleaseTag::Int(444444444444444)], 
+                    build: vec!["alpha".into(), "555555555555555".into()] 
                 }
             },
         ];
