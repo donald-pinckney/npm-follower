@@ -103,11 +103,21 @@ fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTi
                                                  .unwrap();
     for (v_key, v_blob) in versions_map.iter_mut() {
         let v_obj = v_blob.as_object_mut().unwrap();
-        let v_created_raw = v_obj.remove_key_unwrap_type::<String>("ctime").unwrap();
-        let v_modified_raw = v_obj.remove_key_unwrap_type::<String>("mtime").unwrap();
-        // If these aren't the same, we need to figure out which to choose
-        assert!(v_created_raw == v_modified_raw);
-        let v_time = parse_datetime(v_created_raw);
+
+        let v_created_raw_maybe = v_obj.remove_key_unwrap_type::<String>("ctime");
+        let v_modified_raw_maybe = v_obj.remove_key_unwrap_type::<String>("mtime");
+
+        let v_time = match (v_created_raw_maybe, v_modified_raw_maybe) {
+            (Some(v_created_raw), Some(v_modified_raw)) => {
+                assert!(v_created_raw == v_modified_raw);
+                parse_datetime(v_created_raw)
+            },
+            (None, None) => {
+                let fake_time = parse_datetime("2015-01-01T00:00:00.000Z".to_string());
+                fake_time
+            },
+            _ => panic!("Unknown ctime / mtime combination.")
+        };
 
         let semver = semver_spec_serialization::parse_semver(v_key).unwrap();
         version_times.insert(semver, v_time);
