@@ -63,7 +63,6 @@ pub fn parse_semver(v_str: &str) -> Result<Semver, ParseSemverError> {
 
 #[derive(Debug)]
 pub enum ParseSpecError {
-    Invalid(String),
     Other(String),
     Encoding(FromUtf8Error),
     JsonParsing(serde_json::Error),
@@ -114,9 +113,8 @@ pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
         return Err(ParseSpecError::Other(format!("stdout:\n{}\n\nstderr:\n{}", String::from_utf8(output.stdout)?, String::from_utf8(output.stderr)?)));
     }
 
-    let parsed: Result<ParsedSpec, String> = serde_json::from_slice(&output.stdout)?;
-
-    parsed.map_err(|invalid_err| ParseSpecError::Invalid(invalid_err))
+    let parsed: ParsedSpec = serde_json::from_slice(&output.stdout)?;
+    Ok(parsed)
 }
 
 

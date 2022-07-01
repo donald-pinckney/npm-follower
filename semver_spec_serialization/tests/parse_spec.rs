@@ -209,7 +209,7 @@ lazy_static! {
         ]])))),
     ];
 
-    static ref FAILURE_CASES: Vec<(&'static str, &'static str)> = vec![
+    static ref INVALID_CASES: Vec<(&'static str, &'static str)> = vec![
         ("ht://stuff.cat", "EUNSUPPORTEDPROTOCOL"),
         ("^sp-reponse", "EINVALIDTAGNAME"),
     ];
@@ -226,12 +226,12 @@ fn test_parse_spec_via_node_success_cases() {
 }
 
 #[test]
-fn test_parse_spec_via_node_failure_cases() {
-    for (input, err_contains) in FAILURE_CASES.iter() {
+fn test_parse_spec_via_node_invalid_cases() {
+    for (input, err_contains) in INVALID_CASES.iter() {
         println!("testing {}", input);
-        let err = parse_spec_via_node(input).unwrap_err();
-        match err {
-            ParseSpecError::Invalid(err) => assert!(err.contains(err_contains)),
+        let spec = parse_spec_via_node(input).unwrap();
+        match spec {
+            ParsedSpec::Invalid(err) => assert!(err.contains(err_contains)),
             _ => assert!(false)
         }    
     }
@@ -240,12 +240,12 @@ fn test_parse_spec_via_node_failure_cases() {
 
 
 
-fn equivalent_results<T>(x: Result<T, ParseSpecError>, y: Result<T, ParseSpecError>, err_contains: Option<String>) -> bool where T: PartialEq {
+fn equivalent_results(x: Result<ParsedSpec, ParseSpecError>, y: Result<ParsedSpec, ParseSpecError>, invalid_contains: Option<String>) -> bool {
     match (x, y) {
         (Ok(xr), Ok(yr)) => xr == yr,
-        (Err(ParseSpecError::Invalid(err1)), Err(ParseSpecError::Invalid(err2))) => {
-            if let Some(err_contains) = err_contains {
-                err1.contains(&err_contains) && err2.contains(&err_contains)
+        (Ok(ParsedSpec::Invalid(invalid1)), Ok(ParsedSpec::Invalid(invalid2))) => {
+            if let Some(invalid_contains) = invalid_contains {
+                invalid1.contains(&invalid_contains) && invalid2.contains(&invalid_contains)
             } else {
                 true
             }
@@ -255,10 +255,10 @@ fn equivalent_results<T>(x: Result<T, ParseSpecError>, y: Result<T, ParseSpecErr
     }
 }
 
-fn node_rust_same_result(s: String, err_contains: Option<String>) -> bool {
+fn node_rust_same_result(s: String, invalid_contains: Option<String>) -> bool {
     let node_result = parse_spec_via_node(&s);
     let rust_result = parse_spec_via_rust(&s);
-    equivalent_results(node_result, rust_result, err_contains)
+    equivalent_results(node_result, rust_result, invalid_contains)
 }
 
 
@@ -276,7 +276,7 @@ fn test_parse_spec_node_rust_equivalent_success_cases() {
 fn test_parse_spec_node_rust_equivalent_failure_cases() {
     return; // TODO: implement rust parser and remove this
 
-    for (input, err_contains) in FAILURE_CASES.iter() {
+    for (input, err_contains) in INVALID_CASES.iter() {
         println!("testing {}", input);
         assert!(node_rust_same_result(input.to_string(), Some(err_contains.to_string())));
     }
