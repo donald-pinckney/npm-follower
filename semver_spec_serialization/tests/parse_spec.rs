@@ -3,126 +3,127 @@ extern crate quickcheck;
 #[macro_use]
 extern crate lazy_static;
 
-use postgres_db::custom_types::{Semver, PrereleaseTag, ParsedSpec, VersionConstraint, VersionComparator, AliasSubspec};
-use semver_spec_serialization::{parse_spec_via_node, parse_spec_via_rust};
-
+use postgres_db::custom_types::{
+    AliasSubspec, ParsedSpec, PrereleaseTag, Semver, VersionComparator, VersionConstraint,
+};
+use semver_spec_serialization::parse_spec_via_node;
 
 lazy_static! {
     static ref SUCCESS_CASES: Vec<(&'static str, ParsedSpec)> = vec![
         ("1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver_simple(1, 2, 3))]]))),
         ("^1.2.3-alpha.5", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 3, vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(5)], vec![]) ), 
+            VersionComparator::Gte(semver(1, 2, 3, vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(5)], vec![]) ),
             VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![]))
         ]]))),
 
         ("~1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 3, vec![], vec![]) ), 
+            VersionComparator::Gte(semver(1, 2, 3, vec![], vec![]) ),
             VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![]))
         ]]))),
 
         (">1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gt(semver(1, 2, 3, vec![], vec![]) ), 
+            VersionComparator::Gt(semver(1, 2, 3, vec![], vec![]) ),
         ]]))),
 
         (">=1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 3, vec![], vec![]) ), 
+            VersionComparator::Gte(semver(1, 2, 3, vec![], vec![]) ),
         ]]))),
 
         ("=1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Eq(semver(1, 2, 3, vec![], vec![]) ), 
+            VersionComparator::Eq(semver(1, 2, 3, vec![], vec![]) ),
         ]]))),
 
         ("<=1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Lte(semver(1, 2, 3, vec![], vec![]) ), 
+            VersionComparator::Lte(semver(1, 2, 3, vec![], vec![]) ),
         ]]))),
 
         ("<1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Lt(semver(1, 2, 3, vec![], vec![]) ), 
+            VersionComparator::Lt(semver(1, 2, 3, vec![], vec![]) ),
         ]]))),
 
         ("<1.2.3 <1.4.5", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Lt(semver(1, 2, 3, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 4, 5, vec![], vec![])), 
+            VersionComparator::Lt(semver(1, 2, 3, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 4, 5, vec![], vec![])),
         ]]))),
 
         ("<1.2.3 <1.4.5 <1.6.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Lt(semver(1, 2, 3, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 4, 5, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 6, 3, vec![], vec![])), 
+            VersionComparator::Lt(semver(1, 2, 3, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 4, 5, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 6, 3, vec![], vec![])),
         ]]))),
 
         ("1.2.3 - 1.6.3", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 3, vec![], vec![])), 
-            VersionComparator::Lte(semver(1, 6, 3, vec![], vec![])), 
+            VersionComparator::Gte(semver(1, 2, 3, vec![], vec![])),
+            VersionComparator::Lte(semver(1, 6, 3, vec![], vec![])),
         ]]))),
 
         ("1.2.x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])), 
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("1.2.*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])), 
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         // Compare to 1.x.y in Tag section
         ("1.x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])), 
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("1.*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])), 
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("1.*.*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])), 
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("1.x.x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])), 
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Any, 
+            VersionComparator::Any,
         ]]))),
 
         ("x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Any, 
+            VersionComparator::Any,
         ]]))),
 
         ("~1.2", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("~1.2.x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("~1.2.*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("~1.*.*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("~1.x.x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("~1", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("~*", ParsedSpec::Range(VersionConstraint(vec![vec![
@@ -133,35 +134,35 @@ lazy_static! {
             VersionComparator::Any
         ]]))),
 
-        
+
         ("^1.2", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("^1.2.x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("^1.2.*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 2, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("^1.*.*", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("^1.x.x", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("^1", ParsedSpec::Range(VersionConstraint(vec![vec![
-            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])), 
-            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),  
+            VersionComparator::Gte(semver(1, 0, 0, vec![], vec![])),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![])),
         ]]))),
 
         ("^*", ParsedSpec::Range(VersionConstraint(vec![vec![
@@ -179,7 +180,7 @@ lazy_static! {
 
         ("some/dir/file.tgz", ParsedSpec::File("some/dir/file.tgz".into())),
         ("./some/file.tgz", ParsedSpec::File("./some/file.tgz".into())),
-        
+
         ("./some/dir", ParsedSpec::Directory("./some/dir".into())),
         ("/some/dir", ParsedSpec::Directory("/some/dir".into())),
         ("some/other/dir", ParsedSpec::Directory("some/other/dir".into())),
@@ -214,7 +215,6 @@ lazy_static! {
     ];
 }
 
-
 #[test]
 fn test_parse_spec_via_node_success_cases() {
     for (input, answer) in SUCCESS_CASES.iter() {
@@ -231,58 +231,41 @@ fn test_parse_spec_via_node_failure_cases() {
     }
 }
 
-
-
-
-fn equivalent_results<T, E>(x: Result<T, E>, y: Result<T, E>) -> bool where T: PartialEq {
+fn equivalent_results<T, E>(x: Result<T, E>, y: Result<T, E>) -> bool
+where
+    T: PartialEq,
+{
     match (x, y) {
         (Ok(xr), Ok(yr)) => xr == yr,
         (Err(_), Err(_)) => true,
-        _ => false
+        _ => false,
     }
 }
-
-fn node_rust_same_result(s: String) -> bool {
-    let node_result = parse_spec_via_node(&s);
-    let rust_result = parse_spec_via_rust(&s);
-    equivalent_results(node_result, rust_result)
-}
-
-
-#[test]
-fn test_parse_spec_node_rust_equivalent_success_cases() {
-    return; // TODO: implement rust parser and remove this
-
-    for (input, _) in SUCCESS_CASES.iter() {
-        println!("testing {}", input);
-        assert!(node_rust_same_result(input.to_string()));
-    }
-}
-
-#[test]
-fn test_parse_spec_node_rust_equivalent_failure_cases() {
-    return; // TODO: implement rust parser and remove this
-
-    for input in FAILURE_CASES.iter() {
-        println!("testing {}", input);
-        assert!(node_rust_same_result(input.to_string()));
-    }
-}
-
-
-quickcheck! {
-    fn test_parse_spec_node_rust_equivalent_quickcheck(s: String) -> bool {
-        return true; // TODO: implement rust parser and remove this
-        node_rust_same_result(s)
-    }
-}
-
 
 
 fn semver_simple(major: i32, minor: i32, bug: i32) -> Semver {
-    Semver { major, minor, bug, prerelease: vec![], build: vec![] }
+    Semver {
+        major,
+        minor,
+        bug,
+        prerelease: vec![],
+        build: vec![],
+    }
 }
 
-fn semver(major: i32, minor: i32, bug: i32, prerelease: Vec<PrereleaseTag>, build: Vec<String>) -> Semver {
-    Semver { major, minor, bug, prerelease, build }
+fn semver(
+    major: i32,
+    minor: i32,
+    bug: i32,
+    prerelease: Vec<PrereleaseTag>,
+    build: Vec<String>,
+) -> Semver {
+    Semver {
+        major,
+        minor,
+        bug,
+        prerelease,
+        build,
+    }
 }
+
