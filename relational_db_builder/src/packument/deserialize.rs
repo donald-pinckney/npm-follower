@@ -116,6 +116,30 @@ fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTi
     (created, modified, version_times)
 }
 
+
+fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Semver, DateTime<Utc>>) {
+    let fake_time = parse_datetime("2015-01-01T00:00:00.000Z".to_string());
+
+    let mut version_times = HashMap::new();
+
+    let versions_map = j.get("versions")
+                                             .unwrap()
+                                             .as_object()
+                                             .unwrap();
+    for (v_key, v_blob) in versions_map.iter() {
+        let v_obj = v_blob.as_object().unwrap();
+        assert!(!v_obj.contains_key("time"));
+        assert!(!v_obj.contains_key("ctime"));
+        assert!(!v_obj.contains_key("mtime"));
+
+        let semver = semver_spec_serialization::parse_semver(v_key).unwrap();
+        version_times.insert(semver, fake_time);
+    }
+
+    (fake_time, fake_time, version_times)
+}
+
+
 fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Semver, DateTime<Utc>>) {
     if j.contains_key("time") {
         assert!(!j.contains_key("ctime"));
@@ -128,7 +152,7 @@ fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc
         
         deserialize_times_ctime(j)
     } else {
-        panic!("Don't know how to deserialize times")
+        deserialize_times_missing_fake_it(j)
     }
 }
 
