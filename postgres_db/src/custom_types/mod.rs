@@ -34,7 +34,7 @@ pub enum ParsedSpec {
     Alias(String, Option<i64>, AliasSubspec),
     File(String),
     Directory(String),
-    Invalid
+    Invalid(String)
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]

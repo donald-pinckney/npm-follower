@@ -96,7 +96,8 @@ CREATE TYPE parsed_spec_struct AS (
   alias_subdep_range_disjuncts  constraint_disjuncts,
   alias_subdep_tag_name         TEXT,
   file_path                     TEXT,
-  directory_path                TEXT
+  directory_path                TEXT,
+  invalid_message               TEXT
 );
 
 CREATE DOMAIN parsed_spec AS parsed_spec_struct
@@ -147,10 +148,11 @@ CREATE DOMAIN parsed_spec AS parsed_spec_struct
     ((VALUE).dep_type = 'directory' AND (VALUE).directory_path IS NOT NULL) OR 
     ((VALUE).dep_type <> 'directory' AND (VALUE).directory_path IS NULL)
   )
-  
-  -- No check needed for dep_type = 'invalid'
-  
-  ;
+
+  CHECK(
+    ((VALUE).dep_type = 'invalid' AND (VALUE).invalid_message IS NOT NULL) OR 
+    ((VALUE).dep_type <> 'invalid' AND (VALUE).invalid_message IS NULL)
+  );
 
 
 CREATE TYPE package_state_enum AS ENUM (

@@ -24,6 +24,7 @@ type ParsedSpecStructRecordSql = (
     Nullable<Array<ConstraintConjunctsSql>>,
     Nullable<Text>,
     Nullable<Text>,
+    Nullable<Text>,
     Nullable<Text>
 );
 
@@ -39,23 +40,24 @@ type ParsedSpecStructRecordRust = (
     Option<VersionConstraint>,
     Option<String>,
     Option<String>,
+    Option<String>,
     Option<String>
 );
 
 impl<'a> ToSql<ParsedSpecStructSql, Pg> for ParsedSpec {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         let record: ParsedSpecStructRecordRust = match self {
-            ParsedSpec::Range(vc) => (SpecTypeEnum::Range, Some(vc.clone()), None, None, None, None, None, None, None, None, None, None),
-            ParsedSpec::Tag(tag) => (SpecTypeEnum::Tag, None, Some(tag.clone()), None, None, None, None, None, None, None, None, None),
-            ParsedSpec::Git(git) => (SpecTypeEnum::Git, None, None, Some(git.clone()), None, None, None, None, None, None, None, None),
-            ParsedSpec::Remote(url) => (SpecTypeEnum::Remote, None, None, None, Some(url.clone()), None, None, None, None, None, None, None),
+            ParsedSpec::Range(vc) => (SpecTypeEnum::Range, Some(vc.clone()), None, None, None, None, None, None, None, None, None, None, None),
+            ParsedSpec::Tag(tag) => (SpecTypeEnum::Tag, None, Some(tag.clone()), None, None, None, None, None, None, None, None, None, None),
+            ParsedSpec::Git(git) => (SpecTypeEnum::Git, None, None, Some(git.clone()), None, None, None, None, None, None, None, None, None),
+            ParsedSpec::Remote(url) => (SpecTypeEnum::Remote, None, None, None, Some(url.clone()), None, None, None, None, None, None, None, None),
             ParsedSpec::Alias(a_name, a_id, AliasSubspec::Range(vc)) => 
-                (SpecTypeEnum::Alias, None, None, None, None, Some(a_name.clone()), *a_id, Some(AliasSubspecTypeEnum::Range), Some(vc.clone()), None, None, None),
+                (SpecTypeEnum::Alias, None, None, None, None, Some(a_name.clone()), *a_id, Some(AliasSubspecTypeEnum::Range), Some(vc.clone()), None, None, None, None),
             ParsedSpec::Alias(a_name, a_id, AliasSubspec::Tag(tag)) => 
-                (SpecTypeEnum::Alias, None, None, None, None, Some(a_name.clone()), *a_id, Some(AliasSubspecTypeEnum::Tag), None, Some(tag.clone()), None, None),
-            ParsedSpec::File(path) => (SpecTypeEnum::File, None, None, None, None, None, None, None, None, None, Some(path.clone()), None),
-            ParsedSpec::Directory(path) => (SpecTypeEnum::Directory, None, None, None, None, None, None, None, None, None, None, Some(path.clone())),
-            ParsedSpec::Invalid => (SpecTypeEnum::Invalid, None, None, None, None, None, None, None, None, None, None, None),
+                (SpecTypeEnum::Alias, None, None, None, None, Some(a_name.clone()), *a_id, Some(AliasSubspecTypeEnum::Tag), None, Some(tag.clone()), None, None, None),
+            ParsedSpec::File(path) => (SpecTypeEnum::File, None, None, None, None, None, None, None, None, None, Some(path.clone()), None, None),
+            ParsedSpec::Directory(path) => (SpecTypeEnum::Directory, None, None, None, None, None, None, None, None, None, None, Some(path.clone()), None),
+            ParsedSpec::Invalid(message) => (SpecTypeEnum::Invalid, None, None, None, None, None, None, None, None, None, None, None, Some(message.clone())),
         };
 
         WriteTuple::<ParsedSpecStructRecordSql>::write_tuple(
@@ -69,15 +71,15 @@ impl<'a> FromSql<ParsedSpecStructSql, Pg> for ParsedSpec {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
         let tup: ParsedSpecStructRecordRust = FromSql::<Record<ParsedSpecStructRecordSql>, Pg>::from_sql(bytes)?;
         match tup {
-            (SpecTypeEnum::Range, Some(vc), None, None, None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Range(vc)),
-            (SpecTypeEnum::Tag, None, Some(tag), None, None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Tag(tag)),
-            (SpecTypeEnum::Git, None, None, Some(git), None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Git(git)),
-            (SpecTypeEnum::Remote, None, None, None, Some(url), None, None, None, None, None, None, None) => Ok(ParsedSpec::Remote(url)),
-            (SpecTypeEnum::Alias, None, None, None, None, Some(a_name), a_id, Some(AliasSubspecTypeEnum::Range), Some(vc), None, None, None) => Ok(ParsedSpec::Alias(a_name, a_id, AliasSubspec::Range(vc))),
-            (SpecTypeEnum::Alias, None, None, None, None, Some(a_name), a_id, Some(AliasSubspecTypeEnum::Tag), None, Some(tag), None, None) => Ok(ParsedSpec::Alias(a_name, a_id, AliasSubspec::Tag(tag))),
-            (SpecTypeEnum::File, None, None, None, None, None, None, None, None, None, Some(path), None) => Ok(ParsedSpec::File(path)),
-            (SpecTypeEnum::Directory, None, None, None, None, None, None, None, None, None, None, Some(path)) => Ok(ParsedSpec::Directory(path)),
-            (SpecTypeEnum::Invalid, None, None, None, None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Invalid),
+            (SpecTypeEnum::Range, Some(vc), None, None, None, None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Range(vc)),
+            (SpecTypeEnum::Tag, None, Some(tag), None, None, None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Tag(tag)),
+            (SpecTypeEnum::Git, None, None, Some(git), None, None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Git(git)),
+            (SpecTypeEnum::Remote, None, None, None, Some(url), None, None, None, None, None, None, None, None) => Ok(ParsedSpec::Remote(url)),
+            (SpecTypeEnum::Alias, None, None, None, None, Some(a_name), a_id, Some(AliasSubspecTypeEnum::Range), Some(vc), None, None, None, None) => Ok(ParsedSpec::Alias(a_name, a_id, AliasSubspec::Range(vc))),
+            (SpecTypeEnum::Alias, None, None, None, None, Some(a_name), a_id, Some(AliasSubspecTypeEnum::Tag), None, Some(tag), None, None, None) => Ok(ParsedSpec::Alias(a_name, a_id, AliasSubspec::Tag(tag))),
+            (SpecTypeEnum::File, None, None, None, None, None, None, None, None, None, Some(path), None, None) => Ok(ParsedSpec::File(path)),
+            (SpecTypeEnum::Directory, None, None, None, None, None, None, None, None, None, None, Some(path), None) => Ok(ParsedSpec::Directory(path)),
+            (SpecTypeEnum::Invalid, None, None, None, None, None, None, None, None, None, None, None, Some(message)) => Ok(ParsedSpec::Invalid(message)),
             _ => Err("Unrecognized enum variant".into()),
         }
     }
@@ -269,7 +271,7 @@ mod tests {
             },
             TestParsedSpecToSql {
                 id: 11,
-                s: ParsedSpec::Invalid
+                s: ParsedSpec::Invalid("error message".into())
             },
         ];
 

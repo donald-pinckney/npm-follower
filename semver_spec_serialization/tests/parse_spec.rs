@@ -4,7 +4,7 @@ extern crate quickcheck;
 extern crate lazy_static;
 
 use postgres_db::custom_types::{Semver, PrereleaseTag, ParsedSpec, VersionConstraint, VersionComparator, AliasSubspec};
-use semver_spec_serialization::{parse_spec_via_node, parse_spec_via_rust};
+use semver_spec_serialization::{parse_spec_via_node, parse_spec_via_rust, ParseSpecError};
 
 
 lazy_static! {
@@ -209,10 +209,12 @@ lazy_static! {
         ]])))),
     ];
 
-    static ref FAILURE_CASES: Vec<&'static str> = vec![
-        "ht://stuff.cat"
+    static ref FAILURE_CASES: Vec<(&'static str, &'static str)> = vec![
+        ("ht://stuff.cat", "EUNSUPPORTEDPROTOCOL"),
+        ("^sp-reponse", "EINVALIDTAGNAME"),
     ];
 }
+
 
 
 #[test]
@@ -225,27 +227,38 @@ fn test_parse_spec_via_node_success_cases() {
 
 #[test]
 fn test_parse_spec_via_node_failure_cases() {
-    for input in FAILURE_CASES.iter() {
+    for (input, err_contains) in FAILURE_CASES.iter() {
         println!("testing {}", input);
-        assert_eq!(parse_spec_via_node(input).is_err(), true)
+        let err = parse_spec_via_node(input).unwrap_err();
+        match err {
+            ParseSpecError::Invalid(err) => assert!(err.contains(err_contains)),
+            _ => assert!(false)
+        }    
     }
 }
 
 
 
 
-fn equivalent_results<T, E>(x: Result<T, E>, y: Result<T, E>) -> bool where T: PartialEq {
+fn equivalent_results<T>(x: Result<T, ParseSpecError>, y: Result<T, ParseSpecError>, err_contains: Option<String>) -> bool where T: PartialEq {
     match (x, y) {
         (Ok(xr), Ok(yr)) => xr == yr,
+        (Err(ParseSpecError::Invalid(err1)), Err(ParseSpecError::Invalid(err2))) => {
+            if let Some(err_contains) = err_contains {
+                err1.contains(&err_contains) && err2.contains(&err_contains)
+            } else {
+                true
+            }
+        },
         (Err(_), Err(_)) => true,
         _ => false
     }
 }
 
-fn node_rust_same_result(s: String) -> bool {
+fn node_rust_same_result(s: String, err_contains: Option<String>) -> bool {
     let node_result = parse_spec_via_node(&s);
     let rust_result = parse_spec_via_rust(&s);
-    equivalent_results(node_result, rust_result)
+    equivalent_results(node_result, rust_result, err_contains)
 }
 
 
@@ -255,7 +268,7 @@ fn test_parse_spec_node_rust_equivalent_success_cases() {
 
     for (input, _) in SUCCESS_CASES.iter() {
         println!("testing {}", input);
-        assert!(node_rust_same_result(input.to_string()));
+        assert!(node_rust_same_result(input.to_string(), None));
     }
 }
 
@@ -263,9 +276,9 @@ fn test_parse_spec_node_rust_equivalent_success_cases() {
 fn test_parse_spec_node_rust_equivalent_failure_cases() {
     return; // TODO: implement rust parser and remove this
 
-    for input in FAILURE_CASES.iter() {
+    for (input, err_contains) in FAILURE_CASES.iter() {
         println!("testing {}", input);
-        assert!(node_rust_same_result(input.to_string()));
+        assert!(node_rust_same_result(input.to_string(), Some(err_contains.to_string())));
     }
 }
 
@@ -273,7 +286,7 @@ fn test_parse_spec_node_rust_equivalent_failure_cases() {
 quickcheck! {
     fn test_parse_spec_node_rust_equivalent_quickcheck(s: String) -> bool {
         return true; // TODO: implement rust parser and remove this
-        node_rust_same_result(s)
+        node_rust_same_result(s, None)
     }
 }
 
