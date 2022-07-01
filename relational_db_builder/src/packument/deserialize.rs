@@ -8,8 +8,25 @@ use super::{Packument, VersionPackument, Dist, Spec};
 
 use utils::RemoveInto;
 
+fn replace_null_with_empty_object(v: &mut Value) {
+    if v.is_null() {
+        *v = Value::Object(Map::new());
+    }
+}
+
+fn replace_null_dependencies(version_blob: &mut Map<String, Value>) {
+    version_blob.get_mut("dependencies").map(replace_null_with_empty_object);
+    version_blob.get_mut("devDependencies").map(replace_null_with_empty_object);
+    version_blob.get_mut("peerDependencies").map(replace_null_with_empty_object);
+    version_blob.get_mut("optionalDependencies").map(replace_null_with_empty_object);
+
+}
+
 fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPackument {
     let description = version_blob.remove_key_unwrap_type::<String>("description");
+
+    replace_null_dependencies(&mut version_blob);
+
     let prod_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dependencies").unwrap_or_default();
     let dev_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("devDependencies").unwrap_or_default();
     let peer_dependencies_raw = version_blob.remove_key_unwrap_type::<Map<String, Value>>("peerDependencies").unwrap_or_default();
