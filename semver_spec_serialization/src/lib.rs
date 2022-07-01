@@ -36,7 +36,8 @@ fn parse_build_tags(s: &str) -> Vec<String> {
 
 pub fn parse_semver(v_str: &str) -> Result<Semver, ParseSemverError> {
     // Modified from: https://github.com/npm/node-semver/blob/main/internal/re.js
-    let re = regex!(r"^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][a-zA-Z0-9-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][a-zA-Z0-9-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$");
+    // console.log(semver.src[semver.tokens['LOOSE']])
+    let re = regex!(r"^[v=\s]*([0-9]+)\.([0-9]+)\.([0-9]+)(?:-?((?:[0-9]+|\d*[a-zA-Z-][a-zA-Z0-9-]*)(?:\.(?:[0-9]+|\d*[a-zA-Z-][a-zA-Z0-9-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$");
 
     let m = re.captures_iter(v_str.trim()).next().ok_or(ParseSemverError::RegexMatchFailed)?;
 

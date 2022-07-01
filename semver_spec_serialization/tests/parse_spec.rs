@@ -10,6 +10,9 @@ use semver_spec_serialization::{parse_spec_via_node, parse_spec_via_rust, ParseS
 lazy_static! {
     static ref SUCCESS_CASES: Vec<(&'static str, ParsedSpec)> = vec![
         ("1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver_simple(1, 2, 3))]]))),
+        ("4.2.3-", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver(4, 2, 3, vec![PrereleaseTag::String("-".into())], vec![]))]]))),
+        ("4.2.3rc0", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver(4, 2, 3, vec![PrereleaseTag::String("rc0".into())], vec![]))]]))),
+
         ("^1.2.3-alpha.5", ParsedSpec::Range(VersionConstraint(vec![vec![
             VersionComparator::Gte(semver(1, 2, 3, vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(5)], vec![]) ), 
             VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![]))
