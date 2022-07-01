@@ -37,7 +37,15 @@ pub fn deserialize_change(c: Change) -> Option<(String, Packument)> {
         }
         Some((package_name, Packument::Deleted))
     } else {
-        let unpublished = doc["time"].as_object().unwrap().contains_key("unpublished");
+        let unpublished = doc
+            .get("time")
+            .map(|time_value| 
+                time_value
+                    .as_object()
+                    .unwrap()
+                    .contains_key("unpublished")
+            )
+            .unwrap_or(false);
 
         if unpublished {
             Some((package_name, packument::deserialize::deserialize_packument_blob_unpublished(doc)))
