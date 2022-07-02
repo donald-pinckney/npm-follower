@@ -152,9 +152,10 @@ pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
             // this might happen if the daemon didn't start up in time.
             // if this was a real error, it will throw again.
             // although, this error should never happen in practice.
-            std::thread::sleep(std::time::Duration::from_millis(200));
-            let mut childwriter = SPEC_PROC_CHILD.lock().unwrap();
-            let stdout = childwriter.stdout.take().unwrap();
+            let mut childwriter = SPEC_PROC_CHILD.lock().map_err(|_| {
+                ParseSpecError::Other("Couldn't lock spec parsing daemon".to_string())
+            })?;
+            let stdout = childwriter.stdout.take().ok_or(ParseSpecError::IO(e))?;
 
             // read stdout and wait for the "Listening" string
             let mut buf = String::new();
