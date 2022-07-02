@@ -142,10 +142,8 @@ impl From<std::io::Error> for ParseSpecError {
 
 pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
     // hack to evaluate the daemon in the lazy static
-    {
-        let lock = SPEC_PROC_CHILD.lock().unwrap();
-        let _hack = lock.id();
-    }
+    let mut lock = SPEC_PROC_CHILD.lock().unwrap();
+    let _hack = lock.id();
 
     // edge case for empty string, which cannot be transmitted via socket
     if s.is_empty() {
@@ -158,10 +156,7 @@ pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
             // this might happen if the daemon didn't start up in time.
             // if this was a real error, it will throw again.
             // although, this error should never happen in practice.
-            let mut childwriter = SPEC_PROC_CHILD.lock().map_err(|_| {
-                ParseSpecError::Other("Couldn't lock spec parsing daemon".to_string())
-            })?;
-            let stdout = childwriter.stdout.take().ok_or_else(|| {
+            let stdout = lock.stdout.take().ok_or_else(|| {
                 ParseSpecError::Other("Couldn't retrieve stdout from parsing daemon".to_string())
             })?;
 
