@@ -141,34 +141,39 @@ impl From<std::io::Error> for ParseSpecError {
 }
 
 pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
-    // hack to evaluate the daemon in the lazy static
-    let mut lock = SPEC_PROC_CHILD.lock().unwrap();
-    let _hack = lock.id();
-
     // edge case for empty string, which cannot be transmitted via socket
     if s.is_empty() {
         return Ok(ParsedSpec::Tag("latest".to_string()));
     }
 
-    let stream_res = UnixStream::connect(SOCK_PATH.to_string());
-    let mut stream = match stream_res {
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            // this might happen if the daemon didn't start up in time.
-            // if this was a real error, it will throw again.
-            // although, this error should never happen in practice.
-            let stdout = lock.stdout.take().ok_or_else(|| {
-                ParseSpecError::Other("Couldn't retrieve stdout from parsing daemon".to_string())
-            })?;
+    let mut stream = {
+        // hack to evaluate the daemon in the lazy static
+        let mut lock = SPEC_PROC_CHILD.lock().unwrap();
+        let _hack = lock.id();
 
-            // read stdout and wait for the "Listening" string
-            let mut buf = String::new();
-            let mut reader = BufReader::new(stdout);
-            reader.read_line(&mut buf)?;
+        let stream_res = UnixStream::connect(SOCK_PATH.to_string());
+        match stream_res {
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                // this might happen if the daemon didn't start up in time.
+                // if this was a real error, it will throw again.
+                // although, this error should never happen in practice.
+                let stdout = lock.stdout.take().ok_or_else(|| {
+                    ParseSpecError::Other(
+                        "Couldn't retrieve stdout from parsing daemon".to_string(),
+                    )
+                })?;
 
-            UnixStream::connect(SOCK_PATH.to_string())
-        }
-        _ => stream_res,
-    }?;
+                // read stdout and wait for the "Listening" string
+                let mut buf = String::new();
+                let mut reader = BufReader::new(stdout);
+                reader.read_line(&mut buf)?;
+
+                UnixStream::connect(SOCK_PATH.to_string())
+            }
+            _ => stream_res,
+        }?
+    };
+
     stream.write_all(s.as_bytes())?;
     let mut res = String::new();
     let mut reader = BufReader::new(stream);
