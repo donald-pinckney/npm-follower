@@ -3,6 +3,7 @@ extern crate lazy_static;
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::string::FromUtf8Error;
+use std::sync::Mutex;
 use std::{num::ParseIntError, os::unix::net::UnixStream};
 
 use cached::proc_macro::cached;
@@ -20,7 +21,7 @@ lazy_static! {
             std::process::id()
         )
     };
-    static ref SPEC_PROC_CHILD: std::process::Child = {
+    static ref SPEC_PROC_CHILD: Mutex<std::process::Child> = {
         use std::process::Command;
         use std::process::Stdio;
 
@@ -36,14 +37,15 @@ lazy_static! {
             js_dir.push("js_parser");
         }
 
-        Command::new("node")
+        let child = Command::new("node")
             .arg(js_dir)
             .arg(SOCK_PATH.to_string())
             .arg(std::process::id().to_string())
             .stdin(Stdio::null())
-            .stdout(Stdio::null())
+            .stdout(Stdio::piped())
             .spawn()
-            .expect("Couldn't spawn spec parsing daemon")
+            .expect("Couldn't spawn spec parsing daemon");
+        Mutex::new(child)
     };
 }
 
@@ -144,15 +146,21 @@ pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
         return Ok(ParsedSpec::Tag("latest".to_string()));
     }
 
-    // hacky way to execute lazy code to spawn the daemon
-    let _specchild = SPEC_PROC_CHILD.id();
-
     let stream_res = UnixStream::connect(SOCK_PATH.to_string());
     let mut stream = match stream_res {
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            // sleep for a bit to let the daemon start up. if this was a real error, it will throw
-            // again. although, this error should never happen in practice.
+            // this might happen if the daemon didn't start up in time.
+            // if this was a real error, it will throw again.
+            // although, this error should never happen in practice.
             std::thread::sleep(std::time::Duration::from_millis(200));
+            let mut childwriter = SPEC_PROC_CHILD.lock().unwrap();
+            let stdout = childwriter.stdout.take().unwrap();
+
+            // read stdout and wait for the "Listening" string
+            let mut buf = String::new();
+            let mut reader = BufReader::new(stdout);
+            reader.read_line(&mut buf)?;
+
             UnixStream::connect(SOCK_PATH.to_string())
         }
         _ => stream_res,
@@ -160,7 +168,7 @@ pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
     stream.write_all(s.as_bytes())?;
     let mut res = String::new();
     let mut reader = BufReader::new(stream);
-    reader.read_line(&mut res).unwrap();
+    reader.read_line(&mut res)?;
     let parsed: ParsedSpec = serde_json::from_str(&res)?;
 
     Ok(parsed)

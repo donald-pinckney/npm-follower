@@ -28,7 +28,7 @@ var unixServer = net.createServer(function (client) {
 
 const socket = process.argv[2];
 unixServer.listen(socket);
-console.log("Listening on " + socket);
+console.log("Listening on " + socket + "\n");
 
 // handlers to close the server, or the socket will remain open forever
 process.on("exit", close);
