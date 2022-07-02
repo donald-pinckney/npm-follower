@@ -79,7 +79,7 @@ fn parse_build_tags(s: &str) -> Vec<String> {
 pub fn parse_semver(v_str: &str) -> Result<Semver, ParseSemverError> {
     // Modified from: https://github.com/npm/node-semver/blob/main/internal/re.js
     let re = regex!(
-        r"^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][a-zA-Z0-9-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][a-zA-Z0-9-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$"
+        r"^[v=\s]*([0-9]+)\.([0-9]+)\.([0-9]+)(?:-?((?:[0-9]+|\d*[a-zA-Z-][a-zA-Z0-9-]*)(?:\.(?:[0-9]+|\d*[a-zA-Z-][a-zA-Z0-9-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$"
     );
 
     let m = re
@@ -141,6 +141,12 @@ impl From<std::io::Error> for ParseSpecError {
 }
 
 pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
+    // hack to evaluate the daemon in the lazy static
+    {
+        let lock = SPEC_PROC_CHILD.lock().unwrap();
+        let _hack = lock.id();
+    }
+
     // edge case for empty string, which cannot be transmitted via socket
     if s.is_empty() {
         return Ok(ParsedSpec::Tag("latest".to_string()));
@@ -155,7 +161,9 @@ pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
             let mut childwriter = SPEC_PROC_CHILD.lock().map_err(|_| {
                 ParseSpecError::Other("Couldn't lock spec parsing daemon".to_string())
             })?;
-            let stdout = childwriter.stdout.take().ok_or(ParseSpecError::IO(e))?;
+            let stdout = childwriter.stdout.take().ok_or_else(|| {
+                ParseSpecError::Other("Couldn't retrieve stdout from parsing daemon".to_string())
+            })?;
 
             // read stdout and wait for the "Listening" string
             let mut buf = String::new();

@@ -1,16 +1,17 @@
 #[macro_use]
-extern crate quickcheck;
-#[macro_use]
 extern crate lazy_static;
 
 use postgres_db::custom_types::{
     AliasSubspec, ParsedSpec, PrereleaseTag, Semver, VersionComparator, VersionConstraint,
 };
-use semver_spec_serialization::parse_spec_via_node;
+use semver_spec_serialization::{parse_spec_via_node, ParseSpecError};
 
 lazy_static! {
     static ref SUCCESS_CASES: Vec<(&'static str, ParsedSpec)> = vec![
         ("1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver_simple(1, 2, 3))]]))),
+        ("4.2.3-", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver(4, 2, 3, vec![PrereleaseTag::String("-".into())], vec![]))]]))),
+        ("4.2.3rc0", ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(semver(4, 2, 3, vec![PrereleaseTag::String("rc0".into())], vec![]))]]))),
+
         ("^1.2.3-alpha.5", ParsedSpec::Range(VersionConstraint(vec![vec![
             VersionComparator::Gte(semver(1, 2, 3, vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(5)], vec![]) ),
             VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![]))
@@ -210,8 +211,9 @@ lazy_static! {
         ]])))),
     ];
 
-    static ref FAILURE_CASES: Vec<&'static str> = vec![
-        "ht://stuff.cat"
+    static ref INVALID_CASES: Vec<(&'static str, &'static str)> = vec![
+        ("ht://stuff.cat", "EUNSUPPORTEDPROTOCOL"),
+        ("^sp-reponse", "EINVALIDTAGNAME"),
     ];
 }
 
@@ -224,24 +226,16 @@ fn test_parse_spec_via_node_success_cases() {
 }
 
 #[test]
-fn test_parse_spec_via_node_failure_cases() {
-    for input in FAILURE_CASES.iter() {
+fn test_parse_spec_via_node_invalid_cases() {
+    for (input, err_contains) in INVALID_CASES.iter() {
         println!("testing {}", input);
-        assert_eq!(parse_spec_via_node(input).is_err(), true)
+        let spec = parse_spec_via_node(input).unwrap();
+        match spec {
+            ParsedSpec::Invalid(err) => assert!(err.contains(err_contains)),
+            _ => assert!(false),
+        }
     }
 }
-
-fn equivalent_results<T, E>(x: Result<T, E>, y: Result<T, E>) -> bool
-where
-    T: PartialEq,
-{
-    match (x, y) {
-        (Ok(xr), Ok(yr)) => xr == yr,
-        (Err(_), Err(_)) => true,
-        _ => false,
-    }
-}
-
 
 fn semver_simple(major: i64, minor: i64, bug: i64) -> Semver {
     Semver {
