@@ -90,7 +90,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
 }
 
 
-fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Semver, DateTime<Utc>>) {
+fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
     let time_raw = j.remove_key_unwrap_type::<Map<String, Value>>("time").unwrap();
     let mut times: HashMap<_, _> = time_raw.into_iter().flat_map(|(k, t_str)| 
         Some((k, parse_datetime(serde_json::from_value::<String>(t_str).unwrap())))
@@ -98,14 +98,17 @@ fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateT
     let created = times.remove("created").unwrap();
     let modified = times.remove("modified").unwrap();
 
-    let version_times: HashMap<Semver, _> = times.into_iter().map(|(v_str, t)| 
-        (semver_spec_serialization::parse_semver(&v_str).unwrap(), t)
+    let version_times: HashMap<Result<Semver, String>, _> = times.into_iter().map(|(v_str, t)| 
+        (semver_spec_serialization::parse_semver(&v_str).map_err(|err| {
+            assert!(err.is_major_minor_bug_parse_int_error());
+            v_str
+        }), t)
     ).collect();
 
     return (created, modified, version_times)
 }
 
-fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Semver, DateTime<Utc>>) {
+fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
     let created_raw = j.remove_key_unwrap_type::<String>("ctime").unwrap();
     let modified_raw = j.remove_key_unwrap_type::<String>("mtime").unwrap();
 
@@ -137,14 +140,14 @@ fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTi
         };
 
         let semver = semver_spec_serialization::parse_semver(v_key).unwrap();
-        version_times.insert(semver, v_time);
+        version_times.insert(Ok(semver), v_time);
     }
 
     (created, modified, version_times)
 }
 
 
-fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Semver, DateTime<Utc>>) {
+fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
     let fake_time = parse_datetime("2015-01-01T00:00:00.000Z".to_string());
 
     let mut version_times = HashMap::new();
@@ -160,14 +163,14 @@ fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, 
         assert!(!v_obj.contains_key("mtime"));
 
         let semver = semver_spec_serialization::parse_semver(v_key).unwrap();
-        version_times.insert(semver, fake_time);
+        version_times.insert(Ok(semver), fake_time);
     }
 
     (fake_time, fake_time, version_times)
 }
 
 
-fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Semver, DateTime<Utc>>) {
+fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
     if j.contains_key("time") {
         assert!(!j.contains_key("ctime"));
         assert!(!j.contains_key("mtime"));
@@ -181,6 +184,12 @@ fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc
     } else {
         deserialize_times_missing_fake_it(j)
     }
+}
+
+fn only_keep_ok_version_times(version_times: HashMap<Result<Semver, String>, DateTime<Utc>>) -> HashMap<Semver, DateTime<Utc>> {
+    version_times
+        .into_iter()
+        .filter_map(|(vr, t)| vr.ok().map(|v| (v, t))).collect()
 }
 
 pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument {
@@ -199,12 +208,15 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
             deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap())
         )
     ).collect();
+
+    
+
     Packument::Normal {
         latest: latest_semver,
         created: created,
         modified: modified,
         other_dist_tags: dist_tags,
-        version_times: version_times,
+        version_times: only_keep_ok_version_times(version_times),
         versions: version_packuments
     }
 }
@@ -216,30 +228,19 @@ pub fn deserialize_packument_blob_unpublished(mut j: Map<String, Value>) -> Pack
         panic!("Unpublished package shouldn't contain key: dist-tags");
     }
 
-
-
-    let mut time_raw = j.remove_key_unwrap_type::<Map<String, Value>>("time").unwrap();
-    let unpublished_blob = time_raw.remove_key_unwrap_type::<Value>("unpublished").unwrap();
-    
-    let mut times: HashMap<_, _> = time_raw.into_iter().flat_map(|(k, t_str)| 
-        Some((k, parse_datetime(serde_json::from_value::<String>(t_str).unwrap())))
-    ).collect();
-    let modified = times.remove("modified").unwrap();
-    let created = times.remove("created").unwrap();
-
-    let extra_version_times: HashMap<Semver, _> = times.into_iter().map(|(v_str, t)| 
-        (semver_spec_serialization::parse_semver(&v_str).unwrap(), t)
-    ).collect();
-
     if j.contains_key("versions") {
         panic!("Unpublished package shouldn't contain key: versions");
     }
+
+    // Note that we have to remove the "unpublished" key from the times data, otherwise deserialize_times would fail to parse it.
+    let unpublished_blob = j.get_mut("time").unwrap().as_object_mut().unwrap().remove_key_unwrap_type::<Value>("unpublished").unwrap();
+    let (created, modified, extra_version_times) = deserialize_times(&mut j);
 
     Packument::Unpublished {
         created,
         modified,
         unpublished_blob,
-        extra_version_times
+        extra_version_times: only_keep_ok_version_times(extra_version_times)
     }
 }
 

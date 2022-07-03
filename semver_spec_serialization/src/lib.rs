@@ -13,6 +13,16 @@ pub enum ParseSemverError {
     RegexMatchFailed,
 }
 
+impl ParseSemverError {
+    /// Returns `true` if the parse semver error is [`MajorMinorBugParseIntError`].
+    ///
+    /// [`MajorMinorBugParseIntError`]: ParseSemverError::MajorMinorBugParseIntError
+    #[must_use]
+    pub fn is_major_minor_bug_parse_int_error(&self) -> bool {
+        matches!(self, Self::MajorMinorBugParseIntError(..))
+    }
+}
+
 impl From<ParseIntError> for ParseSemverError {
     fn from(err: ParseIntError) -> Self {
         Self::MajorMinorBugParseIntError(err)
