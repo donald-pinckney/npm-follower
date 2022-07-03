@@ -21,6 +21,9 @@ pub enum Packument {
         unpublished_blob: Value,
         extra_version_times: HashMap<Semver, DateTime<Utc>>
     },
+    // Marked as *not* deleted, but does not have any data in the change. 
+    // Possibly has data if you hit registry.npmjs.org.
+    MissingData, 
     Deleted
 }
 

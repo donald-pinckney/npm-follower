@@ -50,7 +50,17 @@ pub fn deserialize_change(c: Change) -> Option<(String, Packument)> {
         if unpublished {
             Some((package_name, packument::deserialize::deserialize_packument_blob_unpublished(doc)))
         } else {
-            Some((package_name, packument::deserialize::deserialize_packument_blob_normal(doc)))
+            let has_dist_tags = doc.contains_key("dist-tags");
+            if has_dist_tags {
+                Some((package_name, packument::deserialize::deserialize_packument_blob_normal(doc)))
+            } else {
+                // If the packument says *not* deleted, 
+                // but has no fields, then we mark it as missing data.
+                // See seq = 4413127.
+                assert!(!doc.contains_key("time"));
+                assert!(!doc.contains_key("versions"));
+                Some((package_name, Packument::MissingData))
+            }
         }
     }    
 }
