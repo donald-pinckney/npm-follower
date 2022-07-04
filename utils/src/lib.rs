@@ -31,15 +31,9 @@ pub fn check_no_concurrent_processes(name: &str) {
 
 pub trait RemoveInto {
     fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de>;
-    fn remove_key_wrap_null<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de>;
-
 
     fn remove_key_unwrap_type<T>(&mut self, key: &'static str) -> Option<T> where T: for<'de> serde::de::Deserialize<'de> {
         self.remove_key(key).map(|x| x.unwrap())
-    }
-
-    fn remove_key_wrap_null_unwrap_type<T>(&mut self, key: &'static str) -> Option<T> where T: for<'de> serde::de::Deserialize<'de> {
-        self.remove_key_wrap_null(key).map(|x| x.unwrap())
     }
 }
 
@@ -47,11 +41,26 @@ impl RemoveInto for Map<String, Value> {
     fn remove_key<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de> { 
         self.remove(key).map(|x| serde_json::from_value(x))
     }
+}
 
-    fn remove_key_wrap_null<T>(&mut self, key: &'static str) -> Option<Result<T, serde_json::Error>> where T: for<'de> serde::de::Deserialize<'de> { 
-        self.remove(key).and_then(|x| match x {
+
+pub trait FilterJsonCases: Sized {
+    fn null_to_none(self) -> Option<Self>;
+    fn empty_array_to_none(self) -> Option<Self>;
+}
+
+impl FilterJsonCases for Value {
+    fn null_to_none(self) -> Option<Self> {
+        match self {
             Value::Null => None,
-            _ => Some(serde_json::from_value(x))
-        })
+            _ => Some(self)
+        }
+    }
+
+    fn empty_array_to_none(self) -> Option<Self> {
+        match self {
+            Value::Array(xs) if xs.len() == 0 => None,
+            _ => Some(self)
+        }
     }
 }

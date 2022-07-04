@@ -6,16 +6,30 @@ use std::collections::HashMap;
 use postgres_db::custom_types::Semver;
 use super::{Packument, VersionPackument, Dist, Spec};
 
-use utils::RemoveInto;
+use utils::{RemoveInto, FilterJsonCases};
 
+
+fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static str) -> Vec<(String, Spec)> {
+    let dependencies_raw = version_blob.remove(key)
+                                                            .and_then(|x| x.null_to_none())
+                                                            .and_then(|x| x.empty_array_to_none())
+                                                            .map(|x| serde_json::from_value::<Map<String, Value>>(x).unwrap())
+                                                            .unwrap_or_default();
+
+    dependencies_raw.into_iter().map(|(p, c)|
+        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
+    ).collect()
+}
 
 fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPackument {
-    let description = version_blob.remove_key_wrap_null_unwrap_type::<String>("description");
+    let description = version_blob.remove("description")
+                                                  .and_then(|x| x.null_to_none())
+                                                  .map(|x| serde_json::from_value::<String>(x).unwrap());
 
-    let prod_dependencies_raw = version_blob.remove_key_wrap_null_unwrap_type::<Map<String, Value>>("dependencies").unwrap_or_default();
-    let dev_dependencies_raw = version_blob.remove_key_wrap_null_unwrap_type::<Map<String, Value>>("devDependencies").unwrap_or_default();
-    let peer_dependencies_raw = version_blob.remove_key_wrap_null_unwrap_type::<Map<String, Value>>("peerDependencies").unwrap_or_default();
-    let optional_dependencies_raw = version_blob.remove_key_wrap_null_unwrap_type::<Map<String, Value>>("optionalDependencies").unwrap_or_default();
+    let prod_dependencies = deserialize_dependencies(&mut version_blob, "dependencies");
+    let dev_dependencies = deserialize_dependencies(&mut version_blob, "devDependencies");
+    let peer_dependencies = deserialize_dependencies(&mut version_blob, "peerDependencies");
+    let optional_dependencies = deserialize_dependencies(&mut version_blob, "optionalDependencies");
 
     let mut dist = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dist").unwrap();
 
@@ -32,23 +46,6 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
     };
 
 
-    
-    let prod_dependencies = prod_dependencies_raw.into_iter().map(|(p, c)|
-        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
-    ).collect();
-
-    let dev_dependencies = dev_dependencies_raw.into_iter().map(|(p, c)|
-        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
-    ).collect();
-
-    let peer_dependencies = peer_dependencies_raw.into_iter().map(|(p, c)|
-        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
-    ).collect();
-
-    let optional_dependencies = optional_dependencies_raw.into_iter().map(|(p, c)|
-        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
-    ).collect();
-    
     let dist = Dist {
         tarball_url: dist.remove_key_unwrap_type::<String>("tarball").unwrap(),
         shasum: dist.remove_key_unwrap_type::<String>("shasum"),
@@ -60,8 +57,10 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         npm_signature: dist.remove_key_unwrap_type::<String>("npm-signature"),
     };
 
-    let repository_blob = version_blob.remove_key_wrap_null_unwrap_type::<Value>("repository");
-
+    let repository_blob = version_blob.remove("repository")
+                                                      .and_then(|x| x.null_to_none())
+                                                      .map(|x| serde_json::from_value::<Value>(x).unwrap());
+    
     VersionPackument {
         prod_dependencies,
         dev_dependencies,
