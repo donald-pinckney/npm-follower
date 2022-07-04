@@ -2,10 +2,11 @@ use chrono::Utc;
 use chrono::DateTime;
 use postgres_db::custom_types::{Semver, ParsedSpec};
 use serde_json::{Value, Map};
+use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Packument {
     Normal {
         latest: Option<Semver>,
@@ -27,7 +28,7 @@ pub enum Packument {
     Deleted
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct VersionPackument {
     pub prod_dependencies: Vec<(String, Spec)>,
     pub dev_dependencies: Vec<(String, Spec)>,
@@ -39,7 +40,7 @@ pub struct VersionPackument {
     pub extra_metadata: HashMap<String, Value>
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Dist {
     pub tarball_url: String,
     pub shasum: Option<String>,
@@ -51,7 +52,7 @@ pub struct Dist {
     pub npm_signature: Option<String>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Spec {
     pub raw: String,
     pub parsed: ParsedSpec

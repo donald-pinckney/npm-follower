@@ -1,0 +1,128 @@
+Some(("stabryla-mateusz-3id-nodeapi", Normal(
+    latest: Some((
+        major: 2,
+        minor: 0,
+        bug: 2,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2017-01-18T06:51:18.599Z",
+    modified: "2017-01-18T07:21:30.517Z",
+    other_dist_tags: {},
+    version_times: {
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2017-01-18T06:51:18.599Z",
+        (
+            major: 2,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2017-01-18T07:13:44.677Z",
+        (
+            major: 2,
+            minor: 0,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): "2017-01-18T07:21:30.517Z",
+        (
+            major: 2,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2017-01-18T07:19:47.514Z",
+    },
+    versions: {
+        (
+            major: 2,
+            minor: 0,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("fs", (
+                    raw: "0.0.2, 0.0.1-security, 0.0.0",
+                    parsed: Range(([
+                        [
+                            Eq((
+                                major: 0,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("querystring", (
+                    raw: "0.2.0, 0.1.0, 0.0.4, 0.0.1",
+                    parsed: Range(([
+                        [
+                            Eq((
+                                major: 0,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/stabryla-mateusz-3id-nodeapi/-/stabryla-mateusz-3id-nodeapi-2.0.2.tgz",
+                shasum: Some("c0a8803a515bcdf7987bc744f57adb5f9f55aa4e"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            description: Some("API do szybkiego zarządzania stroną w Node.js"),
+            repository: None,
+            extra_metadata: {
+                "main": "NodeAPI.js",
+                "_shasum": "c0a8803a515bcdf7987bc744f57adb5f9f55aa4e",
+                "license": "ISC",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/stabryla-mateusz-3id-nodeapi-2.0.2.tgz_1484724088639_0.5181692121550441",
+                },
+                "_npmUser": {
+                    "email": "mstabryla@op.pl",
+                    "name": "morteniusz",
+                },
+                "version": "2.0.2",
+                "_nodeVersion": "6.9.4",
+                "_id": "stabryla-mateusz-3id-nodeapi@2.0.2",
+                "maintainers": [
+                    {
+                        "email": "mstabryla@op.pl",
+                        "name": "morteniusz",
+                    },
+                ],
+                "scripts": {
+                    "test": "console.log(\"Start API\")",
+                },
+                "_npmVersion": "3.10.10",
+                "name": "stabryla-mateusz-3id-nodeapi",
+                "_from": ".",
+                "author": {
+                    "name": "Mateusz\tStabryła",
+                },
+            },
+        ),
+    },
+)))

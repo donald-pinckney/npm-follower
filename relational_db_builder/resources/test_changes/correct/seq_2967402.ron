@@ -1,0 +1,63 @@
+Some(("JSLint-commonJS", Normal(
+    latest: Some((
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2015-01-01T00:00:00Z",
+    modified: "2015-01-01T00:00:00Z",
+    other_dist_tags: {},
+    version_times: {
+        (
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2015-01-01T00:00:00Z",
+    },
+    versions: {
+        (
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/JSLint-commonJS/-/JSLint-commonJS-0.0.1.tgz",
+                shasum: Some("ab03e5ca7274cf094e96cf889f1668137ac17fd5"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            description: Some("JSLint with commonJS exportability and package.json"),
+            repository: None,
+            extra_metadata: {
+                "name": "JSLint-commonJS",
+                "author": {
+                    "email": "douglas@crockford.com",
+                    "name": "Douglas Crockford",
+                },
+                "version": "0.0.1",
+                "_nodeVersion": "v0.2.4",
+                "_nodeSupported": true,
+                "engines": {
+                    "node": "*",
+                },
+                "main": "./fulljslint",
+                "_id": "JSLint-commonJS@0.0.1",
+                "_npmVersion": "0.2.8-1",
+            },
+        ),
+    },
+)))

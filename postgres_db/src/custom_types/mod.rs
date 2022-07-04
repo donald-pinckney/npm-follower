@@ -24,7 +24,7 @@ pub enum PrereleaseTag {
 }
 
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Serialize, Deserialize, Clone)]
+#[derive(Debug, FromSqlRow, AsExpression, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[sql_type = "ParsedSpecStructSql"]
 pub enum ParsedSpec {
     Range(VersionConstraint),
@@ -37,13 +37,13 @@ pub enum ParsedSpec {
     Invalid(String)
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum AliasSubspec {
     Range(VersionConstraint),
     Tag(String)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Serialize, Deserialize)]
+#[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[sql_type = "VersionComparatorSql"]
 pub enum VersionComparator {
     Any,
@@ -54,7 +54,7 @@ pub enum VersionComparator {
     Lte(Semver)
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Serialize, Deserialize)]
+#[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[sql_type = "Array<ConstraintConjunctsSql>"]
 pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 

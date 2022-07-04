@@ -1,0 +1,1708 @@
+Some(("swagger-editor-xl", Normal(
+    latest: Some((
+        major: 2,
+        minor: 10,
+        bug: 4,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2017-01-13T06:05:46.509Z",
+    modified: "2017-01-13T06:05:46.509Z",
+    other_dist_tags: {},
+    version_times: {
+        (
+            major: 2,
+            minor: 10,
+            bug: 4,
+            prerelease: [],
+            build: [],
+        ): "2017-01-13T06:05:46.509Z",
+    },
+    versions: {
+        (
+            major: 2,
+            minor: 10,
+            bug: 4,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [
+                ("angular", (
+                    raw: "^1.5.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 5,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-cookies", (
+                    raw: "^1.5.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 5,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-json-schema-form", (
+                    raw: "^0.1.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 1,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-marked", (
+                    raw: "^1.2.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-mocks", (
+                    raw: "^1.5.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 5,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-sanitize", (
+                    raw: "^1.5.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 5,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-ui-ace", (
+                    raw: "^0.2.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 2,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 3,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-ui-bootstrap", (
+                    raw: "^1.2.5",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-ui-layout", (
+                    raw: "^1.4.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 4,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("angular-ui-router", (
+                    raw: "^0.3.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 3,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 4,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("bootstrap", (
+                    raw: "^3.3.6",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 3,
+                                bug: 6,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("brace", (
+                    raw: "^0.8.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 8,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 9,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("chai", (
+                    raw: "^3.5.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 5,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("css-loader", (
+                    raw: "^0.23.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 23,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 24,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("es6-promise", (
+                    raw: "^3.1.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 1,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("es6-shim", (
+                    raw: "^0.35.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 35,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 36,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint", (
+                    raw: "^2.13.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 13,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint-config-google", (
+                    raw: "^0.6.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 7,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint-friendly-formatter", (
+                    raw: "^2.0.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 0,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint-loader", (
+                    raw: "^1.3.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 3,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint-plugin-chai-expect", (
+                    raw: "^1.1.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 1,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("extract-text-webpack-plugin", (
+                    raw: "^1.0.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("file-loader", (
+                    raw: "^0.9.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 9,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 10,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("font-awesome", (
+                    raw: "^4.6.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 4,
+                                minor: 6,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("font-awesome-webpack", (
+                    raw: "0.0.4",
+                    parsed: Range(([
+                        [
+                            Eq((
+                                major: 0,
+                                minor: 0,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("html-loader", (
+                    raw: "^0.4.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 4,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 5,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("http-server", (
+                    raw: "^0.9.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 9,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 10,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("jasmine-core", (
+                    raw: "^2.4.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 4,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("jquery", (
+                    raw: "^3.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("js-yaml", (
+                    raw: "^3.5.5",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 5,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("json-editor", (
+                    raw: "^0.7.26",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 7,
+                                bug: 26,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 8,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("json-formatter-js", (
+                    raw: "^1.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("json-loader", (
+                    raw: "^0.5.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 5,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("json-schema-view-js", (
+                    raw: "^0.4.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 4,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 5,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("jsonformatter", (
+                    raw: "^0.6.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 7,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("jsonlint", (
+                    raw: "^1.6.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 6,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma", (
+                    raw: "^1.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-chai-plugins", (
+                    raw: "^0.7.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 7,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 8,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-chrome-launcher", (
+                    raw: "^1.0.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-firefox-launcher", (
+                    raw: "^1.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-jasmine", (
+                    raw: "^1.0.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-mocha", (
+                    raw: "^1.1.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 1,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-mocha-reporter", (
+                    raw: "^2.0.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 0,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-ng-html2js-preprocessor", (
+                    raw: "^1.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-ng-scenario", (
+                    raw: "^1.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-sourcemap-loader", (
+                    raw: "^0.3.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 3,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 4,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("karma-webpack", (
+                    raw: "^1.7.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 7,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("less", (
+                    raw: "^2.6.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 6,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("less-loader", (
+                    raw: "^2.2.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 2,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("lodash", (
+                    raw: "^4.6.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 4,
+                                minor: 6,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("minimist", (
+                    raw: "^1.2.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("mocha", (
+                    raw: "^2.4.5",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 4,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("mversion", (
+                    raw: "^1.10.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 10,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("ng-annotate-webpack-plugin", (
+                    raw: "^0.1.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 1,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("ng-file-upload", (
+                    raw: "^12.0.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 12,
+                                minor: 0,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 13,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("ngstorage", (
+                    raw: "^0.3.10",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 3,
+                                bug: 10,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 4,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("open", (
+                    raw: "0.0.5",
+                    parsed: Range(([
+                        [
+                            Eq((
+                                major: 0,
+                                minor: 0,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("open-sans-fontface", (
+                    raw: "^1.4.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 4,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("protractor", (
+                    raw: "^3.2.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 2,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("sinon", (
+                    raw: "^1.17.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 17,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("sinon-chai", (
+                    raw: "^2.8.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 8,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("source-code-pro", (
+                    raw: "git+https://github.com/adobe-fonts/source-code-pro.git#release",
+                    parsed: Git("git+https://github.com/adobe-fonts/source-code-pro.git#release"),
+                )),
+                ("spark-md5", (
+                    raw: "^2.0.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 0,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("style-loader", (
+                    raw: "^0.13.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 13,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 14,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("svg-inline-loader", (
+                    raw: "^0.6.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 7,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("sway", (
+                    raw: "^1.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("url-loader", (
+                    raw: "^0.5.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 5,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("webpack", (
+                    raw: "^1.12.14",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 12,
+                                bug: 14,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("webpack-dev-server", (
+                    raw: "^1.14.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 14,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("worker-loader", (
+                    raw: "^0.7.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 7,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 8,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("yaml-js", (
+                    raw: "^0.1.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 1,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/swagger-editor-xl/-/swagger-editor-xl-2.10.4.tgz",
+                shasum: Some("4ba9acc0daaa23a1d5d5782b8ee697c2bb085384"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            description: Some("Swagger Editor"),
+            repository: Some({
+                "type": "github",
+                "url": "git+https://github.com/swagger-api/swagger-editor.git",
+            }),
+            extra_metadata: {
+                "version": "2.10.4",
+                "_nodeVersion": "6.4.0",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/swagger-editor-xl-2.10.4.tgz_1484287546263_0.050670018419623375",
+                },
+                "license": "Apache-2.0",
+                "_shasum": "4ba9acc0daaa23a1d5d5782b8ee697c2bb085384",
+                "gitHead": "5fbffc77b643d4459ce310c1e2c150e8ab2fd93d",
+                "maintainers": [
+                    {
+                        "email": "freelibao@gmail.com",
+                        "name": "tranter",
+                    },
+                ],
+                "_from": ".",
+                "_id": "swagger-editor-xl@2.10.4",
+                "_npmVersion": "3.10.3",
+                "homepage": "https://github.com/swagger-api/swagger-editor",
+                "authors": [
+                    "Mohsen Azimi <me@azimi.me>",
+                    "Sahar Jafari <shr.jafari@gmail.com>",
+                ],
+                "bugs": {
+                    "url": "https://github.com/swagger-api/swagger-editor/issues",
+                },
+                "scripts": {
+                    "build": "webpack --production --hide-modules --stats=errors-only",
+                    "clean": "rm -rf dist/**",
+                    "e2e-test": "protractor test/e2e/protractor.config.js",
+                    "gh-pages": "./gh-pages.sh",
+                    "lint": "eslint . --format \'node_modules/eslint-friendly-formatter\'",
+                    "prebuild": "npm run clean",
+                    "pree2e-test": "webdriver-manager update",
+                    "start": "node server.js",
+                    "test": "npm run unit-test && npm run e2e-test",
+                    "unit-test": "karma start test/unit/karma.conf.js --single-run=true",
+                    "unit-test-watch": "karma start test/unit/karma.conf.js",
+                },
+                "name": "swagger-editor-xl",
+                "engines": {
+                    "node": ">=5.8.0",
+                },
+                "files": [
+                    "index.html",
+                    "styles/branding.css",
+                    "scripts/branding.js",
+                    "dist/",
+                    "config/",
+                    "images/",
+                    "spec-files/",
+                    "robots.txt",
+                    "404.html",
+                    "README.md",
+                ],
+                "_npmUser": {
+                    "email": "freelibao@gmail.com",
+                    "name": "tranter",
+                },
+            },
+        ),
+    },
+)))

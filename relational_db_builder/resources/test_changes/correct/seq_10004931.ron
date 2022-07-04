@@ -1,0 +1,374 @@
+Some(("@murrayju/config", Normal(
+    latest: Some((
+        major: 2,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2019-12-12T04:34:33.800Z",
+    modified: "2022-04-06T06:55:40.037Z",
+    other_dist_tags: {
+        "next": "1.0.1-dependabot-npm-and-yarn-acorn-7.1.1.4",
+    },
+    version_times: {
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [
+                String("dependabot-npm-and-yarn-acorn-7"),
+                Int(1),
+                Int(1),
+                Int(4),
+            ],
+            build: [],
+        ): "2020-03-14T17:14:38.547Z",
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2019-12-12T04:37:41.869Z",
+        (
+            major: 2,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2021-07-10T20:50:54.451Z",
+        (
+            major: 1,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2019-12-12T04:34:33.997Z",
+    },
+    versions: {
+        (
+            major: 2,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [
+                ("config", (
+                    raw: "3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@murrayju/config/-/config-2.0.0.tgz",
+                shasum: Some("bd905253cf4f79dc0c8e5458f4e789e8ebd21441"),
+                unpacked_size: Some(22523),
+                file_count: Some(8),
+                integrity: Some("sha512-pB42vQdW/7TexTEOFuNtV2m6KReiGeeOb5pBS92dQdMDfd5LUsrPNvm9/7yVmtPqg87YU4u/s9ksxp7hqK/EHw=="),
+                signature0_sig: Some("MEUCIBRYKYeCFiwLbGt2t7bpY802xlxMmBLr4q8pPlGMY9R4AiEAxMNO98RaQxE2Odu/ddpa9lXy9HE4HpTiPkraklWt3Ck="),
+                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJg6gguCRA9TVsSAnZWagAAXG8P/1CavKDgu0f50txluocN\nQvZLrjxK6WyUL/hD1qWSNQnsGJEFdc4oxSLDGKnqyh1k2TGrdQ88MXEkVbHL\nMgCvKvIdj7PAYmyKLcZLqSid41u+qKZqvHg6Irf25u8Zcjm8edIj4CQJhDPF\nqyJLajI6YZdi2hkxPajpsU6noqGieX7o3D4pPSWxrG+WYN5GHzO+XNvU/I65\nX22Gr9sASQRI/UD6vQddsuK7mUDgUGs+YDOOC90fLWnbkYsZyTfKqX7jdGv7\n81dWibrpsKu1cMq/aw/zz3QE8tDB667o9mz6YhVK9Yh1z8EzVNJEHVL+F/EX\nSoHtGIXoCnj2Va6dat+uHT735YuckOGOeNGH5m7SMktC9DRfkA1/saycIiCI\n+svUfQGLCzkV+5TnXA41uDhBI09Nyc5AR4SLl3zI6O1E3gE5vlJvrZAbqmr+\nqa6Jr2alp9SBBioXlUDpztea1+pP51eN167L+PKbU/baROq3JTtvZlAC5lpl\nOQg7q7KbUm3m/Zo1WaTva3CWNw4D0Fb+BXqaBHzB2YFM15c8uZ22jjeTM0SN\nn0ZY3sh8EW+MyCEO02ZlaAqhdgjPvKrL/opd70bf6uylcOx4UZVCiJbkovN8\nMB4aSXlE9yGL147PvVCbJtCd2d5eVXQnSIt/xuUVrhMEl2WtBlBOVr7tr17N\ndyXP\r\n=rhma\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            description: Some("Wrapper around [config](https://www.npmjs.com/package/config), to support multiple config directories merged together."),
+            repository: None,
+            extra_metadata: {
+                "_npmVersion": "6.14.13",
+                "_id": "@murrayju/config@2.0.0",
+                "directories": {},
+                "name": "@murrayju/config",
+                "version": "2.0.0",
+                "_integrity": "",
+                "_from": "file:/home/runner/work/config/config/out/config-2.0.0+1.10ea25fc37ce.tgz",
+                "_resolved": "",
+                "_hasShrinkwrap": false,
+                "_npmUser": {
+                    "email": "justin@murrayju.com",
+                    "name": "murrayju",
+                },
+                "maintainers": [
+                    {
+                        "email": "justin@murrayju.com",
+                        "name": "murrayju",
+                    },
+                ],
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/config_2.0.0_1625950254298_0.7119388487290998",
+                },
+                "main": "index.js",
+                "_nodeVersion": "14.17.2",
+                "engines": {
+                    "node": ">=12",
+                    "npm": ">=4",
+                },
+            },
+        ),
+        (
+            major: 1,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("config", (
+                    raw: "^3.2.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 2,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@murrayju/config/-/config-1.0.0.tgz",
+                shasum: Some("cc9df0c43e0a92aaff1fdcf31b3fa2bd4b3f7d23"),
+                unpacked_size: Some(22379),
+                file_count: Some(9),
+                integrity: Some("sha512-xRE6juO7m1m6HGlQdujhqlBHdNjy0pyNvp0aGEqbXbb1uOf2zq5kR3BLZDp8ckX+zVITzDfQ6qoXRQB7ymtxJg=="),
+                signature0_sig: Some("MEQCIEEbWAHFLcQOkqYxlpO5LGEvnsWWE9ra/KqPHIyYb+ylAiAzB75vfgKPUcrv+Z61zz+PsVf/yeIgZq1jk2ONBAAiFg=="),
+                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJd8cNaCRA9TVsSAnZWagAATD0P/RfRodIRRq5E8jRben9L\nU0xpBdy1gezmEkgNkQ5TyoucLEFuN3utbNEbd2s/z5U2oO9d1MRiWMv1gQyG\nu6s9fBkLJYnG6yjLs5O5SnI0rtyxFdrhClNVanGuRrC/bpKnSymkXnVG2QWD\nMZtSn/UogHhk5Nt/4nE856x4ZT4dlXy5tRt6ghpLIvgcASPDk+EwXQAoQslw\nuAG/+/U1NHdjCGMqPmSg+csSjyuRyRSOn9/2XqUcLbGDCxjMKCP6Vh988W/i\n7v6Hpjjt5ynqP/GmAwZW1EqXzj37gYlbsL2GYF10N6Fz2OIhKhrX4rwoglhi\nOTNAOpAYDIOL8OPmlISaS5inKt8QLDZwSHMw9njw44Uw8lFhO6zS5HCF1Jic\nCh0IdTp8yZGw7W8zZjLd/xuJrv2zC9PvnTi2SoYnZy5FqfqVJk/8jLNWovHY\nnPw1gZ51WArQeIndTQ80rv+NzxZUfOwtCD6vy6oXS6QqPr/obkkDktvqz4I8\nQGphSgwH25HZ6CX1aY9B0TVWInsF6IQpiT6bzbcg+nbVtpIeVzG7iwwTmI5q\nAkxLpjUGX05vdZwMs8ve0uL8MiNkG648aVh0+kRJIpWqT8Ei/ho/BUQH2VS1\nyyEdD4Wx2SMfBRSx8eRANbDyqT3N4lcwCpk3a4x3bleVv+3WXEDFt+lo60Q4\nM+tK\r\n=g9+a\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            description: Some("A wrapper around `node-config` that allows for merging config from multiple folders."),
+            repository: None,
+            extra_metadata: {
+                "main": "index.js",
+                "_integrity": "",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/config_1.0.0_1576125273831_0.774164773870345",
+                },
+                "_resolved": "",
+                "_id": "@murrayju/config@1.0.0",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "email": "justin@murrayju.com",
+                        "name": "murrayju",
+                    },
+                ],
+                "_npmVersion": "6.12.1",
+                "_hasShrinkwrap": false,
+                "engines": {
+                    "node": ">=12",
+                    "npm": ">=4",
+                },
+                "name": "@murrayju/config",
+                "version": "1.0.0",
+                "_from": "file:/home/travis/build/murrayju/config/out/config-1.0.0+master.2+3252f7e58e83.tgz",
+                "_npmUser": {
+                    "email": "justin@murrayju.com",
+                    "name": "murrayju",
+                },
+                "_nodeVersion": "12.13.1",
+            },
+        ),
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [
+                String("dependabot-npm-and-yarn-acorn-7"),
+                Int(1),
+                Int(1),
+                Int(4),
+            ],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("config", (
+                    raw: "^3.2.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 2,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@murrayju/config/-/config-1.0.1-dependabot-npm-and-yarn-acorn-7.1.1.4.tgz",
+                shasum: Some("8c90a07faf7e908416f36f0835a82f42895044a1"),
+                unpacked_size: Some(22421),
+                file_count: Some(9),
+                integrity: Some("sha512-yLz6ocKGhqBGB2tHgRWoq9owH/jBClmWdaHhDbHuHVBkFxSIxo2fCbj27yXRUD2NX1voaI44dDo8tA9t1Vx6xA=="),
+                signature0_sig: Some("MEUCIQCqxgL/NVil5E54FhbcrcNXB+VqL35nB1VjuSh9sSeWhgIgWZ1zhfaUdjMrEKy7+rkcKxJ6t1rfr4ynWLhUCXPLT84="),
+                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJebRD+CRA9TVsSAnZWagAARC0P/jbzFY13kf9nSdawfcX4\nlMezshLIulw98h0QvSzFgZT9dqtZSuD+HHm894K9mcHXjzQx+rbke0euIRYo\nsAzFf93qFeSdUisoGB6MLBvoxbu6649/pPIDFdwK3ke33RUpWBVDNiSI7LWV\nm/GPlFz/0UVpoHpnVw7Kix7gv+YKsbtAwzVOBtdw7wd5h4Jq5qpnuzSY9SGJ\nqwInwd5qoU6Z3rukDeyJfE8tLYNBUiQBt/uXsKIDza141cTyuM/SZIkEXKHW\nNO63O+n4rQ5GdG21JVcuHEYxNBSY1SQ8cwH0IvNpYOZDuRbLdr9MzN5rWcnC\neos2yJ+3WGStCLL9v6fGZAy8ZFeLBTAj20MYiVhbW7s6nHcfFYwmlExF94im\nc/9E/Ko4nx1OZ+wms0F1P39C9AKnebukPlImnGqAg1/GCSmFQSnkGZH5tyz3\n6xJiNRHTjrqXa7l0LmHEgwuA5tmHQXSdRWQZLyIMqo4obGVp0yhxlcEIXhCA\nmRGuQtIUO4X9vh+zJbxNNVuMjxUsaGjAMydTFJIazB62eTTojxcEOsfuXwN1\nwHFBP7fIywLa4Z8RZ9EPTqgj3aTb3n8KZOvW/ROpCaVqWQGvcmh5VLXFDQAc\nNMPzRkfvMIvWF8KF660QRFFbISRj7YXs7cnKfb+I8GZaYw2Tpn+UuOS+9jbD\nLsAC\r\n=7AY7\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            description: Some("A wrapper around `node-config` that allows for merging config from multiple folders."),
+            repository: None,
+            extra_metadata: {
+                "_resolved": "",
+                "_id": "@murrayju/config@1.0.1-dependabot-npm-and-yarn-acorn-7.1.1.4",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/config_1.0.1-dependabot-npm-and-yarn-acorn-7.1.1.4_1584206078419_0.5288361092074112",
+                },
+                "_hasShrinkwrap": false,
+                "_from": "file:/home/travis/build/murrayju/config/out/config-1.0.1-dependabot-npm-and-yarn-acorn-7.1.1.4+2d543afede5e.tgz",
+                "_nodeVersion": "12.13.1",
+                "engines": {
+                    "node": ">=12",
+                    "npm": ">=4",
+                },
+                "name": "@murrayju/config",
+                "directories": {},
+                "_npmUser": {
+                    "email": "justin@murrayju.com",
+                    "name": "murrayju",
+                },
+                "_npmVersion": "6.12.1",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "justin@murrayju.com",
+                        "name": "murrayju",
+                    },
+                ],
+                "readmeFilename": "README.md",
+                "version": "1.0.1-dependabot-npm-and-yarn-acorn-7.1.1.4",
+                "readme": "# @murrayju/config\nA wrapper around `node-config` that allows for merging config from multiple folders.\n",
+                "_integrity": "",
+            },
+        ),
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("config", (
+                    raw: "^3.2.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 2,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@murrayju/config/-/config-1.0.1.tgz",
+                shasum: Some("7b4ad475f8354912f9654639104d76411395748a"),
+                unpacked_size: Some(22383),
+                file_count: Some(9),
+                integrity: Some("sha512-BEn29RJp1ufhDiBZqyJU02KJn5xn8V3O28FYHdmoLoFiE8DUkI8Mn2gLOmYbFeX0ty75Xp12a0cbPBPki0wdqQ=="),
+                signature0_sig: Some("MEYCIQD6KprBjcK+HE223W56Dfkux+FX0a9UaJHSvLaU0511dQIhAP0uNz13DHp/9F+sHahR+DVWYYGWgb/ckda3Qi1Y2UNR"),
+                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJd8cQWCRA9TVsSAnZWagAAI98QAIOalk7rnzGnZu8z5yUS\neaZHEosap273HQucwD8zEbeOZGsqltsvmif6aSnWR+0EsaSDwuvtalHIfqJe\n10kj0zIUa6t5Z0ISoZTTE10l8K8R8mgd5dV49rEakaySbXUFAbkLsQxXuqEI\nt3nOWC1FetVM06w76PVT0O3iEOulGFFgHTLnkE5WPVOgC+I6+isMFife4oRV\nKFJiOUE4kpGytFi9TKV5TjKcfHMdq2BJU0ixUgZv1VGHMkYYo24JI+Ku6HOM\n88lDLHjb/HCqAHAUkQyyLF3DQBQ8EdZ0h0T00qZkyYoExtx5/Tql1Pxn1KZ3\nmuOfrd4qHbNneAAUYHv1hHgsv6QjgWA4yWofIR/4qYycJviWmFMsv4hazgW2\nGb9SJ8RzZ7o5isuX7tfoo6qcM+XNiECF2v7L4EJJQfKLZZjmVBhmfr5Gnm2X\ndjvBodBX8O7Igu0BJhMEAbaeafxWgjmqfFO9faVpSGwPWqjIiWOW1xIsVebG\nvm5IZSidajXW2SFcY1duoCmt42xmB9ywdsPjzblurVjyE/Ye8HTE+Lo0PXKf\nu8C5kTPO79g/vFrY0jTs1E3Dvf4EY3mjwjevr65o9Lu2yCrajPXzmIWAygso\nJLznPWxjDVgBdf32pQhR11GAywSkgf+/VdcVAceg2DGUO/NyWB0EYJZPQWzm\nKXKJ\r\n=Bs85\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            description: Some("A wrapper around `node-config` that allows for merging config from multiple folders."),
+            repository: None,
+            extra_metadata: {
+                "name": "@murrayju/config",
+                "main": "index.js",
+                "_npmUser": {
+                    "email": "justin@murrayju.com",
+                    "name": "murrayju",
+                },
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/config_1.0.1_1576125461719_0.8097823004788152",
+                },
+                "_resolved": "",
+                "_integrity": "",
+                "_nodeVersion": "12.13.1",
+                "_npmVersion": "6.12.1",
+                "directories": {},
+                "version": "1.0.1",
+                "maintainers": [
+                    {
+                        "email": "justin@murrayju.com",
+                        "name": "murrayju",
+                    },
+                ],
+                "_hasShrinkwrap": false,
+                "_from": "file:/home/travis/build/murrayju/config/out/config-1.0.1+master.3+be7c2b9fa512.tgz",
+                "engines": {
+                    "node": ">=12",
+                    "npm": ">=4",
+                },
+                "_id": "@murrayju/config@1.0.1",
+            },
+        ),
+    },
+)))

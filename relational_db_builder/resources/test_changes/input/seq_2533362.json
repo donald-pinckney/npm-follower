@@ -1,0 +1,81 @@
+{
+    "changes": [
+        {
+            "rev": "8-103f3893f6947c320723f4e89cac2747"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "stabryla-mateusz-3id-nodeapi",
+        "_rev": "8-103f3893f6947c320723f4e89cac2747",
+        "author": {
+            "name": "Mateusz\tStabry\u0142a"
+        },
+        "description": "API do szybkiego zarz\u0105dzania stron\u0105 w Node.js",
+        "dist-tags": {
+            "latest": "2.0.2"
+        },
+        "license": "ISC",
+        "maintainers": [
+            {
+                "email": "mstabryla@op.pl",
+                "name": "morteniusz"
+            }
+        ],
+        "name": "stabryla-mateusz-3id-nodeapi",
+        "readme": "ERROR: No README data found!",
+        "readmeFilename": "",
+        "time": {
+            "1.0.1": "2017-01-18T06:51:18.599Z",
+            "2.0.0": "2017-01-18T07:13:44.677Z",
+            "2.0.1": "2017-01-18T07:19:47.514Z",
+            "2.0.2": "2017-01-18T07:21:30.517Z",
+            "created": "2017-01-18T06:51:18.599Z",
+            "modified": "2017-01-18T07:21:30.517Z"
+        },
+        "versions": {
+            "2.0.2": {
+                "_from": ".",
+                "_id": "stabryla-mateusz-3id-nodeapi@2.0.2",
+                "_nodeVersion": "6.9.4",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/stabryla-mateusz-3id-nodeapi-2.0.2.tgz_1484724088639_0.5181692121550441"
+                },
+                "_npmUser": {
+                    "email": "mstabryla@op.pl",
+                    "name": "morteniusz"
+                },
+                "_npmVersion": "3.10.10",
+                "_shasum": "c0a8803a515bcdf7987bc744f57adb5f9f55aa4e",
+                "author": {
+                    "name": "Mateusz\tStabry\u0142a"
+                },
+                "dependencies": {
+                    "fs": "0.0.2, 0.0.1-security, 0.0.0",
+                    "querystring": "0.2.0, 0.1.0, 0.0.4, 0.0.1"
+                },
+                "description": "API do szybkiego zarz\u0105dzania stron\u0105 w Node.js",
+                "dist": {
+                    "shasum": "c0a8803a515bcdf7987bc744f57adb5f9f55aa4e",
+                    "tarball": "https://registry.npmjs.org/stabryla-mateusz-3id-nodeapi/-/stabryla-mateusz-3id-nodeapi-2.0.2.tgz"
+                },
+                "license": "ISC",
+                "main": "NodeAPI.js",
+                "maintainers": [
+                    {
+                        "email": "mstabryla@op.pl",
+                        "name": "morteniusz"
+                    }
+                ],
+                "name": "stabryla-mateusz-3id-nodeapi",
+                "scripts": {
+                    "test": "console.log(\"Start API\")"
+                },
+                "version": "2.0.2"
+            }
+        }
+    },
+    "id": "stabryla-mateusz-3id-nodeapi",
+    "seq": 2533362
+}
