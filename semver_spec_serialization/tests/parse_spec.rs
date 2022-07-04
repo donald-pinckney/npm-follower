@@ -17,6 +17,11 @@ lazy_static! {
             VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![]))
         ]]))),
 
+        ("npm:^1.2.3-alpha.5", ParsedSpec::Range(VersionConstraint(vec![vec![
+            VersionComparator::Gte(semver(1, 2, 3, vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(5)], vec![]) ),
+            VersionComparator::Lt(semver(2, 0, 0, vec![PrereleaseTag::Int(0)], vec![]))
+        ]]))),
+
         ("~1.2.3", ParsedSpec::Range(VersionConstraint(vec![vec![
             VersionComparator::Gte(semver(1, 2, 3, vec![], vec![]) ),
             VersionComparator::Lt(semver(1, 3, 0, vec![PrereleaseTag::Int(0)], vec![]))
