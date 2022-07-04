@@ -19,7 +19,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
 
     let mut dist = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dist").unwrap();
 
-    let sigs_maybe = version_blob.remove_key_unwrap_type::<Vec<Value>>("signatures");
+    let sigs_maybe = dist.remove_key_unwrap_type::<Vec<Value>>("signatures");
     let sig0: Option<Map<String, Value>> = sigs_maybe.map(|mut sigs| 
         serde_json::from_value(sigs.remove(0)).unwrap()
     );
