@@ -1,9 +1,9 @@
-use diesel::prelude::*;
-use super::DbConnection;
-use super::schema::download_tasks;
 use super::schema;
-use diesel::Queryable;
+use super::schema::download_tasks;
+use super::DbConnection;
 use chrono::{DateTime, Utc};
+use diesel::prelude::*;
+use diesel::Queryable;
 
 #[derive(Queryable, Insertable, Debug)]
 #[diesel(table_name = download_tasks)]
@@ -21,7 +21,7 @@ pub struct DownloadTask {
     pub queue_time: DateTime<Utc>,
     pub num_failures: i32,
     pub last_failure: Option<DateTime<Utc>>,
-    pub success: bool
+    pub success: bool,
 }
 
 impl DownloadTask {
@@ -33,7 +33,7 @@ impl DownloadTask {
         integrity: Option<String>,
         signature0_sig: Option<String>,
         signature0_keyid: Option<String>,
-        npm_signature: Option<String>
+        npm_signature: Option<String>,
     ) -> DownloadTask {
         DownloadTask {
             url,
@@ -49,13 +49,10 @@ impl DownloadTask {
             queue_time: Utc::now(),
             num_failures: 0,
             last_failure: None,
-            success: false
+            success: false,
         }
     }
 }
-
-
-
 
 const ENQUEUE_CHUNK_SIZE: usize = 2048;
 
@@ -67,7 +64,7 @@ pub fn enqueue_downloads(the_downloads: Vec<DownloadTask>, conn: &DbConnection) 
     }
 
     modify_count += enqueue_chunk(conn, chunk_iter.remainder());
-    
+
     modify_count
 }
 
