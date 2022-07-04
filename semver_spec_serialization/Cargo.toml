@@ -10,13 +10,13 @@ postgres_db = { path = "../postgres_db" }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
 lazy-regex = "2.3.0"
+lazy_static = "1.4.0"
 cached = "0.34"
 
 [dev-dependencies]
 test-case = "2.1.0"
 criterion = { version = "0.3", features = ["html_reports"] }
 quickcheck = "1.0.3"
-lazy_static = "1.4.0"
 
 [[bench]]
 name = "serialization"
