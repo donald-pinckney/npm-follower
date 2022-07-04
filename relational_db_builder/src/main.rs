@@ -36,7 +36,7 @@ fn main() {
             process_change(&conn, c);
         }
 
-        // internal_state::set_relational_processed_seq(last_seq_in_page, &conn);
+        internal_state::set_relational_processed_seq(last_seq_in_page, &conn);
         processed_up_to = last_seq_in_page;
 
         if num_changes < PAGE_SIZE {

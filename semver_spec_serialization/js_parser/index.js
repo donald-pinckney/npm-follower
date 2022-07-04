@@ -76,7 +76,11 @@ function parse_spec(s) {
         JSON.stringify(parsed_spec)
       );
     }
-    answer = { Alias: [parsed_spec.subSpec.name, null, sub_answer] };
+    if(parse_spec.subSpec.name === null) {
+      answer = sub_answer;
+    } else {
+      answer = { Alias: [parsed_spec.subSpec.name, null, sub_answer] };
+    }
   } else {
     return (
       "unknown spec type. Type = " +

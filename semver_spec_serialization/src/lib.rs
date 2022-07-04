@@ -188,6 +188,7 @@ pub fn parse_spec_via_node(s: &str) -> Result<ParsedSpec, ParseSpecError> {
     let mut res = String::new();
     let mut reader = BufReader::new(stream);
     reader.read_line(&mut res)?;
+    // println!("json = {}", res);
     let parsed: ParsedSpec = serde_json::from_str(&res)?;
 
     Ok(parsed)
