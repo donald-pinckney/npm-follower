@@ -84,7 +84,6 @@ fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateT
 
     let version_times: HashMap<Result<Semver, String>, _> = times.into_iter().map(|(v_str, t)| 
         (semver_spec_serialization::parse_semver(&v_str).map_err(|err| {
-            assert!(err.is_major_minor_bug_parse_int_error());
             v_str
         }), t)
     ).collect();
