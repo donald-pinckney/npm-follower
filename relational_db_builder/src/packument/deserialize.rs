@@ -20,12 +20,16 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
                 version_blob.insert(key.to_string(), Value::Array(xs));
                 vec![]
             },
+            Value::String(s) => {
+                version_blob.insert(key.to_string(), Value::String(s));
+                vec![]
+            },
             Value::Object(dependencies_raw) => {
                 dependencies_raw.into_iter().map(|(p, c)|
                     (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
                 ).collect()
             },
-            Value::Bool(_) | Value::Number(_) | Value::String(_) => {
+            Value::Bool(_) | Value::Number(_) => {
                 panic!("Invalid dependencies");
             },
             Value::Null | Value::Array(_) => unreachable!()
