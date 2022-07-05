@@ -25,9 +25,12 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
                 vec![]
             },
             Value::Object(dependencies_raw) => {
-                dependencies_raw.into_iter().map(|(p, c)|
-                    (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
-                ).collect()
+                dependencies_raw.into_iter().map(|(p, c)| {
+                    match c {
+                        Value::Null => (p, Spec { raw: "JSON(null)".to_string(), parsed: postgres_db::custom_types::ParsedSpec::Invalid("spec cannot be null".to_string())}),
+                        _ => (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
+                    }
+                }).collect()
             },
             Value::Bool(_) | Value::Number(_) => {
                 panic!("Invalid dependencies");

@@ -1,0 +1,1043 @@
+{
+    "changes": [
+        {
+            "rev": "11-d0c2556ba05276e2a6a3cbe441f1b76d"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "@glimpse/glimpse-agent-node",
+        "_rev": "11-d0c2556ba05276e2a6a3cbe441f1b76d",
+        "author": "Microsoft",
+        "bugs": "https://github.com/Glimpse/home/issues",
+        "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+        "dist-tags": {
+            "latest": "0.22.15"
+        },
+        "homepage": "http://node.getglimpse.com/",
+        "keywords": [
+            "debugging",
+            "diagnostics",
+            "performance",
+            "bottleneck",
+            "profiling",
+            "instrumentation",
+            "glimpse",
+            "logging",
+            "express",
+            "middleware",
+            "console",
+            "http",
+            "hud",
+            "heads up display",
+            "full stack"
+        ],
+        "license": "See license in license.md",
+        "maintainers": [
+            {
+                "email": "phillip@orst.edu",
+                "name": "philliphoff"
+            },
+            {
+                "email": "legomushroom@gmail.com",
+                "name": "legomushroom"
+            },
+            {
+                "email": "davidkpiano@gmail.com",
+                "name": "davidkpiano"
+            },
+            {
+                "email": "nikmd23@gmail.com",
+                "name": "nikmd23"
+            },
+            {
+                "email": "anthony.vanderhoorn@gmail.com",
+                "name": "avanderhoorn"
+            },
+            {
+                "email": "glimpseproject@gmail.com",
+                "name": "getglimpse"
+            }
+        ],
+        "name": "@glimpse/glimpse-agent-node",
+        "readme": "[![npm (@glimpse/glimpse-agent-node)](https://img.shields.io/npm/v/@glimpse/glimpse-agent-node.svg)](https://www.npmjs.com/package/@glimpse/glimpse-agent-node)\n[![#ProjectGlimpse](https://img.shields.io/badge/tweet-%23ProjectGlimpse-blue.svg)](https://twitter.com/intent/tweet?hashtags=projectGlimpse&tw_p=tweetbutton)\n\n# Project Glimpse: Node Edition\n\nGlimpse is an experimental **[npm package](https://www.npmjs.com/package/@glimpse/glimpse)** that gives you in-depth insights about the **client and server sides** of your **Node.js** apps. More **efficient debugging** means **faster development**. Best of all, it\u2019s free.\n\n![Project Glimpse: Node Edition Screenshot](http://node.getglimpse.com/img/front-page/hero1.7848ce21.svg)\n\nFull details and documentation available at [http://node.getglimpse.com](http://node.getglimpse.com).\n\n## Getting started\n\nThe easiest way to get started is to use the [@glimpse/glimpse](https://www.npmjs.com/package/@glimpse/glimpse) package.\n\nIf your app runs on multiple processes/services, you may want to install this package directly, along with [@glimpse/glimpse-server](https://www.npmjs.com/package/@glimpse/glimpse) as [covered in our documentation](http://localhost:1313/docs/user-guide/glimpse-architecture/#multiple-processes-sharing-a-single-glimpse-server).\n\n## Package & version support\n\nProject Glimpse: Node Edition currently supports the following:\n- Node.js version 4.0 to 8.1 (async/await is not yet supported)\n- [Express.js](https://www.npmjs.com/package/express) version 4.0 to 4.15.\n- The native `http` module.\n- The native `console` module.\n- And other modules as well.\n- Complete version support details are available from [our faq](http://node.getglimpse.com/docs/support/faq/#which-versions-and-modules-are-supported).\n\nFor further support targets, please open an issue with your requested module and version.\n\n## Issue reporting\n\nIf you run into any problems, please open a [new issue](https://github.com/aspnet/home/issues/new) in this repo. A member of the team will follow up with you ASAP.\n\n---\n\nThis project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.\n",
+        "readmeFilename": "",
+        "repository": "Glimpse/Home",
+        "time": {
+            "0.20.6": "2017-05-08T07:00:23.049Z",
+            "0.20.8": "2017-05-09T17:33:21.116Z",
+            "0.20.9": "2017-05-15T20:20:58.082Z",
+            "0.21.5": "2017-06-05T18:09:36.966Z",
+            "0.22.11": "2017-07-14T17:30:28.304Z",
+            "0.22.13": "2017-07-20T18:35:41.014Z",
+            "0.22.15": "2017-07-27T19:25:57.868Z",
+            "created": "2017-05-08T07:00:23.049Z",
+            "modified": "2022-05-12T19:23:31.474Z"
+        },
+        "versions": {
+            "0.20.6": {
+                "_id": "@glimpse/glimpse-agent-node@0.20.6",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/glimpse-agent-node-0.20.6.tgz_1494226820884_0.44983622222207487"
+                },
+                "_npmUser": {
+                    "email": "glimpseproject@gmail.com",
+                    "name": "getglimpse"
+                },
+                "author": "Microsoft",
+                "bugs": "https://github.com/Glimpse/home/issues",
+                "dependencies": {
+                    "@glimpse/glimpse-common": "0.20.6",
+                    "config-chain": "^1.1.10",
+                    "continuation-local-storage": "^3.1.4",
+                    "cookie": "^0.2.3",
+                    "dicer": "^0.2.5",
+                    "htmlparser2": "^3.9.1",
+                    "lodash": "^4.3.0",
+                    "moment": "^2.16.1",
+                    "parseurl": "^1.3.0",
+                    "request": "^2.67.0",
+                    "semver": "^5.1.0",
+                    "source-map": "^0.5.6",
+                    "useragent": "~2.1.7",
+                    "util": "~0.10.3",
+                    "uuid": "^2.0.2"
+                },
+                "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+                "devDependencies": {
+                    "@glimpse/multi-require": null,
+                    "@types/assertion-error": "^1.0.30",
+                    "@types/chai": "^3.4.34",
+                    "@types/cookie": "^0.1.29",
+                    "@types/es6-promise": "0.0.32",
+                    "@types/express": "^4.0.34",
+                    "@types/form-data": "0.0.33",
+                    "@types/lodash": "^4.14.41",
+                    "@types/mime": "0.0.29",
+                    "@types/mocha": "^2.2.33",
+                    "@types/mongodb": "^2.1.36",
+                    "@types/node": "0.0.2",
+                    "@types/request": "0.0.36",
+                    "@types/semver": "^5.3.30",
+                    "@types/serve-static": "^1.7.31",
+                    "@types/uuid": "^2.0.29",
+                    "babel-preset-es2015": "^6.3.13",
+                    "bluebird": "^3.4.6",
+                    "body-parser": "^1.17.0",
+                    "chai": "^3.5.0",
+                    "chai-json-schema": "^1.2.0",
+                    "cookie-parser": "^1.4.1",
+                    "del": "^2.2.0",
+                    "express": "^4.13.4",
+                    "gulp": "^3.9.0",
+                    "gulp-babel": "^6.1.1",
+                    "gulp-eslint": "^2.0.0",
+                    "gulp-istanbul": "^0.10.3",
+                    "gulp-mocha": "^2.2.0",
+                    "gulp-sourcemaps": "^1.6.0",
+                    "gulp-tslint": "^6.1.1",
+                    "gulp-typescript": "^3.1.3",
+                    "ip-address": "^5.8.0",
+                    "jade": "^1.11.0",
+                    "merge": "^1.2.0",
+                    "morgan": "^1.8.1",
+                    "remap-istanbul": "^0.6.3",
+                    "source-map-support": "^0.4.0",
+                    "tslint": "^3.15.1",
+                    "typescript": "^2.0.10",
+                    "typings": "^1.0.4"
+                },
+                "dist": {
+                    "integrity": "sha512-vt+/+54ZjjLai7moKPcDBlJ8da83DnEgjWGKsptE3GyrDSw+mIuXVKbTLlDh2xnE4R16uAscPoL87b5T3Qm6qA==",
+                    "shasum": "00cf10323eb5bf4280fdc73ca0d096864a2881be",
+                    "tarball": "https://registry.npmjs.org/@glimpse/glimpse-agent-node/-/glimpse-agent-node-0.20.6.tgz"
+                },
+                "engines": {
+                    "node": ">=4.0.0"
+                },
+                "homepage": "https://node.getglimpse.com/",
+                "keywords": [
+                    "debugging",
+                    "diagnostics",
+                    "performance",
+                    "bottleneck",
+                    "profiling",
+                    "instrumentation",
+                    "glimpse",
+                    "logging",
+                    "express",
+                    "middleware",
+                    "console",
+                    "http",
+                    "hud",
+                    "heads up display",
+                    "full stack"
+                ],
+                "license": "See license in license.md",
+                "main": "./release/index.js",
+                "maintainers": [
+                    {
+                        "email": "anvan@microsoft.com",
+                        "name": "getglimpse"
+                    }
+                ],
+                "name": "@glimpse/glimpse-agent-node",
+                "repository": "Glimpse/Home",
+                "scripts": {
+                    "lint": "gulp lint",
+                    "test": "gulp test-pri0"
+                },
+                "typings": "./release/definitions/src/index.d.ts",
+                "version": "0.20.6"
+            },
+            "0.20.8": {
+                "_id": "@glimpse/glimpse-agent-node@0.20.8",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/glimpse-agent-node-0.20.8.tgz_1494351198731_0.14530304237268865"
+                },
+                "_npmUser": {
+                    "email": "glimpseproject@gmail.com",
+                    "name": "getglimpse"
+                },
+                "author": "Microsoft",
+                "bugs": "https://github.com/Glimpse/home/issues",
+                "dependencies": {
+                    "@glimpse/glimpse-common": "0.20.8",
+                    "config-chain": "^1.1.10",
+                    "continuation-local-storage": "^3.1.4",
+                    "cookie": "^0.2.3",
+                    "dicer": "^0.2.5",
+                    "htmlparser2": "^3.9.1",
+                    "lodash": "^4.3.0",
+                    "moment": "^2.16.1",
+                    "parseurl": "^1.3.0",
+                    "request": "^2.67.0",
+                    "semver": "^5.1.0",
+                    "source-map": "^0.5.6",
+                    "useragent": "~2.1.7",
+                    "util": "~0.10.3",
+                    "uuid": "^2.0.2"
+                },
+                "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+                "devDependencies": {
+                    "@glimpse/multi-require": null,
+                    "@types/assertion-error": "^1.0.30",
+                    "@types/chai": "^3.4.34",
+                    "@types/cookie": "^0.1.29",
+                    "@types/es6-promise": "0.0.32",
+                    "@types/express": "^4.0.34",
+                    "@types/form-data": "0.0.33",
+                    "@types/lodash": "^4.14.41",
+                    "@types/mime": "0.0.29",
+                    "@types/mocha": "^2.2.33",
+                    "@types/mongodb": "^2.1.36",
+                    "@types/node": "0.0.2",
+                    "@types/request": "0.0.36",
+                    "@types/semver": "^5.3.30",
+                    "@types/serve-static": "^1.7.31",
+                    "@types/uuid": "^2.0.29",
+                    "babel-preset-es2015": "^6.3.13",
+                    "bluebird": "^3.4.6",
+                    "body-parser": "^1.17.0",
+                    "chai": "^3.5.0",
+                    "chai-json-schema": "^1.2.0",
+                    "cookie-parser": "^1.4.1",
+                    "del": "^2.2.0",
+                    "express": "^4.13.4",
+                    "gulp": "^3.9.0",
+                    "gulp-babel": "^6.1.1",
+                    "gulp-eslint": "^2.0.0",
+                    "gulp-istanbul": "^0.10.3",
+                    "gulp-mocha": "^2.2.0",
+                    "gulp-sourcemaps": "^1.6.0",
+                    "gulp-tslint": "^6.1.1",
+                    "gulp-typescript": "^3.1.3",
+                    "ip-address": "^5.8.0",
+                    "jade": "^1.11.0",
+                    "merge": "^1.2.0",
+                    "morgan": "^1.8.1",
+                    "remap-istanbul": "^0.6.3",
+                    "source-map-support": "^0.4.0",
+                    "tslint": "^3.15.1",
+                    "typescript": "^2.0.10",
+                    "typings": "^1.0.4"
+                },
+                "dist": {
+                    "integrity": "sha512-ub4QDbLER9wmZX/ksr83JDU86dNzWoonR4PxRPbE7oB3RkXaAzp3AuazsRaRVdoAurUiHP+vgqljk9lxFyle5Q==",
+                    "shasum": "3a6934ae7b3585273311331c3d1138b1109e98c7",
+                    "tarball": "https://registry.npmjs.org/@glimpse/glimpse-agent-node/-/glimpse-agent-node-0.20.8.tgz"
+                },
+                "engines": {
+                    "node": ">=4.0.0"
+                },
+                "homepage": "http://node.getglimpse.com/",
+                "keywords": [
+                    "debugging",
+                    "diagnostics",
+                    "performance",
+                    "bottleneck",
+                    "profiling",
+                    "instrumentation",
+                    "glimpse",
+                    "logging",
+                    "express",
+                    "middleware",
+                    "console",
+                    "http",
+                    "hud",
+                    "heads up display",
+                    "full stack"
+                ],
+                "license": "See license in license.md",
+                "main": "./release/index.js",
+                "maintainers": [
+                    {
+                        "email": "phillip@orst.edu",
+                        "name": "philliphoff"
+                    },
+                    {
+                        "email": "legomushroom@gmail.com",
+                        "name": "legomushroom"
+                    },
+                    {
+                        "email": "davidkpiano@gmail.com",
+                        "name": "davidkpiano"
+                    },
+                    {
+                        "email": "nikmd23@gmail.com",
+                        "name": "nikmd23"
+                    },
+                    {
+                        "email": "anthony.vanderhoorn@gmail.com",
+                        "name": "avanderhoorn"
+                    },
+                    {
+                        "email": "glimpseproject@gmail.com",
+                        "name": "getglimpse"
+                    }
+                ],
+                "name": "@glimpse/glimpse-agent-node",
+                "repository": "Glimpse/Home",
+                "scripts": {
+                    "lint": "gulp lint",
+                    "test": "gulp test-pri0"
+                },
+                "typings": "./release/definitions/src/index.d.ts",
+                "version": "0.20.8"
+            },
+            "0.20.9": {
+                "_id": "@glimpse/glimpse-agent-node@0.20.9",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/glimpse-agent-node-0.20.9.tgz_1494879655748_0.008782087825238705"
+                },
+                "_npmUser": {
+                    "email": "glimpseproject@gmail.com",
+                    "name": "getglimpse"
+                },
+                "author": "Microsoft",
+                "bugs": "https://github.com/Glimpse/home/issues",
+                "dependencies": {
+                    "@glimpse/glimpse-common": "0.20.9",
+                    "config-chain": "^1.1.10",
+                    "continuation-local-storage": "^3.1.4",
+                    "cookie": "^0.2.3",
+                    "dicer": "^0.2.5",
+                    "htmlparser2": "^3.9.1",
+                    "lodash": "^4.3.0",
+                    "moment": "^2.16.1",
+                    "parseurl": "^1.3.0",
+                    "request": "^2.67.0",
+                    "semver": "^5.1.0",
+                    "source-map": "^0.5.6",
+                    "useragent": "~2.1.7",
+                    "util": "~0.10.3",
+                    "uuid": "^2.0.2"
+                },
+                "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+                "devDependencies": {
+                    "@glimpse/multi-require": null,
+                    "@types/assertion-error": "^1.0.30",
+                    "@types/chai": "^3.4.34",
+                    "@types/cookie": "^0.1.29",
+                    "@types/es6-promise": "0.0.32",
+                    "@types/express": "^4.0.34",
+                    "@types/form-data": "0.0.33",
+                    "@types/lodash": "^4.14.41",
+                    "@types/mime": "0.0.29",
+                    "@types/mocha": "^2.2.33",
+                    "@types/mongodb": "^2.1.36",
+                    "@types/node": "0.0.2",
+                    "@types/request": "0.0.36",
+                    "@types/semver": "^5.3.30",
+                    "@types/serve-static": "^1.7.31",
+                    "@types/uuid": "^2.0.29",
+                    "babel-preset-es2015": "^6.3.13",
+                    "bluebird": "^3.4.6",
+                    "body-parser": "^1.17.0",
+                    "chai": "^3.5.0",
+                    "chai-json-schema": "^1.2.0",
+                    "cookie-parser": "^1.4.1",
+                    "create-error": "^0.3.1",
+                    "del": "^2.2.0",
+                    "express": "^4.13.4",
+                    "gulp": "^3.9.0",
+                    "gulp-babel": "^6.1.1",
+                    "gulp-eslint": "^2.0.0",
+                    "gulp-istanbul": "^0.10.3",
+                    "gulp-mocha": "^2.2.0",
+                    "gulp-sourcemaps": "^1.6.0",
+                    "gulp-tslint": "^6.1.1",
+                    "gulp-typescript": "^3.1.3",
+                    "ip-address": "^5.8.0",
+                    "jade": "^1.11.0",
+                    "merge": "^1.2.0",
+                    "morgan": "^1.8.1",
+                    "remap-istanbul": "^0.6.3",
+                    "source-map-support": "^0.4.0",
+                    "tslint": "^3.15.1",
+                    "typescript": "^2.0.10",
+                    "typings": "^1.0.4"
+                },
+                "dist": {
+                    "integrity": "sha512-0g+cIHWKkeeny31YAwM6V4HQ2rgi28Lr7tgdZDSdAVFAYVppAl18YB6B6Ozmln9mUT3MMfCgLaML453iYJF7zw==",
+                    "shasum": "45fbbfa4a2cf13112b973c325ec0bd617da0d8eb",
+                    "tarball": "https://registry.npmjs.org/@glimpse/glimpse-agent-node/-/glimpse-agent-node-0.20.9.tgz"
+                },
+                "engines": {
+                    "node": ">=4.0.0"
+                },
+                "homepage": "http://node.getglimpse.com/",
+                "keywords": [
+                    "debugging",
+                    "diagnostics",
+                    "performance",
+                    "bottleneck",
+                    "profiling",
+                    "instrumentation",
+                    "glimpse",
+                    "logging",
+                    "express",
+                    "middleware",
+                    "console",
+                    "http",
+                    "hud",
+                    "heads up display",
+                    "full stack"
+                ],
+                "license": "See license in license.md",
+                "main": "./release/index.js",
+                "maintainers": [
+                    {
+                        "email": "phillip@orst.edu",
+                        "name": "philliphoff"
+                    },
+                    {
+                        "email": "legomushroom@gmail.com",
+                        "name": "legomushroom"
+                    },
+                    {
+                        "email": "davidkpiano@gmail.com",
+                        "name": "davidkpiano"
+                    },
+                    {
+                        "email": "nikmd23@gmail.com",
+                        "name": "nikmd23"
+                    },
+                    {
+                        "email": "anthony.vanderhoorn@gmail.com",
+                        "name": "avanderhoorn"
+                    },
+                    {
+                        "email": "glimpseproject@gmail.com",
+                        "name": "getglimpse"
+                    }
+                ],
+                "name": "@glimpse/glimpse-agent-node",
+                "repository": "Glimpse/Home",
+                "scripts": {
+                    "lint": "gulp lint",
+                    "test": "gulp test-pri0"
+                },
+                "typings": "./release/definitions/src/index.d.ts",
+                "version": "0.20.9"
+            },
+            "0.21.5": {
+                "_id": "@glimpse/glimpse-agent-node@0.21.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/glimpse-agent-node-0.21.5.tgz_1496686175445_0.32807587273418903"
+                },
+                "_npmUser": {
+                    "email": "glimpseproject@gmail.com",
+                    "name": "getglimpse"
+                },
+                "author": "Microsoft",
+                "bugs": "https://github.com/Glimpse/home/issues",
+                "dependencies": {
+                    "@glimpse/glimpse-common": "0.21.5",
+                    "config-chain": "^1.1.10",
+                    "continuation-local-storage": "^3.1.4",
+                    "cookie": "^0.2.3",
+                    "dicer": "^0.2.5",
+                    "htmlparser2": "^3.9.1",
+                    "lodash": "^4.3.0",
+                    "moment": "^2.16.1",
+                    "parseurl": "^1.3.0",
+                    "request": "^2.67.0",
+                    "semver": "^5.1.0",
+                    "source-map": "^0.5.6",
+                    "useragent": "~2.1.7",
+                    "util": "~0.10.3",
+                    "uuid": "^2.0.2",
+                    "zone.js": "^0.8.10"
+                },
+                "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+                "devDependencies": {
+                    "@glimpse/multi-require": null,
+                    "@types/assertion-error": "^1.0.30",
+                    "@types/chai": "^3.4.34",
+                    "@types/cookie": "^0.1.29",
+                    "@types/debug": "0.0.29",
+                    "@types/es6-promise": "0.0.32",
+                    "@types/express": "^4.0.34",
+                    "@types/form-data": "0.0.33",
+                    "@types/lodash": "^4.14.41",
+                    "@types/mime": "0.0.29",
+                    "@types/mocha": "^2.2.33",
+                    "@types/mongodb": "^2.1.36",
+                    "@types/node": "0.0.2",
+                    "@types/request": "0.0.36",
+                    "@types/semver": "^5.3.30",
+                    "@types/serve-static": "^1.7.31",
+                    "@types/uuid": "^2.0.29",
+                    "babel-preset-es2015": "^6.3.13",
+                    "bluebird": "^3.4.6",
+                    "body-parser": "^1.17.0",
+                    "chai": "^3.5.0",
+                    "chai-json-schema": "^1.2.0",
+                    "cookie-parser": "^1.4.1",
+                    "create-error": "^0.3.1",
+                    "del": "^2.2.0",
+                    "express": "^4.13.4",
+                    "gulp": "^3.9.0",
+                    "gulp-babel": "^6.1.1",
+                    "gulp-eslint": "^2.0.0",
+                    "gulp-istanbul": "^0.10.3",
+                    "gulp-mocha": "^2.2.0",
+                    "gulp-sourcemaps": "^1.6.0",
+                    "gulp-tslint": "^6.1.1",
+                    "gulp-typescript": "^3.1.3",
+                    "ip-address": "^5.8.0",
+                    "jade": "^1.11.0",
+                    "merge": "^1.2.0",
+                    "morgan": "^1.8.1",
+                    "remap-istanbul": "^0.6.3",
+                    "serve-favicon": "^2.4.3",
+                    "serve-index": "^1.8.0",
+                    "serve-static": "^1.12.3",
+                    "source-map-support": "^0.4.0",
+                    "tslint": "^3.15.1",
+                    "typescript": "^2.0.10",
+                    "typings": "^1.0.4"
+                },
+                "dist": {
+                    "integrity": "sha512-VlN49moQVBBHq/Fb7QxHYWyvDRmVBb0GNKHEgs3teV6hcuoVA2KQr/YiyS9VGtHqqyYoU7iUEV/GpnKin6EHiQ==",
+                    "shasum": "cf5fb8d8bde5f5441d059d7714666787b7346feb",
+                    "tarball": "https://registry.npmjs.org/@glimpse/glimpse-agent-node/-/glimpse-agent-node-0.21.5.tgz"
+                },
+                "engines": {
+                    "node": ">=4.0.0"
+                },
+                "homepage": "http://node.getglimpse.com/",
+                "keywords": [
+                    "debugging",
+                    "diagnostics",
+                    "performance",
+                    "bottleneck",
+                    "profiling",
+                    "instrumentation",
+                    "glimpse",
+                    "logging",
+                    "express",
+                    "middleware",
+                    "console",
+                    "http",
+                    "hud",
+                    "heads up display",
+                    "full stack"
+                ],
+                "license": "See license in license.md",
+                "main": "./release/index.js",
+                "maintainers": [
+                    {
+                        "email": "phillip@orst.edu",
+                        "name": "philliphoff"
+                    },
+                    {
+                        "email": "legomushroom@gmail.com",
+                        "name": "legomushroom"
+                    },
+                    {
+                        "email": "davidkpiano@gmail.com",
+                        "name": "davidkpiano"
+                    },
+                    {
+                        "email": "nikmd23@gmail.com",
+                        "name": "nikmd23"
+                    },
+                    {
+                        "email": "anthony.vanderhoorn@gmail.com",
+                        "name": "avanderhoorn"
+                    },
+                    {
+                        "email": "glimpseproject@gmail.com",
+                        "name": "getglimpse"
+                    }
+                ],
+                "name": "@glimpse/glimpse-agent-node",
+                "repository": "Glimpse/Home",
+                "scripts": {
+                    "lint": "gulp lint",
+                    "test": "gulp test-pri0"
+                },
+                "typings": "./release/definitions/src/index.d.ts",
+                "version": "0.21.5"
+            },
+            "0.22.11": {
+                "_id": "@glimpse/glimpse-agent-node@0.22.11",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/glimpse-agent-node-0.22.11.tgz_1500053426949_0.546295364620164"
+                },
+                "_npmUser": {
+                    "email": "glimpseproject@gmail.com",
+                    "name": "getglimpse"
+                },
+                "author": "Microsoft",
+                "bugs": "https://github.com/Glimpse/home/issues",
+                "dependencies": {
+                    "@glimpse/glimpse-common": "0.22.11",
+                    "config-chain": "^1.1.10",
+                    "continuation-local-storage": "^3.1.4",
+                    "cookie": "^0.2.3",
+                    "dicer": "^0.2.5",
+                    "htmlparser2": "^3.9.1",
+                    "lodash": "^4.3.0",
+                    "moment": "^2.16.1",
+                    "parseurl": "^1.3.0",
+                    "request": "^2.67.0",
+                    "semver": "^5.1.0",
+                    "source-map": "^0.5.6",
+                    "useragent": "~2.1.7",
+                    "util": "~0.10.3",
+                    "uuid": "^2.0.2",
+                    "zone.js": "^0.8.10"
+                },
+                "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+                "devDependencies": {
+                    "@glimpse/multi-require": null,
+                    "@types/assertion-error": "^1.0.30",
+                    "@types/chai": "^3.4.34",
+                    "@types/cookie": "^0.1.29",
+                    "@types/debug": "0.0.29",
+                    "@types/es6-promise": "0.0.32",
+                    "@types/express": "^4.0.34",
+                    "@types/form-data": "0.0.33",
+                    "@types/lodash": "^4.14.41",
+                    "@types/mime": "0.0.29",
+                    "@types/mocha": "^2.2.33",
+                    "@types/mongodb": "^2.1.36",
+                    "@types/node": "^7.0.8",
+                    "@types/request": "0.0.36",
+                    "@types/semver": "^5.3.30",
+                    "@types/serve-static": "^1.7.31",
+                    "@types/uuid": "^2.0.29",
+                    "babel-preset-es2015": "^6.3.13",
+                    "bluebird": "^3.4.6",
+                    "body-parser": "^1.17.0",
+                    "chai": "^3.5.0",
+                    "chai-json-schema": "^1.2.0",
+                    "compression": "^1.6.2",
+                    "cookie-parser": "^1.4.1",
+                    "create-error": "^0.3.1",
+                    "del": "^2.2.0",
+                    "express": "^4.13.4",
+                    "gulp": "^3.9.0",
+                    "gulp-babel": "^6.1.1",
+                    "gulp-eslint": "^2.0.0",
+                    "gulp-istanbul": "^0.10.3",
+                    "gulp-mocha": "^2.2.0",
+                    "gulp-sourcemaps": "^1.6.0",
+                    "gulp-tslint": "^6.1.1",
+                    "gulp-typescript": "^3.1.3",
+                    "ip-address": "^5.8.0",
+                    "jade": "^1.11.0",
+                    "merge": "^1.2.0",
+                    "morgan": "^1.8.1",
+                    "remap-istanbul": "^0.6.3",
+                    "serve-favicon": "^2.4.3",
+                    "serve-index": "^1.8.0",
+                    "serve-static": "^1.12.3",
+                    "source-map-support": "^0.4.0",
+                    "tslint": "^3.15.1",
+                    "typescript": "^2.4.1",
+                    "typings": "^1.0.4"
+                },
+                "dist": {
+                    "integrity": "sha512-DQ7xTU4RgP4rIAXTt718z4/LnB5i20CCvin3x7K8WGBC02Q/i07uKmj8WcZKRZF7tlBi0oNWDW9sGzAlg16r1g==",
+                    "shasum": "581220d5cc9fba52c9943f9aaf9a64c7e0a8ba5e",
+                    "tarball": "https://registry.npmjs.org/@glimpse/glimpse-agent-node/-/glimpse-agent-node-0.22.11.tgz"
+                },
+                "engines": {
+                    "node": ">=4.0.0"
+                },
+                "homepage": "http://node.getglimpse.com/",
+                "keywords": [
+                    "debugging",
+                    "diagnostics",
+                    "performance",
+                    "bottleneck",
+                    "profiling",
+                    "instrumentation",
+                    "glimpse",
+                    "logging",
+                    "express",
+                    "middleware",
+                    "console",
+                    "http",
+                    "hud",
+                    "heads up display",
+                    "full stack"
+                ],
+                "license": "See license in license.md",
+                "main": "./release/index.js",
+                "maintainers": [
+                    {
+                        "email": "phillip@orst.edu",
+                        "name": "philliphoff"
+                    },
+                    {
+                        "email": "legomushroom@gmail.com",
+                        "name": "legomushroom"
+                    },
+                    {
+                        "email": "davidkpiano@gmail.com",
+                        "name": "davidkpiano"
+                    },
+                    {
+                        "email": "nikmd23@gmail.com",
+                        "name": "nikmd23"
+                    },
+                    {
+                        "email": "anthony.vanderhoorn@gmail.com",
+                        "name": "avanderhoorn"
+                    },
+                    {
+                        "email": "glimpseproject@gmail.com",
+                        "name": "getglimpse"
+                    }
+                ],
+                "name": "@glimpse/glimpse-agent-node",
+                "repository": "Glimpse/Home",
+                "scripts": {
+                    "lint": "gulp lint",
+                    "test": "gulp test-pri0"
+                },
+                "typings": "./release/definitions/src/index.d.ts",
+                "version": "0.22.11"
+            },
+            "0.22.13": {
+                "_id": "@glimpse/glimpse-agent-node@0.22.13",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/glimpse-agent-node-0.22.13.tgz_1500575739513_0.4537125094793737"
+                },
+                "_npmUser": {
+                    "email": "glimpseproject@gmail.com",
+                    "name": "getglimpse"
+                },
+                "author": "Microsoft",
+                "bugs": "https://github.com/Glimpse/home/issues",
+                "dependencies": {
+                    "@glimpse/glimpse-common": "0.22.13",
+                    "config-chain": "^1.1.10",
+                    "continuation-local-storage": "^3.1.4",
+                    "cookie": "^0.2.3",
+                    "dicer": "^0.2.5",
+                    "htmlparser2": "^3.9.1",
+                    "lodash": "^4.3.0",
+                    "moment": "^2.16.1",
+                    "parseurl": "^1.3.0",
+                    "request": "^2.67.0",
+                    "semver": "^5.1.0",
+                    "source-map": "^0.5.6",
+                    "useragent": "~2.1.7",
+                    "util": "~0.10.3",
+                    "uuid": "^2.0.2",
+                    "zone.js": "^0.8.10"
+                },
+                "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+                "devDependencies": {
+                    "@glimpse/multi-require": null,
+                    "@types/assertion-error": "^1.0.30",
+                    "@types/chai": "^3.4.34",
+                    "@types/cookie": "^0.1.29",
+                    "@types/debug": "0.0.29",
+                    "@types/es6-promise": "0.0.32",
+                    "@types/express": "^4.0.34",
+                    "@types/form-data": "0.0.33",
+                    "@types/lodash": "^4.14.41",
+                    "@types/mime": "0.0.29",
+                    "@types/mocha": "^2.2.33",
+                    "@types/mongodb": "^2.1.36",
+                    "@types/node": "^7.0.8",
+                    "@types/request": "0.0.36",
+                    "@types/semver": "^5.3.30",
+                    "@types/serve-static": "^1.7.31",
+                    "@types/uuid": "^2.0.29",
+                    "babel-preset-es2015": "^6.3.13",
+                    "bluebird": "^3.4.6",
+                    "body-parser": "^1.17.0",
+                    "chai": "^3.5.0",
+                    "chai-json-schema": "^1.2.0",
+                    "compression": "^1.6.2",
+                    "cookie-parser": "^1.4.1",
+                    "create-error": "^0.3.1",
+                    "del": "^2.2.0",
+                    "express": "^4.13.4",
+                    "gulp": "^3.9.0",
+                    "gulp-babel": "^6.1.1",
+                    "gulp-eslint": "^2.0.0",
+                    "gulp-istanbul": "^0.10.3",
+                    "gulp-mocha": "^2.2.0",
+                    "gulp-sourcemaps": "^1.6.0",
+                    "gulp-tslint": "^6.1.1",
+                    "gulp-typescript": "^3.1.3",
+                    "ip-address": "^5.8.0",
+                    "jade": "^1.11.0",
+                    "merge": "^1.2.0",
+                    "morgan": "^1.8.1",
+                    "remap-istanbul": "^0.6.3",
+                    "serve-favicon": "^2.4.3",
+                    "serve-index": "^1.8.0",
+                    "serve-static": "^1.12.3",
+                    "source-map-support": "^0.4.0",
+                    "tslint": "^3.15.1",
+                    "typescript": "^2.4.1",
+                    "typings": "^1.0.4"
+                },
+                "dist": {
+                    "integrity": "sha512-Nn5MDtZXOQEniH7bSMLGsSiNcVoQYiTRB14bTKU0mULQpW0onWMjQrZXrgC0CTLUBgt3rLUR3CfVfrVWi4Tx+g==",
+                    "shasum": "5d03dfbdc22cedfa69732db79ddc6642d4aac593",
+                    "tarball": "https://registry.npmjs.org/@glimpse/glimpse-agent-node/-/glimpse-agent-node-0.22.13.tgz"
+                },
+                "engines": {
+                    "node": ">=4.0.0"
+                },
+                "homepage": "http://node.getglimpse.com/",
+                "keywords": [
+                    "debugging",
+                    "diagnostics",
+                    "performance",
+                    "bottleneck",
+                    "profiling",
+                    "instrumentation",
+                    "glimpse",
+                    "logging",
+                    "express",
+                    "middleware",
+                    "console",
+                    "http",
+                    "hud",
+                    "heads up display",
+                    "full stack"
+                ],
+                "license": "See license in license.md",
+                "main": "./release/index.js",
+                "maintainers": [
+                    {
+                        "email": "phillip@orst.edu",
+                        "name": "philliphoff"
+                    },
+                    {
+                        "email": "legomushroom@gmail.com",
+                        "name": "legomushroom"
+                    },
+                    {
+                        "email": "davidkpiano@gmail.com",
+                        "name": "davidkpiano"
+                    },
+                    {
+                        "email": "nikmd23@gmail.com",
+                        "name": "nikmd23"
+                    },
+                    {
+                        "email": "anthony.vanderhoorn@gmail.com",
+                        "name": "avanderhoorn"
+                    },
+                    {
+                        "email": "glimpseproject@gmail.com",
+                        "name": "getglimpse"
+                    }
+                ],
+                "name": "@glimpse/glimpse-agent-node",
+                "repository": "Glimpse/Home",
+                "scripts": {
+                    "lint": "gulp lint",
+                    "test": "gulp test-pri0"
+                },
+                "typings": "./release/definitions/src/index.d.ts",
+                "version": "0.22.13"
+            },
+            "0.22.15": {
+                "_id": "@glimpse/glimpse-agent-node@0.22.15",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/glimpse-agent-node-0.22.15.tgz_1501183556267_0.7682877657935023"
+                },
+                "_npmUser": {
+                    "email": "glimpseproject@gmail.com",
+                    "name": "getglimpse"
+                },
+                "author": "Microsoft",
+                "bugs": "https://github.com/Glimpse/home/issues",
+                "dependencies": {
+                    "@glimpse/glimpse-common": "0.22.15",
+                    "config-chain": "^1.1.10",
+                    "continuation-local-storage": "^3.1.4",
+                    "cookie": "^0.2.3",
+                    "dicer": "^0.2.5",
+                    "escape-html": "^1.0.3",
+                    "htmlparser2": "^3.9.1",
+                    "lodash": "^4.3.0",
+                    "moment": "^2.16.1",
+                    "parseurl": "^1.3.0",
+                    "request": "^2.67.0",
+                    "semver": "^5.1.0",
+                    "source-map": "^0.5.6",
+                    "useragent": "~2.1.7",
+                    "util": "~0.10.3",
+                    "uuid": "^2.0.2",
+                    "zone.js": "^0.8.10"
+                },
+                "description": "The agent that instruments Node.js apps for Glimpse, a web debugging tool that provides both client and server-side diagnostic insights. Spend less time debugging and more time developing. See http://node.getglimpse.com for more details and configuration.",
+                "devDependencies": {
+                    "@glimpse/multi-require": null,
+                    "@types/assertion-error": "^1.0.30",
+                    "@types/chai": "^3.4.34",
+                    "@types/cookie": "^0.1.29",
+                    "@types/debug": "0.0.29",
+                    "@types/es6-promise": "0.0.32",
+                    "@types/express": "^4.0.34",
+                    "@types/form-data": "0.0.33",
+                    "@types/lodash": "^4.14.41",
+                    "@types/mime": "0.0.29",
+                    "@types/mocha": "^2.2.33",
+                    "@types/mongodb": "^2.1.36",
+                    "@types/node": "^7.0.8",
+                    "@types/request": "0.0.36",
+                    "@types/semver": "^5.3.30",
+                    "@types/serve-static": "^1.7.31",
+                    "@types/uuid": "^2.0.29",
+                    "babel-preset-es2015": "^6.3.13",
+                    "bluebird": "^3.4.6",
+                    "body-parser": "^1.17.0",
+                    "chai": "^3.5.0",
+                    "chai-json-schema": "^1.2.0",
+                    "compression": "^1.6.2",
+                    "cookie-parser": "^1.4.1",
+                    "create-error": "^0.3.1",
+                    "del": "^2.2.0",
+                    "express": "^4.13.4",
+                    "gulp": "^3.9.0",
+                    "gulp-babel": "^6.1.1",
+                    "gulp-eslint": "^2.0.0",
+                    "gulp-istanbul": "^0.10.3",
+                    "gulp-mocha": "^2.2.0",
+                    "gulp-sourcemaps": "^1.6.0",
+                    "gulp-tslint": "^6.1.1",
+                    "gulp-typescript": "^3.1.3",
+                    "ip-address": "^5.8.0",
+                    "jade": "^1.11.0",
+                    "merge": "^1.2.0",
+                    "morgan": "^1.8.1",
+                    "remap-istanbul": "^0.6.3",
+                    "serve-favicon": "^2.4.3",
+                    "serve-index": "^1.8.0",
+                    "serve-static": "^1.12.3",
+                    "source-map-support": "^0.4.0",
+                    "tslint": "^3.15.1",
+                    "typescript": "^2.4.1",
+                    "typings": "^1.0.4"
+                },
+                "dist": {
+                    "integrity": "sha512-pnYa5SctOHoaFiJW7I/o0F2qd2fLDiS+dp473WrIFdYT/mnV5DIVeLgDmO/NTKiwoCfkQCh6T5L0EjcO9Wogqw==",
+                    "shasum": "93075fc56a234f716ed37dc8743be3f58121cfb2",
+                    "tarball": "https://registry.npmjs.org/@glimpse/glimpse-agent-node/-/glimpse-agent-node-0.22.15.tgz"
+                },
+                "engines": {
+                    "node": ">=4.0.0"
+                },
+                "homepage": "http://node.getglimpse.com/",
+                "keywords": [
+                    "debugging",
+                    "diagnostics",
+                    "performance",
+                    "bottleneck",
+                    "profiling",
+                    "instrumentation",
+                    "glimpse",
+                    "logging",
+                    "express",
+                    "middleware",
+                    "console",
+                    "http",
+                    "hud",
+                    "heads up display",
+                    "full stack"
+                ],
+                "license": "See license in license.md",
+                "main": "./release/index.js",
+                "maintainers": [
+                    {
+                        "email": "phillip@orst.edu",
+                        "name": "philliphoff"
+                    },
+                    {
+                        "email": "legomushroom@gmail.com",
+                        "name": "legomushroom"
+                    },
+                    {
+                        "email": "davidkpiano@gmail.com",
+                        "name": "davidkpiano"
+                    },
+                    {
+                        "email": "nikmd23@gmail.com",
+                        "name": "nikmd23"
+                    },
+                    {
+                        "email": "anthony.vanderhoorn@gmail.com",
+                        "name": "avanderhoorn"
+                    },
+                    {
+                        "email": "glimpseproject@gmail.com",
+                        "name": "getglimpse"
+                    }
+                ],
+                "name": "@glimpse/glimpse-agent-node",
+                "repository": "Glimpse/Home",
+                "scripts": {
+                    "lint": "gulp lint",
+                    "test": "gulp test-pri0"
+                },
+                "typings": "./release/definitions/src/index.d.ts",
+                "version": "0.22.15"
+            }
+        }
+    },
+    "id": "@glimpse/glimpse-agent-node",
+    "seq": 11600387
+}
