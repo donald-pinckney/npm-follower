@@ -1,3 +1,5 @@
+use crate::download_tarball::DownloadedTarball;
+
 use super::schema;
 use super::schema::download_tasks;
 use super::DbConnection;
@@ -52,6 +54,48 @@ impl DownloadTask {
             success: false,
         }
     }
+
+    /// Downloads this task to the given directory. Inserts the task into the downloaded_tarballs table,
+    /// and deletes it from the download_tasks table.
+    pub async fn do_download(&self, conn: &DbConnection, dest: &str) -> std::io::Result<()> {
+        // get the file and download it to dir
+        let res = reqwest::get(&self.url).await.map_err(|e| {
+            std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("Failed to download tarball, reqwest error: {}", e),
+            )
+        })?;
+        let name = self.url.split('/').last().unwrap();
+        let path = std::path::Path::new(dest).join(name);
+        let mut file = std::fs::File::create(path.clone())?;
+        let mut body = std::io::Cursor::new(res.bytes().await.map_err(|e| {
+            std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("Failed to extract request body, reqwest error: {}", e),
+            )
+        })?);
+        std::io::copy(&mut body, &mut file)?;
+
+        // insert the task into the downloaded_tarballs table
+        let task = DownloadedTarball::from_task(
+            self,
+            // makes the path absolute
+            std::fs::canonicalize(path)?.to_str().unwrap().to_string(),
+        );
+        diesel::insert_into(schema::downloaded_tarballs::table)
+            .values(&task)
+            .execute(&conn.conn)
+            .expect("Failed to insert downloaded tarball");
+
+        // delete the task from the download_tasks table
+        diesel::delete(
+            schema::download_tasks::table.filter(schema::download_tasks::url.eq(&self.url)),
+        )
+        .execute(&conn.conn)
+        .expect("Failed to delete download task");
+
+        Ok(())
+    }
 }
 
 const ENQUEUE_CHUNK_SIZE: usize = 2048;
@@ -80,4 +124,21 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
         .on_conflict_do_nothing()
         .execute(&conn.conn)
         .expect("Failed to enqueue downloads into DB")
+}
+
+/// Downloads all present tasks to the given directory. Inserts each task completed in the
+/// downloaded_tarballs table, and removes the completed tasks from the download_tasks table.
+pub fn download_to_dest(conn: &DbConnection, dest: &str) -> std::io::Result<()> {
+    use schema::download_tasks::dsl::*;
+
+    let mut tasks: Vec<DownloadTask> = download_tasks
+        .load(&conn.conn)
+        .expect("Failed to load download tasks from DB");
+
+    for task in tasks {
+        // task.do_download(conn, dest)?;
+        println!("{}", task.url);
+    }
+
+    Ok(())
 }

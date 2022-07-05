@@ -1,3 +1,5 @@
+use crate::download_queue::DownloadTask;
+
 use super::schema;
 use super::schema::downloaded_tarballs;
 use super::DbConnection;
@@ -22,4 +24,23 @@ pub struct DownloadedTarball {
     pub tgz_local_path: String,
 }
 
-impl DownloadedTarball {}
+impl DownloadedTarball {
+    /// Creates the downloaded tarball struct from the given download task and local path (full
+    /// path to file). Sets the time of download to now.
+    pub fn from_task(task: &DownloadTask, local_path: String) -> DownloadedTarball {
+        DownloadedTarball {
+            tarball_url: task.url.clone(),
+            downloaded_at: Utc::now(),
+
+            shasum: task.shasum.clone(),
+            unpacked_size: task.unpacked_size,
+            file_count: task.file_count,
+            integrity: task.integrity.clone(),
+            signature0_sig: task.signature0_sig.clone(),
+            signature0_keyid: task.signature0_keyid.clone(),
+            npm_signature: task.npm_signature.clone(),
+
+            tgz_local_path: local_path,
+        }
+    }
+}
