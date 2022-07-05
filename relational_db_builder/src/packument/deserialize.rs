@@ -10,15 +10,29 @@ use utils::{RemoveInto, FilterJsonCases};
 
 
 fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static str) -> Vec<(String, Spec)> {
-    let dependencies_raw = version_blob.remove(key)
+    let dependencies_maybe_val = version_blob.remove(key)
                                                             .and_then(|x| x.null_to_none())
-                                                            .and_then(|x| x.empty_array_to_none())
-                                                            .map(|x| serde_json::from_value::<Map<String, Value>>(x).unwrap())
-                                                            .unwrap_or_default();
+                                                            .and_then(|x| x.empty_array_to_none());
 
-    dependencies_raw.into_iter().map(|(p, c)|
-        (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
-    ).collect()
+    if let Some(dependencies_val) = dependencies_maybe_val {
+        match dependencies_val {
+            Value::Array(xs) if xs.len() > 0 => {
+                version_blob.insert(key.to_string(), Value::Array(xs));
+                vec![]
+            },
+            Value::Object(dependencies_raw) => {
+                dependencies_raw.into_iter().map(|(p, c)|
+                    (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
+                ).collect()
+            },
+            Value::Bool(_) | Value::Number(_) | Value::String(_) => {
+                panic!("Invalid dependencies");
+            },
+            Value::Null | Value::Array(_) => unreachable!()
+        }
+    } else {
+        vec![]
+    }
 }
 
 fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPackument {
@@ -83,7 +97,7 @@ fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateT
     let modified = times.remove("modified").unwrap();
 
     let version_times: HashMap<Result<Semver, String>, _> = times.into_iter().map(|(v_str, t)| 
-        (semver_spec_serialization::parse_semver(&v_str).map_err(|err| {
+        (semver_spec_serialization::parse_semver(&v_str).map_err(|_err| {
             v_str
         }), t)
     ).collect();
