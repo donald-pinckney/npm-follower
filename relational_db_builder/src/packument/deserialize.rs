@@ -202,12 +202,23 @@ fn only_keep_ok_version_times(version_times: HashMap<Result<Semver, String>, Dat
         .filter_map(|(vr, t)| vr.ok().map(|v| (v, t))).collect()
 }
 
+fn deserialize_latest_tag(dist_tags: &mut Map<String, Value>) -> Option<Semver> {
+    dist_tags.remove_key_unwrap_type::<String>("latest")
+             .and_then(|latest_str| {
+                match semver_spec_serialization::parse_semver(&latest_str) {
+                    Ok(v) => Some(v),
+                    Err(_) => {
+                        dist_tags.insert("latest".to_string(), Value::String(latest_str));
+                        None
+                    }
+                }
+            })
+}
+
 pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument {
     
     let mut dist_tags = j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap();
-    let latest_semver = dist_tags.remove_key_unwrap_type::<String>("latest")
-                                                 .map(|latest_str| 
-                                                    semver_spec_serialization::parse_semver(&latest_str).unwrap());
+    let latest_semver = deserialize_latest_tag(&mut dist_tags);
     
     let (created, modified, version_times) = deserialize_times(&mut j);
 
