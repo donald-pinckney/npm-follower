@@ -259,7 +259,7 @@ CREATE TABLE dependencies (
   dst_package_name              TEXT NOT NULL,
   dst_package_id_if_exists      BIGINT,
 
-  raw_spec                      TEXT NOT NULL,
+  raw_spec                      JSONB NOT NULL,
   spec                          parsed_spec NOT NULL,
 
   secret                        BOOLEAN NOT NULL,

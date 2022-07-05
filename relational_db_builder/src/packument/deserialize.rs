@@ -8,6 +8,15 @@ use super::{Packument, VersionPackument, Dist, Spec};
 
 use utils::{RemoveInto, FilterJsonCases};
 
+fn deserialize_spec(c: Value) -> Spec {
+    match c {
+        Value::String(spec_str) => spec_str.parse().unwrap(),
+        _ => {
+            let err = format!("spec must be a string, received: {}", c);
+            Spec { raw: c, parsed: postgres_db::custom_types::ParsedSpec::Invalid(err) }
+        }
+    }
+}
 
 fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static str) -> Vec<(String, Spec)> {
     let dependencies_maybe_val = version_blob.remove(key)
@@ -26,10 +35,7 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
             },
             Value::Object(dependencies_raw) => {
                 dependencies_raw.into_iter().map(|(p, c)| {
-                    match c {
-                        Value::Null => (p, Spec { raw: "JSON(null)".to_string(), parsed: postgres_db::custom_types::ParsedSpec::Invalid("spec cannot be null".to_string())}),
-                        _ => (p, serde_json::from_value::<String>(c).unwrap().parse().unwrap())
-                    }
+                    (p, deserialize_spec(c))
                 }).collect()
             },
             Value::Bool(_) | Value::Number(_) => {

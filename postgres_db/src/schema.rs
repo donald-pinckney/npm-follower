@@ -16,7 +16,7 @@ table! {
         id -> Int8,
         dst_package_name -> Text,
         dst_package_id_if_exists -> Nullable<Int8>,
-        raw_spec -> Text,
+        raw_spec -> Jsonb,
         spec -> Parsed_spec_struct,
         secret -> Bool,
     }

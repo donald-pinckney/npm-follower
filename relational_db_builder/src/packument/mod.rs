@@ -54,7 +54,7 @@ pub struct Dist {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Spec {
-    pub raw: String,
+    pub raw: Value,
     pub parsed: ParsedSpec
 }
 
