@@ -1,10 +1,7 @@
 use crate::download_queue::DownloadTask;
 
-use super::schema;
 use super::schema::downloaded_tarballs;
-use super::DbConnection;
 use chrono::{DateTime, Utc};
-use diesel::prelude::*;
 use diesel::Queryable;
 
 #[derive(Queryable, Insertable, Debug)]
@@ -42,5 +39,36 @@ impl DownloadedTarball {
 
             tgz_local_path: local_path,
         }
+    }
+}
+
+#[derive(Debug)]
+pub enum DownloadError {
+    Request(reqwest::Error),
+    StatusNotOk(reqwest::StatusCode),
+    Io(std::io::Error),
+}
+
+impl std::error::Error for DownloadError {}
+
+impl std::fmt::Display for DownloadError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DownloadError::Request(e) => write!(f, "Request error: {}", e),
+            DownloadError::StatusNotOk(e) => write!(f, "Status not OK: {}", e),
+            DownloadError::Io(e) => write!(f, "IO error: {}", e),
+        }
+    }
+}
+
+impl From<std::io::Error> for DownloadError {
+    fn from(e: std::io::Error) -> Self {
+        DownloadError::Io(e)
+    }
+}
+
+impl From<reqwest::Error> for DownloadError {
+    fn from(e: reqwest::Error) -> Self {
+        DownloadError::Request(e)
     }
 }

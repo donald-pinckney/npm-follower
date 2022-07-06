@@ -4,6 +4,7 @@ use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use crate::download_tarball::DownloadError;
 use crate::download_tarball::DownloadedTarball;
 
 use super::schema;
@@ -62,23 +63,17 @@ impl DownloadTask {
     }
 
     /// Downloads this task to the given directory.
-    pub async fn do_download(&self, dest: &str) -> std::io::Result<DownloadedTarball> {
+    pub async fn do_download(&self, dest: &str) -> Result<DownloadedTarball, DownloadError> {
         // get the file and download it to dir
-        let res = reqwest::get(&self.url).await.map_err(|e| {
-            std::io::Error::new(
-                std::io::ErrorKind::Other,
-                format!("Failed to download tarball, reqwest error: {}", e),
-            )
-        })?;
+        let res = reqwest::get(&self.url).await?;
+        let status = res.status();
+        if status != reqwest::StatusCode::OK {
+            return Err(DownloadError::StatusNotOk(status));
+        }
         let name = self.url.split('/').last().unwrap();
         let path = std::path::Path::new(dest).join(name);
         let mut file = std::fs::File::create(path.clone())?;
-        let mut body = std::io::Cursor::new(res.bytes().await.map_err(|e| {
-            std::io::Error::new(
-                std::io::ErrorKind::Other,
-                format!("Failed to extract request body, reqwest error: {}", e),
-            )
-        })?);
+        let mut body = std::io::Cursor::new(res.bytes().await?);
         std::io::copy(&mut body, &mut file)?;
 
         let task = DownloadedTarball::from_task(
@@ -121,16 +116,21 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
 
 /// Downloads all present tasks to the given directory. Inserts each task completed in the
 /// downloaded_tarballs table, and removes the completed tasks from the download_tasks table.
-pub fn download_to_dest(conn: &DbConnection, dest: &str) -> std::io::Result<()> {
+pub fn download_to_dest(
+    conn: &DbConnection,
+    dest: &str,
+    num_workers: usize,
+) -> std::io::Result<()> {
     use schema::download_tasks::dsl::*;
 
     let tasks: Vec<DownloadTask> = download_tasks
+        .order(queue_time.asc()) // order by the time they got queued, in ascending order
         .load(&conn.conn)
         .expect("Failed to load download tasks from DB");
     let tasks_len = tasks.len();
 
     let (db_sender, db_receiver) = channel();
-    let pool = DownloadThreadPool::new(10, dest, db_sender);
+    let pool = DownloadThreadPool::new(num_workers, dest, db_sender);
 
     for task in tasks {
         pool.download(task);
@@ -138,21 +138,26 @@ pub fn download_to_dest(conn: &DbConnection, dest: &str) -> std::io::Result<()> 
 
     for _ in 0..tasks_len {
         // TODO: handle error
-        if let DbMessage::Tarball(tarball) = db_receiver.recv().unwrap() {
-            // insert the tarball into the DB
-            diesel::insert_into(schema::downloaded_tarballs::table)
-                .values(&*tarball)
-                .execute(&conn.conn)
-                .expect("Failed to insert downloaded tarball");
+        match db_receiver.recv().unwrap() {
+            DbMessage::Tarball(tarball) => {
+                // insert the tarball into the DB
+                diesel::insert_into(schema::downloaded_tarballs::table)
+                    .values(&*tarball)
+                    .execute(&conn.conn)
+                    .expect("Failed to insert downloaded tarball");
 
-            // delete the task from the download_tasks table
-            diesel::delete(
-                schema::download_tasks::table
-                    .filter(schema::download_tasks::url.eq(&tarball.tarball_url)),
-            )
-            .execute(&conn.conn)
-            .expect("Failed to delete download task");
-            println!("Inserted and removed task {}", tarball.tarball_url);
+                // delete the task from the download_tasks table
+                diesel::delete(
+                    schema::download_tasks::table
+                        .filter(schema::download_tasks::url.eq(&tarball.tarball_url)),
+                )
+                .execute(&conn.conn)
+                .expect("Failed to delete download task");
+                println!("Inserted and removed task {}", tarball.tarball_url);
+            }
+            DbMessage::Error(e, task) => {
+                println!("Error: {} from task: {}", e, task.url);
+            }
         }
     }
 
@@ -164,7 +169,7 @@ pub fn download_to_dest(conn: &DbConnection, dest: &str) -> std::io::Result<()> 
 // the channel message for resulting tarballs to be inserted into the database
 pub enum DbMessage {
     Tarball(Box<DownloadedTarball>),
-    Error, // TODO: more
+    Error(DownloadError, Box<DownloadTask>), // The error and the task that produced it
 }
 
 // The channel message for download tasks in the download thread pool
@@ -198,7 +203,7 @@ impl Worker {
                         let tarball = dl.do_download(&dest).await;
                         match tarball {
                             Ok(tar) => db_sender.send(DbMessage::Tarball(Box::new(tar))).unwrap(),
-                            Err(_e) => db_sender.send(DbMessage::Error).unwrap(),
+                            Err(e) => db_sender.send(DbMessage::Error(e, dl)).unwrap(),
                         }
                     }
                     TaskMessage::Exit => break,
