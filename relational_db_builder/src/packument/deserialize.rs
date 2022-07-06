@@ -10,6 +10,8 @@ use utils::{RemoveInto, FilterJsonCases};
 
 fn deserialize_spec(c: Value) -> Spec {
     match c {
+        // the spec must parse ok. This should hold, since invalid specs are parsed successfully as invalid, not errors.
+        // error should only occur due to I/O problems.
         Value::String(spec_str) => spec_str.parse().unwrap(),
         _ => {
             let err = format!("spec must be a string, received: {}", c);
@@ -54,12 +56,16 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
     let peer_dependencies = deserialize_dependencies(&mut version_blob, "peerDependencies");
     let optional_dependencies = deserialize_dependencies(&mut version_blob, "optionalDependencies");
 
+    // We should always have a "dist" field, and it should always be an object
     let mut dist = version_blob.remove_key_unwrap_type::<Map<String, Value>>("dist").unwrap();
 
+    // If there is a "signatures" field, it should always be an array.
     let sigs_maybe = dist.remove_key_unwrap_type::<Vec<Value>>("signatures");
     let sig0: Option<Map<String, Value>> = sigs_maybe.map(|mut sigs| 
+        // If we have signatures, there should always be 1 element, and it should be an object
         serde_json::from_value(sigs.remove(0)).unwrap()
     );
+    // The signature object at index 0 should always have a "sig" and "keyid", and those should always be strings.
     let sig0_sig_keyid = sig0.map(|mut s| 
         (s.remove_key_unwrap_type::<String>("sig").unwrap(), s.remove_key_unwrap_type::<String>("keyid").unwrap())
     );
@@ -70,19 +76,18 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
 
 
     let dist = Dist {
-        tarball_url: dist.remove_key_unwrap_type::<String>("tarball").unwrap(),
-        shasum: dist.remove_key_unwrap_type::<String>("shasum"),
-        unpacked_size: dist.remove_key_unwrap_type::<i64>("unpackedSize"),
-        file_count: dist.remove_key_unwrap_type::<i64>("fileCount").map(|x| x.try_into().unwrap()),
-        integrity: dist.remove_key_unwrap_type::<String>("integrity"),
+        tarball_url: dist.remove_key_unwrap_type::<String>("tarball").unwrap(), // tarball must exist and be a string
+        shasum: dist.remove_key_unwrap_type::<String>("shasum"), // if shasum exists it must be a string
+        unpacked_size: dist.remove_key_unwrap_type::<i64>("unpackedSize"), // if shasum exists it must be a string
+        file_count: dist.remove_key_unwrap_type::<i64>("fileCount").map(|x| x.try_into().unwrap()), // if file_count exists, must be an i32
+        integrity: dist.remove_key_unwrap_type::<String>("integrity"), // if integrity exists must be a string
         signature0_sig: sig0_sig,
         signature0_keyid: sig0_keyid,
-        npm_signature: dist.remove_key_unwrap_type::<String>("npm-signature"),
+        npm_signature: dist.remove_key_unwrap_type::<String>("npm-signature"), // if npm-signature exists must be a string
     };
 
     let repository_blob = version_blob.remove("repository")
-                                                      .and_then(|x| x.null_to_none())
-                                                      .map(|x| serde_json::from_value::<Value>(x).unwrap());
+                                                      .and_then(|x| x.null_to_none());
     
     VersionPackument {
         prod_dependencies,
@@ -177,8 +182,8 @@ fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, 
 
 fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
     if j.contains_key("time") {
-        assert!(!j.contains_key("ctime"));
-        assert!(!j.contains_key("mtime"));
+        // assert!(!j.contains_key("ctime"));
+        // assert!(!j.contains_key("mtime"));
 
         deserialize_times_normal(j)
     } else if j.contains_key("ctime") {
