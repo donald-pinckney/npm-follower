@@ -1,3 +1,9 @@
+use std::sync::mpsc::channel;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
+use std::sync::Arc;
+use std::sync::Mutex;
+
 use crate::download_tarball::DownloadedTarball;
 
 use super::schema;
@@ -55,9 +61,8 @@ impl DownloadTask {
         }
     }
 
-    /// Downloads this task to the given directory. Inserts the task into the downloaded_tarballs table,
-    /// and deletes it from the download_tasks table.
-    pub async fn do_download(&self, conn: &DbConnection, dest: &str) -> std::io::Result<()> {
+    /// Downloads this task to the given directory.
+    pub async fn do_download(&self, dest: &str) -> std::io::Result<DownloadedTarball> {
         // get the file and download it to dir
         let res = reqwest::get(&self.url).await.map_err(|e| {
             std::io::Error::new(
@@ -76,25 +81,13 @@ impl DownloadTask {
         })?);
         std::io::copy(&mut body, &mut file)?;
 
-        // insert the task into the downloaded_tarballs table
         let task = DownloadedTarball::from_task(
             self,
             // makes the path absolute
             std::fs::canonicalize(path)?.to_str().unwrap().to_string(),
         );
-        diesel::insert_into(schema::downloaded_tarballs::table)
-            .values(&task)
-            .execute(&conn.conn)
-            .expect("Failed to insert downloaded tarball");
 
-        // delete the task from the download_tasks table
-        diesel::delete(
-            schema::download_tasks::table.filter(schema::download_tasks::url.eq(&self.url)),
-        )
-        .execute(&conn.conn)
-        .expect("Failed to delete download task");
-
-        Ok(())
+        Ok(task)
     }
 }
 
@@ -131,14 +124,155 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
 pub fn download_to_dest(conn: &DbConnection, dest: &str) -> std::io::Result<()> {
     use schema::download_tasks::dsl::*;
 
-    let mut tasks: Vec<DownloadTask> = download_tasks
+    let tasks: Vec<DownloadTask> = download_tasks
         .load(&conn.conn)
         .expect("Failed to load download tasks from DB");
+    let tasks_len = tasks.len();
+
+    let (db_sender, db_receiver) = channel();
+    let pool = DownloadThreadPool::new(10, dest, db_sender);
 
     for task in tasks {
-        // task.do_download(conn, dest)?;
-        println!("{}", task.url);
+        pool.download(task);
     }
 
+    for _ in 0..tasks_len {
+        // TODO: handle error
+        if let DbMessage::Tarball(tarball) = db_receiver.recv().unwrap() {
+            // insert the tarball into the DB
+            diesel::insert_into(schema::downloaded_tarballs::table)
+                .values(&*tarball)
+                .execute(&conn.conn)
+                .expect("Failed to insert downloaded tarball");
+
+            // delete the task from the download_tasks table
+            diesel::delete(
+                schema::download_tasks::table
+                    .filter(schema::download_tasks::url.eq(&tarball.tarball_url)),
+            )
+            .execute(&conn.conn)
+            .expect("Failed to delete download task");
+            println!("Inserted and removed task {}", tarball.tarball_url);
+        }
+    }
+
+    println!("done");
+
     Ok(())
+}
+
+// the channel message for resulting tarballs to be inserted into the database
+pub enum DbMessage {
+    Tarball(Box<DownloadedTarball>),
+    Error, // TODO: more
+}
+
+// The channel message for download tasks in the download thread pool
+enum TaskMessage {
+    Task(Box<DownloadTask>), // where the string is the path to the destination directory
+    Exit,
+}
+
+#[derive(Debug)]
+struct Worker {
+    id: usize,
+    thread: Option<tokio::task::JoinHandle<()>>,
+}
+
+impl Worker {
+    fn make(
+        id: usize,
+        task_receiver: Arc<Mutex<Receiver<TaskMessage>>>,
+        handle: tokio::runtime::Handle,
+        db_sender: Sender<DbMessage>,
+        destination: &str,
+    ) -> Worker {
+        let dest = destination.to_string();
+        let task = handle.spawn(async move {
+            println!("Worker {} started", id);
+            loop {
+                let msg = task_receiver.lock().unwrap().recv().unwrap();
+                match msg {
+                    TaskMessage::Task(dl) => {
+                        println!("Worker {} downloading {}", id, dl.url);
+                        let tarball = dl.do_download(&dest).await;
+                        match tarball {
+                            Ok(tar) => db_sender.send(DbMessage::Tarball(Box::new(tar))).unwrap(),
+                            Err(_e) => db_sender.send(DbMessage::Error).unwrap(),
+                        }
+                    }
+                    TaskMessage::Exit => break,
+                }
+            }
+        });
+
+        Worker {
+            id,
+            thread: Some(task),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct DownloadThreadPool {
+    workers: Vec<Worker>,
+    task_sender: Sender<TaskMessage>,
+    tokio_runtime: tokio::runtime::Runtime,
+}
+
+impl DownloadThreadPool {
+    pub fn new(size: usize, dest: &str, db_sender: Sender<DbMessage>) -> DownloadThreadPool {
+        assert!(size > 0);
+
+        let (task_sender, task_receiver) = channel();
+
+        let arc_task_receiver = Arc::new(Mutex::new(task_receiver));
+
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+
+        let mut workers = Vec::with_capacity(size);
+        for id in 0..size {
+            workers.push(Worker::make(
+                id,
+                Arc::clone(&arc_task_receiver),
+                rt.handle().clone(),
+                db_sender.clone(),
+                dest,
+            ));
+        }
+
+        DownloadThreadPool {
+            workers,
+            task_sender,
+            tokio_runtime: rt,
+        }
+    }
+
+    pub fn download(&self, task: DownloadTask) {
+        self.task_sender
+            .send(TaskMessage::Task(Box::new(task)))
+            .unwrap();
+    }
+}
+
+impl Drop for DownloadThreadPool {
+    fn drop(&mut self) {
+        println!("Sending terminate message to all workers.");
+
+        for _ in &self.workers {
+            self.task_sender.send(TaskMessage::Exit).unwrap();
+        }
+
+        for worker in &mut self.workers {
+            println!("Shutting down worker {}", worker.id);
+
+            let thread = worker.thread.take().unwrap();
+            self.tokio_runtime.block_on(async {
+                thread.await.unwrap();
+            });
+        }
+    }
 }
