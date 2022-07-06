@@ -41,6 +41,8 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
                 }).collect()
             },
             Value::Bool(_) | Value::Number(_) => {
+                // These are some really weird dependency cases, so we assume they don't happen.
+                // If they do, this case can be handled same as the Array or String cases.
                 panic!("Invalid dependencies");
             },
             Value::Null | Value::Array(_) => unreachable!()
@@ -102,10 +104,13 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
 
 
 fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
+    // If time exists (checked in deserialize_times), then time must be a dictionary
     let time_raw = j.remove_key_unwrap_type::<Map<String, Value>>("time").unwrap();
     let mut times: HashMap<_, _> = time_raw.into_iter().flat_map(|(k, t_str)| 
+        // Every entry in time must be a valid date string
         Some((k, parse_datetime(serde_json::from_value::<String>(t_str).unwrap())))
     ).collect();
+    // There must be created and modified times
     let created = times.remove("created").unwrap();
     let modified = times.remove("modified").unwrap();
 
@@ -119,24 +124,30 @@ fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateT
 }
 
 fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
+    // If ctime and mtime exist (checked in deserialize_times), they must be strings.
     let created_raw = j.remove_key_unwrap_type::<String>("ctime").unwrap();
     let modified_raw = j.remove_key_unwrap_type::<String>("mtime").unwrap();
 
+    // And they must parse as valid dates.
     let created = parse_datetime(created_raw);
     let modified = parse_datetime(modified_raw);
 
     let mut version_times = HashMap::new();
 
+    // There must be a versions field that is a dictionary.
     let versions_map = j.get_mut("versions")
                                                  .unwrap()
                                                  .as_object_mut()
                                                  .unwrap();
     for (v_key, v_blob) in versions_map.iter_mut() {
+        // Each version must be a dictionary
         let v_obj = v_blob.as_object_mut().unwrap();
 
+        // If it has ctime and mtime, they must be strings
         let v_created_raw_maybe = v_obj.remove_key_unwrap_type::<String>("ctime");
         let v_modified_raw_maybe = v_obj.remove_key_unwrap_type::<String>("mtime");
 
+        // and must parse as valid dates. Since created == modified here, we only keep created.
         let v_time = match (v_created_raw_maybe, v_modified_raw_maybe) {
             (Some(v_created_raw), Some(v_modified_raw)) => {
                 assert!(v_created_raw == v_modified_raw);
@@ -146,9 +157,10 @@ fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTi
                 let fake_time = parse_datetime("2015-01-01T00:00:00.000Z".to_string());
                 fake_time
             },
-            _ => panic!("Unknown ctime / mtime combination.")
+            _ => panic!("Unknown ctime / mtime combination.") // we expect there to be either: ctime & mtime, or neither of them.
         };
 
+        // And the version string must parse ok.
         let semver = semver_spec_serialization::parse_semver(v_key).unwrap();
         version_times.insert(Ok(semver), v_time);
     }
@@ -162,16 +174,19 @@ fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, 
 
     let mut version_times = HashMap::new();
 
+    // There must be a versions field that is a dictionary.
     let versions_map = j.get("versions")
                                              .unwrap()
                                              .as_object()
                                              .unwrap();
     for (v_key, v_blob) in versions_map.iter() {
+        // Each version should be a dictionary, and shouldn't have time or ctime or mtime (in this case).
         let v_obj = v_blob.as_object().unwrap();
         assert!(!v_obj.contains_key("time"));
         assert!(!v_obj.contains_key("ctime"));
         assert!(!v_obj.contains_key("mtime"));
 
+        // The version string must parse ok.
         let semver = semver_spec_serialization::parse_semver(v_key).unwrap();
         version_times.insert(Ok(semver), fake_time);
     }
@@ -182,11 +197,13 @@ fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, 
 
 fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
     if j.contains_key("time") {
+        // Note: if we have time, then possibly we have ctime and mtime, but we ignore those.
         // assert!(!j.contains_key("ctime"));
         // assert!(!j.contains_key("mtime"));
 
         deserialize_times_normal(j)
     } else if j.contains_key("ctime") {
+        // If we have ctime, then we also have to have mtime.
         assert!(j.contains_key("mtime"));
         assert!(!j.contains_key("time"));
         
@@ -203,11 +220,13 @@ fn only_keep_ok_version_times(version_times: HashMap<Result<Semver, String>, Dat
 }
 
 fn deserialize_latest_tag(dist_tags: &mut Map<String, Value>) -> Option<Semver> {
+    // If we have a latest tag, then it must be a string
     dist_tags.remove_key_unwrap_type::<String>("latest")
              .and_then(|latest_str| {
                 match semver_spec_serialization::parse_semver(&latest_str) {
                     Ok(v) => Some(v),
                     Err(_) => {
+                        // If it fails to parse as a version, then we put it back into the dist tags.
                         dist_tags.insert("latest".to_string(), Value::String(latest_str));
                         None
                     }
@@ -216,20 +235,20 @@ fn deserialize_latest_tag(dist_tags: &mut Map<String, Value>) -> Option<Semver> 
 }
 
 pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument {
-    
+    // We have to have dist-tags, and it must be a dictionary
     let mut dist_tags = j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap();
     let latest_semver = deserialize_latest_tag(&mut dist_tags);
     
     let (created, modified, version_times) = deserialize_times(&mut j);
 
+    // We have to have versions, and it must be a dictionary
     let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
     let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
         (
-            semver_spec_serialization::parse_semver(&v_str).unwrap(), 
-            deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap())
+            semver_spec_serialization::parse_semver(&v_str).unwrap(), // each version string must parse ok
+            deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap()) // and each version data must be a dictionary
         )
     ).collect();
-
     
 
     Packument::Normal {
@@ -246,14 +265,17 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
 pub fn deserialize_packument_blob_unpublished(mut j: Map<String, Value>) -> Packument {
 
     if j.contains_key("dist-tags") {
+        // We expect unpublished packages to never contain dist-tags
         panic!("Unpublished package shouldn't contain key: dist-tags");
     }
 
     if j.contains_key("versions") {
+        // We expect unpublished packages to never contain versions
         panic!("Unpublished package shouldn't contain key: versions");
     }
 
-    // Note that we have to remove the "unpublished" key from the times data, otherwise deserialize_times would fail to parse it.
+    // For an unpublished package, we must have a time dictionary, and it must have an unpublished key.
+    // Note that we have to remove the unpublished key from the times data, otherwise deserialize_times would fail to parse it.
     let unpublished_blob = j.get_mut("time").unwrap().as_object_mut().unwrap().remove_key_unwrap_type::<Value>("unpublished").unwrap();
     let (created, modified, extra_version_times) = deserialize_times(&mut j);
 
