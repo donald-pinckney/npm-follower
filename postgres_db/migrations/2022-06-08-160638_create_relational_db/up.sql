@@ -232,7 +232,6 @@ CREATE TABLE versions (
   -- In addition, the tarball_url may not yet exist in downloaded_tarballs,
   -- if the tarball hasn't been downloaded yet!
   tarball_url             TEXT NOT NULL,
-  description             TEXT,
   repository              JSONB,
   created                 TIMESTAMP WITH TIME ZONE NOT NULL,
   deleted                 BOOLEAN NOT NULL,

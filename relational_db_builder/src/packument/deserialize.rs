@@ -49,10 +49,6 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
 }
 
 fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPackument {
-    let description = version_blob.remove("description")
-                                                  .and_then(|x| x.null_to_none())
-                                                  .map(|x| serde_json::from_value::<String>(x).unwrap());
-
     let prod_dependencies = deserialize_dependencies(&mut version_blob, "dependencies");
     let dev_dependencies = deserialize_dependencies(&mut version_blob, "devDependencies");
     let peer_dependencies = deserialize_dependencies(&mut version_blob, "peerDependencies");
@@ -94,7 +90,6 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         peer_dependencies,
         optional_dependencies,
         dist,
-        description,
         repository: repository_blob,
         extra_metadata: version_blob.into_iter().collect()
     }

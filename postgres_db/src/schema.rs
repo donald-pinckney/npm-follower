@@ -91,7 +91,6 @@ table! {
         package_id -> Int8,
         semver -> Semver_struct,
         tarball_url -> Text,
-        description -> Nullable<Text>,
         repository -> Nullable<Jsonb>,
         created -> Timestamptz,
         deleted -> Bool,

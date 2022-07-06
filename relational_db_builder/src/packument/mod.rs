@@ -35,7 +35,6 @@ pub struct VersionPackument {
     pub peer_dependencies: Vec<(String, Spec)>,
     pub optional_dependencies: Vec<(String, Spec)>,
     pub dist: Dist,
-    pub description: Option<String>,
     pub repository: Option<Value>,
     pub extra_metadata: HashMap<String, Value>
 }
