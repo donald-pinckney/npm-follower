@@ -64,6 +64,8 @@ impl DownloadTask {
     }
 
     /// Downloads this task to the given directory.
+    /// # Panics
+    /// if there are any IO errors in creating the file.
     pub async fn do_download(&self, dest: &str) -> Result<DownloadedTarball, DownloadError> {
         // get the file and download it to dir
         let res = reqwest::get(&self.url).await?;
@@ -73,14 +75,18 @@ impl DownloadTask {
         }
         let name = self.url.split('/').last().unwrap();
         let path = std::path::Path::new(dest).join(name);
-        let mut file = std::fs::File::create(path.clone())?;
+        let mut file = std::fs::File::create(path.clone()).unwrap();
         let mut body = std::io::Cursor::new(res.bytes().await?);
-        std::io::copy(&mut body, &mut file)?;
+        std::io::copy(&mut body, &mut file).unwrap();
 
         let task = DownloadedTarball::from_task(
             self,
             // makes the path absolute
-            std::fs::canonicalize(path)?.to_str().unwrap().to_string(),
+            std::fs::canonicalize(path)
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .to_string(),
         );
 
         Ok(task)
@@ -124,7 +130,9 @@ pub fn download_to_dest(
 ) -> std::io::Result<()> {
     use schema::download_tasks::dsl::*;
 
+    // get all tasks with no failed downloads
     let tasks: Vec<DownloadTask> = download_tasks
+        .filter(failed.is_null())
         .order(queue_time.asc()) // order by the time they got queued, in ascending order
         .load(&conn.conn)
         .expect("Failed to load download tasks from DB");
@@ -138,7 +146,6 @@ pub fn download_to_dest(
     }
 
     for _ in 0..tasks_len {
-        // TODO: handle error
         match db_receiver.recv().unwrap() {
             DbMessage::Tarball(tarball) => {
                 // insert the tarball into the DB
@@ -157,7 +164,15 @@ pub fn download_to_dest(
                 println!("Inserted and removed task {}", tarball.tarball_url);
             }
             DbMessage::Error(e, task) => {
-                println!("Error: {} from task: {}", e, task.url);
+                println!("Error downloading task {}: {}", task.url, e);
+                // modify the task in the DB such that the failed column is set to its
+                // corresponding error
+                diesel::update(
+                    schema::download_tasks::table.filter(schema::download_tasks::url.eq(&task.url)),
+                )
+                .set(failed.eq(Some(DownlaodFailed::from(e))))
+                .execute(&conn.conn)
+                .expect("Failed to update download task after error");
             }
         }
     }

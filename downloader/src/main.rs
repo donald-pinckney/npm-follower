@@ -20,6 +20,7 @@ pub fn main() {
     // check that the directory exists
     if !std::path::Path::new(dest).exists() {
         eprintln!("Destination directory does not exist");
+        std::process::exit(1);
     }
 
     download_to_dest(&conn, dest, num_workers).expect("Failed to download");

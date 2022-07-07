@@ -10,6 +10,7 @@ use sql_types::*;
 #[sql_type = "Text"]
 pub enum DownlaodFailed {
     Res404,
+    Other,
 }
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
