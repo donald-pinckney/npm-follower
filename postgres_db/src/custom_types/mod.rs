@@ -1,10 +1,16 @@
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
-use serde::{Serialize, Deserialize};
-use sql_types::*;
 use diesel::sql_types::Array;
+use diesel::sql_types::Text;
+use serde::{Deserialize, Serialize};
+use sql_types::*;
 
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
+#[sql_type = "Text"]
+pub enum DownlaodFailed {
+    Res404,
+}
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "SemverSql"]
@@ -13,16 +19,15 @@ pub struct Semver {
     pub minor: i64,
     pub bug: i64,
     pub prerelease: Vec<PrereleaseTag>,
-    pub build: Vec<String>
+    pub build: Vec<String>,
 }
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
-    Int(i64)
+    Int(i64),
 }
-
 
 #[derive(Debug, FromSqlRow, AsExpression, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[sql_type = "ParsedSpecStructSql"]
@@ -34,13 +39,13 @@ pub enum ParsedSpec {
     Alias(String, Option<i64>, AliasSubspec),
     File(String),
     Directory(String),
-    Invalid(String)
+    Invalid(String),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum AliasSubspec {
     Range(VersionConstraint),
-    Tag(String)
+    Tag(String),
 }
 
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -51,25 +56,24 @@ pub enum VersionComparator {
     Gt(Semver),
     Gte(Semver),
     Lt(Semver),
-    Lte(Semver)
+    Lte(Semver),
 }
 
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[sql_type = "Array<ConstraintConjunctsSql>"]
 pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 
-
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
 #[sql_type = "PackageMetadataStructSql"]
 pub enum PackageMetadata {
-    Normal { 
-        dist_tag_latest_version: Option<i64>, 
-        created: DateTime<Utc>, 
-        modified: DateTime<Utc>, 
-        other_dist_tags: HashMap<String, String> 
+    Normal {
+        dist_tag_latest_version: Option<i64>,
+        created: DateTime<Utc>,
+        modified: DateTime<Utc>,
+        other_dist_tags: HashMap<String, String>,
     },
     Unpublished {
-        created: DateTime<Utc>, 
+        created: DateTime<Utc>,
         modified: DateTime<Utc>,
         other_time_data: HashMap<String, DateTime<Utc>>,
         unpublished_data: serde_json::Value,
@@ -107,7 +111,6 @@ pub mod sql_types {
     pub struct PackageMetadataStructSql;
 }
 
-
 #[allow(non_camel_case_types)]
 pub mod sql_type_names {
     pub type Repository_struct = super::sql_types::RepositorySql;
@@ -116,12 +119,11 @@ pub mod sql_type_names {
     pub type Constraint_conjuncts_struct = super::sql_types::ConstraintConjunctsSql;
     pub type Parsed_spec_struct = super::sql_types::ParsedSpecStructSql;
     pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
-
 }
 
-
+mod package_metadata;
+mod parsed_spec;
 mod semver;
 mod version_comparator;
 mod version_constraint;
-mod parsed_spec;
-mod package_metadata;
+mod download_failed;

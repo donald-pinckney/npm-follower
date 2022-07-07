@@ -4,6 +4,7 @@ use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use crate::custom_types::DownlaodFailed;
 use crate::download_tarball::DownloadError;
 use crate::download_tarball::DownloadedTarball;
 
@@ -30,7 +31,7 @@ pub struct DownloadTask {
     pub queue_time: DateTime<Utc>,
     pub num_failures: i32,
     pub last_failure: Option<DateTime<Utc>>,
-    pub success: bool,
+    pub failed: Option<DownlaodFailed>,
 }
 
 impl DownloadTask {
@@ -58,7 +59,7 @@ impl DownloadTask {
             queue_time: Utc::now(),
             num_failures: 0,
             last_failure: None,
-            success: false,
+            failed: None,
         }
     }
 
