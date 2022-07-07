@@ -16,7 +16,7 @@ table! {
         id -> Int8,
         dst_package_name -> Text,
         dst_package_id_if_exists -> Nullable<Int8>,
-        raw_spec -> Text,
+        raw_spec -> Jsonb,
         spec -> Parsed_spec_struct,
         secret -> Bool,
     }
@@ -91,7 +91,6 @@ table! {
         package_id -> Int8,
         semver -> Semver_struct,
         tarball_url -> Text,
-        description -> Nullable<Text>,
         repository -> Nullable<Jsonb>,
         created -> Timestamptz,
         deleted -> Bool,

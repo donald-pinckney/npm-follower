@@ -40,39 +40,50 @@ Some(("@avalos/extjs-gpl", Normal(
                 signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
                 npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJhzGt8CRA9TVsSAnZWagAANKoQAIH0iaGE1DNfI5myAOcA\ndHVACO6tamwBH/525+ATdJv7uIW6kYp9CX+Y48wP2rz7K4zXVN8TSnUyjEJs\nmyaM0eLviLILg8f7hf0hf70WQEIPa7IYeDVsqC5+oc6TI7jq+exZ6ZJzukjB\nz72DqKmwX4w/2LG8RAptoBZxBiq+ZDyX+SLkmzqdD4xiPX1P8C3VAJllexFV\nEo4mV9nrpa/zODG3upTobASv1NJlmjYJZPrscZx3wb84x7JgugYS37FnBCU4\n5exkoku9fQ1fOg5/p0Ld+8Z6aT8Tba19knWbL+hsOYyo1lBF/3lkPzjX/hlh\n2mlHYwYkH3bTsdZ0BAjMw40s3/W6so31v9oqPW6U8iGqGaXfAZ7IDWtdsLWc\nTV1rzzOTvMQoQat/ccLsZX/UpfKnf35nXkVKdbUfSK+CgmW73W3qHOTsXUkA\nJ3WTGU5y3AyeHAMlM/Kkyjk9WnlhnLM602hkV/bFwu9a16y9g5zlgiZV3iST\ndSfPtMCTWQY1NK3c6iuJ27CpSrG+DbuuA4DwN8Em+jiQuossbNlZiTCw4kO8\nDMo1sr9a8RFZt/jpO6e+UzBaiXDJftl/YgH26Vt9lnqHkMcnKOfF0qB/c5jh\n6qNwn3NZb9WOymGjrumdMMB9MU8tKP94OZC0aJ5EU94sorATIrbpD4dApeFa\nEeN6\r\n=c9hY\r\n-----END PGP SIGNATURE-----\r\n"),
             ),
-            description: Some("This is the Sencha Ext JS Framework Package, or just \"ext\" for short."),
             repository: None,
             extra_metadata: {
-                "_npmUser": {
-                    "email": "avalos@disroot.org",
-                    "name": "avalos",
-                },
-                "version": "7.0.0",
-                "properties": {
-                    "skip.sass": 1,
-                    "skip.slice": 1,
-                },
-                "build": {
-                    "dir": "${package.output.base}",
-                },
+                "creator": "Sencha",
                 "resource": {
                     "paths": [
                         "resources",
                     ],
                 },
+                "detailedDescription": "Sencha Ext JS JavaScript Framework",
+                "sass": {
+                    "etc": "${package.dir}/sass/etc/all.scss",
+                    "fashion": true,
+                    "namespace": "Ext",
+                    "src": "${package.dir}/sass/src",
+                    "var": "${package.dir}/sass/var",
+                },
+                "_nodeVersion": "16.11.1",
                 "compatVersion": "7.0.0",
-                "creator": "Sencha",
-                "signatures": [
-                    {
-                        "algorithm": "SHA1withRSA",
-                        "created": "2020-01-14T07:08:07Z",
-                        "name": "Sencha",
-                        "nonce": "7nieRql1fas=",
-                        "signature": "UjGi4mP+Kp+YsuDnMvsGW+WAq1tB3AxpaZUL9VKqj8M7rPHwTAa11w5AG8hYisuic+h2sqEevIL0UQ6CBwBGQHsZOC0qpYi5wmYGouiGPAkTiGyZv1Qh0Ocvy2EVHMstXgjwkIGG64Pe5rP1wfgu+3of0Qpi0vu/XhPTaCAKkr5GVHoLbSPlsBIxjeKSro7C/m4eeQDCIxjwypW2aVk3kpyqqQmhDQjRxy+qEK652uWDUgOB6wIXLK2fVzhqgRSPudOm6HB7uS5re3qEHN0JmICW8sTnPTrYeUVilBoibBrcltwg3PPZqMpcwRvSumnE+60U1GYZTpd9Cq1OiiEusw==",
-                        "uuid": "1d6b0d9c-3333-4e65-885f-5b07a1fc3198",
+                "overrides": "${package.dir}/overrides",
+                "classpath": "${package.dir}/src",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/extjs-gpl_7.0.0_1635196074923_0.19884833814998726",
+                },
+                "output": "${package.dir}/build",
+                "type": "framework",
+                "build": {
+                    "dir": "${package.output.base}",
+                },
+                "_npmUser": {
+                    "email": "avalos@disroot.org",
+                    "name": "avalos",
+                },
+                "format": "1",
+                "version": "7.0.0",
+                "language": {
+                    "js": {
+                        "input": {
+                            "version": "ES5",
+                        },
                     },
-                ],
-                "_npmVersion": "8.1.0",
+                },
+                "namespace": "Ext",
+                "name": "@avalos/extjs-gpl",
                 "subpkgs": {
                     "dir": "${package.dir}",
                     "packages": [
@@ -90,30 +101,24 @@ Some(("@avalos/extjs-gpl", Normal(
                     ],
                 },
                 "summary": "Ext JS",
-                "_hasShrinkwrap": false,
                 "maintainers": [
                     {
                         "email": "avalos@disroot.org",
                         "name": "avalos",
                     },
                 ],
+                "description": "This is the Sencha Ext JS Framework Package, or just \"ext\" for short.",
+                "signatures": [
+                    {
+                        "algorithm": "SHA1withRSA",
+                        "created": "2020-01-14T07:08:07Z",
+                        "name": "Sencha",
+                        "nonce": "7nieRql1fas=",
+                        "signature": "UjGi4mP+Kp+YsuDnMvsGW+WAq1tB3AxpaZUL9VKqj8M7rPHwTAa11w5AG8hYisuic+h2sqEevIL0UQ6CBwBGQHsZOC0qpYi5wmYGouiGPAkTiGyZv1Qh0Ocvy2EVHMstXgjwkIGG64Pe5rP1wfgu+3of0Qpi0vu/XhPTaCAKkr5GVHoLbSPlsBIxjeKSro7C/m4eeQDCIxjwypW2aVk3kpyqqQmhDQjRxy+qEK652uWDUgOB6wIXLK2fVzhqgRSPudOm6HB7uS5re3qEHN0JmICW8sTnPTrYeUVilBoibBrcltwg3PPZqMpcwRvSumnE+60U1GYZTpd9Cq1OiiEusw==",
+                        "uuid": "1d6b0d9c-3333-4e65-885f-5b07a1fc3198",
+                    },
+                ],
                 "directories": {},
-                "type": "framework",
-                "name": "@avalos/extjs-gpl",
-                "sass": {
-                    "etc": "${package.dir}/sass/etc/all.scss",
-                    "fashion": true,
-                    "namespace": "Ext",
-                    "src": "${package.dir}/sass/src",
-                    "var": "${package.dir}/sass/var",
-                },
-                "format": "1",
-                "_id": "@avalos/extjs-gpl@7.0.0",
-                "_nodeVersion": "16.11.1",
-                "detailedDescription": "Sencha Ext JS JavaScript Framework",
-                "output": "${package.dir}/build",
-                "overrides": "${package.dir}/overrides",
-                "namespace": "Ext",
                 "example": {
                     "apps": [
                         "admin-dashboard",
@@ -140,18 +145,13 @@ Some(("@avalos/extjs-gpl", Normal(
                         "templates",
                     ],
                 },
-                "classpath": "${package.dir}/src",
-                "language": {
-                    "js": {
-                        "input": {
-                            "version": "ES5",
-                        },
-                    },
+                "_hasShrinkwrap": false,
+                "properties": {
+                    "skip.sass": 1,
+                    "skip.slice": 1,
                 },
-                "_npmOperationalInternal": {
-                    "host": "s3://npm-registry-packages",
-                    "tmp": "tmp/extjs-gpl_7.0.0_1635196074923_0.19884833814998726",
-                },
+                "_id": "@avalos/extjs-gpl@7.0.0",
+                "_npmVersion": "8.1.0",
             },
         ),
     },

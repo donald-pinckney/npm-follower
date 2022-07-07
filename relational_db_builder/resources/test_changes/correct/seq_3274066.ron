@@ -13,10 +13,10 @@ Some(("sinopib", Normal(
         (
             major: 1,
             minor: 4,
-            bug: 1,
+            bug: 0,
             prerelease: [],
             build: [],
-        ): "2016-01-18T19:11:38.987Z",
+        ): "2016-01-18T18:53:19.778Z",
         (
             major: 1,
             minor: 4,
@@ -27,10 +27,10 @@ Some(("sinopib", Normal(
         (
             major: 1,
             minor: 4,
-            bug: 0,
+            bug: 1,
             prerelease: [],
             build: [],
-        ): "2016-01-18T18:53:19.778Z",
+        ): "2016-01-18T19:11:38.987Z",
         (
             major: 1,
             minor: 4,
@@ -43,7 +43,7 @@ Some(("sinopib", Normal(
         (
             major: 1,
             minor: 4,
-            bug: 0,
+            bug: 3,
             prerelease: [],
             build: [],
         ): (
@@ -909,8 +909,8 @@ Some(("sinopib", Normal(
             peer_dependencies: [],
             optional_dependencies: [],
             dist: (
-                tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.0.tgz",
-                shasum: Some("38825dcfcf650c3f79506b073b37fe3c284333e6"),
+                tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.3.tgz",
+                shasum: Some("09d810aee8df3dfee3066a698b22ed1ab11ce087"),
                 unpacked_size: None,
                 file_count: None,
                 integrity: None,
@@ -918,17 +918,61 @@ Some(("sinopib", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            description: Some("Private npm repository server"),
             repository: Some({
                 "type": "git",
                 "url": "git://github.com/rlidwka/sinopia",
             }),
             extra_metadata: {
-                "preferGlobal": true,
+                "_from": ".",
+                "bugs": {
+                    "url": "https://github.com/rlidwka/sinopia/issues",
+                },
                 "engines": {
                     "node": ">=0.10",
                 },
-                "gitHead": "a168d4a12ac45c1ba6814df9a39b168bb3cdf97e",
+                "_id": "sinopib@1.4.3",
+                "author": {
+                    "email": "alex@kocharin.ru",
+                    "name": "Alex Kocharin",
+                },
+                "_nodeVersion": "4.0.0",
+                "license": {
+                    "type": "WTFPL",
+                    "url": "http://www.wtfpl.net/txt/copying/",
+                },
+                "_shasum": "09d810aee8df3dfee3066a698b22ed1ab11ce087",
+                "preferGlobal": true,
+                "_npmUser": {
+                    "email": "mathieumg@gmail.com",
+                    "name": "mathieumg",
+                },
+                "homepage": "https://github.com/rlidwka/sinopia",
+                "_npmVersion": "2.4.2",
+                "gitHead": "4fbc97717cbd0acb11253ef420f73cfd14695780",
+                "scripts": {
+                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
+                    "lint": "eslint .",
+                    "prepublish": "js-yaml package.yaml > package.json",
+                    "test": "eslint . && mocha ./test/functional ./test/unit",
+                    "test-only": "mocha ./test/functional ./test/unit",
+                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
+                },
+                "bin": {
+                    "sinopia": "./bin/sinopia",
+                },
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
+                },
+                "main": "index.js",
+                "description": "Private npm repository server",
+                "maintainers": [
+                    {
+                        "email": "mathieumg@gmail.com",
+                        "name": "mathieumg",
+                    },
+                ],
+                "name": "sinopib",
+                "version": "1.4.3",
                 "keywords": [
                     "private",
                     "package",
@@ -938,50 +982,6 @@ Some(("sinopib", Normal(
                     "proxy",
                     "server",
                 ],
-                "license": {
-                    "type": "WTFPL",
-                    "url": "http://www.wtfpl.net/txt/copying/",
-                },
-                "main": "index.js",
-                "maintainers": [
-                    {
-                        "email": "mathieumg@gmail.com",
-                        "name": "mathieumg",
-                    },
-                ],
-                "author": {
-                    "email": "alex@kocharin.ru",
-                    "name": "Alex Kocharin",
-                },
-                "scripts": {
-                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
-                    "lint": "eslint .",
-                    "prepublish": "js-yaml package.yaml > package.json",
-                    "test": "eslint . && mocha ./test/functional ./test/unit",
-                    "test-only": "mocha ./test/functional ./test/unit",
-                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
-                },
-                "name": "sinopib",
-                "_npmUser": {
-                    "email": "mathieumg@gmail.com",
-                    "name": "mathieumg",
-                },
-                "homepage": "https://github.com/rlidwka/sinopia",
-                "version": "1.4.0",
-                "_shasum": "38825dcfcf650c3f79506b073b37fe3c284333e6",
-                "bugs": {
-                    "url": "https://github.com/rlidwka/sinopia/issues",
-                },
-                "_id": "sinopib@1.4.0",
-                "_nodeVersion": "4.0.0",
-                "bin": {
-                    "sinopia": "./bin/sinopia",
-                },
-                "_npmVersion": "2.4.2",
-                "_from": ".",
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
             },
         ),
         (
@@ -1862,16 +1862,28 @@ Some(("sinopib", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            description: Some("Private npm repository server"),
             repository: Some({
                 "type": "git",
                 "url": "git://github.com/rlidwka/sinopia",
             }),
             extra_metadata: {
+                "_npmVersion": "2.4.2",
                 "author": {
                     "email": "alex@kocharin.ru",
                     "name": "Alex Kocharin",
                 },
+                "bin": {
+                    "sinopia": "./bin/sinopia",
+                },
+                "_npmUser": {
+                    "email": "mathieumg@gmail.com",
+                    "name": "mathieumg",
+                },
+                "gitHead": "146281609f567fb8f4deeb4fc6a86dc974e766a0",
+                "version": "1.4.1",
+                "name": "sinopib",
+                "_from": ".",
+                "_nodeVersion": "4.0.0",
                 "scripts": {
                     "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
                     "lint": "eslint .",
@@ -1880,10 +1892,19 @@ Some(("sinopib", Normal(
                     "test-only": "mocha ./test/functional ./test/unit",
                     "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
                 },
-                "preferGlobal": true,
-                "gitHead": "146281609f567fb8f4deeb4fc6a86dc974e766a0",
-                "bin": {
-                    "sinopia": "./bin/sinopia",
+                "keywords": [
+                    "private",
+                    "package",
+                    "repository",
+                    "registry",
+                    "modules",
+                    "proxy",
+                    "server",
+                ],
+                "_shasum": "4745b387791de6af5d5361a3b045d59e031d7633",
+                "description": "Private npm repository server",
+                "engines": {
+                    "node": ">=0.10",
                 },
                 "main": "index.js",
                 "maintainers": [
@@ -1895,37 +1916,16 @@ Some(("sinopib", Normal(
                 "publishConfig": {
                     "registry": "https://registry.npmjs.org/",
                 },
-                "version": "1.4.1",
-                "engines": {
-                    "node": ">=0.10",
-                },
                 "license": {
                     "type": "WTFPL",
                     "url": "http://www.wtfpl.net/txt/copying/",
                 },
-                "_from": ".",
-                "_nodeVersion": "4.0.0",
-                "keywords": [
-                    "private",
-                    "package",
-                    "repository",
-                    "registry",
-                    "modules",
-                    "proxy",
-                    "server",
-                ],
-                "_npmVersion": "2.4.2",
+                "homepage": "https://github.com/rlidwka/sinopia",
+                "_id": "sinopib@1.4.1",
                 "bugs": {
                     "url": "https://github.com/rlidwka/sinopia/issues",
                 },
-                "name": "sinopib",
-                "_id": "sinopib@1.4.1",
-                "homepage": "https://github.com/rlidwka/sinopia",
-                "_npmUser": {
-                    "email": "mathieumg@gmail.com",
-                    "name": "mathieumg",
-                },
-                "_shasum": "4745b387791de6af5d5361a3b045d59e031d7633",
+                "preferGlobal": true,
             },
         ),
         (
@@ -2806,20 +2806,40 @@ Some(("sinopib", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            description: Some("Private npm repository server"),
             repository: Some({
                 "type": "git",
                 "url": "git://github.com/rlidwka/sinopia",
             }),
             extra_metadata: {
+                "maintainers": [
+                    {
+                        "email": "mathieumg@gmail.com",
+                        "name": "mathieumg",
+                    },
+                ],
+                "version": "1.4.2",
                 "name": "sinopib",
-                "_shasum": "13d7de795ff7e81e0c74d20be41f7a330f73c7fd",
+                "preferGlobal": true,
+                "gitHead": "09006c6ad981102f66d0f1002ad8f70c9e01b37b",
+                "description": "Private npm repository server",
+                "main": "index.js",
+                "scripts": {
+                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
+                    "lint": "eslint .",
+                    "prepublish": "js-yaml package.yaml > package.json",
+                    "test": "eslint . && mocha ./test/functional ./test/unit",
+                    "test-only": "mocha ./test/functional ./test/unit",
+                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
+                },
+                "_npmUser": {
+                    "email": "mathieumg@gmail.com",
+                    "name": "mathieumg",
+                },
+                "_npmVersion": "2.4.2",
+                "_id": "sinopib@1.4.2",
                 "engines": {
                     "node": ">=0.10",
                 },
-                "_nodeVersion": "4.0.0",
-                "preferGlobal": true,
-                "_npmVersion": "2.4.2",
                 "keywords": [
                     "private",
                     "package",
@@ -2829,53 +2849,33 @@ Some(("sinopib", Normal(
                     "proxy",
                     "server",
                 ],
-                "gitHead": "09006c6ad981102f66d0f1002ad8f70c9e01b37b",
-                "_id": "sinopib@1.4.2",
-                "homepage": "https://github.com/rlidwka/sinopia",
-                "_from": ".",
-                "main": "index.js",
+                "_nodeVersion": "4.0.0",
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
+                },
                 "author": {
                     "email": "alex@kocharin.ru",
                     "name": "Alex Kocharin",
+                },
+                "_shasum": "13d7de795ff7e81e0c74d20be41f7a330f73c7fd",
+                "homepage": "https://github.com/rlidwka/sinopia",
+                "bin": {
+                    "sinopia": "./bin/sinopia",
+                },
+                "bugs": {
+                    "url": "https://github.com/rlidwka/sinopia/issues",
                 },
                 "license": {
                     "type": "WTFPL",
                     "url": "http://www.wtfpl.net/txt/copying/",
                 },
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
-                "version": "1.4.2",
-                "scripts": {
-                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
-                    "lint": "eslint .",
-                    "prepublish": "js-yaml package.yaml > package.json",
-                    "test": "eslint . && mocha ./test/functional ./test/unit",
-                    "test-only": "mocha ./test/functional ./test/unit",
-                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
-                },
-                "bugs": {
-                    "url": "https://github.com/rlidwka/sinopia/issues",
-                },
-                "maintainers": [
-                    {
-                        "email": "mathieumg@gmail.com",
-                        "name": "mathieumg",
-                    },
-                ],
-                "_npmUser": {
-                    "email": "mathieumg@gmail.com",
-                    "name": "mathieumg",
-                },
-                "bin": {
-                    "sinopia": "./bin/sinopia",
-                },
+                "_from": ".",
             },
         ),
         (
             major: 1,
             minor: 4,
-            bug: 3,
+            bug: 0,
             prerelease: [],
             build: [],
         ): (
@@ -3741,8 +3741,8 @@ Some(("sinopib", Normal(
             peer_dependencies: [],
             optional_dependencies: [],
             dist: (
-                tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.3.tgz",
-                shasum: Some("09d810aee8df3dfee3066a698b22ed1ab11ce087"),
+                tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.0.tgz",
+                shasum: Some("38825dcfcf650c3f79506b073b37fe3c284333e6"),
                 unpacked_size: None,
                 file_count: None,
                 integrity: None,
@@ -3750,40 +3750,40 @@ Some(("sinopib", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            description: Some("Private npm repository server"),
             repository: Some({
                 "type": "git",
                 "url": "git://github.com/rlidwka/sinopia",
             }),
             extra_metadata: {
-                "_shasum": "09d810aee8df3dfee3066a698b22ed1ab11ce087",
-                "bugs": {
-                    "url": "https://github.com/rlidwka/sinopia/issues",
+                "scripts": {
+                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
+                    "lint": "eslint .",
+                    "prepublish": "js-yaml package.yaml > package.json",
+                    "test": "eslint . && mocha ./test/functional ./test/unit",
+                    "test-only": "mocha ./test/functional ./test/unit",
+                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
                 },
-                "main": "index.js",
-                "license": {
-                    "type": "WTFPL",
-                    "url": "http://www.wtfpl.net/txt/copying/",
-                },
-                "version": "1.4.3",
-                "preferGlobal": true,
                 "name": "sinopib",
-                "_nodeVersion": "4.0.0",
-                "bin": {
-                    "sinopia": "./bin/sinopia",
-                },
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
-                "_from": ".",
-                "engines": {
-                    "node": ">=0.10",
-                },
-                "homepage": "https://github.com/rlidwka/sinopia",
                 "author": {
                     "email": "alex@kocharin.ru",
                     "name": "Alex Kocharin",
                 },
+                "gitHead": "a168d4a12ac45c1ba6814df9a39b168bb3cdf97e",
+                "engines": {
+                    "node": ">=0.10",
+                },
+                "_npmUser": {
+                    "email": "mathieumg@gmail.com",
+                    "name": "mathieumg",
+                },
+                "_id": "sinopib@1.4.0",
+                "_npmVersion": "2.4.2",
+                "bin": {
+                    "sinopia": "./bin/sinopia",
+                },
+                "homepage": "https://github.com/rlidwka/sinopia",
+                "_from": ".",
+                "_nodeVersion": "4.0.0",
                 "keywords": [
                     "private",
                     "package",
@@ -3793,27 +3793,27 @@ Some(("sinopib", Normal(
                     "proxy",
                     "server",
                 ],
-                "_id": "sinopib@1.4.3",
-                "_npmUser": {
-                    "email": "mathieumg@gmail.com",
-                    "name": "mathieumg",
-                },
-                "_npmVersion": "2.4.2",
-                "scripts": {
-                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
-                    "lint": "eslint .",
-                    "prepublish": "js-yaml package.yaml > package.json",
-                    "test": "eslint . && mocha ./test/functional ./test/unit",
-                    "test-only": "mocha ./test/functional ./test/unit",
-                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
-                },
-                "gitHead": "4fbc97717cbd0acb11253ef420f73cfd14695780",
+                "main": "index.js",
+                "version": "1.4.0",
                 "maintainers": [
                     {
                         "email": "mathieumg@gmail.com",
                         "name": "mathieumg",
                     },
                 ],
+                "_shasum": "38825dcfcf650c3f79506b073b37fe3c284333e6",
+                "bugs": {
+                    "url": "https://github.com/rlidwka/sinopia/issues",
+                },
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
+                },
+                "description": "Private npm repository server",
+                "license": {
+                    "type": "WTFPL",
+                    "url": "http://www.wtfpl.net/txt/copying/",
+                },
+                "preferGlobal": true,
             },
         ),
     },

@@ -1,0 +1,88 @@
+Some(("Graph", Normal(
+    latest: Some((
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2015-01-01T00:00:00Z",
+    modified: "2022-06-12T13:45:31.702Z",
+    other_dist_tags: {},
+    version_times: {
+        (
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2015-01-01T00:00:00Z",
+    },
+    versions: {
+        (
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/Graph/-/Graph-0.0.1.tgz",
+                shasum: Some("154c8a5a3896935c8d18a3462e70ef454f3e25b8"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: Some("sha512-iiWON3bkd0uF0WOUWud+GLyafNKWsSmVQyxUnkFVEA8W1Fb96RRHzy/+zIg3isv7mJ1b1FgtuCG6DNDmpjvSGQ=="),
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: None,
+            extra_metadata: {
+                "contributors": [
+                    {
+                        "email": "yoni.bmesh@gmail.com",
+                        "name": "Yoni Ben-Meshulam",
+                    },
+                ],
+                "mtime": "2010-11-09T23:25:38Z",
+                "ctime": "2010-11-09T23:25:38Z",
+                "_nodeSupported": true,
+                "licenses": [
+                    {
+                        "type": "GPLv2",
+                        "url": "http://www.example.com/licenses/gpl.html",
+                    },
+                ],
+                "description": "A mathematical Graph theory library.",
+                "_nodeVersion": "v0.3.1-pre",
+                "main": "Graph",
+                "version": "0.0.1",
+                "name": "Graph",
+                "_npmVersion": "0.2.7-2",
+                "_id": "Graph@0.0.1",
+                "author": {
+                    "email": "yoni.bmesh@gmail.com",
+                    "name": "Yoni Ben-Meshulam",
+                },
+                "engines": {
+                    "node": ">= 0.1.99",
+                },
+                "scripts": {
+                    "test": "Test/Graph.js",
+                },
+                "keywords": [
+                    "graph",
+                    "graph theory",
+                    "vertex",
+                    "edge",
+                    "node",
+                    "connection",
+                ],
+            },
+        ),
+    },
+)))

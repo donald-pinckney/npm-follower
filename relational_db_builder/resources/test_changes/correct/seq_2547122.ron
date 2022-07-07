@@ -19,18 +19,18 @@ Some(("sp-upload", Normal(
         ): "2017-03-03T08:07:42.640Z",
         (
             major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2017-02-13T09:13:05.749Z",
+        (
+            major: 1,
             minor: 1,
             bug: 1,
             prerelease: [],
             build: [],
         ): "2017-02-20T06:59:08.316Z",
-        (
-            major: 1,
-            minor: 1,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): "2017-02-20T07:10:48.536Z",
         (
             major: 1,
             minor: 1,
@@ -47,177 +47,13 @@ Some(("sp-upload", Normal(
         ): "2017-02-13T09:00:59.451Z",
         (
             major: 1,
-            minor: 0,
-            bug: 1,
-            prerelease: [],
-            build: [],
-        ): "2017-02-13T09:13:05.749Z",
-    },
-    versions: {
-        (
-            major: 1,
             minor: 1,
             bug: 2,
             prerelease: [],
             build: [],
-        ): (
-            prod_dependencies: [
-                ("koa-multer", (
-                    raw: "^1.0.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("mkdirp", (
-                    raw: "^0.5.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 5,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 6,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("moment", (
-                    raw: "^2.17.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 17,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("sp-model", (
-                    raw: "^1.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("sp-response", (
-                    raw: "^sp-response",
-                    parsed: Invalid("EINVALIDTAGNAME: Invalid tag name \"^sp-response\" of package \"foo@^sp-response\": Tags may not have any characters that encodeURIComponent encodes."),
-                )),
-            ],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/sp-upload/-/sp-upload-1.1.2.tgz",
-                shasum: Some("df44c583b7c999a4c0ff83e0bdd5d3b6adefefb8"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            description: Some("sp-upload,sp-base,upload"),
-            repository: Some({
-                "type": "git",
-                "url": "git+https://github.com/dongwenxiao/sp-upload.git",
-            }),
-            extra_metadata: {
-                "_npmOperationalInternal": {
-                    "host": "packages-18-east.internal.npmjs.com",
-                    "tmp": "tmp/sp-upload-1.1.2.tgz_1487574646612_0.8483238904736936",
-                },
-                "scripts": {
-                    "test": "echo \"Error: no test specified\" && exit 1",
-                },
-                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
-                "keywords": [
-                    "sp-upload",
-                    "sp-base",
-                    "upload",
-                ],
-                "_shasum": "df44c583b7c999a4c0ff83e0bdd5d3b6adefefb8",
-                "license": "Apache-2.0",
-                "main": "index.js",
-                "author": {
-                    "name": "cs_victor@126.com",
-                },
-                "_from": ".",
-                "_npmVersion": "3.10.9",
-                "bugs": {
-                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
-                },
-                "name": "sp-upload",
-                "_id": "sp-upload@1.1.2",
-                "_npmUser": {
-                    "email": "cs_victor@126.com",
-                    "name": "dongwenxiao",
-                },
-                "version": "1.1.2",
-                "maintainers": [
-                    {
-                        "email": "cs_victor@126.com",
-                        "name": "dongwenxiao",
-                    },
-                ],
-                "_nodeVersion": "7.1.0",
-            },
-        ),
+        ): "2017-02-20T07:10:48.536Z",
+    },
+    versions: {
         (
             major: 1,
             minor: 1,
@@ -355,32 +191,28 @@ Some(("sp-upload", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            description: Some("sp-upload,sp-base,upload"),
             repository: Some({
                 "type": "git",
                 "url": "git+https://github.com/dongwenxiao/sp-upload.git",
             }),
             extra_metadata: {
-                "_id": "sp-upload@1.1.3",
-                "version": "1.1.3",
-                "_nodeVersion": "6.10.0",
-                "_npmUser": {
-                    "email": "cs_victor@126.com",
-                    "name": "dongwenxiao",
+                "name": "sp-upload",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
                 },
-                "main": "index.js",
+                "_shasum": "48cc02518cb247f496a0160f8dd9665f949c9609",
+                "description": "sp-upload,sp-base,upload",
+                "keywords": [
+                    "sp-upload",
+                    "sp-base",
+                    "upload",
+                ],
+                "_id": "sp-upload@1.1.3",
                 "_npmVersion": "3.10.10",
                 "_npmOperationalInternal": {
                     "host": "packages-18-east.internal.npmjs.com",
                     "tmp": "tmp/sp-upload-1.1.3.tgz_1488528460652_0.8725990753155202",
                 },
-                "scripts": {
-                    "test": "echo \"Error: no test specified\" && exit 1",
-                },
-                "author": {
-                    "name": "cs_victor@126.com",
-                },
-                "_from": ".",
                 "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
                 "maintainers": [
                     {
@@ -388,17 +220,158 @@ Some(("sp-upload", Normal(
                         "name": "dongwenxiao",
                     },
                 ],
+                "bugs": {
+                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
+                },
+                "_from": ".",
+                "_nodeVersion": "6.10.0",
+                "main": "index.js",
+                "author": {
+                    "name": "cs_victor@126.com",
+                },
+                "version": "1.1.3",
                 "license": "Apache-2.0",
-                "_shasum": "48cc02518cb247f496a0160f8dd9665f949c9609",
+                "_npmUser": {
+                    "email": "cs_victor@126.com",
+                    "name": "dongwenxiao",
+                },
+            },
+        ),
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("koa-multer", (
+                    raw: "^1.0.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("mkdirp", (
+                    raw: "^0.5.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 5,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("moment", (
+                    raw: "^2.17.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 17,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/sp-upload/-/sp-upload-1.0.1.tgz",
+                shasum: Some("b4f310b7230546583d80c971473916c844849d7c"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some({
+                "type": "git",
+                "url": "git+https://github.com/dongwenxiao/sp-upload.git",
+            }),
+            extra_metadata: {
+                "_npmVersion": "3.10.9",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/sp-upload-1.0.1.tgz_1486977185509_0.5434435526840389",
+                },
+                "_id": "sp-upload@1.0.1",
+                "version": "1.0.1",
+                "_from": ".",
+                "author": {
+                    "name": "cs_victor@126.com",
+                },
+                "_npmUser": {
+                    "email": "cs_victor@126.com",
+                    "name": "dongwenxiao",
+                },
+                "name": "sp-upload",
+                "bugs": {
+                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
+                },
+                "description": "sp-upload,sp-base,upload",
+                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
+                "license": "Apache-2.0",
+                "main": "index.js",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
+                },
+                "maintainers": [
+                    {
+                        "email": "cs_victor@126.com",
+                        "name": "dongwenxiao",
+                    },
+                ],
+                "_nodeVersion": "7.1.0",
+                "_shasum": "b4f310b7230546583d80c971473916c844849d7c",
                 "keywords": [
                     "sp-upload",
                     "sp-base",
                     "upload",
                 ],
-                "bugs": {
-                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
-                },
-                "name": "sp-upload",
             },
         ),
         (
@@ -492,50 +465,328 @@ Some(("sp-upload", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            description: Some("sp-upload,sp-base,upload"),
             repository: Some({
                 "type": "git",
                 "url": "git+https://github.com/dongwenxiao/sp-upload.git",
             }),
             extra_metadata: {
-                "keywords": [
-                    "sp-upload",
-                    "sp-base",
-                    "upload",
-                ],
-                "bugs": {
-                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
-                },
-                "license": "Apache-2.0",
+                "description": "sp-upload,sp-base,upload",
+                "_nodeVersion": "7.1.0",
                 "_npmOperationalInternal": {
                     "host": "packages-12-west.internal.npmjs.com",
                     "tmp": "tmp/sp-upload-1.1.0.tgz_1487233723215_0.3222573937382549",
                 },
+                "_shasum": "bd99015995c9419fa98818a4a8a03985ffabb878",
+                "_npmVersion": "3.10.9",
+                "name": "sp-upload",
+                "_id": "sp-upload@1.1.0",
+                "_from": ".",
+                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
                 "maintainers": [
                     {
                         "email": "cs_victor@126.com",
                         "name": "dongwenxiao",
                     },
                 ],
-                "_npmVersion": "3.10.9",
-                "_shasum": "bd99015995c9419fa98818a4a8a03985ffabb878",
                 "scripts": {
                     "test": "echo \"Error: no test specified\" && exit 1",
                 },
-                "version": "1.1.0",
-                "_from": ".",
-                "name": "sp-upload",
                 "main": "index.js",
+                "author": {
+                    "name": "cs_victor@126.com",
+                },
+                "license": "Apache-2.0",
+                "version": "1.1.0",
                 "_npmUser": {
                     "email": "cs_victor@126.com",
                     "name": "dongwenxiao",
                 },
+                "bugs": {
+                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
+                },
+                "keywords": [
+                    "sp-upload",
+                    "sp-base",
+                    "upload",
+                ],
+            },
+        ),
+        (
+            major: 1,
+            minor: 1,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("koa-multer", (
+                    raw: "^1.0.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("mkdirp", (
+                    raw: "^0.5.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 5,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("moment", (
+                    raw: "^2.17.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 17,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("sp-model", (
+                    raw: "^1.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("sp-response", (
+                    raw: "^sp-response",
+                    parsed: Invalid("EINVALIDTAGNAME: Invalid tag name \"^sp-response\" of package \"foo@^sp-response\": Tags may not have any characters that encodeURIComponent encodes."),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/sp-upload/-/sp-upload-1.1.2.tgz",
+                shasum: Some("df44c583b7c999a4c0ff83e0bdd5d3b6adefefb8"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some({
+                "type": "git",
+                "url": "git+https://github.com/dongwenxiao/sp-upload.git",
+            }),
+            extra_metadata: {
+                "description": "sp-upload,sp-base,upload",
+                "keywords": [
+                    "sp-upload",
+                    "sp-base",
+                    "upload",
+                ],
+                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
+                "maintainers": [
+                    {
+                        "email": "cs_victor@126.com",
+                        "name": "dongwenxiao",
+                    },
+                ],
+                "_shasum": "df44c583b7c999a4c0ff83e0bdd5d3b6adefefb8",
                 "author": {
                     "name": "cs_victor@126.com",
                 },
-                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
-                "_id": "sp-upload@1.1.0",
+                "name": "sp-upload",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
+                },
+                "main": "index.js",
                 "_nodeVersion": "7.1.0",
+                "_id": "sp-upload@1.1.2",
+                "version": "1.1.2",
+                "_npmOperationalInternal": {
+                    "host": "packages-18-east.internal.npmjs.com",
+                    "tmp": "tmp/sp-upload-1.1.2.tgz_1487574646612_0.8483238904736936",
+                },
+                "_npmVersion": "3.10.9",
+                "bugs": {
+                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
+                },
+                "_npmUser": {
+                    "email": "cs_victor@126.com",
+                    "name": "dongwenxiao",
+                },
+                "_from": ".",
+                "license": "Apache-2.0",
+            },
+        ),
+        (
+            major: 1,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("koa-multer", (
+                    raw: "^1.0.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("mkdirp", (
+                    raw: "^0.5.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 5,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 6,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/sp-upload/-/sp-upload-1.0.0.tgz",
+                shasum: Some("6357fec28ba4c15c7c36e50bbf68b3cbb67096ed"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some({
+                "type": "git",
+                "url": "git+https://github.com/dongwenxiao/sp-upload.git",
+            }),
+            extra_metadata: {
+                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
+                "keywords": [
+                    "sp-upload",
+                    "sp-base",
+                    "upload",
+                ],
+                "maintainers": [
+                    {
+                        "email": "cs_victor@126.com",
+                        "name": "dongwenxiao",
+                    },
+                ],
+                "name": "sp-upload",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/sp-upload-1.0.0.tgz_1486976459174_0.023207707097753882",
+                },
+                "author": {
+                    "name": "cs_victor@126.com",
+                },
+                "main": "index.js",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
+                },
+                "_nodeVersion": "7.1.0",
+                "bugs": {
+                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
+                },
+                "version": "1.0.0",
+                "license": "Apache-2.0",
+                "_from": ".",
+                "_id": "sp-upload@1.0.0",
+                "_npmUser": {
+                    "email": "cs_victor@126.com",
+                    "name": "dongwenxiao",
+                },
+                "_npmVersion": "3.10.9",
+                "_shasum": "6357fec28ba4c15c7c36e50bbf68b3cbb67096ed",
+                "description": "sp-upload,sp-base,upload",
             },
         ),
         (
@@ -656,301 +907,50 @@ Some(("sp-upload", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            description: Some("sp-upload,sp-base,upload"),
             repository: Some({
                 "type": "git",
                 "url": "git+https://github.com/dongwenxiao/sp-upload.git",
             }),
             extra_metadata: {
+                "description": "sp-upload,sp-base,upload",
+                "_shasum": "6349a7a8dda148ea13b332e018e960693d0c5c06",
+                "maintainers": [
+                    {
+                        "email": "cs_victor@126.com",
+                        "name": "dongwenxiao",
+                    },
+                ],
                 "_nodeVersion": "7.1.0",
+                "version": "1.1.1",
+                "main": "index.js",
                 "_id": "sp-upload@1.1.1",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
+                },
+                "_npmVersion": "3.10.9",
+                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
+                "license": "Apache-2.0",
                 "_from": ".",
+                "author": {
+                    "name": "cs_victor@126.com",
+                },
+                "bugs": {
+                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
+                },
+                "name": "sp-upload",
                 "_npmOperationalInternal": {
                     "host": "packages-18-east.internal.npmjs.com",
                     "tmp": "tmp/sp-upload-1.1.1.tgz_1487573946491_0.9369253786280751",
                 },
-                "_npmVersion": "3.10.9",
-                "author": {
-                    "name": "cs_victor@126.com",
-                },
-                "scripts": {
-                    "test": "echo \"Error: no test specified\" && exit 1",
-                },
                 "keywords": [
                     "sp-upload",
                     "sp-base",
                     "upload",
                 ],
-                "maintainers": [
-                    {
-                        "email": "cs_victor@126.com",
-                        "name": "dongwenxiao",
-                    },
-                ],
-                "version": "1.1.1",
-                "_shasum": "6349a7a8dda148ea13b332e018e960693d0c5c06",
-                "bugs": {
-                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
-                },
-                "main": "index.js",
                 "_npmUser": {
                     "email": "cs_victor@126.com",
                     "name": "dongwenxiao",
                 },
-                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
-                "license": "Apache-2.0",
-                "name": "sp-upload",
-            },
-        ),
-        (
-            major: 1,
-            minor: 0,
-            bug: 1,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [
-                ("koa-multer", (
-                    raw: "^1.0.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("mkdirp", (
-                    raw: "^0.5.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 5,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 6,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("moment", (
-                    raw: "^2.17.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 17,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/sp-upload/-/sp-upload-1.0.1.tgz",
-                shasum: Some("b4f310b7230546583d80c971473916c844849d7c"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            description: Some("sp-upload,sp-base,upload"),
-            repository: Some({
-                "type": "git",
-                "url": "git+https://github.com/dongwenxiao/sp-upload.git",
-            }),
-            extra_metadata: {
-                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
-                "_id": "sp-upload@1.0.1",
-                "main": "index.js",
-                "_nodeVersion": "7.1.0",
-                "_npmVersion": "3.10.9",
-                "keywords": [
-                    "sp-upload",
-                    "sp-base",
-                    "upload",
-                ],
-                "license": "Apache-2.0",
-                "maintainers": [
-                    {
-                        "email": "cs_victor@126.com",
-                        "name": "dongwenxiao",
-                    },
-                ],
-                "_npmUser": {
-                    "email": "cs_victor@126.com",
-                    "name": "dongwenxiao",
-                },
-                "_shasum": "b4f310b7230546583d80c971473916c844849d7c",
-                "author": {
-                    "name": "cs_victor@126.com",
-                },
-                "bugs": {
-                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
-                },
-                "scripts": {
-                    "test": "echo \"Error: no test specified\" && exit 1",
-                },
-                "_from": ".",
-                "_npmOperationalInternal": {
-                    "host": "packages-12-west.internal.npmjs.com",
-                    "tmp": "tmp/sp-upload-1.0.1.tgz_1486977185509_0.5434435526840389",
-                },
-                "name": "sp-upload",
-                "version": "1.0.1",
-            },
-        ),
-        (
-            major: 1,
-            minor: 0,
-            bug: 0,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [
-                ("koa-multer", (
-                    raw: "^1.0.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("mkdirp", (
-                    raw: "^0.5.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 5,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 6,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/sp-upload/-/sp-upload-1.0.0.tgz",
-                shasum: Some("6357fec28ba4c15c7c36e50bbf68b3cbb67096ed"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            description: Some("sp-upload,sp-base,upload"),
-            repository: Some({
-                "type": "git",
-                "url": "git+https://github.com/dongwenxiao/sp-upload.git",
-            }),
-            extra_metadata: {
-                "_from": ".",
-                "_npmUser": {
-                    "email": "cs_victor@126.com",
-                    "name": "dongwenxiao",
-                },
-                "maintainers": [
-                    {
-                        "email": "cs_victor@126.com",
-                        "name": "dongwenxiao",
-                    },
-                ],
-                "_nodeVersion": "7.1.0",
-                "_npmOperationalInternal": {
-                    "host": "packages-12-west.internal.npmjs.com",
-                    "tmp": "tmp/sp-upload-1.0.0.tgz_1486976459174_0.023207707097753882",
-                },
-                "homepage": "https://github.com/dongwenxiao/sp-upload#readme",
-                "_npmVersion": "3.10.9",
-                "_id": "sp-upload@1.0.0",
-                "version": "1.0.0",
-                "name": "sp-upload",
-                "bugs": {
-                    "url": "https://github.com/dongwenxiao/sp-upload/issues",
-                },
-                "main": "index.js",
-                "author": {
-                    "name": "cs_victor@126.com",
-                },
-                "_shasum": "6357fec28ba4c15c7c36e50bbf68b3cbb67096ed",
-                "keywords": [
-                    "sp-upload",
-                    "sp-base",
-                    "upload",
-                ],
-                "scripts": {
-                    "test": "echo \"Error: no test specified\" && exit 1",
-                },
-                "license": "Apache-2.0",
             },
         ),
     },
