@@ -38,7 +38,7 @@ table! {
         queue_time -> Timestamptz,
         num_failures -> Int4,
         last_failure -> Nullable<Timestamptz>,
-        success -> Bool,
+        failed -> Nullable<Bool>,
     }
 }
 
