@@ -13,6 +13,7 @@ use super::schema::download_tasks;
 use super::DbConnection;
 use chrono::{DateTime, Utc};
 use diesel::prelude::*;
+use diesel::sql_query;
 use diesel::Queryable;
 
 #[derive(Queryable, Insertable, Debug)]
@@ -121,31 +122,127 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
         .expect("Failed to enqueue downloads into DB")
 }
 
+const TASKS_CHUNK_SIZE: i64 = 50_000;
+
+fn get_total_tasks_num(conn: &DbConnection, retry_failed: bool) -> i64 {
+    use schema::download_tasks::dsl::*;
+
+    if retry_failed {
+        download_tasks
+            .count()
+            .get_result(&conn.conn)
+            .expect("Failed to get number of tasks")
+    } else {
+        download_tasks
+            .filter(failed.is_null())
+            .count()
+            .get_result(&conn.conn)
+            .expect("Failed to get number of tasks")
+    }
+}
+
+fn load_chunk_init(conn: &DbConnection, retry_failed: bool) -> Vec<DownloadTask> {
+    use schema::download_tasks::dsl::*;
+    if retry_failed {
+        download_tasks
+            .order(queue_time.asc()) // order by the time they got queued, in ascending order
+            .limit(TASKS_CHUNK_SIZE)
+            .load(&conn.conn)
+            .expect("Failed to load download tasks from DB")
+    } else {
+        download_tasks
+            .order(queue_time.asc()) // order by the time they got queued, in ascending order
+            .filter(failed.is_null())
+            .limit(TASKS_CHUNK_SIZE)
+            .load(&conn.conn)
+            .expect("Failed to load download tasks from DB")
+    }
+}
+
+fn load_chunk_next(
+    conn: &DbConnection,
+    last_qt: &DateTime<Utc>,
+    retry_failed: bool,
+) -> Vec<DownloadTask> {
+    use schema::download_tasks::dsl::*;
+    if retry_failed {
+        download_tasks
+            .order(queue_time.asc()) // order by the time they got queued, in ascending order
+            .filter(queue_time.gt(last_qt))
+            .limit(TASKS_CHUNK_SIZE)
+            .load(&conn.conn)
+            .expect("Failed to load download tasks from DB")
+    } else {
+        download_tasks
+            .order(queue_time.asc()) // order by the time they got queued, in ascending order
+            .filter(failed.is_null().and(queue_time.gt(last_qt)))
+            .limit(TASKS_CHUNK_SIZE)
+            .load(&conn.conn)
+            .expect("Failed to load download tasks from DB")
+    }
+}
+
 /// Downloads all present tasks to the given directory. Inserts each task completed in the
 /// downloaded_tarballs table, and removes the completed tasks from the download_tasks table.
+/// The given number of workers represents the number of threads that will be used to download the
+/// tasks, where for each thread there is a new parallel download. if retry_failed is true, it will
+/// retry to download failed tasks.
+///
+/// # Panics
+///
+/// If the number of workers is 0 or greater than TASKS_CHUNK_SIZE (unreasonable amount).
+/// If there are any IO errors in creating the files.
 pub fn download_to_dest(
     conn: &DbConnection,
     dest: &str,
     num_workers: usize,
+    retry_failed: bool,
 ) -> std::io::Result<()> {
     use schema::download_tasks::dsl::*;
+    assert!(TASKS_CHUNK_SIZE > num_workers as i64 && num_workers > 0);
 
     // get all tasks with no failed downloads
-    let tasks: Vec<DownloadTask> = download_tasks
-        .filter(failed.is_null())
-        .order(queue_time.asc()) // order by the time they got queued, in ascending order
-        .load(&conn.conn)
-        .expect("Failed to load download tasks from DB");
-    let tasks_len = tasks.len();
+    let tasks_len = get_total_tasks_num(&conn, retry_failed);
+    println!("{} tasks to download", tasks_len);
 
     let (db_sender, db_receiver) = channel();
     let pool = DownloadThreadPool::new(num_workers, dest, db_sender);
 
-    for task in tasks {
-        pool.download(task);
+    // get first round of tasks, with no failed downloads
+    let tasks: Vec<DownloadTask> = load_chunk_init(conn, retry_failed);
+    println!("Got {} tasks", tasks.len());
+
+    if tasks.is_empty() {
+        return Ok(());
     }
 
+    // variables to keep for safely querying new chunks of tasks
+    let mut last_queue_time = tasks.last().unwrap().queue_time;
+    let mut last_chunk_size = tasks.len();
+    let mut download_counter = 0;
+
+    // pool the first round of tasks
+    pool.download_chunk(tasks);
+
     for _ in 0..tasks_len {
+        if (download_counter + 1) == last_chunk_size {
+            println!("Sending new chunk of tasks to pool");
+            // get next round of tasks, with no failed downloads and with tasks that have greater
+            // queue_time than the last chunk
+            let tasks: Vec<DownloadTask> = load_chunk_next(conn, &last_queue_time, retry_failed);
+            println!("Got {} tasks", tasks.len());
+
+            // reassign last_queue_time and last_chunk_size to the new chunk of tasks
+            if !tasks.is_empty() {
+                last_queue_time = tasks.last().unwrap().queue_time;
+            }
+            last_chunk_size = tasks.len();
+            // reset download_counter
+            download_counter = 0;
+
+            // pool the new chunk of tasks
+            pool.download_chunk(tasks);
+        }
         match db_receiver.recv().unwrap() {
             DbMessage::Tarball(tarball) => {
                 // insert the tarball into the DB
@@ -164,7 +261,7 @@ pub fn download_to_dest(
                 println!("Inserted and removed task {}", tarball.tarball_url);
             }
             DbMessage::Error(e, task) => {
-                println!("Error downloading task {}: {}", task.url, e);
+                println!("Error downloading task {} -> {}", task.url, e);
                 // modify the task in the DB such that the failed column is set to its
                 // corresponding error
                 diesel::update(
@@ -175,9 +272,10 @@ pub fn download_to_dest(
                 .expect("Failed to update download task after error");
             }
         }
+        download_counter += 1;
     }
 
-    println!("done");
+    println!("Done downloading tasks");
 
     Ok(())
 }
@@ -250,6 +348,7 @@ impl DownloadThreadPool {
         let arc_task_receiver = Arc::new(Mutex::new(task_receiver));
 
         let rt = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(size)
             .enable_all()
             .build()
             .unwrap();
@@ -269,6 +368,12 @@ impl DownloadThreadPool {
             workers,
             task_sender,
             tokio_runtime: rt,
+        }
+    }
+
+    pub fn download_chunk(&self, tasks: Vec<DownloadTask>) {
+        for task in tasks {
+            self.download(task);
         }
     }
 
