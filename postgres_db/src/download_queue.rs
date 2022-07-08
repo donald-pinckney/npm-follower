@@ -21,7 +21,7 @@ pub struct DownloadTask {
     pub queue_time: DateTime<Utc>,
     pub num_failures: i32,
     pub last_failure: Option<DateTime<Utc>>,
-    pub failed: Option<bool>
+    pub success: bool
 }
 
 impl DownloadTask {
@@ -49,7 +49,7 @@ impl DownloadTask {
             queue_time: Utc::now(),
             num_failures: 0,
             last_failure: None,
-            failed: None
+            success: false
         }
     }
 }
