@@ -9,7 +9,7 @@ use sql_types::*;
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "Text"]
 pub enum DownlaodFailed {
-    Res404,
+    Res(u16),
     Other,
 }
 
@@ -122,9 +122,9 @@ pub mod sql_type_names {
     pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
 }
 
+mod download_failed;
 mod package_metadata;
 mod parsed_spec;
 mod semver;
 mod version_comparator;
 mod version_constraint;
-mod download_failed;
