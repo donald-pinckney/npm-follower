@@ -4,7 +4,7 @@ use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use crate::custom_types::DownlaodFailed;
+use crate::custom_types::DownloadFailed;
 use crate::download_tarball::DownloadError;
 use crate::download_tarball::DownloadedTarball;
 
@@ -32,7 +32,7 @@ pub struct DownloadTask {
     pub queue_time: DateTime<Utc>,
     pub num_failures: i32,
     pub last_failure: Option<DateTime<Utc>>,
-    pub failed: Option<DownlaodFailed>,
+    pub failed: Option<DownloadFailed>,
 }
 
 impl DownloadTask {
@@ -64,9 +64,7 @@ impl DownloadTask {
         }
     }
 
-    /// Downloads this task to the given directory.
-    /// # Panics
-    /// if there are any IO errors in creating the file.
+    /// Downloads this task to the given directory. This function cannot panic.
     pub async fn do_download(&self, dest: &str) -> Result<DownloadedTarball, DownloadError> {
         // get the file and download it to dir
         let res = reqwest::get(&self.url).await?;
@@ -74,19 +72,22 @@ impl DownloadTask {
         if status != reqwest::StatusCode::OK {
             return Err(DownloadError::StatusNotOk(status));
         }
-        let name = self.url.split('/').last().unwrap();
+        let name = self
+            .url
+            .split('/')
+            .last()
+            .ok_or(DownloadError::BadlyFormattedUrl)?;
         let path = std::path::Path::new(dest).join(name);
-        let mut file = std::fs::File::create(path.clone()).unwrap();
+        let mut file = std::fs::File::create(path.clone())?;
         let mut body = std::io::Cursor::new(res.bytes().await?);
-        std::io::copy(&mut body, &mut file).unwrap();
+        std::io::copy(&mut body, &mut file)?;
 
         let task = DownloadedTarball::from_task(
             self,
             // makes the path absolute
-            std::fs::canonicalize(path)
-                .unwrap()
+            std::fs::canonicalize(path)?
                 .to_str()
-                .unwrap()
+                .ok_or(DownloadError::BadlyFormattedUrl)?
                 .to_string(),
         );
 
@@ -191,7 +192,6 @@ fn load_chunk_next(
 /// # Panics
 ///
 /// If the number of workers is 0 or greater than TASKS_CHUNK_SIZE (unreasonable amount).
-/// If there are any IO errors in creating the files.
 pub fn download_to_dest(
     conn: &DbConnection,
     dest: &str,
@@ -267,7 +267,7 @@ pub fn download_to_dest(
                 diesel::update(
                     schema::download_tasks::table.filter(schema::download_tasks::url.eq(&task.url)),
                 )
-                .set(failed.eq(Some(DownlaodFailed::from(e))))
+                .set(failed.eq(Some(DownloadFailed::from(e))))
                 .execute(&conn.conn)
                 .expect("Failed to update download task after error");
             }

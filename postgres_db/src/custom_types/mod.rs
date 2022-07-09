@@ -8,8 +8,10 @@ use sql_types::*;
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "Text"]
-pub enum DownlaodFailed {
+pub enum DownloadFailed {
     Res(u16),
+    Io,
+    BadlyFormattedUrl,
     Other,
 }
 
