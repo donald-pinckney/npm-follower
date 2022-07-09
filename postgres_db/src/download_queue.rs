@@ -145,13 +145,13 @@ fn load_chunk_init(conn: &DbConnection, retry_failed: bool) -> Vec<DownloadTask>
     use schema::download_tasks::dsl::*;
     if retry_failed {
         download_tasks
-            .order(queue_time.asc()) // order by the time they got queued, in ascending order
+            .order(url.asc()) // order by the time they got queued, in ascending order
             .limit(TASKS_CHUNK_SIZE)
             .load(&conn.conn)
             .expect("Failed to load download tasks from DB")
     } else {
         download_tasks
-            .order(queue_time.asc()) // order by the time they got queued, in ascending order
+            .order(url.asc()) // order by the time they got queued, in ascending order
             .filter(failed.is_null())
             .limit(TASKS_CHUNK_SIZE)
             .load(&conn.conn)
@@ -161,21 +161,21 @@ fn load_chunk_init(conn: &DbConnection, retry_failed: bool) -> Vec<DownloadTask>
 
 fn load_chunk_next(
     conn: &DbConnection,
-    last_qt: &DateTime<Utc>,
+    last_url: &String,
     retry_failed: bool,
 ) -> Vec<DownloadTask> {
     use schema::download_tasks::dsl::*;
     if retry_failed {
         download_tasks
-            .order(queue_time.asc()) // order by the time they got queued, in ascending order
-            .filter(queue_time.gt(last_qt))
+            .order(url.asc()) // order by the time they got queued, in ascending order
+            .filter(url.gt(last_url))
             .limit(TASKS_CHUNK_SIZE)
             .load(&conn.conn)
             .expect("Failed to load download tasks from DB")
     } else {
         download_tasks
-            .order(queue_time.asc()) // order by the time they got queued, in ascending order
-            .filter(failed.is_null().and(queue_time.gt(last_qt)))
+            .order(url.asc()) // order by the time they got queued, in ascending order
+            .filter(failed.is_null().and(url.gt(last_url)))
             .limit(TASKS_CHUNK_SIZE)
             .load(&conn.conn)
             .expect("Failed to load download tasks from DB")
@@ -217,7 +217,7 @@ pub fn download_to_dest(
     }
 
     // variables to keep for safely querying new chunks of tasks
-    let mut last_queue_time = tasks.last().unwrap().queue_time;
+    let mut last_url = tasks.last().unwrap().url.clone();
     let mut last_chunk_size = tasks.len();
     let mut download_counter = 0;
 
@@ -228,13 +228,13 @@ pub fn download_to_dest(
         if (download_counter + 1) == last_chunk_size {
             println!("Sending new chunk of tasks to pool");
             // get next round of tasks, with no failed downloads and with tasks that have greater
-            // queue_time than the last chunk
-            let tasks: Vec<DownloadTask> = load_chunk_next(conn, &last_queue_time, retry_failed);
+            // url sort-position than the last chunk
+            let tasks: Vec<DownloadTask> = load_chunk_next(conn, &last_url, retry_failed);
             println!("Got {} tasks", tasks.len());
 
-            // reassign last_queue_time and last_chunk_size to the new chunk of tasks
+            // reassign last_url and last_chunk_size to the new chunk of tasks
             if !tasks.is_empty() {
-                last_queue_time = tasks.last().unwrap().queue_time;
+                last_url = tasks.last().unwrap().url.clone();
             }
             last_chunk_size = tasks.len();
             // reset download_counter
