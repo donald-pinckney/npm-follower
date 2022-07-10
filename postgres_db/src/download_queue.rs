@@ -1,3 +1,4 @@
+use std::os::unix::prelude::PermissionsExt;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
@@ -79,6 +80,7 @@ impl DownloadTask {
             .ok_or(DownloadError::BadlyFormattedUrl)?;
         let path = std::path::Path::new(dest).join(name);
         let mut file = std::fs::File::create(path.clone())?;
+        file.set_permissions(std::fs::Permissions::from_mode(0o774))?; // rwxrwxr--
         let mut body = std::io::Cursor::new(res.bytes().await?);
         std::io::copy(&mut body, &mut file)?;
 
@@ -274,22 +276,12 @@ pub fn download_to_dest(
             pool.download_chunk(tasks);
         }
         match db_receiver.recv().unwrap() {
+            // NOTE: the tarballs get inserted in chunks, but errors don't. This is because it
+            // doesn't make sense to pool errors as we have to update each row in the tasks in a
+            // loop.
             DbMessage::Tarball(tarball) => {
                 println!("Done downloading task {}", tarball.tarball_url);
                 tarballs_queue.push(*tarball);
-                // // insert the tarball into the DB
-                // diesel::insert_into(schema::downloaded_tarballs::table)
-                // .values(&*tarball)
-                // .execute(&conn.conn)
-                // .expect("Failed to insert downloaded tarball");
-
-                // // delete the task from the download_tasks table
-                // diesel::delete(
-                // schema::download_tasks::table
-                // .filter(schema::download_tasks::url.eq(&tarball.tarball_url)),
-                // )
-                // .execute(&conn.conn)
-                // .expect("Failed to delete download task");
             }
             DbMessage::Error(e, task) => {
                 println!("Error downloading task {} -> {}", task.url, e);
