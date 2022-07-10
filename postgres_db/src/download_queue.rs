@@ -123,7 +123,7 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
         .expect("Failed to enqueue downloads into DB")
 }
 
-const TASKS_CHUNK_SIZE: i64 = 50_000;
+const TASKS_CHUNK_SIZE: i64 = 1024;
 
 fn get_total_tasks_num(conn: &DbConnection, retry_failed: bool) -> i64 {
     use schema::download_tasks::dsl::*;
@@ -183,6 +183,27 @@ fn load_chunk_next(
     }
 }
 
+fn update_from_tarballs(conn: &DbConnection, tarballs: &mut Vec<DownloadedTarball>) {
+    use schema::download_tasks::dsl::*;
+    if !tarballs.is_empty() {
+        println!("Inserting {} tarballs", tarballs.len());
+        // insert all the tarballs from download_queue in the db
+        diesel::insert_into(schema::downloaded_tarballs::table)
+            .values(&*tarballs)
+            .execute(&conn.conn)
+            .expect("Failed to insert downloaded tarballs into DB");
+
+        // delete the tasks from download_tasks that are contained in download_queue
+        diesel::delete(download_tasks)
+            .filter(url.eq_any(tarballs.iter().map(|x| x.tarball_url.clone())))
+            .execute(&conn.conn)
+            .expect("Failed to delete downloaded tasks from DB");
+
+        // clear the queue
+        tarballs.clear();
+    }
+}
+
 /// Downloads all present tasks to the given directory. Inserts each task completed in the
 /// downloaded_tarballs table, and removes the completed tasks from the download_tasks table.
 /// The given number of workers represents the number of threads that will be used to download the
@@ -202,7 +223,7 @@ pub fn download_to_dest(
     assert!(TASKS_CHUNK_SIZE > num_workers as i64 && num_workers > 0);
 
     // get all tasks with no failed downloads
-    let tasks_len = get_total_tasks_num(&conn, retry_failed);
+    let tasks_len = get_total_tasks_num(conn, retry_failed);
     println!("{} tasks to download", tasks_len);
 
     let (db_sender, db_receiver) = channel();
@@ -216,16 +237,25 @@ pub fn download_to_dest(
         return Ok(());
     }
 
-    // variables to keep for safely querying new chunks of tasks
+    // ---  variables to keep for safely querying new chunks of tasks ---
+
+    // the last url of the task that was queried
     let mut last_url = tasks.last().unwrap().url.clone();
+    // the last chunk size that was quried
     let mut last_chunk_size = tasks.len();
+    // the counter of downloads per chunk (gets reset on each chunk)
     let mut download_counter = 0;
+    // the queue of tarballs that have been downloaded and are waiting to be inserted into the db
+    let mut tarballs_queue: Vec<DownloadedTarball> = vec![];
 
     // pool the first round of tasks
     pool.download_chunk(tasks);
 
-    for _ in 0..tasks_len {
+    for i in 0..tasks_len {
+        println!("{}/{}", i, tasks_len);
         if (download_counter + 1) == last_chunk_size {
+            update_from_tarballs(conn, &mut tarballs_queue);
+
             println!("Sending new chunk of tasks to pool");
             // get next round of tasks, with no failed downloads and with tasks that have greater
             // url sort-position than the last chunk
@@ -245,20 +275,21 @@ pub fn download_to_dest(
         }
         match db_receiver.recv().unwrap() {
             DbMessage::Tarball(tarball) => {
-                // insert the tarball into the DB
-                diesel::insert_into(schema::downloaded_tarballs::table)
-                    .values(&*tarball)
-                    .execute(&conn.conn)
-                    .expect("Failed to insert downloaded tarball");
+                println!("Done downloading task {}", tarball.tarball_url);
+                tarballs_queue.push(*tarball);
+                // // insert the tarball into the DB
+                // diesel::insert_into(schema::downloaded_tarballs::table)
+                // .values(&*tarball)
+                // .execute(&conn.conn)
+                // .expect("Failed to insert downloaded tarball");
 
-                // delete the task from the download_tasks table
-                diesel::delete(
-                    schema::download_tasks::table
-                        .filter(schema::download_tasks::url.eq(&tarball.tarball_url)),
-                )
-                .execute(&conn.conn)
-                .expect("Failed to delete download task");
-                println!("Inserted and removed task {}", tarball.tarball_url);
+                // // delete the task from the download_tasks table
+                // diesel::delete(
+                // schema::download_tasks::table
+                // .filter(schema::download_tasks::url.eq(&tarball.tarball_url)),
+                // )
+                // .execute(&conn.conn)
+                // .expect("Failed to delete download task");
             }
             DbMessage::Error(e, task) => {
                 println!("Error downloading task {} -> {}", task.url, e);
@@ -274,6 +305,8 @@ pub fn download_to_dest(
         }
         download_counter += 1;
     }
+
+    update_from_tarballs(conn, &mut tarballs_queue);
 
     println!("Done downloading tasks");
 
