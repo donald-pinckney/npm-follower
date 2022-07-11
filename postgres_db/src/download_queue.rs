@@ -14,7 +14,6 @@ use super::schema::download_tasks;
 use super::DbConnection;
 use chrono::{DateTime, Utc};
 use diesel::prelude::*;
-use diesel::sql_query;
 use diesel::Queryable;
 
 #[derive(Queryable, Insertable, Debug)]
@@ -65,6 +64,31 @@ impl DownloadTask {
         }
     }
 
+    // gets the depth of an url, subtracting 3 for the '//' in 'https://' and the domain space
+    pub fn url_depth(url: &str) -> usize {
+        match url.split('/').count() as i16 - 3 {
+            x if x < 0 => 0,
+            x => x as usize,
+        }
+    }
+
+    /// Produces the name of the resulting file from the given url. Where if it is a tarball that comes
+    /// from a namespace, it names is appropriately.
+    pub fn get_filename(url: &str) -> Result<String, DownloadError> {
+        let slashsplit = url.split('/').collect::<Vec<&str>>();
+        let base_name = slashsplit.last().ok_or(DownloadError::BadlyFormattedUrl)?;
+        // 3 = normal package
+        // 4 = namespace
+        match Self::url_depth(url) {
+            3 => Ok(base_name.to_string()),
+            4 => {
+                let namespace = slashsplit.get(3).ok_or(DownloadError::BadlyFormattedUrl)?;
+                Ok(format!("{}-{}", namespace, base_name))
+            }
+            _ => Err(DownloadError::BadlyFormattedUrl),
+        }
+    }
+
     /// Downloads this task to the given directory. This function cannot panic.
     pub async fn do_download(&self, dest: &str) -> Result<DownloadedTarball, DownloadError> {
         // get the file and download it to dir
@@ -73,11 +97,7 @@ impl DownloadTask {
         if status != reqwest::StatusCode::OK {
             return Err(DownloadError::StatusNotOk(status));
         }
-        let name = self
-            .url
-            .split('/')
-            .last()
-            .ok_or(DownloadError::BadlyFormattedUrl)?;
+        let name = Self::get_filename(&self.url)?;
         let path = std::path::Path::new(dest).join(name);
         let mut file = std::fs::File::create(path.clone())?;
         file.set_permissions(std::fs::Permissions::from_mode(0o774))?; // rwxrwxr--
@@ -425,5 +445,74 @@ impl Drop for DownloadThreadPool {
                 thread.await.unwrap();
             });
         }
+    }
+}
+
+#[cfg(test)]
+mod dl_queue_tests {
+    use crate::download_queue::DownloadTask;
+
+    // tests for the url path to file stuff
+    #[test]
+    fn test_url_depth() {
+        assert_eq!(
+            DownloadTask::url_depth("https://www.example.com/foo/bar/baz.tar.gz"),
+            3
+        );
+        assert_eq!(DownloadTask::url_depth("https://www.example.com/"), 1);
+        assert_eq!(DownloadTask::url_depth("aaaaa"), 0);
+        assert_eq!(
+            DownloadTask::url_depth(
+                "https://registry.npmjs.org/@_000407/transpose.js/-/transpose.js-1.0.1.tgz"
+            ),
+            4
+        );
+        assert_eq!(DownloadTask::url_depth(""), 0);
+        assert_eq!(
+            DownloadTask::url_depth(
+                "https://registry.npmjs.org/@bolt/components-button-group/-/components-button-group-2.21.0-canary.12348.5.0.tgz"
+            ),
+            4
+        );
+        assert_eq!(
+            DownloadTask::url_depth("https://registry.npmjs.org/vs-deploy/-/vs-deploy-1.5.0.tgz"),
+            3
+        );
+    }
+
+    #[test]
+    fn test_filename_for_task() {
+        // macro for making the string
+        macro_rules! s {
+            ($url:expr) => {
+                String::from($url)
+            };
+        }
+        assert_eq!(
+            DownloadTask::get_filename("https://www.example.com/foo/bar/baz.tar.gz").unwrap(),
+            s!("baz.tar.gz")
+        );
+        assert!(DownloadTask::get_filename("https://www.example.com/").is_err());
+        assert!(DownloadTask::get_filename("aaaaa").is_err());
+        assert_eq!(
+            DownloadTask::get_filename(
+                "https://registry.npmjs.org/@_000407/transpose.js/-/transpose.js-1.0.1.tgz"
+            )
+            .unwrap(),
+            s!("@_000407-transpose.js-1.0.1.tgz")
+        );
+        assert_eq!(
+            DownloadTask::get_filename(
+                "https://registry.npmjs.org/@bolt/components-button-group/-/components-button-group-2.21.0-canary.12348.5.0.tgz"
+            ).unwrap(),
+            s!("@bolt-components-button-group-2.21.0-canary.12348.5.0.tgz")
+        );
+        assert_eq!(
+            DownloadTask::get_filename(
+                "https://registry.npmjs.org/vs-deploy/-/vs-deploy-1.5.0.tgz"
+            )
+            .unwrap(),
+            s!("vs-deploy-1.5.0.tgz")
+        );
     }
 }
