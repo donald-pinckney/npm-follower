@@ -310,7 +310,11 @@ pub fn download_to_dest(
                 diesel::update(
                     schema::download_tasks::table.filter(schema::download_tasks::url.eq(&task.url)),
                 )
-                .set(failed.eq(Some(DownloadFailed::from(e))))
+                .set((
+                    failed.eq(Some(DownloadFailed::from(e))),
+                    last_failure.eq(Utc::now()),
+                    num_failures.eq(num_failures + 1),
+                ))
                 .execute(&conn.conn)
                 .expect("Failed to update download task after error");
             }
