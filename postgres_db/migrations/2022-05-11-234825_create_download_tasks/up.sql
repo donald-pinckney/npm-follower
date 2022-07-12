@@ -14,5 +14,5 @@ CREATE TABLE download_tasks (
   queue_time TIMESTAMP WITH TIME ZONE NOT NULL,
   num_failures INTEGER NOT NULL,
   last_failure TIMESTAMP WITH TIME ZONE,
-  success BOOLEAN NOT NULL
+  failed TEXT
 );
