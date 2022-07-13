@@ -1,4 +1,6 @@
+use std::collections::HashSet;
 use crate::custom_types::DownloadFailed;
+use crate::download_tarball;
 use crate::download_tarball::DownloadedTarball;
 
 use super::schema;
@@ -103,11 +105,110 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
         panic!("Programming error: enqueue_chunk must be called with a chunk of size <= ENQUEUE_CHUNK_SIZE ({})", ENQUEUE_CHUNK_SIZE);
     }
 
+
+    // A1. Filter out URL x if it exists in downloaded_tarballs
+    let already_downloaded_urls: HashSet<_> = download_tarball::get_downloaded_urls_matching_tasks(conn, chunk).into_iter().collect();
+    let chunk: Vec<_> =  chunk.iter().filter(|t| !already_downloaded_urls.contains(&t.url)).collect();
+
+    // A2. If URL x didn't exist in downloaded_tarballs, enqueue into download_tasks
     diesel::insert_into(download_tasks)
         .values(chunk)
         .on_conflict_do_nothing()
         .execute(&conn.conn)
         .expect("Failed to enqueue downloads into DB")
+
+
+    // Note: we could do a transaction here, but instead if we consider
+    // the overleavings with the downloader, it is safe,
+    // so long as the downloader can handle duplicate downloads.
+    // Possible interleavings combined with:
+
+    // B1. Downloader selects URL x from download_tasks
+    // B2. Downloader inserts URL x into downloaded_tarballs
+    // B3. Downloader removes URL x from download_tasks
+
+    /*
+    
+    A1
+    A2
+    B1
+    B2
+    B3
+    ---> normal case, ok
+
+
+    A1
+    B1
+    A2 ---> this will be a nop, because the task is already in the table (not yet deleted by B3).
+    B2
+    B3
+    ---> ok 
+
+
+    B1
+    A1
+    A2 ---> this will be a nop, because the task is already in the table (not yet deleted by B3).
+    B2
+    B3
+    ---> ok
+
+
+    A1
+    B1
+    B2
+    B3
+    A2 ---> ***this will re-insert URL x back into download_tasks***
+    ---> NEED TO MAKE SURE DOWNLOADER HANDLES RE-DOWNLOADING OK
+
+
+    B1
+    A1
+    B2
+    B3
+    A2 ---> ***this will re-insert URL x back into download_tasks***
+    ---> NEED TO MAKE SURE DOWNLOADER HANDLES RE-DOWNLOADING OK
+
+    
+    B1
+    B2
+    B3
+    A1 ---> will always filter, ok
+    A2
+    ---> ok
+    
+
+    A1
+    B1
+    B2
+    A2 ---> this insert will be a nop, because URL x hasn't yet been deleted by B3
+    B3
+    ---> ok
+
+
+    B1
+    A1
+    B2
+    A2 ---> this insert will be a nop, because URL x hasn't yet been deleted by B3
+    B3
+    ---> ok
+
+
+    B1
+    B2
+    A1 ---> will always filter, ok
+    A2
+    B3
+    ---> ok
+
+
+    B1
+    B2
+    A1 ---> will always filter, ok
+    B3
+    A2
+    ---> ok
+
+    */
 }
 
 pub const TASKS_CHUNK_SIZE: i64 = 1024;
