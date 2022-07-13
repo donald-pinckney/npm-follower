@@ -42,35 +42,3 @@ impl DownloadedTarball {
     }
 }
 
-#[derive(Debug)]
-pub enum DownloadError {
-    Request(reqwest::Error),
-    StatusNotOk(reqwest::StatusCode),
-    Io(std::io::Error),
-    BadlyFormattedUrl,
-}
-
-impl std::error::Error for DownloadError {}
-
-impl std::fmt::Display for DownloadError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            DownloadError::Request(e) => write!(f, "Request error: {}", e),
-            DownloadError::StatusNotOk(e) => write!(f, "Status not OK: {}", e),
-            DownloadError::Io(e) => write!(f, "IO error: {}", e),
-            DownloadError::BadlyFormattedUrl => write!(f, "Badly formatted URL"),
-        }
-    }
-}
-
-impl From<reqwest::Error> for DownloadError {
-    fn from(e: reqwest::Error) -> Self {
-        DownloadError::Request(e)
-    }
-}
-
-impl From<std::io::Error> for DownloadError {
-    fn from(e: std::io::Error) -> Self {
-        DownloadError::Io(e)
-    }
-}

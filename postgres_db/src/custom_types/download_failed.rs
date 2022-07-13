@@ -1,5 +1,3 @@
-use crate::download_tarball::DownloadError;
-
 use super::DownloadFailed;
 use diesel::deserialize;
 use diesel::pg::Pg;
@@ -37,14 +35,3 @@ impl FromSql<Text, Pg> for DownloadFailed {
     }
 }
 
-impl From<DownloadError> for DownloadFailed {
-    fn from(e: DownloadError) -> Self {
-        #[allow(clippy::collapsible_match)]
-        match e {
-            DownloadError::StatusNotOk(e) => DownloadFailed::Res(e.into()),
-            DownloadError::Io(_) => DownloadFailed::Io,
-            DownloadError::BadlyFormattedUrl => DownloadFailed::BadlyFormattedUrl,
-            _ => DownloadFailed::Other,
-        }
-    }
-}
