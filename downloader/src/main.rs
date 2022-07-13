@@ -1,4 +1,4 @@
-use postgres_db::download_queue::download_to_dest;
+use downloader::download_db::download_to_dest;
 use utils::check_no_concurrent_processes;
 
 pub fn main() {
