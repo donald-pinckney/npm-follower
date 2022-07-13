@@ -7,6 +7,7 @@ use super::schema;
 use super::schema::download_tasks;
 use super::DbConnection;
 use chrono::{DateTime, Utc};
+use diesel::pg::upsert::excluded;
 use diesel::prelude::*;
 use diesel::Queryable;
 
@@ -272,20 +273,42 @@ pub fn load_chunk_next(
 }
 
 pub fn update_from_tarballs(conn: &DbConnection, tarballs: &mut Vec<DownloadedTarball>) {
-    use schema::download_tasks::dsl::*;
+
     if !tarballs.is_empty() {
         println!("Inserting {} tarballs", tarballs.len());
+
         // insert all the tarballs from download_queue in the db
-        diesel::insert_into(schema::downloaded_tarballs::table)
-            .values(&*tarballs)
-            .execute(&conn.conn)
-            .expect("Failed to insert downloaded tarballs into DB");
+        {
+            use schema::downloaded_tarballs::dsl::*; // have to scope the imports as they conflict.
+            diesel::insert_into(schema::downloaded_tarballs::table)
+                .values(&*tarballs)
+                // .on_conflict_do_nothing()
+                .on_conflict(tarball_url)
+                .do_update()
+                .set((
+                    tarball_url.eq(excluded(tarball_url)),
+                    downloaded_at.eq(excluded(downloaded_at)),
+                    shasum.eq(excluded(shasum)),
+                    unpacked_size.eq(excluded(unpacked_size)),
+                    file_count.eq(excluded(file_count)),
+                    integrity.eq(excluded(integrity)),
+                    signature0_sig.eq(excluded(signature0_sig)),
+                    signature0_keyid.eq(excluded(signature0_keyid)),
+                    npm_signature.eq(excluded(npm_signature)),
+                    tgz_local_path.eq(excluded(tgz_local_path)),
+                ))
+                .execute(&conn.conn)
+                .expect("Failed to insert downloaded tarballs into DB");
+        }
 
         // delete the tasks from download_tasks that are contained in download_queue
-        diesel::delete(download_tasks)
-            .filter(url.eq_any(tarballs.iter().map(|x| x.tarball_url.clone())))
-            .execute(&conn.conn)
-            .expect("Failed to delete downloaded tasks from DB");
+        {
+            use schema::download_tasks::dsl::*;
+            diesel::delete(download_tasks)
+                .filter(url.eq_any(tarballs.iter().map(|x| x.tarball_url.clone())))
+                .execute(&conn.conn)
+                .expect("Failed to delete downloaded tasks from DB"); 
+        }
 
         // clear the queue
         tarballs.clear();
