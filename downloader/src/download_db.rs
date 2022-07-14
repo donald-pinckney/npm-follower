@@ -43,6 +43,15 @@ pub async fn download_task(
     Ok(downloaded_tarball)
 }
 
+/// Updates the database with the given tarballs and then clears the queue.
+pub fn update_from_tarball_queue(conn: &DbConnection, tarballs: &mut Vec<DownloadedTarball>) {
+    if tarballs.is_empty() {
+        return;
+    }
+    update_from_tarballs(conn, &tarballs);
+    tarballs.clear();
+}
+
 /// Downloads all present tasks to the given directory. Inserts each task completed in the
 /// downloaded_tarballs table, and removes the completed tasks from the download_tasks table.
 /// The given number of workers represents the number of threads that will be used to download the
@@ -92,7 +101,7 @@ pub fn download_to_dest(
     for i in 0..tasks_len {
         println!("{}/{}", i, tasks_len);
         if (download_counter + 1) == last_chunk_size {
-            update_from_tarballs(conn, &mut tarballs_queue);
+            update_from_tarball_queue(conn, &mut tarballs_queue);
 
             println!("Sending new chunk of tasks to pool");
             // get next round of tasks, with no failed downloads and with tasks that have greater
@@ -127,7 +136,7 @@ pub fn download_to_dest(
         download_counter += 1;
     }
 
-    update_from_tarballs(conn, &mut tarballs_queue);
+    update_from_tarball_queue(conn, &mut tarballs_queue);
 
     println!("Done downloading tasks");
 
