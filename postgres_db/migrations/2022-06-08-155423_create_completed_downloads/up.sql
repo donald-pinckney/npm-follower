@@ -1,7 +1,7 @@
 -- Your SQL goes here
 
 CREATE TABLE downloaded_tarballs (
-  tarball_url TEXT NOT NULL,
+  tarball_url TEXT PRIMARY KEY NOT NULL,
   downloaded_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
   shasum TEXT,
@@ -12,7 +12,5 @@ CREATE TABLE downloaded_tarballs (
   signature0_keyid TEXT,
   npm_signature TEXT,
 
-  tgz_local_path TEXT NOT NULL,
-
-  PRIMARY KEY(tarball_url, downloaded_at)
+  tgz_local_path TEXT NOT NULL
 );
