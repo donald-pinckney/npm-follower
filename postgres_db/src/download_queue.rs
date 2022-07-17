@@ -1,7 +1,7 @@
-use std::collections::HashSet;
 use crate::custom_types::DownloadFailed;
 use crate::download_tarball;
 use crate::download_tarball::DownloadedTarball;
+use std::collections::HashSet;
 
 use super::schema;
 use super::schema::download_tasks;
@@ -106,10 +106,15 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
         panic!("Programming error: enqueue_chunk must be called with a chunk of size <= ENQUEUE_CHUNK_SIZE ({})", ENQUEUE_CHUNK_SIZE);
     }
 
-
     // A1. Filter out URL x if it exists in downloaded_tarballs
-    let already_downloaded_urls: HashSet<_> = download_tarball::get_downloaded_urls_matching_tasks(conn, chunk).into_iter().collect();
-    let chunk: Vec<_> =  chunk.iter().filter(|t| !already_downloaded_urls.contains(&t.url)).collect();
+    let already_downloaded_urls: HashSet<_> =
+        download_tarball::get_downloaded_urls_matching_tasks(conn, chunk)
+            .into_iter()
+            .collect();
+    let chunk: Vec<_> = chunk
+        .iter()
+        .filter(|t| !already_downloaded_urls.contains(&t.url))
+        .collect();
 
     // A2. If URL x didn't exist in downloaded_tarballs, enqueue into download_tasks
     diesel::insert_into(download_tasks)
@@ -117,7 +122,6 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
         .on_conflict_do_nothing()
         .execute(&conn.conn)
         .expect("Failed to enqueue downloads into DB")
-
 
     // Note: we could do a transaction here, but instead if we consider
     // the overleavings with the downloader, it is safe,
@@ -129,7 +133,7 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
     // B3. Downloader removes URL x from download_tasks
 
     /*
-    
+
     A1
     A2
     B1
@@ -143,7 +147,7 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
     A2 ---> this will be a nop, because the task is already in the table (not yet deleted by B3).
     B2
     B3
-    ---> ok 
+    ---> ok
 
 
     B1
@@ -169,14 +173,14 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
     A2 ---> ***this will re-insert URL x back into download_tasks***
     ---> NEED TO MAKE SURE DOWNLOADER HANDLES RE-DOWNLOADING OK
 
-    
+
     B1
     B2
     B3
     A1 ---> will always filter, ok
     A2
     ---> ok
-    
+
 
     A1
     B1
@@ -272,46 +276,40 @@ pub fn load_chunk_next(
     }
 }
 
-pub fn update_from_tarballs(conn: &DbConnection, tarballs: &mut Vec<DownloadedTarball>) {
+pub fn update_from_tarballs(conn: &DbConnection, tarballs: &Vec<DownloadedTarball>) {
+    println!("Inserting {} tarballs", tarballs.len());
 
-    if !tarballs.is_empty() {
-        println!("Inserting {} tarballs", tarballs.len());
+    // insert all the tarballs from download_queue in the db
+    {
+        use schema::downloaded_tarballs::dsl::*; // have to scope the imports as they conflict.
+        diesel::insert_into(schema::downloaded_tarballs::table)
+            .values(&*tarballs)
+            // .on_conflict_do_nothing()
+            .on_conflict(tarball_url)
+            .do_update()
+            .set((
+                tarball_url.eq(excluded(tarball_url)),
+                downloaded_at.eq(excluded(downloaded_at)),
+                shasum.eq(excluded(shasum)),
+                unpacked_size.eq(excluded(unpacked_size)),
+                file_count.eq(excluded(file_count)),
+                integrity.eq(excluded(integrity)),
+                signature0_sig.eq(excluded(signature0_sig)),
+                signature0_keyid.eq(excluded(signature0_keyid)),
+                npm_signature.eq(excluded(npm_signature)),
+                tgz_local_path.eq(excluded(tgz_local_path)),
+            ))
+            .execute(&conn.conn)
+            .expect("Failed to insert downloaded tarballs into DB");
+    }
 
-        // insert all the tarballs from download_queue in the db
-        {
-            use schema::downloaded_tarballs::dsl::*; // have to scope the imports as they conflict.
-            diesel::insert_into(schema::downloaded_tarballs::table)
-                .values(&*tarballs)
-                // .on_conflict_do_nothing()
-                .on_conflict(tarball_url)
-                .do_update()
-                .set((
-                    tarball_url.eq(excluded(tarball_url)),
-                    downloaded_at.eq(excluded(downloaded_at)),
-                    shasum.eq(excluded(shasum)),
-                    unpacked_size.eq(excluded(unpacked_size)),
-                    file_count.eq(excluded(file_count)),
-                    integrity.eq(excluded(integrity)),
-                    signature0_sig.eq(excluded(signature0_sig)),
-                    signature0_keyid.eq(excluded(signature0_keyid)),
-                    npm_signature.eq(excluded(npm_signature)),
-                    tgz_local_path.eq(excluded(tgz_local_path)),
-                ))
-                .execute(&conn.conn)
-                .expect("Failed to insert downloaded tarballs into DB");
-        }
-
-        // delete the tasks from download_tasks that are contained in download_queue
-        {
-            use schema::download_tasks::dsl::*;
-            diesel::delete(download_tasks)
-                .filter(url.eq_any(tarballs.iter().map(|x| x.tarball_url.clone())))
-                .execute(&conn.conn)
-                .expect("Failed to delete downloaded tasks from DB"); 
-        }
-
-        // clear the queue
-        tarballs.clear();
+    // delete the tasks from download_tasks that are contained in download_queue
+    {
+        use schema::download_tasks::dsl::*;
+        diesel::delete(download_tasks)
+            .filter(url.eq_any(tarballs.iter().map(|x| x.tarball_url.clone())))
+            .execute(&conn.conn)
+            .expect("Failed to delete downloaded tasks from DB");
     }
 }
 
