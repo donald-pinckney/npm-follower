@@ -4,7 +4,7 @@ use serde_json::{Map, Value};
 use std::collections::HashMap;
 
 use postgres_db::custom_types::Semver;
-use super::{Packument, VersionPackument, Dist, Spec};
+use super::{Packument, VersionPackument, Dist, Spec, RepositoryInfo};
 
 use utils::{RemoveInto, FilterJsonCases};
 
@@ -18,6 +18,13 @@ fn deserialize_spec(c: Value) -> Spec {
             Spec { raw: c, parsed: postgres_db::custom_types::ParsedSpec::Invalid(err) }
         }
     }
+}
+
+fn deserialize_repo_blob(repo_blob: Value) -> RepositoryInfo {
+    let repo_url = todo!();
+    let dir = todo!();
+
+    RepositoryInfo { raw: repo_blob, cloneable_repo_url: repo_url, repo_dir: dir }
 }
 
 fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static str) -> Vec<(String, Spec)> {
@@ -97,7 +104,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         peer_dependencies,
         optional_dependencies,
         dist,
-        repository: repository_blob,
+        repository: repository_blob.map(deserialize_repo_blob),
         extra_metadata: version_blob.into_iter().collect()
     }
 }

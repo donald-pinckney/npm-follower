@@ -35,7 +35,7 @@ pub struct VersionPackument {
     pub peer_dependencies: Vec<(String, Spec)>,
     pub optional_dependencies: Vec<(String, Spec)>,
     pub dist: Dist,
-    pub repository: Option<Value>,
+    pub repository: Option<RepositoryInfo>,
     pub extra_metadata: HashMap<String, Value>
 }
 
@@ -55,6 +55,13 @@ pub struct Dist {
 pub struct Spec {
     pub raw: Value,
     pub parsed: ParsedSpec
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct RepositoryInfo {
+    pub raw: Value,
+    pub cloneable_repo_url: String,
+    pub repo_dir: String
 }
 
 pub mod deserialize;

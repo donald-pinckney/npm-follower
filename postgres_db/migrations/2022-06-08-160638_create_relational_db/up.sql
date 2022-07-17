@@ -233,6 +233,8 @@ CREATE TABLE versions (
   -- if the tarball hasn't been downloaded yet!
   tarball_url             TEXT NOT NULL,
   repository              JSONB,
+  cloneable_repo_url      TEXT,
+  cloneable_repo_dir      TEXT,
   created                 TIMESTAMP WITH TIME ZONE NOT NULL,
   deleted                 BOOLEAN NOT NULL,
   extra_metadata JSONB    NOT NULL,
