@@ -88,8 +88,6 @@ mod tests {
     #[test_case("github:https/https", "https://github.com/https/https", "/", "github", "fetch")]
     #[test_case("github:https/github", "https://github.com/https/github", "/", "github", "fetch")]
 
-
-
     // standard https:// cases
     #[test_case("https://github.com/npm/cacache", "https://github.com/npm/cacache", "/", "github", "fetch")]
     #[test_case("https://github.com/kornelski/https.git-github.git", "https://github.com/kornelski/https.git-github", "/", "github", "fetch")]
@@ -102,7 +100,6 @@ mod tests {
 
     // github tree directory case
     #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "packages/babel-plugin-syntax-async-generators", "github", "fetch")]
-
 
     // git:// cases
     #[test_case("git://github.com/whitequark/ipaddr.js", "https://github.com/whitequark/ipaddr.js", "/", "github", "fetch")]
@@ -135,50 +132,127 @@ mod tests {
         assert_eq!(deserialize_repo_blob(blob4), answer4);
     }
 
-        // // other gist url cases
-        // #[test_case("https://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "/")]
-        // #[test_case("https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "/")]
-        // #[test_case("git@gist.github.com:35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "/")]
-    
 
-        // // gist: bitbucket: and gitlab: shorthand cases
-        // #[test_case("gist:11081aaa281", "https://gist.github.com/11081aaa281", "/")]
-        // #[test_case("bitbucket:github/git", "https://bitbucket.org/github/git", "/")]
-        // #[test_case("gitlab:bitbucket-gist/github", "https://gitlab.com/bitbucket-gist/github", "/")]
+    // normal bitbucket case
+    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff.git", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/", "janouwehand", "stuff-stuff-stuff")]
+    #[test_case("http://bitbucket.org/janouwehand/stuff-stuff-stuff.git", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/", "janouwehand", "stuff-stuff-stuff")]
+    // bitbucket: shorthand
+    #[test_case("bitbucket:github/git", "https://bitbucket.org/github/git", "/", "github", "git")]
+    // bitbucket tree directory case
+    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "ReplacePackageRefs/Properties/", "janouwehand", "stuff-stuff-stuff")]
+    fn test_deserialize_repo_blob_bitbucket(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
+        let blob1: Value = json!(url_str);
+        let blob2 = json!({"url": url_str});
+        let blob3 = json!({"url": url_str, "type": "git"});
+        let blob4 = json!({"url": url_str, "type": "bitbucket"});
 
+        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Bitbucket { user: answer_user.into(), repo: answer_repo.into() }};
         
-
-        // // bitbucket tree directory case
-        // #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "ReplacePackageRefs/Properties/")]
-
-        // // gitlab tree directory case
-        // #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab", "generator_templates/snowplow_event_definition")]
-    
-
-        // // 3rd party git host
-        // #[test_case("git@git.coolaj86.com:coolaj86/atob.js.git", "git@git.coolaj86.com:coolaj86/atob.js.git", "/")]
-        // #[test_case("git://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js", "/")]
-        // #[test_case("https://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js", "/")]
+        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
+        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
+        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
+        let answer4 = RepositoryInfo { raw: blob4.clone(), info: answer_info };
+        
+        assert_eq!(deserialize_repo_blob(blob1), answer1);
+        assert_eq!(deserialize_repo_blob(blob2), answer2);
+        assert_eq!(deserialize_repo_blob(blob3), answer3);
+        assert_eq!(deserialize_repo_blob(blob4), answer4);
+    }
 
 
-    #[test_case("github/fetch", "some/dir", "https://github.com/github/fetch")]
-    #[test_case("github:git/git.git", "some/dir", "https://github.com/git/git")]
-    #[test_case("https://github.com/kornelski/https.git-github.git", "some/dir", "https://github.com/kornelski/https.git-github")]
-    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel")]
-    #[test_case("git+ssh://git@github.com/istanbuljs/istanbuljs.git", "packages/istanbul-lib-coverage", "https://github.com/istanbuljs/istanbuljs")]
-    fn test_deserialize_repo_blob_git_url_with_directory(url_str: &str, directory_str: &str, answer_url: &str) {
-        let answer_dir = directory_str;
+    // normal gitlab case
+    #[test_case("https://gitlab.com/gitlab-org/gitlab.git", "https://gitlab.com/gitlab-org/gitlab.git", "/", "gitlab-org", "gitlab")]
+    #[test_case("http://gitlab.com/gitlab-org/gitlab.git", "https://gitlab.com/gitlab-org/gitlab.git", "/", "gitlab-org", "gitlab")]
+    // gitlab: shorthand
+    #[test_case("gitlab:bitbucket-gist/github", "https://gitlab.com/bitbucket-gist/github.git", "/", "bitbucket-gist", "github")]
+    // gitlab tree directory case
+    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
+    fn test_deserialize_repo_blob_gitlab(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
+        let blob1: Value = json!(url_str);
+        let blob2 = json!({"url": url_str});
+        let blob3 = json!({"url": url_str, "type": "git"});
+        let blob4 = json!({"url": url_str, "type": "gitlab"});
 
+        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Gitlab { user: answer_user.into(), repo: answer_repo.into() }};
+        
+        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
+        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
+        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
+        let answer4 = RepositoryInfo { raw: blob4.clone(), info: answer_info };
+        
+        assert_eq!(deserialize_repo_blob(blob1), answer1);
+        assert_eq!(deserialize_repo_blob(blob2), answer2);
+        assert_eq!(deserialize_repo_blob(blob3), answer3);
+        assert_eq!(deserialize_repo_blob(blob4), answer4);
+    }
+
+
+    // other gist url cases
+    #[test_case("https://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
+    #[test_case("https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
+    #[test_case("git@gist.github.com:35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
+    #[test_case("http://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
+
+    // gist: shorthand case
+    #[test_case("gist:11081aaa281", "https://gist.github.com/11081aaa281", "11081aaa281")]
+    fn test_deserialize_repo_blob_gist(url_str: &str, answer_url: &str, answer_id: &str) {
+        let blob1: Value = json!(url_str);
+        let blob2 = json!({"url": url_str});
+        let blob3 = json!({"url": url_str, "type": "git"});
+        let blob4 = json!({"url": url_str, "type": "gist"});
+
+        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: "/".into(), vcs: Vcs::Git, host_info: RepoHostInfo::Gist { id: answer_id.into() }};
+        
+        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
+        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
+        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
+        let answer4 = RepositoryInfo { raw: blob4.clone(), info: answer_info };
+        
+        assert_eq!(deserialize_repo_blob(blob1), answer1);
+        assert_eq!(deserialize_repo_blob(blob2), answer2);
+        assert_eq!(deserialize_repo_blob(blob3), answer3);
+        assert_eq!(deserialize_repo_blob(blob4), answer4);
+    }
+
+
+    // 3rd party git host
+    #[test_case("git@git.coolaj86.com:coolaj86/atob.js.git", "git@git.coolaj86.com:coolaj86/atob.js.git")]
+    #[test_case("git://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js")]
+    #[test_case("https://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js")]
+    #[test_case("http://git.coolaj86.com/coolaj86/atob.js.git", "http://git.coolaj86.com/coolaj86/atob.js")]
+    fn test_deserialize_repo_blob_3rd(url_str: &str, answer_url: &str) {
+        let blob1: Value = json!(url_str);
+        let blob2 = json!({"url": url_str});
+        let blob3 = json!({"url": url_str, "type": "git"});
+
+        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: "/".into(), vcs: Vcs::Git, host_info: RepoHostInfo::Thirdparty};
+        
+        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
+        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
+        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
+        
+        assert_eq!(deserialize_repo_blob(blob1), answer1);
+        assert_eq!(deserialize_repo_blob(blob2), answer2);
+        assert_eq!(deserialize_repo_blob(blob3), answer3);
+    }
+
+
+
+
+
+
+    #[test_case("github/fetch", "some/dir")]
+    #[test_case("github:git/git.git", "some/dir")]
+    #[test_case("https://github.com/kornelski/https.git-github.git", "some/dir")]
+    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "packages/babel-plugin-syntax-async-generators")]
+    #[test_case("git+ssh://git@github.com/istanbuljs/istanbuljs.git", "packages/istanbul-lib-coverage")]
+    fn test_deserialize_repo_blob_git_url_with_directory(url_str: &str, directory_str: &str) {
         let blob1 = json!({"url": url_str, "directory": directory_str});
         let blob2 = json!({"url": url_str, "type": "git", "directory": directory_str});
         let blob3 = json!({"url": url_str, "type": "github", "directory": directory_str});
 
-        // let answer1 = RepositoryInfo { raw: blob1.clone(), cloneable_repo_url: answer_url.into(), repo_dir: answer_dir.into(), repo_type: RepositoryType::Git };
-        // let answer2 = RepositoryInfo { raw: blob2.clone(), cloneable_repo_url: answer_url.into(), repo_dir: answer_dir.into(), repo_type: RepositoryType::Git };
-        // let answer3 = RepositoryInfo { raw: blob3.clone(), cloneable_repo_url: answer_url.into(), repo_dir: answer_dir.into(), repo_type: RepositoryType::Git };
-
-        // assert_eq!(deserialize_repo_blob(blob1), answer1);
-        // assert_eq!(deserialize_repo_blob(blob2), answer2);
-        // assert_eq!(deserialize_repo_blob(blob3), answer3);
+        assert_eq!(deserialize_repo_blob(blob1).info.cloneable_repo_dir, directory_str);
+        assert_eq!(deserialize_repo_blob(blob2).info.cloneable_repo_dir, directory_str);
+        assert_eq!(deserialize_repo_blob(blob3).info.cloneable_repo_dir, directory_str);
     }
 }
