@@ -205,6 +205,63 @@ CREATE DOMAIN package_metadata AS package_metadata_struct
 
 
 
+CREATE TYPE vcs_type_enum AS ENUM (
+  'git'
+);
+
+CREATE TYPE repo_host_enum AS ENUM (
+  'github',
+  'bitbucket',
+  'gitlab',
+  'gist',
+  '3rdparty'
+);
+
+CREATE TYPE repo_info_struct AS (
+  cloneable_repo_url            TEXT,
+  cloneable_repo_dir            TEXT,
+  vcs                           vcs_type_enum,
+  host                          repo_host_enum,
+  github_bitbucket_gitlab_user  TEXT,
+  github_bitbucket_gitlab_repo  TEXT,
+  gist_id                       TEXT
+);
+
+CREATE DOMAIN repo_info AS repo_info_struct
+  CHECK(
+    VALUE IS NULL OR (
+      (VALUE).cloneable_repo_url IS NOT NULL AND 
+      (VALUE).cloneable_repo_dir IS NOT NULL AND
+      (VALUE).host IS NOT NULL AND
+      (VALUE).vcs IS NOT NULL
+    )
+  )
+  
+  CHECK(
+    VALUE IS NULL OR 
+    (
+      ((VALUE).host = 'github' OR (VALUE).host = 'bitbucket' OR (VALUE).host = 'gitlab') AND
+      (VALUE).github_bitbucket_gitlab_user IS NOT NULL AND 
+      (VALUE).github_bitbucket_gitlab_repo IS NOT NULL AND
+      (VALUE).gist_id IS NULL AND
+      (VALUE).vcs = 'git'
+    ) OR
+    (
+      (VALUE).host = 'gist' AND
+      (VALUE).github_bitbucket_gitlab_user IS NULL AND 
+      (VALUE).github_bitbucket_gitlab_repo IS NULL AND
+      (VALUE).gist_id IS NOT NULL AND
+      (VALUE).vcs = 'git'
+    ) OR
+    (
+      (VALUE).host = '3rdparty' AND
+      (VALUE).github_bitbucket_gitlab_user IS NULL AND 
+      (VALUE).github_bitbucket_gitlab_repo IS NULL AND
+      (VALUE).gist_id IS NULL
+    )
+  );
+
+
 ------------------------------------------
 -----                              -------
 -----       TABLE DEFINITIONS      -------
@@ -232,9 +289,8 @@ CREATE TABLE versions (
   -- In addition, the tarball_url may not yet exist in downloaded_tarballs,
   -- if the tarball hasn't been downloaded yet!
   tarball_url             TEXT NOT NULL,
-  repository              JSONB,
-  cloneable_repo_url      TEXT,
-  cloneable_repo_dir      TEXT,
+  repository_raw          JSONB,
+  repository_parsed       repo_info,
   created                 TIMESTAMP WITH TIME ZONE NOT NULL,
   deleted                 BOOLEAN NOT NULL,
   extra_metadata JSONB    NOT NULL,

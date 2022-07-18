@@ -1,6 +1,6 @@
 use chrono::Utc;
 use chrono::DateTime;
-use postgres_db::custom_types::{Semver, ParsedSpec};
+use postgres_db::custom_types::{Semver, ParsedSpec, RepoInfo};
 use serde_json::{Value, Map};
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
@@ -60,8 +60,8 @@ pub struct Spec {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct RepositoryInfo {
     pub raw: Value,
-    pub cloneable_repo_url: String,
-    pub repo_dir: String
+    pub info: RepoInfo
 }
 
 pub mod deserialize;
+mod deserialize_repo;
