@@ -19,11 +19,16 @@ pub async fn download_task(
     dest: &str,
 ) -> Result<DownloadedTarball, DownloadError> {
     // get the file and download it to dir
-    let res = reqwest::get(&task.url).await?;
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(600)) // timeout of 10 minutes
+        .build()?;
+
+    let res = client.get(&task.url).send().await?;
     let status = res.status();
     if status != reqwest::StatusCode::OK {
         return Err(DownloadError::StatusNotOk(status));
     }
+
     let name = DownloadTask::get_filename(&task.url)?;
     let path = std::path::Path::new(dest).join(name);
     let mut file = std::fs::File::create(path.clone())?;
