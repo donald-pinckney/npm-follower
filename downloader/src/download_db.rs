@@ -104,7 +104,10 @@ pub fn download_to_dest(
     pool.download_chunk(tasks);
 
     for i in 0..tasks_len {
-        println!("{}/{}", i, tasks_len);
+        println!(
+            "Status: {}/{} - Chunkwise: {}/{}",
+            i, tasks_len, download_counter, last_chunk_size
+        );
         if (download_counter + 1) == last_chunk_size {
             update_from_tarball_queue(conn, &mut tarballs_queue);
 
