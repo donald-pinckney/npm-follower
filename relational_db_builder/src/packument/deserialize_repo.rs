@@ -67,52 +67,53 @@ mod tests {
 
     // github implied shorthand cases
     #[test_case("github/fetch", "https://github.com/github/fetch", "/", "github", "fetch")]
-    #[test_case("stuff/stuff.com", "https://github.com/stuff/stuff.com", "/", "github", "fetch")]
-    #[test_case("jshttp/accepts", "https://github.com/jshttp/accepts", "/", "github", "fetch")]
-    #[test_case("git/git", "https://github.com/git/git", "/", "github", "fetch")]
-    #[test_case("git/git.git", "https://github.com/git/git", "/", "github", "fetch")]
-    #[test_case("github/github", "https://github.com/github/github", "/", "github", "fetch")]
-    #[test_case("github/github.git", "https://github.com/github/github", "/", "github", "fetch")]
-    #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "/", "github", "fetch")]
-    #[test_case("https/https", "https://github.com/https/https", "/", "github", "fetch")]
-    #[test_case("https/github", "https://github.com/https/github", "/", "github", "fetch")]
+    #[test_case("stuff/stuff.com", "https://github.com/stuff/stuff.com", "/", "stuff", "stuff.com")]
+    #[test_case("jshttp/accepts", "https://github.com/jshttp/accepts", "/", "jshttp", "accepts")]
+    #[test_case("git/git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("git/git.git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("github/github", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case("github/github.git", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
+    #[test_case("https/https", "https://github.com/https/https", "/", "https", "https")]
+    #[test_case("https/github", "https://github.com/https/github", "/", "https", "github")]
 
     // github: shorthand cases
-    #[test_case("github:eemeli/yaml", "https://github.com/eemeli/yaml", "/", "github", "fetch")]
-    #[test_case("github:stuff.com/stuff.com", "https://github.com/stuff.com/stuff.com", "/", "github", "fetch")]
-    #[test_case("github:git/git", "https://github.com/git/git", "/", "github", "fetch")]
-    #[test_case("github:git/git.git", "https://github.com/git/git", "/", "github", "fetch")]
-    #[test_case("github:github/github", "https://github.com/github/github", "/", "github", "fetch")]
-    #[test_case("github:github/github.git", "https://github.com/github/github", "/", "github", "fetch")]
-    #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "/", "github", "fetch")]
-    #[test_case("github:https/https", "https://github.com/https/https", "/", "github", "fetch")]
-    #[test_case("github:https/github", "https://github.com/https/github", "/", "github", "fetch")]
+    #[test_case("github:eemeli/yaml", "https://github.com/eemeli/yaml", "/", "eemeli", "yaml")]
+    #[test_case("github:stuff.com/stuff.com", "https://github.com/stuff.com/stuff.com", "/", "stuff.com", "stuff.com")]
+    #[test_case("github:git/git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("github:git/git.git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("github:github/github", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case("github:github/github.git", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
+    #[test_case("github:https/https", "https://github.com/https/https", "/", "https", "https")]
+    #[test_case("github:https/github", "https://github.com/https/github", "/", "https", "github")]
 
     // standard https:// cases
-    #[test_case("https://github.com/npm/cacache", "https://github.com/npm/cacache", "/", "github", "fetch")]
-    #[test_case("https://github.com/kornelski/https.git-github.git", "https://github.com/kornelski/https.git-github", "/", "github", "fetch")]
+    #[test_case("https://github.com/npm/cacache", "https://github.com/npm/cacache", "/", "npm", "cacache")]
+    #[test_case("https://github.com/kornelski/https.git-github.git", "https://github.com/kornelski/https.git-github", "/", "kornelski", "https.git-github")]
 
     // http:// case
-    #[test_case("http://github.com/isaacs/abbrev-js", "https://github.com/isaacs/abbrev-js", "/", "github", "fetch")]
+    #[test_case("http://github.com/isaacs/abbrev-js", "https://github.com/isaacs/abbrev-js", "/", "isaacs", "abbrev-js")]
 
     // broken url case
-    #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "github", "fetch")]
+    #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "crypto-browserify", "browserify-rsa")]
 
     // github tree directory case
-    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "packages/babel-plugin-syntax-async-generators", "github", "fetch")]
+    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "packages/babel-plugin-syntax-async-generators", "babel", "babel")]
 
     // git:// cases
-    #[test_case("git://github.com/whitequark/ipaddr.js", "https://github.com/whitequark/ipaddr.js", "/", "github", "fetch")]
-    #[test_case("git://github.com/browserify/console-browserify.git", "https://github.com/browserify/console-browserify", "/", "github", "fetch")]
+    #[test_case("git://github.com/whitequark/ipaddr.js", "https://github.com/whitequark/ipaddr.js", "/", "whitequark", "ipaddr.js")]
+    #[test_case("git://github.com/browserify/console-browserify.git", "https://github.com/browserify/console-browserify", "/", "browserify", "console-browserify")]
 
     // git+https:// cases
-    #[test_case("git+https://github.com/yargs/set-blocking.git", "https://github.com/yargs/set-blocking", "/", "github", "fetch")]
+    #[test_case("git+https://github.com/yargs/set-blocking.git", "https://github.com/yargs/set-blocking", "/", "yargs", "set-blocking")]
 
     // git+ssh:// cases
-    #[test_case("git+ssh://git@github.com/mikaelbr/node-notifier.git", "https://github.com/mikaelbr/node-notifier", "/", "github", "fetch")]
+    #[test_case("git+ssh://git@github.com/mikaelbr/node-notifier.git", "https://github.com/mikaelbr/node-notifier", "/", "mikaelbr", "node-notifier")]
+    #[test_case("git+ssh://git@github.com/istanbuljs/istanbuljs.git", "https://github.com/istanbuljs/istanbuljs", "/", "istanbuljs", "istanbuljs")]
 
     // ssh case
-    #[test_case("git@github.com:tsertkov/exec-sh.git", "https://github.com/tsertkov/exec-sh", "/", "github", "fetch")]
+    #[test_case("git@github.com:tsertkov/exec-sh.git", "https://github.com/tsertkov/exec-sh", "/", "tsertkov", "exec-sh")]
     fn test_deserialize_repo_blob_github(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
         let blob1: Value = json!(url_str);
         let blob2 = json!({"url": url_str});
@@ -234,25 +235,5 @@ mod tests {
         assert_eq!(deserialize_repo_blob(blob1), answer1);
         assert_eq!(deserialize_repo_blob(blob2), answer2);
         assert_eq!(deserialize_repo_blob(blob3), answer3);
-    }
-
-
-
-
-
-
-    #[test_case("github/fetch", "some/dir")]
-    #[test_case("github:git/git.git", "some/dir")]
-    #[test_case("https://github.com/kornelski/https.git-github.git", "some/dir")]
-    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "packages/babel-plugin-syntax-async-generators")]
-    #[test_case("git+ssh://git@github.com/istanbuljs/istanbuljs.git", "packages/istanbul-lib-coverage")]
-    fn test_deserialize_repo_blob_git_url_with_directory(url_str: &str, directory_str: &str) {
-        let blob1 = json!({"url": url_str, "directory": directory_str});
-        let blob2 = json!({"url": url_str, "type": "git", "directory": directory_str});
-        let blob3 = json!({"url": url_str, "type": "github", "directory": directory_str});
-
-        assert_eq!(deserialize_repo_blob(blob1).info.cloneable_repo_dir, directory_str);
-        assert_eq!(deserialize_repo_blob(blob2).info.cloneable_repo_dir, directory_str);
-        assert_eq!(deserialize_repo_blob(blob3).info.cloneable_repo_dir, directory_str);
     }
 }
