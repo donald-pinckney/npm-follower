@@ -6,6 +6,12 @@
 
 The PostgreSQL database will (currently) need around 150 GB total.
 
+### macOS Only:
+
+```bash
+brew install libpq
+```
+
 ### Rust & Cargo
 
 ```bash
