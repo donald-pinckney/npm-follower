@@ -42,28 +42,21 @@ Some(("actest", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_hasShrinkwrap": false,
-                "author": {
-                    "name": "nick yermak",
-                },
-                "directories": {},
-                "_nodeVersion": "8.11.3",
-                "name": "actest",
-                "main": "index.js",
-                "license": "ISC",
-                "version": "1.0.0",
-                "_npmVersion": "5.6.0",
-                "description": "ac test npm pacakge",
-                "_npmOperationalInternal": {
-                    "host": "s3://npm-registry-packages",
-                    "tmp": "tmp/actest_1.0.0_1549380398535_0.03779759076339828",
-                },
+                "_id": "actest@1.0.0",
                 "_npmUser": {
                     "email": "nickolas.yermak@alignedcode.com",
                     "name": "nickyermak",
                 },
-                "scripts": {
-                    "test": "test",
+                "_npmVersion": "5.6.0",
+                "directories": {},
+                "_nodeVersion": "8.11.3",
+                "author": {
+                    "name": "nick yermak",
+                },
+                "version": "1.0.0",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/actest_1.0.0_1549380398535_0.03779759076339828",
                 },
                 "maintainers": [
                     {
@@ -71,7 +64,14 @@ Some(("actest", Normal(
                         "name": "nickyermak",
                     },
                 ],
-                "_id": "actest@1.0.0",
+                "_hasShrinkwrap": false,
+                "description": "ac test npm pacakge",
+                "license": "ISC",
+                "main": "index.js",
+                "name": "actest",
+                "scripts": {
+                    "test": "test",
+                },
             },
         ),
     },

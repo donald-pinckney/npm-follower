@@ -1637,11 +1637,36 @@ Some(("swagger-editor-xl", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            repository: Some({
-                "type": "github",
-                "url": "git+https://github.com/swagger-api/swagger-editor.git",
-            }),
+            repository: Some((
+                raw: {
+                    "type": "github",
+                    "url": "git+https://github.com/swagger-api/swagger-editor.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/swagger-api/swagger-editor",
+                    cloneable_repo_dir: "/",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "swagger-api",
+                        repo: "swagger-editor",
+                    ),
+                ),
+            )),
             extra_metadata: {
+                "homepage": "https://github.com/swagger-api/swagger-editor",
+                "_from": ".",
+                "description": "Swagger Editor",
+                "maintainers": [
+                    {
+                        "email": "freelibao@gmail.com",
+                        "name": "tranter",
+                    },
+                ],
+                "_shasum": "4ba9acc0daaa23a1d5d5782b8ee697c2bb085384",
+                "bugs": {
+                    "url": "https://github.com/swagger-api/swagger-editor/issues",
+                },
+                "_nodeVersion": "6.4.0",
                 "scripts": {
                     "build": "webpack --production --hide-modules --stats=errors-only",
                     "clean": "rm -rf dist/**",
@@ -1655,13 +1680,21 @@ Some(("swagger-editor-xl", Normal(
                     "unit-test": "karma start test/unit/karma.conf.js --single-run=true",
                     "unit-test-watch": "karma start test/unit/karma.conf.js",
                 },
-                "homepage": "https://github.com/swagger-api/swagger-editor",
+                "_npmUser": {
+                    "email": "freelibao@gmail.com",
+                    "name": "tranter",
+                },
+                "gitHead": "5fbffc77b643d4459ce310c1e2c150e8ab2fd93d",
+                "version": "2.10.4",
+                "name": "swagger-editor-xl",
                 "authors": [
                     "Mohsen Azimi <me@azimi.me>",
                     "Sahar Jafari <shr.jafari@gmail.com>",
                 ],
-                "name": "swagger-editor-xl",
-                "_npmVersion": "3.10.3",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/swagger-editor-xl-2.10.4.tgz_1484287546263_0.050670018419623375",
+                },
                 "files": [
                     "index.html",
                     "styles/branding.css",
@@ -1675,33 +1708,11 @@ Some(("swagger-editor-xl", Normal(
                     "README.md",
                 ],
                 "license": "Apache-2.0",
-                "_from": ".",
-                "_id": "swagger-editor-xl@2.10.4",
-                "_nodeVersion": "6.4.0",
-                "description": "Swagger Editor",
-                "version": "2.10.4",
+                "_npmVersion": "3.10.3",
                 "engines": {
                     "node": ">=5.8.0",
                 },
-                "_npmOperationalInternal": {
-                    "host": "packages-12-west.internal.npmjs.com",
-                    "tmp": "tmp/swagger-editor-xl-2.10.4.tgz_1484287546263_0.050670018419623375",
-                },
-                "_shasum": "4ba9acc0daaa23a1d5d5782b8ee697c2bb085384",
-                "bugs": {
-                    "url": "https://github.com/swagger-api/swagger-editor/issues",
-                },
-                "_npmUser": {
-                    "email": "freelibao@gmail.com",
-                    "name": "tranter",
-                },
-                "gitHead": "5fbffc77b643d4459ce310c1e2c150e8ab2fd93d",
-                "maintainers": [
-                    {
-                        "email": "freelibao@gmail.com",
-                        "name": "tranter",
-                    },
-                ],
+                "_id": "swagger-editor-xl@2.10.4",
             },
         ),
     },

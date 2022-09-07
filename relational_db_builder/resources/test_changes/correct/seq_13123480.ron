@@ -42,38 +42,15 @@ Some(("Graph", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "contributors": [
-                    {
-                        "email": "yoni.bmesh@gmail.com",
-                        "name": "Yoni Ben-Meshulam",
-                    },
-                ],
-                "mtime": "2010-11-09T23:25:38Z",
-                "ctime": "2010-11-09T23:25:38Z",
-                "_nodeSupported": true,
+                "main": "Graph",
+                "description": "A mathematical Graph theory library.",
+                "_nodeVersion": "v0.3.1-pre",
                 "licenses": [
                     {
                         "type": "GPLv2",
                         "url": "http://www.example.com/licenses/gpl.html",
                     },
                 ],
-                "description": "A mathematical Graph theory library.",
-                "_nodeVersion": "v0.3.1-pre",
-                "main": "Graph",
-                "version": "0.0.1",
-                "name": "Graph",
-                "_npmVersion": "0.2.7-2",
-                "_id": "Graph@0.0.1",
-                "author": {
-                    "email": "yoni.bmesh@gmail.com",
-                    "name": "Yoni Ben-Meshulam",
-                },
-                "engines": {
-                    "node": ">= 0.1.99",
-                },
-                "scripts": {
-                    "test": "Test/Graph.js",
-                },
                 "keywords": [
                     "graph",
                     "graph theory",
@@ -82,6 +59,29 @@ Some(("Graph", Normal(
                     "node",
                     "connection",
                 ],
+                "_id": "Graph@0.0.1",
+                "contributors": [
+                    {
+                        "email": "yoni.bmesh@gmail.com",
+                        "name": "Yoni Ben-Meshulam",
+                    },
+                ],
+                "ctime": "2010-11-09T23:25:38Z",
+                "engines": {
+                    "node": ">= 0.1.99",
+                },
+                "_npmVersion": "0.2.7-2",
+                "_nodeSupported": true,
+                "author": {
+                    "email": "yoni.bmesh@gmail.com",
+                    "name": "Yoni Ben-Meshulam",
+                },
+                "name": "Graph",
+                "version": "0.0.1",
+                "mtime": "2010-11-09T23:25:38Z",
+                "scripts": {
+                    "test": "Test/Graph.js",
+                },
             },
         ),
     },

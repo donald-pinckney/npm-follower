@@ -195,11 +195,17 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
 
     // In this case, we are dealig with either some URL, or some git ssh format.
 
-    // First, try to deal with the known broken github url case
+    // First, try to deal with the known broken github url cases
     // We deal with it by rewriting into a non-broken url, then continuing as normal
     if match_strip_start(&mut repo_str, "https://github.com:") {
+        // https://github.com:crypto-browserify/browserify-rsa.git
         let fixed_url_string = "https://github.com/".to_owned() + repo_str;
         parse_url_or_ssh_case(&fixed_url_string)
+    } else if repo_str.split("/").count() == 3 && repo_str.starts_with("github.com/") {
+        // github.com/makindotcc/McHttpFrida
+        assert!(match_strip_start(&mut repo_str, "github.com/"));
+        let new_repo_str = format!("https://github.com/{}", repo_str);
+        parse_url_or_ssh_case(&new_repo_str)
     } else {
         parse_url_or_ssh_case(repo_str)
     }
@@ -215,8 +221,6 @@ fn deserialize_repo_check_git_type_str(repo: String) -> RepoInfo {
 }
 
 pub fn deserialize_repo_blob(repo_blob: Value) -> RepositoryInfo {
-    println!("{:?}", repo_blob);
-
     let info = match repo_blob.clone() {
         Value::String(repo) => deserialize_repo_infer_type_str(repo),
         Value::Object(mut repo_obj) => {
@@ -226,7 +230,7 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> RepositoryInfo {
 
             let info = match t.as_deref() {
                 None => deserialize_repo_infer_type_str(url),
-                Some("git" | "github") => deserialize_repo_check_git_type_str(url),
+                Some("git" | "github" | "bitbucket" | "gitlab" | "gist") => deserialize_repo_check_git_type_str(url),
                 _ => panic!("Unknown repo type: {:?}", t)
             };
 
@@ -294,6 +298,7 @@ mod tests {
 
     // broken url case
     #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "crypto-browserify", "browserify-rsa")]
+    #[test_case("github.com/makindotcc/McHttpFrida", "https://github.com/makindotcc/McHttpFrida", "/", "makindotcc", "McHttpFrida")]
 
     // github tree directory case
     #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "/packages/babel-plugin-syntax-async-generators", "babel", "babel")]
@@ -469,6 +474,7 @@ mod tests {
 
     // broken url case
     #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "crypto-browserify", "browserify-rsa")]
+    #[test_case("github.com/makindotcc/McHttpFrida", "https://github.com/makindotcc/McHttpFrida", "/", "makindotcc", "McHttpFrida")]
 
     // github tree directory case
     #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "/packages/babel-plugin-syntax-async-generators", "babel", "babel")]
