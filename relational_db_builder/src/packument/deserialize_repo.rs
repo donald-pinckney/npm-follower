@@ -1,4 +1,4 @@
-use postgres_db::custom_types::{RepoInfo, Vcs, RepoHostInfo};
+use postgres_db::custom_types::{RepoInfo, Vcs};
 use serde_json::Value;
 use utils::RemoveInto;
 use super::RepositoryInfo;
@@ -47,6 +47,16 @@ fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
 }
 
 
+fn parse_gist_path(gist_path: &str) -> RepoInfo {
+    if gist_path.contains("/") {
+        let (_user, id) = try_parse_user_repo_shorthand(gist_path).unwrap();
+        return RepoInfo::new_gist(strip_dot_git(id).to_owned());
+    } else {
+        return RepoInfo::new_gist(strip_dot_git(gist_path).to_owned());
+    }
+}
+
+
 fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
 
     // Lets try to parse git ssh format first.
@@ -61,8 +71,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
             return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
         } else if host == "gist.github.com" {
-            assert!(!path.contains("/"));
-            return RepoInfo::new_gist(strip_dot_git(path).to_owned());
+            return parse_gist_path(path)
         } else {
             return RepoInfo::new_thirdparty(url_or_ssh.to_owned(), "/".to_owned())
         }
@@ -143,10 +152,20 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             }
         }
     } else if host == "gist.github.com" {
-        assert!(!url_path.contains("/"));
-        return RepoInfo::new_gist(strip_dot_git(url_path).to_owned());
+        return parse_gist_path(url_path);
     } else {
-        return RepoInfo::new_thirdparty(repo_url.to_string(), "/".to_owned())
+        if scheme == "git" {
+            // Convert to https and strip .git
+            let mut new_url = repo_url.clone();
+            new_url.set_path(strip_dot_git(url_path));
+            let https_url_str = new_url.to_string().replacen("git://", "https://", 1);
+            return RepoInfo::new_thirdparty(https_url_str, "/".to_owned())
+        } else {
+            // Strip .git
+            let mut new_url = repo_url.clone();
+            new_url.set_path(strip_dot_git(url_path));
+            return RepoInfo::new_thirdparty(new_url.to_string(), "/".to_owned())
+        }
     }
 }
 
@@ -169,8 +188,7 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
         return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
     } else if match_strip_start(&mut repo_str, "gist:") {
-        assert!(!repo_str.contains("/"));
-        return RepoInfo::new_gist(strip_dot_git(repo_str).to_owned());
+        return parse_gist_path(repo_str);
     } else if let Some((user, repo)) = try_parse_user_repo_shorthand(repo_str) {
         return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
     }
