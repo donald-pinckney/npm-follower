@@ -2,6 +2,7 @@ use postgres_db::custom_types::{RepoInfo, Vcs, RepoHostInfo};
 use serde_json::Value;
 use utils::RemoveInto;
 use super::RepositoryInfo;
+use url::Url;
 
 
 /// This attempts to parse the common repo shorthand form of: xxx/yyy
@@ -34,7 +35,7 @@ fn match_strip_start(x: &mut &str, p: &str) -> bool {
 fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
     let mut x_copy = x;
     if match_strip_start(&mut x_copy, "git@") {
-        let components: Vec<_> = x.split(":").collect();
+        let components: Vec<_> = x_copy.split(":").collect();
         assert!(components.len() == 2);
         let left = components[0];
         let right = components[1];
@@ -67,7 +68,86 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
         }
     }
 
-    todo!()
+    // Otherwise, we should have a valid URL to parse.
+    let repo_url = Url::parse(url_or_ssh).unwrap();
+    let scheme = repo_url.scheme();
+    let host = repo_url.host_str().unwrap();
+    let maybe_user = repo_url.username();
+    let url_path = repo_url.path().strip_prefix("/").unwrap();
+    let url_path = url_path.strip_suffix("/").unwrap_or(url_path);
+
+    if scheme == "git+ssh" {
+        assert!(maybe_user == "git");
+    }
+
+
+    if host == "github.com" {
+        if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
+            return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+        } else {
+            // Else we handle github tree directory case
+            // Example url_path = "babel/babel/tree/master/packages/babel-plugin-syntax-async-generators"
+            let comps: Vec<_> = url_path.split("/").collect();
+            let num_comps = comps.len();
+            assert!(num_comps >= 4);
+            let user = comps[0];
+            let repo = comps[1];
+            assert!(comps[2] == "tree");
+            let _branch = comps[3]; // We ignore the branch
+            if num_comps == 4 {
+                return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+            } else {
+                let dir_path = comps[4..].join("/");
+                return RepoInfo::new_github(format!("/{}", dir_path), user.to_owned(), repo.to_owned())
+            }
+        }
+    } else if host == "bitbucket.org" {
+        if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
+            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+        } else {
+            // Else we handle bitbucket tree directory case
+            // Example url_path = "janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties"
+            let comps: Vec<_> = url_path.split("/").collect();
+            let num_comps = comps.len();
+            assert!(num_comps >= 4);
+            let user = comps[0];
+            let repo = comps[1];
+            assert!(comps[2] == "src");
+            let _branch = comps[3]; // We ignore the branch
+            if num_comps == 4 {
+                return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+            } else {
+                let dir_path = comps[4..].join("/");
+                return RepoInfo::new_bitbucket(format!("/{}", dir_path), user.to_owned(), repo.to_owned())
+            }
+        }
+    } else if host == "gitlab.com" {
+        if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
+            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+        } else {
+            // Else we handle gitlab tree directory case
+            // Example url_path = "gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition"
+            let comps: Vec<_> = url_path.split("/").collect();
+            let num_comps = comps.len();
+            assert!(num_comps >= 5);
+            let user = comps[0];
+            let repo = comps[1];
+            assert!(comps[2] == "-");
+            assert!(comps[3] == "tree");
+            let _branch = comps[4]; // We ignore the branch
+            if num_comps == 5 {
+                return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+            } else {
+                let dir_path = comps[5..].join("/");
+                return RepoInfo::new_gitlab(format!("/{}", dir_path), user.to_owned(), repo.to_owned())
+            }
+        }
+    } else if host == "gist.github.com" {
+        assert!(!url_path.contains("/"));
+        return RepoInfo::new_gist(url_path.to_owned());
+    } else {
+        return RepoInfo::new_thirdparty(repo_url.to_string(), "/".to_owned())
+    }
 }
 
 
@@ -193,7 +273,7 @@ mod tests {
     #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "crypto-browserify", "browserify-rsa")]
 
     // github tree directory case
-    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "packages/babel-plugin-syntax-async-generators", "babel", "babel")]
+    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "/packages/babel-plugin-syntax-async-generators", "babel", "babel")]
 
     // git:// cases
     #[test_case("git://github.com/whitequark/ipaddr.js", "https://github.com/whitequark/ipaddr.js", "/", "whitequark", "ipaddr.js")]
@@ -234,7 +314,7 @@ mod tests {
     // bitbucket: shorthand
     #[test_case("bitbucket:github/git", "https://bitbucket.org/github/git", "/", "github", "git")]
     // bitbucket tree directory case
-    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "ReplacePackageRefs/Properties/", "janouwehand", "stuff-stuff-stuff")]
+    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
     fn test_deserialize_repo_blob_bitbucket(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
         let blob1: Value = json!(url_str);
         let blob2 = json!({"url": url_str});
@@ -261,7 +341,7 @@ mod tests {
     // gitlab: shorthand
     #[test_case("gitlab:bitbucket-gist/github", "https://gitlab.com/bitbucket-gist/github.git", "/", "bitbucket-gist", "github")]
     // gitlab tree directory case
-    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
+    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "/generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
     fn test_deserialize_repo_blob_gitlab(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
         let blob1: Value = json!(url_str);
         let blob2 = json!({"url": url_str});
@@ -368,7 +448,7 @@ mod tests {
     #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "crypto-browserify", "browserify-rsa")]
 
     // github tree directory case
-    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "packages/babel-plugin-syntax-async-generators", "babel", "babel")]
+    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "/packages/babel-plugin-syntax-async-generators", "babel", "babel")]
 
     // git:// cases
     #[test_case("git://github.com/whitequark/ipaddr.js", "https://github.com/whitequark/ipaddr.js", "/", "whitequark", "ipaddr.js")]
@@ -395,7 +475,7 @@ mod tests {
     // bitbucket: shorthand
     #[test_case("bitbucket:github/git", "https://bitbucket.org/github/git", "/", "github", "git")]
     // bitbucket tree directory case
-    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "ReplacePackageRefs/Properties/", "janouwehand", "stuff-stuff-stuff")]
+    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
     fn test_deserialize_repo_infer_type_str_bitbucket(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
         let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Bitbucket { user: answer_user.into(), repo: answer_repo.into() }};
         assert_eq!(deserialize_repo_infer_type_str(url_str.to_string()), answer_info);
@@ -408,7 +488,7 @@ mod tests {
     // gitlab: shorthand
     #[test_case("gitlab:bitbucket-gist/github", "https://gitlab.com/bitbucket-gist/github.git", "/", "bitbucket-gist", "github")]
     // gitlab tree directory case
-    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
+    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "/generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
     fn test_deserialize_repo_infer_type_str_gitlab(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
         let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Gitlab { user: answer_user.into(), repo: answer_repo.into() }};
         assert_eq!(deserialize_repo_infer_type_str(url_str.to_string()), answer_info);
