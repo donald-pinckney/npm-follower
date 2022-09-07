@@ -94,6 +94,49 @@ pub struct RepoInfo {
     pub host_info: RepoHostInfo
 }
 
+impl RepoInfo {
+    pub fn new_github(dir: String, user: String, repo: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://github.com/{}/{}", user, repo),
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Github { user, repo }
+        }
+    }
+    pub fn new_bitbucket(dir: String, user: String, repo: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://bitbucket.org/{}/{}", user, repo),
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Bitbucket { user, repo }
+        }
+    }
+    pub fn new_gitlab(dir: String, user: String, repo: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://gitlab.com/{}/{}.git", user, repo),
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gitlab { user, repo }
+        }
+    }
+    pub fn new_gist(id: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://gist.github.com/{}", id),
+            cloneable_repo_dir: "/".to_string(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gist { id }
+        }
+    }
+    pub fn new_thirdparty(url: String, dir: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: url,
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Thirdparty
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Vcs {
     Git

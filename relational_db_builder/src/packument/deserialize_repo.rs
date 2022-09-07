@@ -1,10 +1,53 @@
-use postgres_db::custom_types::{RepoInfo, Vcs};
+use postgres_db::custom_types::{RepoInfo, Vcs, RepoHostInfo};
 use serde_json::Value;
 use utils::RemoveInto;
 use super::RepositoryInfo;
 
 
-fn deserialize_repo_infer_type_str(repo: String) -> RepoInfo {
+/// This attempts to parse the common repo shorthand form of: xxx/yyy
+fn try_parse_user_repo_shorthand(x: &str) -> Option<(&str, &str)> {
+    let components: Vec<_> = x.split("/").collect();
+    if components.len() == 2 {
+        let left = components[0];
+        let right = components[1];
+        if left.contains(":") || left.contains("@") || right.contains(":") || right.contains("@") {
+            None
+        } else {
+            Some((left, right))
+        }
+    } else {
+        None
+    }
+}
+
+fn match_strip_start(x: &mut &str, p: &str) -> bool {
+    if let Some(new_x) = x.strip_prefix(p) {
+        *x = new_x;
+        return true
+    } else {
+        return false
+    }
+}
+
+
+fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
+    let mut repo_str: &str = &full_repo_string;
+    if match_strip_start(&mut repo_str, "github:") {
+        let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
+        return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+    } else if match_strip_start(&mut repo_str, "bitbucket:") {
+        let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
+        return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+    } else if match_strip_start(&mut repo_str, "gitlab:") {
+        let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
+        return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+    } else if match_strip_start(&mut repo_str, "gist:") {
+        assert!(!repo_str.contains("/"));
+        return RepoInfo::new_gist(repo_str.to_owned());
+    } else if let Some((user, repo)) = try_parse_user_repo_shorthand(repo_str) {
+        return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+    }
+
     todo!()
 }
 
