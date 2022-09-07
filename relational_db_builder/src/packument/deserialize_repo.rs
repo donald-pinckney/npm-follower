@@ -30,6 +30,48 @@ fn match_strip_start(x: &mut &str, p: &str) -> bool {
 }
 
 
+/// This attempts to parse the form: git@xxx:yyy
+fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
+    let mut x_copy = x;
+    if match_strip_start(&mut x_copy, "git@") {
+        let components: Vec<_> = x.split(":").collect();
+        assert!(components.len() == 2);
+        let left = components[0];
+        let right = components[1];
+        assert!(!left.contains(":") && !left.contains("@") && !right.contains(":") && !right.contains("@"));
+        return Some((left, right))
+    } else {
+        return None
+    }
+}
+
+
+fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
+
+    // Lets try to parse git ssh format first.
+    if let Some((host, path)) = try_parse_git_ssh_format(url_or_ssh) {
+        if host == "github.com" {
+            let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
+            return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+        } else if host == "bitbucket.org" {
+            let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
+            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+        } else if host == "gitlab.com" {
+            let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
+            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+        } else if host == "gist.github.com" {
+            assert!(!path.contains("/"));
+            return RepoInfo::new_gist(path.to_owned());
+        } else {
+            return RepoInfo::new_thirdparty(url_or_ssh.to_owned(), "/".to_owned())
+        }
+    }
+
+    todo!()
+}
+
+
+
 fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
     let mut repo_str: &str = &full_repo_string;
     if match_strip_start(&mut repo_str, "github:") {
@@ -48,7 +90,16 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
         return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
     }
 
-    todo!()
+    // In this case, we are dealig with either some URL, or some git ssh format.
+
+    // First, try to deal with the known broken github url case
+    // We deal with it by rewriting into a non-broken url, then continuing as normal
+    if match_strip_start(&mut repo_str, "https://github.com:") {
+        let fixed_url_string = "https://github.com/".to_owned() + repo_str;
+        parse_url_or_ssh_case(&fixed_url_string)
+    } else {
+        parse_url_or_ssh_case(repo_str)
+    }
 }
 
 
