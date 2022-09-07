@@ -4,6 +4,10 @@ DROP INDEX dependencies_dst_package_name_idx;
 DROP INDEX dependencies_alias_package_name_idx;
 DROP TABLE packages, versions, dependencies CASCADE;
 
+DROP DOMAIN     repo_info;
+DROP TYPE       repo_info_struct;
+DROP TYPE       repo_host_enum;
+DROP TYPE       vcs_type_enum;
 DROP DOMAIN     package_metadata;
 DROP TYPE       package_metadata_struct;
 DROP TYPE       package_state_enum;

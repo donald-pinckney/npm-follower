@@ -1,6 +1,6 @@
 use chrono::Utc;
 use chrono::DateTime;
-use postgres_db::custom_types::{Semver, ParsedSpec};
+use postgres_db::custom_types::{Semver, ParsedSpec, RepoInfo};
 use serde_json::{Value, Map};
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
@@ -35,7 +35,7 @@ pub struct VersionPackument {
     pub peer_dependencies: Vec<(String, Spec)>,
     pub optional_dependencies: Vec<(String, Spec)>,
     pub dist: Dist,
-    pub repository: Option<Value>,
+    pub repository: Option<RepositoryInfo>,
     pub extra_metadata: HashMap<String, Value>
 }
 
@@ -57,4 +57,11 @@ pub struct Spec {
     pub parsed: ParsedSpec
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct RepositoryInfo {
+    pub raw: Value,
+    pub info: RepoInfo
+}
+
 pub mod deserialize;
+mod deserialize_repo;

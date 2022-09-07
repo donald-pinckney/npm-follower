@@ -13,17 +13,17 @@ Some(("@adityac8/wasm-add", Normal(
         (
             major: 0,
             minor: 1,
-            bug: 0,
-            prerelease: [],
-            build: [],
-        ): "2018-05-19T11:35:14.717Z",
-        (
-            major: 0,
-            minor: 1,
             bug: 1,
             prerelease: [],
             build: [],
         ): "2018-06-12T17:00:19.594Z",
+        (
+            major: 0,
+            minor: 1,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2018-05-19T11:35:14.717Z",
     },
     versions: {
         (
@@ -49,26 +49,19 @@ Some(("@adityac8/wasm-add", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_npmVersion": "5.5.1",
-                "version": "0.1.1",
-                "description": (),
-                "name": "@adityac8/wasm-add",
+                "main": "wasm_add.js",
                 "_npmOperationalInternal": {
                     "host": "s3://npm-registry-packages",
                     "tmp": "tmp/wasm-add_0.1.1_1528822819526_0.5588566803415853",
                 },
-                "directories": {},
-                "_hasShrinkwrap": false,
-                "_nodeVersion": "8.9.1",
-                "main": "wasm_add.js",
-                "license": (),
+                "name": "@adityac8/wasm-add",
+                "types": "wasm_add.d.ts",
+                "_npmUser": {
+                    "email": "adityadvlp@gmail.com",
+                    "name": "adityac8",
+                },
                 "collaborators": [
                     "Aditya Arora <adityadvlp@gmail.com>",
-                ],
-                "_id": "@adityac8/wasm-add@0.1.1",
-                "files": [
-                    "wasm_add_bg.wasm",
-                    "wasm_add.d.ts",
                 ],
                 "maintainers": [
                     {
@@ -76,11 +69,18 @@ Some(("@adityac8/wasm-add", Normal(
                         "name": "adityac8",
                     },
                 ],
-                "types": "wasm_add.d.ts",
-                "_npmUser": {
-                    "email": "adityadvlp@gmail.com",
-                    "name": "adityac8",
-                },
+                "description": (),
+                "_hasShrinkwrap": false,
+                "license": (),
+                "directories": {},
+                "_npmVersion": "5.5.1",
+                "files": [
+                    "wasm_add_bg.wasm",
+                    "wasm_add.d.ts",
+                ],
+                "_id": "@adityac8/wasm-add@0.1.1",
+                "version": "0.1.1",
+                "_nodeVersion": "8.9.1",
             },
         ),
         (
@@ -104,45 +104,56 @@ Some(("@adityac8/wasm-add", Normal(
                 signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
                 npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbAAvzCRA9TVsSAnZWagAAT/IP/igXB8r/3fb/niaQFYm/\nw8KXYIe3oxL9DcAFhp0e8WiWeFfRypE3Np9uTIowhNjK4vil2/cQ+Mf/Cjp8\nvAkf1WJu51B8z++veIAsUXKpa4Bu65tEp6bnQIQ6LSWp5FdG6dVjkCHl+m9y\n21eyVTE1JYdihU5RaiY355pbcdNSwCo9XBFJ/hDWfdLCxkThwfiOnwkJ9I8n\n3nZkuq2tbG4JXnJuDdXDxQuUioDo71ZtvPENKaR2lkjVozN8Fj1jQL8PLYLB\nOLDtqPoAy2WkBedpChdrWgaOtICYXPzhn0Qmv7XyqfUOIK0sof1vIbjJpVEW\n5WPx6OqOqJCiv13FRMVae1Js7PQXwZjFxHofddd6FBJ+ZXtEHAZtf4J5Igbq\nhGeuHBl3yJQI4nctpC4Xnszfjd4vNYHk9AgcOCgubunD9FoVKiu34gqS9Ggb\nIniCD/fF2cGI5Mk85aXcB226z2XFlqL4bo31vZKTK1ulTd9pYfqerajoOxzq\nFeQofATbElF1NF5+ZSWiyQX3juMfOAKSORJtv4Zs6mvp6Ihk3HlwbpJAIRjt\nPs22vGa3rTQ+zsJTqOs0Eu4TKS/bqyuXz1IKaLsWWqMSXYR1nx9n3/zDbsCm\n2+2NqnzZwRNBb8aWEoZyvVHsdofnyTQF3KD2/HKu6iiZqgsqrw+U3T/nKuGk\n/WgL\r\n=xAse\r\n-----END PGP SIGNATURE-----\r\n"),
             ),
-            repository: Some({
-                "type": "git",
-                "url": "git+https://github.com/mgattozzi/wasm-add.git",
-            }),
+            repository: Some((
+                raw: {
+                    "type": "git",
+                    "url": "git+https://github.com/mgattozzi/wasm-add.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/mgattozzi/wasm-add",
+                    cloneable_repo_dir: "/",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "mgattozzi",
+                        repo: "wasm-add",
+                    ),
+                ),
+            )),
             extra_metadata: {
+                "license": "MIT/Apache-2.0",
+                "_id": "@adityac8/wasm-add@0.1.0",
+                "name": "@adityac8/wasm-add",
+                "homepage": "https://github.com/mgattozzi/wasm-add#readme",
+                "description": "Code used to demonstrate how to use wasm-pack",
+                "main": "wasm_add.js",
+                "collaborators": [
+                    "Aditya Arora <adityadvlp@gmail.com>",
+                ],
+                "_nodeVersion": "8.9.4",
+                "_npmUser": {
+                    "email": "adityadvlp@gmail.com",
+                    "name": "adityac8",
+                },
+                "directories": {},
                 "bugs": {
                     "url": "https://github.com/mgattozzi/wasm-add/issues",
                 },
+                "_hasShrinkwrap": false,
+                "_npmVersion": "5.6.0",
+                "files": [
+                    "wasm_add_bg.wasm",
+                ],
                 "maintainers": [
                     {
                         "email": "adityadvlp@gmail.com",
                         "name": "adityac8",
                     },
                 ],
-                "collaborators": [
-                    "Aditya Arora <adityadvlp@gmail.com>",
-                ],
-                "_npmUser": {
-                    "email": "adityadvlp@gmail.com",
-                    "name": "adityac8",
-                },
-                "version": "0.1.0",
-                "_id": "@adityac8/wasm-add@0.1.0",
-                "_hasShrinkwrap": false,
-                "_nodeVersion": "8.9.4",
-                "directories": {},
-                "license": "MIT/Apache-2.0",
                 "_npmOperationalInternal": {
                     "host": "s3://npm-registry-packages",
                     "tmp": "tmp/wasm-add_0.1.0_1526729714549_0.6193097938909076",
                 },
-                "files": [
-                    "wasm_add_bg.wasm",
-                ],
-                "main": "wasm_add.js",
-                "name": "@adityac8/wasm-add",
-                "homepage": "https://github.com/mgattozzi/wasm-add#readme",
-                "description": "Code used to demonstrate how to use wasm-pack",
-                "_npmVersion": "5.6.0",
+                "version": "0.1.0",
             },
         ),
     },

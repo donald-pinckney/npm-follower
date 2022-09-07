@@ -13,148 +13,19 @@ Some(("subtoilet", Normal(
         (
             major: 1,
             minor: 0,
-            bug: 1,
-            prerelease: [],
-            build: [],
-        ): "2017-03-05T10:28:52.426Z",
-        (
-            major: 1,
-            minor: 0,
             bug: 0,
             prerelease: [],
             build: [],
         ): "2017-03-05T10:28:09.931Z",
-    },
-    versions: {
         (
             major: 1,
             minor: 0,
             bug: 1,
             prerelease: [],
             build: [],
-        ): (
-            prod_dependencies: [],
-            dev_dependencies: [
-                ("prettier-standard-formatter", (
-                    raw: "^0.222222222222222.333333333333333",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 222222222222222,
-                                bug: 333333333333333,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 222222222222223,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("tape", (
-                    raw: "^4.6.3",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 4,
-                                minor: 6,
-                                bug: 3,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 5,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("toiletdb", (
-                    raw: "^1.2.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 2,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/subtoilet/-/subtoilet-1.0.1.tgz",
-                shasum: Some("21046bfd133fb9861285832f533d37e318a43b4f"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: Some({
-                "type": "git",
-                "url": "git+https://github.com/juliangruber/subtoilet.git",
-            }),
-            extra_metadata: {
-                "maintainers": [
-                    {
-                        "email": "julian@juliangruber.com",
-                        "name": "juliangruber",
-                    },
-                ],
-                "description": "Marrying toiletdb and level-sublevel",
-                "version": "1.0.1",
-                "gitHead": "329eababaf07818aaf31835ed0e6a91d08760d46",
-                "_id": "subtoilet@1.0.1",
-                "bugs": {
-                    "url": "https://github.com/juliangruber/subtoilet/issues",
-                },
-                "scripts": {
-                    "test": "prettier-standard-formatter *.js && tape test.js",
-                },
-                "name": "subtoilet",
-                "_from": ".",
-                "_nodeVersion": "4.6.0",
-                "_npmOperationalInternal": {
-                    "host": "packages-18-east.internal.npmjs.com",
-                    "tmp": "tmp/subtoilet-1.0.1.tgz_1488709731741_0.7845627213828266",
-                },
-                "_shasum": "21046bfd133fb9861285832f533d37e318a43b4f",
-                "_npmVersion": "2.15.9",
-                "_npmUser": {
-                    "email": "julian@juliangruber.com",
-                    "name": "juliangruber",
-                },
-                "homepage": "https://github.com/juliangruber/subtoilet#readme",
-                "license": "MIT",
-            },
-        ),
+        ): "2017-03-05T10:28:52.426Z",
+    },
+    versions: {
         (
             major: 1,
             minor: 0,
@@ -246,42 +117,193 @@ Some(("subtoilet", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            repository: Some({
-                "type": "git",
-                "url": "git+https://github.com/juliangruber/subtoilet.git",
-            }),
-            extra_metadata: {
-                "_npmOperationalInternal": {
-                    "host": "packages-12-west.internal.npmjs.com",
-                    "tmp": "tmp/subtoilet-1.0.0.tgz_1488709688078_0.1540002420078963",
+            repository: Some((
+                raw: {
+                    "type": "git",
+                    "url": "git+https://github.com/juliangruber/subtoilet.git",
                 },
-                "_from": ".",
+                info: (
+                    cloneable_repo_url: "https://github.com/juliangruber/subtoilet",
+                    cloneable_repo_dir: "/",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "juliangruber",
+                        repo: "subtoilet",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "_npmVersion": "2.15.9",
+                "description": "Marrying toiletdb and level-sublevel",
+                "scripts": {
+                    "test": "prettier-standard-formatter *.js && tape test.js",
+                },
+                "gitHead": "61240112cd783e19f0b7d6bcd3ca534579389246",
+                "_shasum": "68c3391452e5700b7e406c4c0e44848b58291a36",
                 "_nodeVersion": "4.6.0",
-                "version": "1.0.0",
+                "bugs": {
+                    "url": "https://github.com/juliangruber/subtoilet/issues",
+                },
+                "homepage": "https://github.com/juliangruber/subtoilet#readme",
                 "maintainers": [
                     {
                         "email": "julian@juliangruber.com",
                         "name": "juliangruber",
                     },
                 ],
+                "_from": ".",
                 "_id": "subtoilet@1.0.0",
-                "_npmVersion": "2.15.9",
-                "bugs": {
-                    "url": "https://github.com/juliangruber/subtoilet/issues",
-                },
-                "name": "subtoilet",
+                "license": "MIT",
                 "_npmUser": {
                     "email": "julian@juliangruber.com",
                     "name": "juliangruber",
                 },
-                "gitHead": "61240112cd783e19f0b7d6bcd3ca534579389246",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/subtoilet-1.0.0.tgz_1488709688078_0.1540002420078963",
+                },
+                "name": "subtoilet",
+                "version": "1.0.0",
+            },
+        ),
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [
+                ("prettier-standard-formatter", (
+                    raw: "^0.222222222222222.333333333333333",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 222222222222222,
+                                bug: 333333333333333,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 222222222222223,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("tape", (
+                    raw: "^4.6.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 4,
+                                minor: 6,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("toiletdb", (
+                    raw: "^1.2.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/subtoilet/-/subtoilet-1.0.1.tgz",
+                shasum: Some("21046bfd133fb9861285832f533d37e318a43b4f"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some((
+                raw: {
+                    "type": "git",
+                    "url": "git+https://github.com/juliangruber/subtoilet.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/juliangruber/subtoilet",
+                    cloneable_repo_dir: "/",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "juliangruber",
+                        repo: "subtoilet",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "name": "subtoilet",
                 "scripts": {
                     "test": "prettier-standard-formatter *.js && tape test.js",
                 },
-                "license": "MIT",
+                "_npmOperationalInternal": {
+                    "host": "packages-18-east.internal.npmjs.com",
+                    "tmp": "tmp/subtoilet-1.0.1.tgz_1488709731741_0.7845627213828266",
+                },
+                "maintainers": [
+                    {
+                        "email": "julian@juliangruber.com",
+                        "name": "juliangruber",
+                    },
+                ],
+                "_id": "subtoilet@1.0.1",
+                "_npmVersion": "2.15.9",
+                "_nodeVersion": "4.6.0",
+                "version": "1.0.1",
                 "description": "Marrying toiletdb and level-sublevel",
+                "_npmUser": {
+                    "email": "julian@juliangruber.com",
+                    "name": "juliangruber",
+                },
+                "_from": ".",
+                "_shasum": "21046bfd133fb9861285832f533d37e318a43b4f",
+                "license": "MIT",
+                "bugs": {
+                    "url": "https://github.com/juliangruber/subtoilet/issues",
+                },
                 "homepage": "https://github.com/juliangruber/subtoilet#readme",
-                "_shasum": "68c3391452e5700b7e406c4c0e44848b58291a36",
+                "gitHead": "329eababaf07818aaf31835ed0e6a91d08760d46",
             },
         ),
     },
