@@ -53,16 +53,16 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
     if let Some((host, path)) = try_parse_git_ssh_format(url_or_ssh) {
         if host == "github.com" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+            return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
         } else if host == "bitbucket.org" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
         } else if host == "gitlab.com" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
         } else if host == "gist.github.com" {
             assert!(!path.contains("/"));
-            return RepoInfo::new_gist(path.to_owned());
+            return RepoInfo::new_gist(strip_dot_git(path).to_owned());
         } else {
             return RepoInfo::new_thirdparty(url_or_ssh.to_owned(), "/".to_owned())
         }
@@ -83,7 +83,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
 
     if host == "github.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+            return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
         } else {
             // Else we handle github tree directory case
             // Example url_path = "babel/babel/tree/master/packages/babel-plugin-syntax-async-generators"
@@ -95,15 +95,15 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             assert!(comps[2] == "tree");
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
-                return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+                return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
             } else {
                 let dir_path = comps[4..].join("/");
-                return RepoInfo::new_github(format!("/{}", dir_path), user.to_owned(), repo.to_owned())
+                return RepoInfo::new_github(format!("/{}", dir_path), user.to_owned(), strip_dot_git(repo).to_owned())
             }
         }
     } else if host == "bitbucket.org" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
         } else {
             // Else we handle bitbucket tree directory case
             // Example url_path = "janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties"
@@ -115,15 +115,15 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             assert!(comps[2] == "src");
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
-                return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+                return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
             } else {
                 let dir_path = comps[4..].join("/");
-                return RepoInfo::new_bitbucket(format!("/{}", dir_path), user.to_owned(), repo.to_owned())
+                return RepoInfo::new_bitbucket(format!("/{}", dir_path), user.to_owned(), strip_dot_git(repo).to_owned())
             }
         }
     } else if host == "gitlab.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
         } else {
             // Else we handle gitlab tree directory case
             // Example url_path = "gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition"
@@ -136,18 +136,23 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             assert!(comps[3] == "tree");
             let _branch = comps[4]; // We ignore the branch
             if num_comps == 5 {
-                return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+                return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
             } else {
                 let dir_path = comps[5..].join("/");
-                return RepoInfo::new_gitlab(format!("/{}", dir_path), user.to_owned(), repo.to_owned())
+                return RepoInfo::new_gitlab(format!("/{}", dir_path), user.to_owned(), strip_dot_git(repo).to_owned())
             }
         }
     } else if host == "gist.github.com" {
         assert!(!url_path.contains("/"));
-        return RepoInfo::new_gist(url_path.to_owned());
+        return RepoInfo::new_gist(strip_dot_git(url_path).to_owned());
     } else {
         return RepoInfo::new_thirdparty(repo_url.to_string(), "/".to_owned())
     }
+}
+
+
+fn strip_dot_git(repo: &str) -> &str {
+    repo.strip_suffix(".git").unwrap_or(repo)
 }
 
 
@@ -156,18 +161,18 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
     let mut repo_str: &str = &full_repo_string;
     if match_strip_start(&mut repo_str, "github:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+        return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
     } else if match_strip_start(&mut repo_str, "bitbucket:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), repo.to_owned())
+        return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
     } else if match_strip_start(&mut repo_str, "gitlab:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), repo.to_owned())
+        return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
     } else if match_strip_start(&mut repo_str, "gist:") {
         assert!(!repo_str.contains("/"));
-        return RepoInfo::new_gist(repo_str.to_owned());
+        return RepoInfo::new_gist(strip_dot_git(repo_str).to_owned());
     } else if let Some((user, repo)) = try_parse_user_repo_shorthand(repo_str) {
-        return RepoInfo::new_github("/".to_string(), user.to_owned(), repo.to_owned())
+        return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
     }
 
     // In this case, we are dealig with either some URL, or some git ssh format.
