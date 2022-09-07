@@ -20,6 +20,9 @@ fn deserialize_spec(c: Value) -> Spec {
     }
 }
 
+
+
+
 fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static str) -> Vec<(String, Spec)> {
     let dependencies_maybe_val = version_blob.remove(key)
                                                             .and_then(|x| x.null_to_none())
@@ -97,7 +100,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         peer_dependencies,
         optional_dependencies,
         dist,
-        repository: repository_blob,
+        repository: repository_blob.map(super::deserialize_repo::deserialize_repo_blob),
         extra_metadata: version_blob.into_iter().collect()
     }
 }

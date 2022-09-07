@@ -13,17 +13,17 @@ Some(("angular-noconflict", Normal(
         (
             major: 1,
             minor: 0,
-            bug: 0,
-            prerelease: [],
-            build: [],
-        ): "2017-01-03T19:44:56.059Z",
-        (
-            major: 1,
-            minor: 0,
             bug: 1,
             prerelease: [],
             build: [],
         ): "2017-01-03T19:47:25.491Z",
+        (
+            major: 1,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2017-01-03T19:44:56.059Z",
     },
     versions: {
         (
@@ -52,45 +52,56 @@ Some(("angular-noconflict", Normal(
                 signature0_keyid: None,
                 npm_signature: None,
             ),
-            repository: Some({
-                "type": "git",
-                "url": "git+https://github.com/graingert/angular-noconflict.git",
-            }),
+            repository: Some((
+                raw: {
+                    "type": "git",
+                    "url": "git+https://github.com/graingert/angular-noconflict.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/graingert/angular-noconflict",
+                    cloneable_repo_dir: "/",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "graingert",
+                        repo: "angular-noconflict",
+                    ),
+                ),
+            )),
             extra_metadata: {
+                "_npmUser": {
+                    "email": "tagrain@gmail.com",
+                    "name": "graingert",
+                },
+                "gitHead": "963bba6913a31dd493cba9a062ba1f2bd9a7b821",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/angular-noconflict-1.0.1.tgz_1483472843628_0.5705059610772878",
+                },
+                "version": "1.0.1",
+                "_npmVersion": "3.10.10",
+                "license": "MIT",
+                "main": "index.js",
+                "homepage": "https://github.com/graingert/angular-noconflict#readme",
+                "description": "import angular without window.angular",
+                "_nodeVersion": "7.3.0",
+                "name": "angular-noconflict",
+                "_shasum": "5f9ae0ee3e292b266f21d476c9e3d406a53d353d",
+                "bugs": {
+                    "url": "https://github.com/graingert/angular-noconflict/issues",
+                },
+                "_id": "angular-noconflict@1.0.1",
                 "maintainers": [
                     {
                         "email": "tagrain@gmail.com",
                         "name": "graingert",
                     },
                 ],
-                "bugs": {
-                    "url": "https://github.com/graingert/angular-noconflict/issues",
-                },
-                "description": "import angular without window.angular",
                 "author": {
                     "email": "angular-noconflict@graingert.co.uk",
                     "name": "Thomas Grainger",
                 },
-                "version": "1.0.1",
-                "license": "MIT",
-                "main": "index.js",
-                "_nodeVersion": "7.3.0",
-                "_npmUser": {
-                    "email": "tagrain@gmail.com",
-                    "name": "graingert",
-                },
-                "_npmVersion": "3.10.10",
                 "_from": ".",
-                "gitHead": "963bba6913a31dd493cba9a062ba1f2bd9a7b821",
                 "scripts": {},
-                "name": "angular-noconflict",
-                "homepage": "https://github.com/graingert/angular-noconflict#readme",
-                "_shasum": "5f9ae0ee3e292b266f21d476c9e3d406a53d353d",
-                "_npmOperationalInternal": {
-                    "host": "packages-12-west.internal.npmjs.com",
-                    "tmp": "tmp/angular-noconflict-1.0.1.tgz_1483472843628_0.5705059610772878",
-                },
-                "_id": "angular-noconflict@1.0.1",
             },
         ),
     },

@@ -46,7 +46,7 @@ table! {
     use diesel::sql_types::*;
     use crate::custom_types::sql_type_names::*;
 
-    downloaded_tarballs (tarball_url, downloaded_at) {
+    downloaded_tarballs (tarball_url) {
         tarball_url -> Text,
         downloaded_at -> Timestamptz,
         shasum -> Nullable<Text>,
@@ -91,7 +91,8 @@ table! {
         package_id -> Int8,
         semver -> Semver_struct,
         tarball_url -> Text,
-        repository -> Nullable<Jsonb>,
+        repository_raw -> Nullable<Jsonb>,
+        repository_parsed -> Nullable<Repo_info_struct>,
         created -> Timestamptz,
         deleted -> Bool,
         extra_metadata -> Jsonb,

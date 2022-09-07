@@ -84,11 +84,78 @@ pub enum PackageMetadata {
     Deleted,
 }
 
-pub mod sql_types {
-    #[derive(SqlType, QueryId)]
-    #[postgres(type_name = "repository_struct")] // or should it be repository (domain)?
-    pub struct RepositorySql;
 
+#[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[sql_type = "RepoInfoSql"]
+pub struct RepoInfo {
+    pub cloneable_repo_url: String,
+    pub cloneable_repo_dir: String,
+    pub vcs: Vcs,
+    pub host_info: RepoHostInfo
+}
+
+impl RepoInfo {
+    pub fn new_github(dir: String, user: String, repo: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://github.com/{}/{}", user, repo),
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Github { user, repo }
+        }
+    }
+    pub fn new_bitbucket(dir: String, user: String, repo: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://bitbucket.org/{}/{}", user, repo),
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Bitbucket { user, repo }
+        }
+    }
+    pub fn new_gitlab(dir: String, user: String, repo: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://gitlab.com/{}/{}.git", user, repo),
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gitlab { user, repo }
+        }
+    }
+    pub fn new_gist(id: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: format!("https://gist.github.com/{}", id),
+            cloneable_repo_dir: "/".to_string(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gist { id }
+        }
+    }
+    pub fn new_thirdparty(url: String, dir: String) -> RepoInfo {
+        RepoInfo { 
+            cloneable_repo_url: url,
+            cloneable_repo_dir: dir,
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Thirdparty
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum Vcs {
+    Git
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum RepoHostInfo {
+    Github { user: String, repo: String },
+    Bitbucket { user: String, repo: String },
+    Gitlab { user: String, repo: String },
+    Gist { id: String },
+    Thirdparty
+}
+
+
+
+
+
+pub mod sql_types {
     #[derive(SqlType, QueryId)]
     #[postgres(type_name = "semver_struct")] // or should it be semver (domain)?
     pub struct SemverSql;
@@ -112,16 +179,20 @@ pub mod sql_types {
     #[derive(SqlType)]
     #[postgres(type_name = "package_metadata_struct")] // or should it be package_metadata (domain)?
     pub struct PackageMetadataStructSql;
+
+    #[derive(SqlType, QueryId)]
+    #[postgres(type_name = "repo_info_struct")]
+    pub struct RepoInfoSql;
 }
 
 #[allow(non_camel_case_types)]
 pub mod sql_type_names {
-    pub type Repository_struct = super::sql_types::RepositorySql;
     pub type Semver_struct = super::sql_types::SemverSql;
     pub type Version_comparator = super::sql_types::VersionComparatorSql;
     pub type Constraint_conjuncts_struct = super::sql_types::ConstraintConjunctsSql;
     pub type Parsed_spec_struct = super::sql_types::ParsedSpecStructSql;
     pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
+    pub type Repo_info_struct = super::sql_types::RepoInfoSql;
 }
 
 mod download_failed;
@@ -130,3 +201,4 @@ mod parsed_spec;
 mod semver;
 mod version_comparator;
 mod version_constraint;
+mod repo_info;
