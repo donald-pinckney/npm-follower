@@ -4,6 +4,7 @@ Description=The changes fetcher for npm-follower
 [Service]
 Type=simple
 StandardOutput=journal
+StandardError=journal
 
 Restart=always
 RestartSec=10
