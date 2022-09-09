@@ -216,7 +216,7 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
     */
 }
 
-pub const TASKS_CHUNK_SIZE: i64 = 1024;
+pub const TASKS_CHUNK_SIZE: i64 = 8192;
 
 pub fn get_total_tasks_num(conn: &DbConnection, retry_failed: bool) -> i64 {
     use schema::download_tasks::dsl::*;
@@ -284,7 +284,6 @@ pub fn update_from_tarballs(conn: &DbConnection, tarballs: &Vec<DownloadedTarbal
         use schema::downloaded_tarballs::dsl::*; // have to scope the imports as they conflict.
         diesel::insert_into(schema::downloaded_tarballs::table)
             .values(&*tarballs)
-            // .on_conflict_do_nothing()
             .on_conflict(tarball_url)
             .do_update()
             .set((
