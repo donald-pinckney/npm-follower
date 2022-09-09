@@ -20,7 +20,7 @@ pub async fn download_task(
 ) -> Result<DownloadedTarball, DownloadError> {
     // get the file and download it to dir
     let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(600)) // timeout of 10 minutes
+        .timeout(std::time::Duration::from_secs(300)) // timeout of 5 minutes
         .build()?;
 
     let res = client.get(&task.url).send().await?;
