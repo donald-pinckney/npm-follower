@@ -216,7 +216,7 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
     */
 }
 
-pub const TASKS_CHUNK_SIZE: i64 = 8192;
+pub const TASKS_CHUNK_SIZE: i64 = 2048;
 
 pub fn get_total_tasks_num(conn: &DbConnection, retry_failed: bool) -> i64 {
     use schema::download_tasks::dsl::*;
