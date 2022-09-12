@@ -78,7 +78,7 @@ pub enum PackageMetadata {
     Unpublished {
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
-        other_time_data: HashMap<String, DateTime<Utc>>,
+        other_time_data: HashMap<Semver, DateTime<Utc>>,
         unpublished_data: serde_json::Value,
     },
     Deleted,

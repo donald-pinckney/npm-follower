@@ -5,6 +5,7 @@ pub mod change_log;
 pub mod download_queue;
 pub mod download_tarball;
 pub mod internal_state;
+pub mod packages;
 
 #[allow(unused_imports)]
 mod schema;
