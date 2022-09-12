@@ -1,12 +1,12 @@
-use chrono::Utc;
 use chrono::DateTime;
-use postgres_db::custom_types::{Semver, ParsedSpec, RepoInfo};
-use serde_json::{Value, Map};
-use serde::{Serialize, Deserialize};
+use chrono::Utc;
+use postgres_db::custom_types::PackageMetadata;
+use postgres_db::custom_types::{ParsedSpec, RepoInfo, Semver};
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
 use std::collections::HashMap;
 
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Packument {
     Normal {
         latest: Option<Semver>,
@@ -20,15 +20,15 @@ pub enum Packument {
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
         unpublished_blob: Value,
-        extra_version_times: HashMap<Semver, DateTime<Utc>>
+        extra_version_times: HashMap<Semver, DateTime<Utc>>,
     },
-    // Marked as *not* deleted, but does not have any data in the change. 
+    // Marked as *not* deleted, but does not have any data in the change.
     // Possibly has data if you hit registry.npmjs.org.
-    MissingData, 
-    Deleted
+    MissingData,
+    Deleted,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct VersionPackument {
     pub prod_dependencies: Vec<(String, Spec)>,
     pub dev_dependencies: Vec<(String, Spec)>,
@@ -36,10 +36,10 @@ pub struct VersionPackument {
     pub optional_dependencies: Vec<(String, Spec)>,
     pub dist: Dist,
     pub repository: Option<RepositoryInfo>,
-    pub extra_metadata: HashMap<String, Value>
+    pub extra_metadata: HashMap<String, Value>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Dist {
     pub tarball_url: String,
     pub shasum: Option<String>,
@@ -51,16 +51,56 @@ pub struct Dist {
     pub npm_signature: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Spec {
     pub raw: Value,
-    pub parsed: ParsedSpec
+    pub parsed: ParsedSpec,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct RepositoryInfo {
     pub raw: Value,
-    pub info: RepoInfo
+    pub info: RepoInfo,
+}
+
+impl TryFrom<Packument> for PackageMetadata {
+    type Error = Box<dyn std::error::Error>;
+
+    /// Convert a packument into a package metadata.
+    /// NOTE: this sets the dist_tag_latest_version to None.
+    fn try_from(pack: Packument) -> Result<Self, Self::Error> {
+        match pack {
+            Packument::Normal {
+                latest,
+                created,
+                modified,
+                other_dist_tags,
+                version_times,
+                versions,
+            } => Ok(PackageMetadata::Normal {
+                dist_tag_latest_version: None,
+                created,
+                modified,
+                other_dist_tags: other_dist_tags
+                    .into_iter()
+                    .map(|(k, v)| (k, v.to_string()))
+                    .collect(),
+            }),
+            Packument::Unpublished {
+                created,
+                modified,
+                unpublished_blob,
+                extra_version_times,
+            } => Ok(PackageMetadata::Unpublished {
+                created,
+                modified,
+                other_time_data: extra_version_times,
+                unpublished_data: unpublished_blob,
+            }),
+            Packument::Deleted => Ok(PackageMetadata::Deleted),
+            Packument::MissingData => Err("Missing data".into()),
+        }
+    }
 }
 
 pub mod deserialize;
