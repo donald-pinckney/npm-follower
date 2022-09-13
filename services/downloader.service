@@ -6,6 +6,9 @@ Type=simple
 StandardOutput=journal
 StandardError=journal
 
+Restart=always
+RuntimeMaxSec=12h
+
 ExecStart=/zfs-raidz1/federico/npm-follower/services/downloader_start.sh
 
 [Install]
