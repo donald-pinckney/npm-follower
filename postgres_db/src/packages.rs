@@ -1,4 +1,7 @@
+use std::collections::HashMap;
+
 use crate::custom_types::PackageMetadata;
+use crate::versions::Version;
 
 use super::schema::packages;
 use chrono::{DateTime, Utc};
@@ -18,15 +21,7 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn create(
-        conn: &DbConnection,
-        name: String,
-        metadata: PackageMetadata,
-        secret: bool,
-    ) -> Package {
-        // let id = get_package_sequence_number(conn);
-        // increase_package_sequence_number(conn);
-
+    pub fn create(name: String, metadata: PackageMetadata, secret: bool) -> Package {
         Package {
             name,
             metadata,
@@ -35,11 +30,22 @@ impl Package {
     }
 }
 
-pub fn insert_package(conn: &DbConnection, package: Package) {
+pub fn package_transaction(conn: &DbConnection, package: Package, versions: Option<()>) {
+    conn.conn
+        .transaction::<(), _, _>(|| {
+            let pkg_id = insert_package(conn, package);
+            Ok::<(), diesel::result::Error>(())
+        })
+        .expect("Failed to insert package");
+}
+
+// Inserts package into the database and returns the id of the row that was just inserted.
+pub fn insert_package(conn: &DbConnection, package: Package) -> i64 {
     use super::schema::packages::dsl::*;
 
     diesel::insert_into(packages)
         .values(&package)
-        .execute(&conn.conn)
-        .expect("Error saving new package");
+        .get_result::<(i64, String, PackageMetadata, bool)>(&conn.conn)
+        .expect("Error saving new package")
+        .0
 }

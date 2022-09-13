@@ -1,9 +1,8 @@
-use std::convert::TryFrom;
 use std::panic;
 
 use postgres_db::change_log;
 use postgres_db::change_log::Change;
-use postgres_db::custom_types::PackageMetadata;
+
 use postgres_db::internal_state;
 use postgres_db::packages::insert_package;
 use postgres_db::packages::Package;
@@ -82,17 +81,10 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
     // pack_str
     // );
 
-    let metadata = match pack.clone().try_into() {
-        Ok(v) => v,
-        Err(_) => {
-            // Missing data
-            return;
-        }
-    };
+    let metadata = pack.clone().into();
 
     let secret = false;
-    let package = Package::create(conn, package_name.clone(), metadata, secret);
-    insert_package(conn, package);
-
-    println!("for package {}", package_name);
+    let package = Package::create(package_name.clone(), metadata, secret);
+    let pkg_id = insert_package(conn, package);
+    println!("for package {} - id: {}", package_name, pkg_id);
 }

@@ -63,12 +63,10 @@ pub struct RepositoryInfo {
     pub info: RepoInfo,
 }
 
-impl TryFrom<Packument> for PackageMetadata {
-    type Error = Box<dyn std::error::Error>;
-
+impl From<Packument> for PackageMetadata {
     /// Convert a packument into a package metadata.
     /// NOTE: this sets the dist_tag_latest_version to None.
-    fn try_from(pack: Packument) -> Result<Self, Self::Error> {
+    fn from(pack: Packument) -> Self {
         match pack {
             Packument::Normal {
                 latest,
@@ -77,7 +75,7 @@ impl TryFrom<Packument> for PackageMetadata {
                 other_dist_tags,
                 version_times,
                 versions,
-            } => Ok(PackageMetadata::Normal {
+            } => PackageMetadata::Normal {
                 dist_tag_latest_version: None,
                 created,
                 modified,
@@ -85,20 +83,19 @@ impl TryFrom<Packument> for PackageMetadata {
                     .into_iter()
                     .map(|(k, v)| (k, v.to_string()))
                     .collect(),
-            }),
+            },
             Packument::Unpublished {
                 created,
                 modified,
                 unpublished_blob,
                 extra_version_times,
-            } => Ok(PackageMetadata::Unpublished {
+            } => PackageMetadata::Unpublished {
                 created,
                 modified,
                 other_time_data: extra_version_times,
                 unpublished_data: unpublished_blob,
-            }),
-            Packument::Deleted => Ok(PackageMetadata::Deleted),
-            Packument::MissingData => Err("Missing data".into()),
+            }, // TODO: i think MissingData should go into Deleted right?
+            Packument::MissingData | Packument::Deleted => PackageMetadata::Deleted,
         }
     }
 }
