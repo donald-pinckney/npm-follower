@@ -43,24 +43,23 @@ impl Dependencie {
     }
 }
 
-pub fn insert_dependency(conn: &DbConnection, dependency: Dependencie) -> i64 {
+pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i64) {
     use super::schema::dependencies::dsl::*;
 
-    diesel::insert_into(dependencies)
-        .values(&dependency)
-        .get_result::<(i64, String, Option<i64>, Value, ParsedSpec, bool)>(&conn.conn)
-        .expect("Error saving new dependency")
-        .0
+    diesel::update(dependencies)
+        .filter(dst_package_name.eq(pack_name))
+        .set(dst_package_id_if_exists.eq(pack_id))
+        .execute(&conn.conn)
+        .expect("Error updating dependencies");
 }
 
 pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
     use super::schema::dependencies::dsl::*;
 
-    diesel::insert_into(dependencies)
+    let inserted = diesel::insert_into(dependencies)
         .values(&deps)
         .get_results::<(i64, String, Option<i64>, Value, ParsedSpec, bool)>(&conn.conn)
-        .expect("Error saving new dependencies")
-        .iter()
-        .map(|x| x.0)
-        .collect()
+        .expect("Error saving new dependencies");
+
+    inserted.into_iter().map(|x| x.0).collect()
 }

@@ -31,13 +31,16 @@ impl Package {
     }
 }
 
-pub fn package_transaction(conn: &DbConnection, package: Package) {
-    conn.conn
-        .transaction::<(), _, _>(|| {
-            let pkg_id = insert_package(conn, package);
-            Ok::<(), diesel::result::Error>(())
-        })
-        .expect("Failed to insert package");
+pub fn query_pkg_id(conn: &DbConnection, pkg_name: &str) -> Option<i64> {
+    use super::schema::packages::dsl::*;
+
+    let result = packages
+        .filter(name.eq(pkg_name))
+        .first::<(i64, String, PackageMetadata, bool)>(&conn.conn)
+        .optional()
+        .expect("Error loading package");
+
+    result.map(|x| x.0)
 }
 
 // Inserts package into the database and returns the id of the row that was just inserted.

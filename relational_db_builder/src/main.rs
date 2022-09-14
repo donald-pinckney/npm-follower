@@ -92,6 +92,7 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
     // TODO: somehow, wrap this in a transaction, maybe a huge FnMut and we pass it to the db?
 
     let package_id = insert_package(conn, package);
+    postgres_db::dependencies::update_deps_missing_pack(conn, &package_name, package_id);
 
     match pack {
         Packument::Normal {
@@ -105,9 +106,13 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
             let insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
                 let mut ser_deps: Vec<Dependencie> = Vec::new();
                 for (pack_name, spec) in deps {
+                    // get the id of the package of this dep
+
+                    let dep_pkg_id = postgres_db::packages::query_pkg_id(conn, pack_name);
+
                     let dep = Dependencie::create(
                         pack_name.clone(),
-                        None, // TODO: figure this out later
+                        dep_pkg_id,
                         spec.raw.clone(),
                         spec.parsed.clone(),
                         secret,
