@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::custom_types::PackageMetadata;
+use crate::custom_types::Semver;
 use crate::versions::Version;
 
 use super::schema::packages;
@@ -30,7 +31,10 @@ impl Package {
     }
 }
 
-pub fn package_transaction(conn: &DbConnection, package: Package, versions: Option<()>) {
+pub fn package_transaction(
+    conn: &DbConnection,
+    package: Package,
+) {
     conn.conn
         .transaction::<(), _, _>(|| {
             let pkg_id = insert_package(conn, package);

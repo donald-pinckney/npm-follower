@@ -24,3 +24,31 @@ pub struct Dependencie {
     pub spec: ParsedSpec,
     pub secret: bool,
 }
+
+impl Dependencie {
+    pub fn create(
+        dst_package_name: String,
+        dst_package_id_if_exists: Option<i64>,
+        raw_spec: Value,
+        spec: ParsedSpec,
+        secret: bool,
+    ) -> Dependencie {
+        Dependencie {
+            dst_package_name,
+            dst_package_id_if_exists,
+            raw_spec,
+            spec,
+            secret,
+        }
+    }
+}
+
+pub fn insert_dependency(conn: &DbConnection, dependency: Dependencie) -> i64 {
+    use super::schema::dependencies::dsl::*;
+
+    diesel::insert_into(dependencies)
+        .values(&dependency)
+        .get_result::<(i64, String, Option<i64>, Value, ParsedSpec, bool)>(&conn.conn)
+        .expect("Error saving new dependency")
+        .0
+}
