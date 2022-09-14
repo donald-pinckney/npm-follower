@@ -7,6 +7,7 @@ use postgres_db::dependencies::Dependencie;
 use postgres_db::internal_state;
 use postgres_db::packages::insert_package;
 use postgres_db::packages::Package;
+use postgres_db::versions::Version;
 use postgres_db::DbConnection;
 use relational_db_builder::packument::Packument;
 use relational_db_builder::packument::Spec;
@@ -96,26 +97,27 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
         Packument::Normal {
             latest,
             created,
-            modified,
-            other_dist_tags,
-            version_times,
+            modified: _,
+            other_dist_tags: _,
+            version_times: _,
             versions,
         } => {
             let insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
-                let mut dep_ids = Vec::new();
+                let mut ser_deps: Vec<Dependencie> = Vec::new();
                 for (pack_name, spec) in deps {
                     let dep = Dependencie::create(
                         pack_name.clone(),
-                        None, // NOTE: this gets patched later
+                        None, // TODO: figure this out later
                         spec.raw.clone(),
                         spec.parsed.clone(),
                         secret,
                     );
-                    let dep_id = postgres_db::dependencies::insert_dependency(conn, dep);
-                    dep_ids.push(dep_id);
+                    ser_deps.push(dep);
                 }
-                dep_ids
+                postgres_db::dependencies::insert_dependencies(conn, ser_deps)
             };
+
+            println!("Normal: {}", package_name);
 
             let mut dep_ids_to_patch: Vec<i64> = vec![];
             for (sv, vpack) in versions {
@@ -127,14 +129,37 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
                 dep_ids_to_patch.extend(&dev_dep_ids);
                 dep_ids_to_patch.extend(&optional_dep_ids);
                 dep_ids_to_patch.extend(&peer_dep_ids);
+
+                let ver = Version::create(
+                    package_id,
+                    sv.clone(),
+                    vpack.dist.tarball_url,
+                    vpack.repository.as_ref().map(|r| r.raw.clone()),
+                    vpack.repository.map(|r| r.info),
+                    created,
+                    false,
+                    serde_json::to_value(&vpack.extra_metadata).unwrap(),
+                    prod_dep_ids,
+                    dev_dep_ids,
+                    peer_dep_ids,
+                    optional_dep_ids,
+                    secret,
+                );
+
+                let ver_id = postgres_db::versions::insert_version(conn, ver);
+
+                // TODO: what do we do if latest is none?
+                if latest.is_some() && latest.as_ref().unwrap() == &sv {
+                    postgres_db::packages::patch_latest_version_id(conn, package_id, ver_id);
+                }
             }
         }
         // TODO: what do we do with these?
         Packument::Unpublished {
-            created,
-            modified,
-            unpublished_blob,
-            extra_version_times,
+            created: _,
+            modified: _,
+            unpublished_blob: _,
+            extra_version_times: _,
         } => println!("Unpublished: {}", package_name),
         Packument::MissingData | Packument::Deleted => println!("Deleted: {}", package_name),
     }
