@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::panic;
 
 use postgres_db::change_log;
@@ -11,6 +12,7 @@ use postgres_db::versions::Version;
 use postgres_db::DbConnection;
 use relational_db_builder::packument::Packument;
 use relational_db_builder::packument::Spec;
+use relational_db_builder::packument::VersionPackument;
 use utils::check_no_concurrent_processes;
 
 use relational_db_builder::*;
@@ -75,15 +77,26 @@ fn process_change(conn: &DbConnection, c: Change) {
     }
 }
 
-fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packument::Packument) {
-    // let pack_str = format!("{:?}", pack);
-    // println!(
-    // "parsed change: name = {}, packument = {}...",
-    // package_name,
-    // // &pack_str[..std::cmp::min(100, pack_str.len())]
-    // pack_str
-    // );
+fn update_dep_countmap(
+    ver: &VersionPackument,
+    mut map: HashMap<(String, String), i64>,
+) -> HashMap<(String, String), i64> {
+    for (pack, spec) in ver
+        .prod_dependencies
+        .iter()
+        .chain(ver.dev_dependencies.iter())
+        .chain(ver.optional_dependencies.iter())
+        .chain(ver.peer_dependencies.iter())
+    {
+        let count = map
+            .entry((pack.clone(), serde_json::to_string(&spec.raw).unwrap()))
+            .or_insert(0);
+        *count += 1;
+    }
+    map
+}
 
+fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packument::Packument) {
     let metadata = pack.clone().into();
 
     let secret = false;
@@ -103,6 +116,12 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
             version_times: _,
             versions,
         } => {
+            let mut dep_countmap = HashMap::new();
+
+            for ver_pack in versions.values() {
+                dep_countmap = update_dep_countmap(ver_pack, dep_countmap);
+            }
+
             let insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
                 let mut ser_deps: Vec<Dependencie> = Vec::new();
                 for (pack_name, spec) in deps {
@@ -116,6 +135,9 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
                         spec.raw.clone(),
                         spec.parsed.clone(),
                         secret,
+                        *dep_countmap
+                            .get(&(pack_name.clone(), serde_json::to_string(&spec.raw).unwrap()))
+                            .unwrap_or(&0),
                     );
                     ser_deps.push(dep);
                 }

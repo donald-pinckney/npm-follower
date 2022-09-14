@@ -321,7 +321,10 @@ CREATE TABLE dependencies (
 
   secret                        BOOLEAN NOT NULL,
 
-  FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id)
+  freq_count                    BIGINT NOT NULL,
+
+  FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id),
+  UNIQUE(dst_package_name, raw_spec)
   -- We would like to specify this, but we can't
   -- FOREIGN KEY((spec).alias_package_id_if_exists) REFERENCES packages(id)
 );

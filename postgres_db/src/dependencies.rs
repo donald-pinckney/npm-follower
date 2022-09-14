@@ -5,6 +5,7 @@ use crate::custom_types::Semver;
 
 use super::schema::dependencies;
 use chrono::{DateTime, Utc};
+use diesel::pg::upsert::excluded;
 use diesel::sql_types::BigInt;
 use diesel::Queryable;
 use serde_json::Value;
@@ -23,6 +24,7 @@ pub struct Dependencie {
     pub raw_spec: Value,
     pub spec: ParsedSpec,
     pub secret: bool,
+    pub freq_count: i64,
 }
 
 impl Dependencie {
@@ -32,6 +34,7 @@ impl Dependencie {
         raw_spec: Value,
         spec: ParsedSpec,
         secret: bool,
+        freq_count: i64,
     ) -> Dependencie {
         Dependencie {
             dst_package_name,
@@ -39,6 +42,7 @@ impl Dependencie {
             raw_spec,
             spec,
             secret,
+            freq_count,
         }
     }
 }
@@ -58,7 +62,10 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
 
     let inserted = diesel::insert_into(dependencies)
         .values(&deps)
-        .get_results::<(i64, String, Option<i64>, Value, ParsedSpec, bool)>(&conn.conn)
+        .on_conflict((dst_package_name, raw_spec))
+        .do_update()
+        .set(freq_count.eq(freq_count + excluded(freq_count)))
+        .get_results::<(i64, String, Option<i64>, Value, ParsedSpec, bool, i64)>(&conn.conn)
         .expect("Error saving new dependencies");
 
     inserted.into_iter().map(|x| x.0).collect()

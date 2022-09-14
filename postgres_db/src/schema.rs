@@ -19,6 +19,7 @@ table! {
         raw_spec -> Jsonb,
         spec -> Parsed_spec_struct,
         secret -> Bool,
+        freq_count -> Int8,
     }
 }
 
