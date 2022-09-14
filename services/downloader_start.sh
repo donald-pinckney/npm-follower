@@ -1,4 +1,5 @@
 #!/bin/bash
 cd /zfs-raidz1/federico/npm-follower
 cargo run --release --bin download_queuer
-cargo run --release --bin downloader ../tarballs/ 30
+# might get stuck due to disk issues, so lets put a 10hr timeout
+timeout 10h cargo run --release --bin downloader ../tarballs/ 30
