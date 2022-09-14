@@ -31,10 +31,7 @@ impl Package {
     }
 }
 
-pub fn package_transaction(
-    conn: &DbConnection,
-    package: Package,
-) {
+pub fn package_transaction(conn: &DbConnection, package: Package) {
     conn.conn
         .transaction::<(), _, _>(|| {
             let pkg_id = insert_package(conn, package);
@@ -52,4 +49,35 @@ pub fn insert_package(conn: &DbConnection, package: Package) -> i64 {
         .get_result::<(i64, String, PackageMetadata, bool)>(&conn.conn)
         .expect("Error saving new package")
         .0
+}
+
+// Patches the missing latest version id of the package, for packages with Normal package metadata.
+pub fn patch_latest_version_id(conn: &DbConnection, package_id: i64, version_id: i64) {
+    use super::schema::packages::dsl::*;
+
+    // get the package
+    let pkg = packages
+        .find(package_id)
+        .get_result::<(i64, String, PackageMetadata, bool)>(&conn.conn)
+        .expect("Error finding package");
+
+    if let PackageMetadata::Normal {
+        dist_tag_latest_version: _,
+        created,
+        modified,
+        other_dist_tags,
+    } = pkg.2
+    {
+        let new_package_metadata = PackageMetadata::Normal {
+            dist_tag_latest_version: Some(version_id),
+            created,
+            modified,
+            other_dist_tags,
+        };
+
+        diesel::update(packages.find(package_id))
+            .set(metadata.eq(new_package_metadata))
+            .execute(&conn.conn)
+            .expect("Error updating package");
+    }
 }

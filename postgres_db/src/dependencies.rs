@@ -52,3 +52,15 @@ pub fn insert_dependency(conn: &DbConnection, dependency: Dependencie) -> i64 {
         .expect("Error saving new dependency")
         .0
 }
+
+pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
+    use super::schema::dependencies::dsl::*;
+
+    diesel::insert_into(dependencies)
+        .values(&deps)
+        .get_results::<(i64, String, Option<i64>, Value, ParsedSpec, bool)>(&conn.conn)
+        .expect("Error saving new dependencies")
+        .iter()
+        .map(|x| x.0)
+        .collect()
+}
