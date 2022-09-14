@@ -8,9 +8,9 @@ pub mod download_queue;
 pub mod download_tarball;
 pub mod internal_state;
 pub mod packages;
-pub mod versions;
 #[allow(unused_imports)]
 mod schema;
+pub mod versions;
 
 pub mod custom_types;
 
@@ -33,4 +33,16 @@ pub fn connect() -> DbConnection {
     let conn = PgConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url));
     DbConnection { conn }
+}
+
+impl DbConnection {
+    pub fn run_psql_transaction<F>(
+        &self,
+        transaction: F 
+    ) -> Result<(), diesel::result::Error> where
+        F: FnOnce() -> Result<(), diesel::result::Error>,
+    {
+        self.conn
+            .transaction::<_, diesel::result::Error, _>(transaction)
+    }
 }

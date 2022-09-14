@@ -104,100 +104,111 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
     let secret = false;
     let package = Package::create(package_name.clone(), metadata, secret);
 
-    // TODO: somehow, wrap this in a transaction, maybe a huge FnMut and we pass it to the db?
-
     let package_id = insert_package(conn, package);
     postgres_db::dependencies::update_deps_missing_pack(conn, &package_name, package_id);
 
-    match pack {
-        Packument::Normal {
-            latest,
-            created,
-            modified: _,
-            other_dist_tags: _,
-            version_times: _,
-            versions,
-        } => {
-            // these are made such that the postgres_db does the least amount of work possible
-            let mut dep_countmap = HashMap::new();
-            let mut deps_inserted: HashSet<(String, String)> = HashSet::new();
+    let res = conn.run_psql_transaction(|| {
+        match pack {
+            Packument::Normal {
+                latest,
+                created,
+                modified: _,
+                other_dist_tags: _,
+                version_times: _,
+                versions,
+            } => {
+                // these are made such that the postgres_db does the least amount of work possible
+                let mut dep_countmap = HashMap::new();
+                let mut deps_inserted: HashSet<(String, String)> = HashSet::new();
 
-            for ver_pack in versions.values() {
-                dep_countmap = update_dep_countmap(ver_pack, dep_countmap);
-            }
+                for ver_pack in versions.values() {
+                    dep_countmap = update_dep_countmap(ver_pack, dep_countmap);
+                }
 
-            let mut insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
-                let mut constructed_deps: Vec<Dependencie> = Vec::new();
-                for (pack_name, spec) in deps {
-                    let spec_pair = (pack_name.clone(), serde_json::to_string(&spec.raw).unwrap());
-                    if deps_inserted.contains(&spec_pair) {
-                        continue;
+                let mut insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
+                    let mut constructed_deps: Vec<Dependencie> = Vec::new();
+                    for (pack_name, spec) in deps {
+                        let spec_pair =
+                            (pack_name.clone(), serde_json::to_string(&spec.raw).unwrap());
+                        if deps_inserted.contains(&spec_pair) {
+                            continue;
+                        }
+
+                        // get the id of the package of this dep, these could be none.
+
+                        let dep_pkg_id = postgres_db::packages::query_pkg_id(conn, pack_name);
+
+                        let dep = Dependencie::create(
+                            pack_name.clone(),
+                            dep_pkg_id,
+                            spec.raw.clone(),
+                            spec.parsed.clone(),
+                            secret,
+                            *dep_countmap
+                                .get(&(
+                                    pack_name.clone(),
+                                    serde_json::to_string(&spec.raw).unwrap(),
+                                ))
+                                .unwrap_or(&1),
+                        );
+                        deps_inserted.insert(spec_pair);
+                        constructed_deps.push(dep);
                     }
+                    postgres_db::dependencies::insert_dependencies(conn, constructed_deps)
+                };
 
-                    // get the id of the package of this dep, these could be none.
+                println!("Normal: {}", package_name);
 
-                    let dep_pkg_id = postgres_db::packages::query_pkg_id(conn, pack_name);
+                let mut dep_ids_to_patch: Vec<i64> = vec![];
+                for (sv, vpack) in versions {
+                    let prod_dep_ids = insert_deps(&vpack.prod_dependencies);
+                    let dev_dep_ids = insert_deps(&vpack.dev_dependencies);
+                    let optional_dep_ids = insert_deps(&vpack.optional_dependencies);
+                    let peer_dep_ids = insert_deps(&vpack.peer_dependencies);
+                    dep_ids_to_patch.extend(&prod_dep_ids);
+                    dep_ids_to_patch.extend(&dev_dep_ids);
+                    dep_ids_to_patch.extend(&optional_dep_ids);
+                    dep_ids_to_patch.extend(&peer_dep_ids);
 
-                    let dep = Dependencie::create(
-                        pack_name.clone(),
-                        dep_pkg_id,
-                        spec.raw.clone(),
-                        spec.parsed.clone(),
+                    let ver = Version::create(
+                        package_id,
+                        sv.clone(),
+                        vpack.dist.tarball_url,
+                        vpack.repository.as_ref().map(|r| r.raw.clone()),
+                        vpack.repository.map(|r| r.info),
+                        created,
+                        false,
+                        serde_json::to_value(&vpack.extra_metadata).unwrap(),
+                        prod_dep_ids,
+                        dev_dep_ids,
+                        peer_dep_ids,
+                        optional_dep_ids,
                         secret,
-                        *dep_countmap
-                            .get(&(pack_name.clone(), serde_json::to_string(&spec.raw).unwrap()))
-                            .unwrap_or(&1),
                     );
-                    deps_inserted.insert(spec_pair);
-                    constructed_deps.push(dep);
-                }
-                postgres_db::dependencies::insert_dependencies(conn, constructed_deps)
-            };
 
-            println!("Normal: {}", package_name);
+                    let ver_id = postgres_db::versions::insert_version(conn, ver);
 
-            let mut dep_ids_to_patch: Vec<i64> = vec![];
-            for (sv, vpack) in versions {
-                let prod_dep_ids = insert_deps(&vpack.prod_dependencies);
-                let dev_dep_ids = insert_deps(&vpack.dev_dependencies);
-                let optional_dep_ids = insert_deps(&vpack.optional_dependencies);
-                let peer_dep_ids = insert_deps(&vpack.peer_dependencies);
-                dep_ids_to_patch.extend(&prod_dep_ids);
-                dep_ids_to_patch.extend(&dev_dep_ids);
-                dep_ids_to_patch.extend(&optional_dep_ids);
-                dep_ids_to_patch.extend(&peer_dep_ids);
-
-                let ver = Version::create(
-                    package_id,
-                    sv.clone(),
-                    vpack.dist.tarball_url,
-                    vpack.repository.as_ref().map(|r| r.raw.clone()),
-                    vpack.repository.map(|r| r.info),
-                    created,
-                    false,
-                    serde_json::to_value(&vpack.extra_metadata).unwrap(),
-                    prod_dep_ids,
-                    dev_dep_ids,
-                    peer_dep_ids,
-                    optional_dep_ids,
-                    secret,
-                );
-
-                let ver_id = postgres_db::versions::insert_version(conn, ver);
-
-                // TODO: what do we do if latest is none?
-                if latest.is_some() && latest.as_ref().unwrap() == &sv {
-                    postgres_db::packages::patch_latest_version_id(conn, package_id, ver_id);
+                    // TODO: what do we do if latest is none?
+                    if latest.is_some() && latest.as_ref().unwrap() == &sv {
+                        postgres_db::packages::patch_latest_version_id(conn, package_id, ver_id);
+                    }
                 }
             }
+            // TODO: what do we do with these?
+            Packument::Unpublished {
+                created: _,
+                modified: _,
+                unpublished_blob: _,
+                extra_version_times: _,
+            } => println!("Unpublished: {}", package_name),
+            Packument::MissingData | Packument::Deleted => println!("Deleted: {}", package_name),
         }
-        // TODO: what do we do with these?
-        Packument::Unpublished {
-            created: _,
-            modified: _,
-            unpublished_blob: _,
-            extra_version_times: _,
-        } => println!("Unpublished: {}", package_name),
-        Packument::MissingData | Packument::Deleted => println!("Deleted: {}", package_name),
+        Ok(())
+    });
+    match res {
+        Ok(_) => (),
+        Err(err) => {
+            println!("Failed on package: {}, reason: {}", package_name, err);
+        }
     }
 }
