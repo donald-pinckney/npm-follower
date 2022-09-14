@@ -1,9 +1,11 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::panic;
 
 use postgres_db::change_log;
 use postgres_db::change_log::Change;
 
+use postgres_db::custom_types::ParsedSpec;
 use postgres_db::dependencies::Dependencie;
 use postgres_db::internal_state;
 use postgres_db::packages::insert_package;
@@ -81,7 +83,7 @@ fn update_dep_countmap(
     ver: &VersionPackument,
     mut map: HashMap<(String, String), i64>,
 ) -> HashMap<(String, String), i64> {
-    for (pack, spec) in ver
+    for (pack_name, spec) in ver
         .prod_dependencies
         .iter()
         .chain(ver.dev_dependencies.iter())
@@ -89,7 +91,7 @@ fn update_dep_countmap(
         .chain(ver.peer_dependencies.iter())
     {
         let count = map
-            .entry((pack.clone(), serde_json::to_string(&spec.raw).unwrap()))
+            .entry((pack_name.clone(), serde_json::to_string(&spec.raw).unwrap()))
             .or_insert(0);
         *count += 1;
     }
@@ -116,16 +118,23 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
             version_times: _,
             versions,
         } => {
+            // these are made such that the postgres_db does the least amount of work possible
             let mut dep_countmap = HashMap::new();
+            let mut deps_inserted: HashSet<(String, String)> = HashSet::new();
 
             for ver_pack in versions.values() {
                 dep_countmap = update_dep_countmap(ver_pack, dep_countmap);
             }
 
-            let insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
-                let mut ser_deps: Vec<Dependencie> = Vec::new();
+            let mut insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
+                let mut constructed_deps: Vec<Dependencie> = Vec::new();
                 for (pack_name, spec) in deps {
-                    // get the id of the package of this dep
+                    let spec_pair = (pack_name.clone(), serde_json::to_string(&spec.raw).unwrap());
+                    if deps_inserted.contains(&spec_pair) {
+                        continue;
+                    }
+
+                    // get the id of the package of this dep, these could be none.
 
                     let dep_pkg_id = postgres_db::packages::query_pkg_id(conn, pack_name);
 
@@ -137,11 +146,12 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
                         secret,
                         *dep_countmap
                             .get(&(pack_name.clone(), serde_json::to_string(&spec.raw).unwrap()))
-                            .unwrap_or(&0),
+                            .unwrap_or(&1),
                     );
-                    ser_deps.push(dep);
+                    deps_inserted.insert(spec_pair);
+                    constructed_deps.push(dep);
                 }
-                postgres_db::dependencies::insert_dependencies(conn, ser_deps)
+                postgres_db::dependencies::insert_dependencies(conn, constructed_deps)
             };
 
             println!("Normal: {}", package_name);
