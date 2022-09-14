@@ -3,11 +3,13 @@ use std::panic;
 use postgres_db::change_log;
 use postgres_db::change_log::Change;
 
+use postgres_db::dependencies::Dependencie;
 use postgres_db::internal_state;
 use postgres_db::packages::insert_package;
 use postgres_db::packages::Package;
 use postgres_db::DbConnection;
 use relational_db_builder::packument::Packument;
+use relational_db_builder::packument::Spec;
 use utils::check_no_concurrent_processes;
 
 use relational_db_builder::*;
@@ -85,6 +87,55 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
 
     let secret = false;
     let package = Package::create(package_name.clone(), metadata, secret);
-    let pkg_id = insert_package(conn, package);
-    println!("for package {} - id: {}", package_name, pkg_id);
+
+    // TODO: somehow, wrap this in a transaction, maybe a huge FnMut and we pass it to the db?
+
+    let package_id = insert_package(conn, package);
+
+    match pack {
+        Packument::Normal {
+            latest,
+            created,
+            modified,
+            other_dist_tags,
+            version_times,
+            versions,
+        } => {
+            let insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
+                let mut dep_ids = Vec::new();
+                for (pack_name, spec) in deps {
+                    let dep = Dependencie::create(
+                        pack_name.clone(),
+                        None, // NOTE: this gets patched later
+                        spec.raw.clone(),
+                        spec.parsed.clone(),
+                        secret,
+                    );
+                    let dep_id = postgres_db::dependencies::insert_dependency(conn, dep);
+                    dep_ids.push(dep_id);
+                }
+                dep_ids
+            };
+
+            let mut dep_ids_to_patch: Vec<i64> = vec![];
+            for (sv, vpack) in versions {
+                let prod_dep_ids = insert_deps(&vpack.prod_dependencies);
+                let dev_dep_ids = insert_deps(&vpack.dev_dependencies);
+                let optional_dep_ids = insert_deps(&vpack.optional_dependencies);
+                let peer_dep_ids = insert_deps(&vpack.peer_dependencies);
+                dep_ids_to_patch.extend(&prod_dep_ids);
+                dep_ids_to_patch.extend(&dev_dep_ids);
+                dep_ids_to_patch.extend(&optional_dep_ids);
+                dep_ids_to_patch.extend(&peer_dep_ids);
+            }
+        }
+        // TODO: what do we do with these?
+        Packument::Unpublished {
+            created,
+            modified,
+            unpublished_blob,
+            extra_version_times,
+        } => println!("Unpublished: {}", package_name),
+        Packument::MissingData | Packument::Deleted => println!("Deleted: {}", package_name),
+    }
 }

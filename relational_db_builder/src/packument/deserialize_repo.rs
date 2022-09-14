@@ -1,9 +1,8 @@
+use super::RepositoryInfo;
 use postgres_db::custom_types::{RepoInfo, Vcs};
 use serde_json::Value;
-use utils::RemoveInto;
-use super::RepositoryInfo;
 use url::Url;
-
+use utils::RemoveInto;
 
 /// This attempts to parse the common repo shorthand form of: xxx/yyy
 fn try_parse_user_repo_shorthand(x: &str) -> Option<(&str, &str)> {
@@ -24,12 +23,11 @@ fn try_parse_user_repo_shorthand(x: &str) -> Option<(&str, &str)> {
 fn match_strip_start(x: &mut &str, p: &str) -> bool {
     if let Some(new_x) = x.strip_prefix(p) {
         *x = new_x;
-        return true
+        return true;
     } else {
-        return false
+        return false;
     }
 }
-
 
 /// This attempts to parse the form: git@xxx:yyy
 fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
@@ -39,13 +37,17 @@ fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
         assert!(components.len() == 2);
         let left = components[0];
         let right = components[1];
-        assert!(!left.contains(":") && !left.contains("@") && !right.contains(":") && !right.contains("@"));
-        return Some((left, right))
+        assert!(
+            !left.contains(":")
+                && !left.contains("@")
+                && !right.contains(":")
+                && !right.contains("@")
+        );
+        return Some((left, right));
     } else {
-        return None
+        return None;
     }
 }
-
 
 fn parse_gist_path(gist_path: &str) -> RepoInfo {
     if gist_path.contains("/") {
@@ -56,24 +58,34 @@ fn parse_gist_path(gist_path: &str) -> RepoInfo {
     }
 }
 
-
 fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
-
     // Lets try to parse git ssh format first.
     if let Some((host, path)) = try_parse_git_ssh_format(url_or_ssh) {
         if host == "github.com" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+            return RepoInfo::new_github(
+                "/".to_string(),
+                user.to_owned(),
+                strip_dot_git(repo).to_owned(),
+            );
         } else if host == "bitbucket.org" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+            return RepoInfo::new_bitbucket(
+                "/".to_string(),
+                user.to_owned(),
+                strip_dot_git(repo).to_owned(),
+            );
         } else if host == "gitlab.com" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+            return RepoInfo::new_gitlab(
+                "/".to_string(),
+                user.to_owned(),
+                strip_dot_git(repo).to_owned(),
+            );
         } else if host == "gist.github.com" {
-            return parse_gist_path(path)
+            return parse_gist_path(path);
         } else {
-            return RepoInfo::new_thirdparty(url_or_ssh.to_owned(), "/".to_owned())
+            return RepoInfo::new_thirdparty(url_or_ssh.to_owned(), "/".to_owned());
         }
     }
 
@@ -89,10 +101,13 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
         assert!(maybe_user == "git");
     }
 
-
     if host == "github.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+            return RepoInfo::new_github(
+                "/".to_string(),
+                user.to_owned(),
+                strip_dot_git(repo).to_owned(),
+            );
         } else {
             // Else we handle github tree directory case
             // Example url_path = "babel/babel/tree/master/packages/babel-plugin-syntax-async-generators"
@@ -104,15 +119,27 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             assert!(comps[2] == "tree");
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
-                return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+                return RepoInfo::new_github(
+                    "/".to_string(),
+                    user.to_owned(),
+                    strip_dot_git(repo).to_owned(),
+                );
             } else {
                 let dir_path = comps[4..].join("/");
-                return RepoInfo::new_github(format!("/{}", dir_path), user.to_owned(), strip_dot_git(repo).to_owned())
+                return RepoInfo::new_github(
+                    format!("/{}", dir_path),
+                    user.to_owned(),
+                    strip_dot_git(repo).to_owned(),
+                );
             }
         }
     } else if host == "bitbucket.org" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+            return RepoInfo::new_bitbucket(
+                "/".to_string(),
+                user.to_owned(),
+                strip_dot_git(repo).to_owned(),
+            );
         } else {
             // Else we handle bitbucket tree directory case
             // Example url_path = "janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties"
@@ -124,15 +151,27 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             assert!(comps[2] == "src");
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
-                return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+                return RepoInfo::new_bitbucket(
+                    "/".to_string(),
+                    user.to_owned(),
+                    strip_dot_git(repo).to_owned(),
+                );
             } else {
                 let dir_path = comps[4..].join("/");
-                return RepoInfo::new_bitbucket(format!("/{}", dir_path), user.to_owned(), strip_dot_git(repo).to_owned())
+                return RepoInfo::new_bitbucket(
+                    format!("/{}", dir_path),
+                    user.to_owned(),
+                    strip_dot_git(repo).to_owned(),
+                );
             }
         }
     } else if host == "gitlab.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+            return RepoInfo::new_gitlab(
+                "/".to_string(),
+                user.to_owned(),
+                strip_dot_git(repo).to_owned(),
+            );
         } else {
             // Else we handle gitlab tree directory case
             // Example url_path = "gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition"
@@ -145,10 +184,18 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             assert!(comps[3] == "tree");
             let _branch = comps[4]; // We ignore the branch
             if num_comps == 5 {
-                return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+                return RepoInfo::new_gitlab(
+                    "/".to_string(),
+                    user.to_owned(),
+                    strip_dot_git(repo).to_owned(),
+                );
             } else {
                 let dir_path = comps[5..].join("/");
-                return RepoInfo::new_gitlab(format!("/{}", dir_path), user.to_owned(), strip_dot_git(repo).to_owned())
+                return RepoInfo::new_gitlab(
+                    format!("/{}", dir_path),
+                    user.to_owned(),
+                    strip_dot_git(repo).to_owned(),
+                );
             }
         }
     } else if host == "gist.github.com" {
@@ -159,38 +206,51 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             let mut new_url = repo_url.clone();
             new_url.set_path(strip_dot_git(url_path));
             let https_url_str = new_url.to_string().replacen("git://", "https://", 1);
-            return RepoInfo::new_thirdparty(https_url_str, "/".to_owned())
+            return RepoInfo::new_thirdparty(https_url_str, "/".to_owned());
         } else {
             // Strip .git
             let mut new_url = repo_url.clone();
             new_url.set_path(strip_dot_git(url_path));
-            return RepoInfo::new_thirdparty(new_url.to_string(), "/".to_owned())
+            return RepoInfo::new_thirdparty(new_url.to_string(), "/".to_owned());
         }
     }
 }
-
 
 fn strip_dot_git(repo: &str) -> &str {
     repo.strip_suffix(".git").unwrap_or(repo)
 }
 
-
-
 fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
     let mut repo_str: &str = &full_repo_string;
     if match_strip_start(&mut repo_str, "github:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+        return RepoInfo::new_github(
+            "/".to_string(),
+            user.to_owned(),
+            strip_dot_git(repo).to_owned(),
+        );
     } else if match_strip_start(&mut repo_str, "bitbucket:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_bitbucket("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+        return RepoInfo::new_bitbucket(
+            "/".to_string(),
+            user.to_owned(),
+            strip_dot_git(repo).to_owned(),
+        );
     } else if match_strip_start(&mut repo_str, "gitlab:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_gitlab("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+        return RepoInfo::new_gitlab(
+            "/".to_string(),
+            user.to_owned(),
+            strip_dot_git(repo).to_owned(),
+        );
     } else if match_strip_start(&mut repo_str, "gist:") {
         return parse_gist_path(repo_str);
     } else if let Some((user, repo)) = try_parse_user_repo_shorthand(repo_str) {
-        return RepoInfo::new_github("/".to_string(), user.to_owned(), strip_dot_git(repo).to_owned())
+        return RepoInfo::new_github(
+            "/".to_string(),
+            user.to_owned(),
+            strip_dot_git(repo).to_owned(),
+        );
     }
 
     // In this case, we are dealig with either some URL, or some git ssh format.
@@ -211,8 +271,6 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
     }
 }
 
-
-
 fn deserialize_repo_check_git_type_str(repo: String) -> RepoInfo {
     // for now its the same parsing logic, but maybe we handle this differently in the future
     let info = deserialize_repo_infer_type_str(repo);
@@ -230,8 +288,10 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> RepositoryInfo {
 
             let info = match t.as_deref() {
                 None => deserialize_repo_infer_type_str(url),
-                Some("git" | "github" | "bitbucket" | "gitlab" | "gist") => deserialize_repo_check_git_type_str(url),
-                _ => panic!("Unknown repo type: {:?}", t)
+                Some("git" | "github" | "bitbucket" | "gitlab" | "gist") => {
+                    deserialize_repo_check_git_type_str(url)
+                }
+                _ => panic!("Unknown repo type: {:?}", t),
             };
 
             let parsed_dir = match dir {
@@ -249,302 +309,877 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> RepositoryInfo {
             };
 
             final_info
-        },
-        _ => panic!("Can't parse repo: {:?}", repo_blob)
+        }
+        _ => panic!("Can't parse repo: {:?}", repo_blob),
     };
 
-    RepositoryInfo { raw: repo_blob, info }
+    RepositoryInfo {
+        raw: repo_blob,
+        info,
+    }
 }
-
 
 #[cfg(test)]
 mod tests {
-    use crate::packument::RepositoryInfo;
-    use serde_json::{Value, json};
-    use test_case::test_case;
-    use postgres_db::custom_types::{RepoInfo, Vcs, RepoHostInfo};
     use super::{deserialize_repo_blob, deserialize_repo_infer_type_str};
-
+    use crate::packument::RepositoryInfo;
+    use postgres_db::custom_types::{RepoHostInfo, RepoInfo, Vcs};
+    use serde_json::{json, Value};
+    use test_case::test_case;
 
     // github implied shorthand cases
-    #[test_case("github/fetch", "https://github.com/github/fetch", "/", "github", "fetch")]
-    #[test_case("stuff/stuff.com", "https://github.com/stuff/stuff.com", "/", "stuff", "stuff.com")]
-    #[test_case("jshttp/accepts", "https://github.com/jshttp/accepts", "/", "jshttp", "accepts")]
+    #[test_case(
+        "github/fetch",
+        "https://github.com/github/fetch",
+        "/",
+        "github",
+        "fetch"
+    )]
+    #[test_case(
+        "stuff/stuff.com",
+        "https://github.com/stuff/stuff.com",
+        "/",
+        "stuff",
+        "stuff.com"
+    )]
+    #[test_case(
+        "jshttp/accepts",
+        "https://github.com/jshttp/accepts",
+        "/",
+        "jshttp",
+        "accepts"
+    )]
     #[test_case("git/git", "https://github.com/git/git", "/", "git", "git")]
     #[test_case("git/git.git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("github/github", "https://github.com/github/github", "/", "github", "github")]
-    #[test_case("github/github.git", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case(
+        "github/github",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
+    #[test_case(
+        "github/github.git",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
     #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
     #[test_case("https/https", "https://github.com/https/https", "/", "https", "https")]
-    #[test_case("https/github", "https://github.com/https/github", "/", "https", "github")]
-
+    #[test_case(
+        "https/github",
+        "https://github.com/https/github",
+        "/",
+        "https",
+        "github"
+    )]
     // github: shorthand cases
-    #[test_case("github:eemeli/yaml", "https://github.com/eemeli/yaml", "/", "eemeli", "yaml")]
-    #[test_case("github:stuff.com/stuff.com", "https://github.com/stuff.com/stuff.com", "/", "stuff.com", "stuff.com")]
+    #[test_case(
+        "github:eemeli/yaml",
+        "https://github.com/eemeli/yaml",
+        "/",
+        "eemeli",
+        "yaml"
+    )]
+    #[test_case(
+        "github:stuff.com/stuff.com",
+        "https://github.com/stuff.com/stuff.com",
+        "/",
+        "stuff.com",
+        "stuff.com"
+    )]
     #[test_case("github:git/git", "https://github.com/git/git", "/", "git", "git")]
     #[test_case("github:git/git.git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("github:github/github", "https://github.com/github/github", "/", "github", "github")]
-    #[test_case("github:github/github.git", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case(
+        "github:github/github",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
+    #[test_case(
+        "github:github/github.git",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
     #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
-    #[test_case("github:https/https", "https://github.com/https/https", "/", "https", "https")]
-    #[test_case("github:https/github", "https://github.com/https/github", "/", "https", "github")]
-
+    #[test_case(
+        "github:https/https",
+        "https://github.com/https/https",
+        "/",
+        "https",
+        "https"
+    )]
+    #[test_case(
+        "github:https/github",
+        "https://github.com/https/github",
+        "/",
+        "https",
+        "github"
+    )]
     // standard https:// cases
-    #[test_case("https://github.com/npm/cacache", "https://github.com/npm/cacache", "/", "npm", "cacache")]
-    #[test_case("https://github.com/kornelski/https.git-github.git", "https://github.com/kornelski/https.git-github", "/", "kornelski", "https.git-github")]
-
+    #[test_case(
+        "https://github.com/npm/cacache",
+        "https://github.com/npm/cacache",
+        "/",
+        "npm",
+        "cacache"
+    )]
+    #[test_case(
+        "https://github.com/kornelski/https.git-github.git",
+        "https://github.com/kornelski/https.git-github",
+        "/",
+        "kornelski",
+        "https.git-github"
+    )]
     // http:// case
-    #[test_case("http://github.com/isaacs/abbrev-js", "https://github.com/isaacs/abbrev-js", "/", "isaacs", "abbrev-js")]
-
+    #[test_case(
+        "http://github.com/isaacs/abbrev-js",
+        "https://github.com/isaacs/abbrev-js",
+        "/",
+        "isaacs",
+        "abbrev-js"
+    )]
     // broken url case
-    #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "crypto-browserify", "browserify-rsa")]
-    #[test_case("github.com/makindotcc/McHttpFrida", "https://github.com/makindotcc/McHttpFrida", "/", "makindotcc", "McHttpFrida")]
-
+    #[test_case(
+        "https://github.com:crypto-browserify/browserify-rsa.git",
+        "https://github.com/crypto-browserify/browserify-rsa",
+        "/",
+        "crypto-browserify",
+        "browserify-rsa"
+    )]
+    #[test_case(
+        "github.com/makindotcc/McHttpFrida",
+        "https://github.com/makindotcc/McHttpFrida",
+        "/",
+        "makindotcc",
+        "McHttpFrida"
+    )]
     // github tree directory case
-    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "/packages/babel-plugin-syntax-async-generators", "babel", "babel")]
-
+    #[test_case(
+        "https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators",
+        "https://github.com/babel/babel",
+        "/packages/babel-plugin-syntax-async-generators",
+        "babel",
+        "babel"
+    )]
     // git:// cases
-    #[test_case("git://github.com/whitequark/ipaddr.js", "https://github.com/whitequark/ipaddr.js", "/", "whitequark", "ipaddr.js")]
-    #[test_case("git://github.com/browserify/console-browserify.git", "https://github.com/browserify/console-browserify", "/", "browserify", "console-browserify")]
-
+    #[test_case(
+        "git://github.com/whitequark/ipaddr.js",
+        "https://github.com/whitequark/ipaddr.js",
+        "/",
+        "whitequark",
+        "ipaddr.js"
+    )]
+    #[test_case(
+        "git://github.com/browserify/console-browserify.git",
+        "https://github.com/browserify/console-browserify",
+        "/",
+        "browserify",
+        "console-browserify"
+    )]
     // git+https:// cases
-    #[test_case("git+https://github.com/yargs/set-blocking.git", "https://github.com/yargs/set-blocking", "/", "yargs", "set-blocking")]
-
+    #[test_case(
+        "git+https://github.com/yargs/set-blocking.git",
+        "https://github.com/yargs/set-blocking",
+        "/",
+        "yargs",
+        "set-blocking"
+    )]
     // git+ssh:// cases
-    #[test_case("git+ssh://git@github.com/mikaelbr/node-notifier.git", "https://github.com/mikaelbr/node-notifier", "/", "mikaelbr", "node-notifier")]
-    #[test_case("git+ssh://git@github.com/istanbuljs/istanbuljs.git", "https://github.com/istanbuljs/istanbuljs", "/", "istanbuljs", "istanbuljs")]
-
+    #[test_case(
+        "git+ssh://git@github.com/mikaelbr/node-notifier.git",
+        "https://github.com/mikaelbr/node-notifier",
+        "/",
+        "mikaelbr",
+        "node-notifier"
+    )]
+    #[test_case(
+        "git+ssh://git@github.com/istanbuljs/istanbuljs.git",
+        "https://github.com/istanbuljs/istanbuljs",
+        "/",
+        "istanbuljs",
+        "istanbuljs"
+    )]
     // ssh case
-    #[test_case("git@github.com:tsertkov/exec-sh.git", "https://github.com/tsertkov/exec-sh", "/", "tsertkov", "exec-sh")]
-    fn test_deserialize_repo_blob_github(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
+    #[test_case(
+        "git@github.com:tsertkov/exec-sh.git",
+        "https://github.com/tsertkov/exec-sh",
+        "/",
+        "tsertkov",
+        "exec-sh"
+    )]
+    fn test_deserialize_repo_blob_github(
+        url_str: &str,
+        answer_url: &str,
+        answer_dir: &str,
+        answer_user: &str,
+        answer_repo: &str,
+    ) {
         let blob1: Value = json!(url_str);
-        let blob2 = json!({"url": url_str});
+        let blob2 = json!({ "url": url_str });
         let blob3 = json!({"url": url_str, "type": "git"});
         let blob4 = json!({"url": url_str, "type": "github"});
 
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Github { user: answer_user.into(), repo: answer_repo.into() }};
-        
-        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
-        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
-        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
-        let answer4 = RepositoryInfo { raw: blob4.clone(), info: answer_info };
-        
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: answer_dir.into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Github {
+                user: answer_user.into(),
+                repo: answer_repo.into(),
+            },
+        };
+
+        let answer1 = RepositoryInfo {
+            raw: blob1.clone(),
+            info: answer_info.clone(),
+        };
+        let answer2 = RepositoryInfo {
+            raw: blob2.clone(),
+            info: answer_info.clone(),
+        };
+        let answer3 = RepositoryInfo {
+            raw: blob3.clone(),
+            info: answer_info.clone(),
+        };
+        let answer4 = RepositoryInfo {
+            raw: blob4.clone(),
+            info: answer_info,
+        };
+
         assert_eq!(deserialize_repo_blob(blob1), answer1);
         assert_eq!(deserialize_repo_blob(blob2), answer2);
         assert_eq!(deserialize_repo_blob(blob3), answer3);
         assert_eq!(deserialize_repo_blob(blob4), answer4);
     }
 
-
     // normal bitbucket case
-    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff.git", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/", "janouwehand", "stuff-stuff-stuff")]
-    #[test_case("http://bitbucket.org/janouwehand/stuff-stuff-stuff.git", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/", "janouwehand", "stuff-stuff-stuff")]
+    #[test_case(
+        "https://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
+        "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
+        "/",
+        "janouwehand",
+        "stuff-stuff-stuff"
+    )]
+    #[test_case(
+        "http://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
+        "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
+        "/",
+        "janouwehand",
+        "stuff-stuff-stuff"
+    )]
     // bitbucket: shorthand
-    #[test_case("bitbucket:github/git", "https://bitbucket.org/github/git", "/", "github", "git")]
+    #[test_case(
+        "bitbucket:github/git",
+        "https://bitbucket.org/github/git",
+        "/",
+        "github",
+        "git"
+    )]
     // bitbucket tree directory case
     #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
-    fn test_deserialize_repo_blob_bitbucket(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
+    fn test_deserialize_repo_blob_bitbucket(
+        url_str: &str,
+        answer_url: &str,
+        answer_dir: &str,
+        answer_user: &str,
+        answer_repo: &str,
+    ) {
         let blob1: Value = json!(url_str);
-        let blob2 = json!({"url": url_str});
+        let blob2 = json!({ "url": url_str });
         let blob3 = json!({"url": url_str, "type": "git"});
         let blob4 = json!({"url": url_str, "type": "bitbucket"});
 
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Bitbucket { user: answer_user.into(), repo: answer_repo.into() }};
-        
-        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
-        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
-        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
-        let answer4 = RepositoryInfo { raw: blob4.clone(), info: answer_info };
-        
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: answer_dir.into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Bitbucket {
+                user: answer_user.into(),
+                repo: answer_repo.into(),
+            },
+        };
+
+        let answer1 = RepositoryInfo {
+            raw: blob1.clone(),
+            info: answer_info.clone(),
+        };
+        let answer2 = RepositoryInfo {
+            raw: blob2.clone(),
+            info: answer_info.clone(),
+        };
+        let answer3 = RepositoryInfo {
+            raw: blob3.clone(),
+            info: answer_info.clone(),
+        };
+        let answer4 = RepositoryInfo {
+            raw: blob4.clone(),
+            info: answer_info,
+        };
+
         assert_eq!(deserialize_repo_blob(blob1), answer1);
         assert_eq!(deserialize_repo_blob(blob2), answer2);
         assert_eq!(deserialize_repo_blob(blob3), answer3);
         assert_eq!(deserialize_repo_blob(blob4), answer4);
     }
 
-
     // normal gitlab case
-    #[test_case("https://gitlab.com/gitlab-org/gitlab.git", "https://gitlab.com/gitlab-org/gitlab.git", "/", "gitlab-org", "gitlab")]
-    #[test_case("http://gitlab.com/gitlab-org/gitlab.git", "https://gitlab.com/gitlab-org/gitlab.git", "/", "gitlab-org", "gitlab")]
+    #[test_case(
+        "https://gitlab.com/gitlab-org/gitlab.git",
+        "https://gitlab.com/gitlab-org/gitlab.git",
+        "/",
+        "gitlab-org",
+        "gitlab"
+    )]
+    #[test_case(
+        "http://gitlab.com/gitlab-org/gitlab.git",
+        "https://gitlab.com/gitlab-org/gitlab.git",
+        "/",
+        "gitlab-org",
+        "gitlab"
+    )]
     // gitlab: shorthand
-    #[test_case("gitlab:bitbucket-gist/github", "https://gitlab.com/bitbucket-gist/github.git", "/", "bitbucket-gist", "github")]
+    #[test_case(
+        "gitlab:bitbucket-gist/github",
+        "https://gitlab.com/bitbucket-gist/github.git",
+        "/",
+        "bitbucket-gist",
+        "github"
+    )]
     // gitlab tree directory case
     #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "/generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
-    fn test_deserialize_repo_blob_gitlab(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
+    fn test_deserialize_repo_blob_gitlab(
+        url_str: &str,
+        answer_url: &str,
+        answer_dir: &str,
+        answer_user: &str,
+        answer_repo: &str,
+    ) {
         let blob1: Value = json!(url_str);
-        let blob2 = json!({"url": url_str});
+        let blob2 = json!({ "url": url_str });
         let blob3 = json!({"url": url_str, "type": "git"});
         let blob4 = json!({"url": url_str, "type": "gitlab"});
 
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Gitlab { user: answer_user.into(), repo: answer_repo.into() }};
-        
-        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
-        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
-        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
-        let answer4 = RepositoryInfo { raw: blob4.clone(), info: answer_info };
-        
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: answer_dir.into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gitlab {
+                user: answer_user.into(),
+                repo: answer_repo.into(),
+            },
+        };
+
+        let answer1 = RepositoryInfo {
+            raw: blob1.clone(),
+            info: answer_info.clone(),
+        };
+        let answer2 = RepositoryInfo {
+            raw: blob2.clone(),
+            info: answer_info.clone(),
+        };
+        let answer3 = RepositoryInfo {
+            raw: blob3.clone(),
+            info: answer_info.clone(),
+        };
+        let answer4 = RepositoryInfo {
+            raw: blob4.clone(),
+            info: answer_info,
+        };
+
         assert_eq!(deserialize_repo_blob(blob1), answer1);
         assert_eq!(deserialize_repo_blob(blob2), answer2);
         assert_eq!(deserialize_repo_blob(blob3), answer3);
         assert_eq!(deserialize_repo_blob(blob4), answer4);
     }
 
-
     // other gist url cases
-    #[test_case("https://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-    #[test_case("https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-    #[test_case("git@gist.github.com:35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-    #[test_case("http://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-
+    #[test_case(
+        "https://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
+    #[test_case(
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99.git",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
+    #[test_case(
+        "git@gist.github.com:35d6483aea16c4f11e9acc51ea659b99.git",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
+    #[test_case(
+        "http://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
     // gist: shorthand case
-    #[test_case("gist:11081aaa281", "https://gist.github.com/11081aaa281", "11081aaa281")]
+    #[test_case(
+        "gist:11081aaa281",
+        "https://gist.github.com/11081aaa281",
+        "11081aaa281"
+    )]
     fn test_deserialize_repo_blob_gist(url_str: &str, answer_url: &str, answer_id: &str) {
         let blob1: Value = json!(url_str);
-        let blob2 = json!({"url": url_str});
+        let blob2 = json!({ "url": url_str });
         let blob3 = json!({"url": url_str, "type": "git"});
         let blob4 = json!({"url": url_str, "type": "gist"});
 
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: "/".into(), vcs: Vcs::Git, host_info: RepoHostInfo::Gist { id: answer_id.into() }};
-        
-        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
-        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
-        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
-        let answer4 = RepositoryInfo { raw: blob4.clone(), info: answer_info };
-        
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: "/".into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gist {
+                id: answer_id.into(),
+            },
+        };
+
+        let answer1 = RepositoryInfo {
+            raw: blob1.clone(),
+            info: answer_info.clone(),
+        };
+        let answer2 = RepositoryInfo {
+            raw: blob2.clone(),
+            info: answer_info.clone(),
+        };
+        let answer3 = RepositoryInfo {
+            raw: blob3.clone(),
+            info: answer_info.clone(),
+        };
+        let answer4 = RepositoryInfo {
+            raw: blob4.clone(),
+            info: answer_info,
+        };
+
         assert_eq!(deserialize_repo_blob(blob1), answer1);
         assert_eq!(deserialize_repo_blob(blob2), answer2);
         assert_eq!(deserialize_repo_blob(blob3), answer3);
         assert_eq!(deserialize_repo_blob(blob4), answer4);
     }
 
-
     // 3rd party git host
-    #[test_case("git@git.coolaj86.com:coolaj86/atob.js.git", "git@git.coolaj86.com:coolaj86/atob.js.git")]
-    #[test_case("git://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js")]
-    #[test_case("https://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js")]
-    #[test_case("http://git.coolaj86.com/coolaj86/atob.js.git", "http://git.coolaj86.com/coolaj86/atob.js")]
+    #[test_case(
+        "git@git.coolaj86.com:coolaj86/atob.js.git",
+        "git@git.coolaj86.com:coolaj86/atob.js.git"
+    )]
+    #[test_case(
+        "git://git.coolaj86.com/coolaj86/atob.js.git",
+        "https://git.coolaj86.com/coolaj86/atob.js"
+    )]
+    #[test_case(
+        "https://git.coolaj86.com/coolaj86/atob.js.git",
+        "https://git.coolaj86.com/coolaj86/atob.js"
+    )]
+    #[test_case(
+        "http://git.coolaj86.com/coolaj86/atob.js.git",
+        "http://git.coolaj86.com/coolaj86/atob.js"
+    )]
     fn test_deserialize_repo_blob_3rd(url_str: &str, answer_url: &str) {
         let blob1: Value = json!(url_str);
-        let blob2 = json!({"url": url_str});
+        let blob2 = json!({ "url": url_str });
         let blob3 = json!({"url": url_str, "type": "git"});
 
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: "/".into(), vcs: Vcs::Git, host_info: RepoHostInfo::Thirdparty};
-        
-        let answer1 = RepositoryInfo { raw: blob1.clone(), info: answer_info.clone() };
-        let answer2 = RepositoryInfo { raw: blob2.clone(), info: answer_info.clone() };
-        let answer3 = RepositoryInfo { raw: blob3.clone(), info: answer_info.clone() };
-        
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: "/".into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Thirdparty,
+        };
+
+        let answer1 = RepositoryInfo {
+            raw: blob1.clone(),
+            info: answer_info.clone(),
+        };
+        let answer2 = RepositoryInfo {
+            raw: blob2.clone(),
+            info: answer_info.clone(),
+        };
+        let answer3 = RepositoryInfo {
+            raw: blob3.clone(),
+            info: answer_info.clone(),
+        };
+
         assert_eq!(deserialize_repo_blob(blob1), answer1);
         assert_eq!(deserialize_repo_blob(blob2), answer2);
         assert_eq!(deserialize_repo_blob(blob3), answer3);
     }
 
-
-
-
     // github implied shorthand cases
-    #[test_case("github/fetch", "https://github.com/github/fetch", "/", "github", "fetch")]
-    #[test_case("stuff/stuff.com", "https://github.com/stuff/stuff.com", "/", "stuff", "stuff.com")]
-    #[test_case("jshttp/accepts", "https://github.com/jshttp/accepts", "/", "jshttp", "accepts")]
+    #[test_case(
+        "github/fetch",
+        "https://github.com/github/fetch",
+        "/",
+        "github",
+        "fetch"
+    )]
+    #[test_case(
+        "stuff/stuff.com",
+        "https://github.com/stuff/stuff.com",
+        "/",
+        "stuff",
+        "stuff.com"
+    )]
+    #[test_case(
+        "jshttp/accepts",
+        "https://github.com/jshttp/accepts",
+        "/",
+        "jshttp",
+        "accepts"
+    )]
     #[test_case("git/git", "https://github.com/git/git", "/", "git", "git")]
     #[test_case("git/git.git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("github/github", "https://github.com/github/github", "/", "github", "github")]
-    #[test_case("github/github.git", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case(
+        "github/github",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
+    #[test_case(
+        "github/github.git",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
     #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
     #[test_case("https/https", "https://github.com/https/https", "/", "https", "https")]
-    #[test_case("https/github", "https://github.com/https/github", "/", "https", "github")]
-
+    #[test_case(
+        "https/github",
+        "https://github.com/https/github",
+        "/",
+        "https",
+        "github"
+    )]
     // github: shorthand cases
-    #[test_case("github:eemeli/yaml", "https://github.com/eemeli/yaml", "/", "eemeli", "yaml")]
-    #[test_case("github:stuff.com/stuff.com", "https://github.com/stuff.com/stuff.com", "/", "stuff.com", "stuff.com")]
+    #[test_case(
+        "github:eemeli/yaml",
+        "https://github.com/eemeli/yaml",
+        "/",
+        "eemeli",
+        "yaml"
+    )]
+    #[test_case(
+        "github:stuff.com/stuff.com",
+        "https://github.com/stuff.com/stuff.com",
+        "/",
+        "stuff.com",
+        "stuff.com"
+    )]
     #[test_case("github:git/git", "https://github.com/git/git", "/", "git", "git")]
     #[test_case("github:git/git.git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("github:github/github", "https://github.com/github/github", "/", "github", "github")]
-    #[test_case("github:github/github.git", "https://github.com/github/github", "/", "github", "github")]
+    #[test_case(
+        "github:github/github",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
+    #[test_case(
+        "github:github/github.git",
+        "https://github.com/github/github",
+        "/",
+        "github",
+        "github"
+    )]
     #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
-    #[test_case("github:https/https", "https://github.com/https/https", "/", "https", "https")]
-    #[test_case("github:https/github", "https://github.com/https/github", "/", "https", "github")]
-
+    #[test_case(
+        "github:https/https",
+        "https://github.com/https/https",
+        "/",
+        "https",
+        "https"
+    )]
+    #[test_case(
+        "github:https/github",
+        "https://github.com/https/github",
+        "/",
+        "https",
+        "github"
+    )]
     // standard https:// cases
-    #[test_case("https://github.com/npm/cacache", "https://github.com/npm/cacache", "/", "npm", "cacache")]
-    #[test_case("https://github.com/kornelski/https.git-github.git", "https://github.com/kornelski/https.git-github", "/", "kornelski", "https.git-github")]
-
+    #[test_case(
+        "https://github.com/npm/cacache",
+        "https://github.com/npm/cacache",
+        "/",
+        "npm",
+        "cacache"
+    )]
+    #[test_case(
+        "https://github.com/kornelski/https.git-github.git",
+        "https://github.com/kornelski/https.git-github",
+        "/",
+        "kornelski",
+        "https.git-github"
+    )]
     // http:// case
-    #[test_case("http://github.com/isaacs/abbrev-js", "https://github.com/isaacs/abbrev-js", "/", "isaacs", "abbrev-js")]
-
+    #[test_case(
+        "http://github.com/isaacs/abbrev-js",
+        "https://github.com/isaacs/abbrev-js",
+        "/",
+        "isaacs",
+        "abbrev-js"
+    )]
     // broken url case
-    #[test_case("https://github.com:crypto-browserify/browserify-rsa.git", "https://github.com/crypto-browserify/browserify-rsa", "/", "crypto-browserify", "browserify-rsa")]
-    #[test_case("github.com/makindotcc/McHttpFrida", "https://github.com/makindotcc/McHttpFrida", "/", "makindotcc", "McHttpFrida")]
-
+    #[test_case(
+        "https://github.com:crypto-browserify/browserify-rsa.git",
+        "https://github.com/crypto-browserify/browserify-rsa",
+        "/",
+        "crypto-browserify",
+        "browserify-rsa"
+    )]
+    #[test_case(
+        "github.com/makindotcc/McHttpFrida",
+        "https://github.com/makindotcc/McHttpFrida",
+        "/",
+        "makindotcc",
+        "McHttpFrida"
+    )]
     // github tree directory case
-    #[test_case("https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators", "https://github.com/babel/babel", "/packages/babel-plugin-syntax-async-generators", "babel", "babel")]
-
+    #[test_case(
+        "https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators",
+        "https://github.com/babel/babel",
+        "/packages/babel-plugin-syntax-async-generators",
+        "babel",
+        "babel"
+    )]
     // git:// cases
-    #[test_case("git://github.com/whitequark/ipaddr.js", "https://github.com/whitequark/ipaddr.js", "/", "whitequark", "ipaddr.js")]
-    #[test_case("git://github.com/browserify/console-browserify.git", "https://github.com/browserify/console-browserify", "/", "browserify", "console-browserify")]
-
+    #[test_case(
+        "git://github.com/whitequark/ipaddr.js",
+        "https://github.com/whitequark/ipaddr.js",
+        "/",
+        "whitequark",
+        "ipaddr.js"
+    )]
+    #[test_case(
+        "git://github.com/browserify/console-browserify.git",
+        "https://github.com/browserify/console-browserify",
+        "/",
+        "browserify",
+        "console-browserify"
+    )]
     // git+https:// cases
-    #[test_case("git+https://github.com/yargs/set-blocking.git", "https://github.com/yargs/set-blocking", "/", "yargs", "set-blocking")]
-
+    #[test_case(
+        "git+https://github.com/yargs/set-blocking.git",
+        "https://github.com/yargs/set-blocking",
+        "/",
+        "yargs",
+        "set-blocking"
+    )]
     // git+ssh:// cases
-    #[test_case("git+ssh://git@github.com/mikaelbr/node-notifier.git", "https://github.com/mikaelbr/node-notifier", "/", "mikaelbr", "node-notifier")]
-    #[test_case("git+ssh://git@github.com/istanbuljs/istanbuljs.git", "https://github.com/istanbuljs/istanbuljs", "/", "istanbuljs", "istanbuljs")]
-
+    #[test_case(
+        "git+ssh://git@github.com/mikaelbr/node-notifier.git",
+        "https://github.com/mikaelbr/node-notifier",
+        "/",
+        "mikaelbr",
+        "node-notifier"
+    )]
+    #[test_case(
+        "git+ssh://git@github.com/istanbuljs/istanbuljs.git",
+        "https://github.com/istanbuljs/istanbuljs",
+        "/",
+        "istanbuljs",
+        "istanbuljs"
+    )]
     // ssh case
-    #[test_case("git@github.com:tsertkov/exec-sh.git", "https://github.com/tsertkov/exec-sh", "/", "tsertkov", "exec-sh")]
-    fn test_deserialize_repo_infer_type_str_github(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Github { user: answer_user.into(), repo: answer_repo.into() }};
-        assert_eq!(deserialize_repo_infer_type_str(url_str.to_string()), answer_info);
+    #[test_case(
+        "git@github.com:tsertkov/exec-sh.git",
+        "https://github.com/tsertkov/exec-sh",
+        "/",
+        "tsertkov",
+        "exec-sh"
+    )]
+    fn test_deserialize_repo_infer_type_str_github(
+        url_str: &str,
+        answer_url: &str,
+        answer_dir: &str,
+        answer_user: &str,
+        answer_repo: &str,
+    ) {
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: answer_dir.into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Github {
+                user: answer_user.into(),
+                repo: answer_repo.into(),
+            },
+        };
+        assert_eq!(
+            deserialize_repo_infer_type_str(url_str.to_string()),
+            answer_info
+        );
     }
-
 
     // normal bitbucket case
-    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff.git", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/", "janouwehand", "stuff-stuff-stuff")]
-    #[test_case("http://bitbucket.org/janouwehand/stuff-stuff-stuff.git", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/", "janouwehand", "stuff-stuff-stuff")]
+    #[test_case(
+        "https://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
+        "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
+        "/",
+        "janouwehand",
+        "stuff-stuff-stuff"
+    )]
+    #[test_case(
+        "http://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
+        "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
+        "/",
+        "janouwehand",
+        "stuff-stuff-stuff"
+    )]
     // bitbucket: shorthand
-    #[test_case("bitbucket:github/git", "https://bitbucket.org/github/git", "/", "github", "git")]
+    #[test_case(
+        "bitbucket:github/git",
+        "https://bitbucket.org/github/git",
+        "/",
+        "github",
+        "git"
+    )]
     // bitbucket tree directory case
     #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
-    fn test_deserialize_repo_infer_type_str_bitbucket(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Bitbucket { user: answer_user.into(), repo: answer_repo.into() }};
-        assert_eq!(deserialize_repo_infer_type_str(url_str.to_string()), answer_info);
+    fn test_deserialize_repo_infer_type_str_bitbucket(
+        url_str: &str,
+        answer_url: &str,
+        answer_dir: &str,
+        answer_user: &str,
+        answer_repo: &str,
+    ) {
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: answer_dir.into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Bitbucket {
+                user: answer_user.into(),
+                repo: answer_repo.into(),
+            },
+        };
+        assert_eq!(
+            deserialize_repo_infer_type_str(url_str.to_string()),
+            answer_info
+        );
     }
-
 
     // normal gitlab case
-    #[test_case("https://gitlab.com/gitlab-org/gitlab.git", "https://gitlab.com/gitlab-org/gitlab.git", "/", "gitlab-org", "gitlab")]
-    #[test_case("http://gitlab.com/gitlab-org/gitlab.git", "https://gitlab.com/gitlab-org/gitlab.git", "/", "gitlab-org", "gitlab")]
+    #[test_case(
+        "https://gitlab.com/gitlab-org/gitlab.git",
+        "https://gitlab.com/gitlab-org/gitlab.git",
+        "/",
+        "gitlab-org",
+        "gitlab"
+    )]
+    #[test_case(
+        "http://gitlab.com/gitlab-org/gitlab.git",
+        "https://gitlab.com/gitlab-org/gitlab.git",
+        "/",
+        "gitlab-org",
+        "gitlab"
+    )]
     // gitlab: shorthand
-    #[test_case("gitlab:bitbucket-gist/github", "https://gitlab.com/bitbucket-gist/github.git", "/", "bitbucket-gist", "github")]
+    #[test_case(
+        "gitlab:bitbucket-gist/github",
+        "https://gitlab.com/bitbucket-gist/github.git",
+        "/",
+        "bitbucket-gist",
+        "github"
+    )]
     // gitlab tree directory case
     #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "/generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
-    fn test_deserialize_repo_infer_type_str_gitlab(url_str: &str, answer_url: &str, answer_dir: &str, answer_user: &str, answer_repo: &str) {
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: answer_dir.into(), vcs: Vcs::Git, host_info: RepoHostInfo::Gitlab { user: answer_user.into(), repo: answer_repo.into() }};
-        assert_eq!(deserialize_repo_infer_type_str(url_str.to_string()), answer_info);
+    fn test_deserialize_repo_infer_type_str_gitlab(
+        url_str: &str,
+        answer_url: &str,
+        answer_dir: &str,
+        answer_user: &str,
+        answer_repo: &str,
+    ) {
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: answer_dir.into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gitlab {
+                user: answer_user.into(),
+                repo: answer_repo.into(),
+            },
+        };
+        assert_eq!(
+            deserialize_repo_infer_type_str(url_str.to_string()),
+            answer_info
+        );
     }
-
 
     // other gist url cases
-    #[test_case("https://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-    #[test_case("https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-    #[test_case("git@gist.github.com:35d6483aea16c4f11e9acc51ea659b99.git", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-    #[test_case("http://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99", "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99", "35d6483aea16c4f11e9acc51ea659b99")]
-
+    #[test_case(
+        "https://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
+    #[test_case(
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99.git",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
+    #[test_case(
+        "git@gist.github.com:35d6483aea16c4f11e9acc51ea659b99.git",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
+    #[test_case(
+        "http://gist.github.com/mathcube7/35d6483aea16c4f11e9acc51ea659b99",
+        "https://gist.github.com/35d6483aea16c4f11e9acc51ea659b99",
+        "35d6483aea16c4f11e9acc51ea659b99"
+    )]
     // gist: shorthand case
-    #[test_case("gist:11081aaa281", "https://gist.github.com/11081aaa281", "11081aaa281")]
+    #[test_case(
+        "gist:11081aaa281",
+        "https://gist.github.com/11081aaa281",
+        "11081aaa281"
+    )]
     fn test_deserialize_repo_infer_type_str_gist(url_str: &str, answer_url: &str, answer_id: &str) {
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: "/".into(), vcs: Vcs::Git, host_info: RepoHostInfo::Gist { id: answer_id.into() }};
-        assert_eq!(deserialize_repo_infer_type_str(url_str.to_string()), answer_info);
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: "/".into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Gist {
+                id: answer_id.into(),
+            },
+        };
+        assert_eq!(
+            deserialize_repo_infer_type_str(url_str.to_string()),
+            answer_info
+        );
     }
-
 
     // 3rd party git host
-    #[test_case("git@git.coolaj86.com:coolaj86/atob.js.git", "git@git.coolaj86.com:coolaj86/atob.js.git")]
-    #[test_case("git://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js")]
-    #[test_case("https://git.coolaj86.com/coolaj86/atob.js.git", "https://git.coolaj86.com/coolaj86/atob.js")]
-    #[test_case("http://git.coolaj86.com/coolaj86/atob.js.git", "http://git.coolaj86.com/coolaj86/atob.js")]
+    #[test_case(
+        "git@git.coolaj86.com:coolaj86/atob.js.git",
+        "git@git.coolaj86.com:coolaj86/atob.js.git"
+    )]
+    #[test_case(
+        "git://git.coolaj86.com/coolaj86/atob.js.git",
+        "https://git.coolaj86.com/coolaj86/atob.js"
+    )]
+    #[test_case(
+        "https://git.coolaj86.com/coolaj86/atob.js.git",
+        "https://git.coolaj86.com/coolaj86/atob.js"
+    )]
+    #[test_case(
+        "http://git.coolaj86.com/coolaj86/atob.js.git",
+        "http://git.coolaj86.com/coolaj86/atob.js"
+    )]
     fn test_deserialize_repo_infer_type_str_3rd(url_str: &str, answer_url: &str) {
-        let answer_info = RepoInfo { cloneable_repo_url: answer_url.into(), cloneable_repo_dir: "/".into(), vcs: Vcs::Git, host_info: RepoHostInfo::Thirdparty};
-        assert_eq!(deserialize_repo_infer_type_str(url_str.to_string()), answer_info);
+        let answer_info = RepoInfo {
+            cloneable_repo_url: answer_url.into(),
+            cloneable_repo_dir: "/".into(),
+            vcs: Vcs::Git,
+            host_info: RepoHostInfo::Thirdparty,
+        };
+        assert_eq!(
+            deserialize_repo_infer_type_str(url_str.to_string()),
+            answer_info
+        );
     }
 }
+
