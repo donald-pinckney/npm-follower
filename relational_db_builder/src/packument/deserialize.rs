@@ -246,12 +246,26 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
 
     // We have to have versions, and it must be a dictionary
     let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
-    let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
+    let version_packuments: HashMap<Semver, VersionPackument> = version_packuments_map.into_iter().map(|(v_str, blob)|
         (
             semver_spec_serialization::parse_semver(&v_str).unwrap(), // each version string must parse ok
             deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap()) // and each version data must be a dictionary
         )
     ).collect();
+
+    let latest_semver = {
+        match latest_semver {
+            Some(l) => {
+                if version_packuments.contains_key(&l) {
+                    Some(l)
+                } else {
+                    dist_tags.insert("latest".to_string(), Value::String(l.to_string()));
+                    None
+                }
+            },
+            None => None,
+        }
+    };
     
 
     Packument::Normal {
