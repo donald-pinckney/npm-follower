@@ -26,9 +26,6 @@ fn main() {
 
     let conn = postgres_db::connect();
 
-    internal_state::set_relational_processed_seq(0, &conn); //TODO: delete this when done with
-                                                            //local dev
-
     let mut processed_up_to = internal_state::query_relational_processed_seq(&conn).unwrap_or(0);
 
     let num_changes_total = change_log::query_num_changes_after_seq(processed_up_to, &conn);
@@ -104,8 +101,12 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
     let secret = false;
     let package = Package::create(package_name.clone(), metadata, secret);
 
-    let package_id = insert_package(conn, package);
-    postgres_db::dependencies::update_deps_missing_pack(conn, &package_name, package_id);
+    let (package_id, pkg_already_existed) = insert_package(conn, package);
+
+    // we don't need to patch deps if we had it before
+    if !pkg_already_existed {
+        postgres_db::dependencies::update_deps_missing_pack(conn, &package_name, package_id);
+    }
 
     let res = conn.run_psql_transaction(|| {
         match pack {
@@ -130,6 +131,7 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
                     for (pack_name, spec) in deps {
                         let spec_pair =
                             (pack_name.clone(), serde_json::to_string(&spec.raw).unwrap());
+                        // skip dups
                         if deps_inserted.contains(&spec_pair) {
                             continue;
                         }
@@ -151,6 +153,7 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
                                 ))
                                 .unwrap_or(&1),
                         );
+
                         deps_inserted.insert(spec_pair);
                         constructed_deps.push(dep);
                     }
@@ -160,7 +163,7 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
                 println!("Normal: {}", package_name);
 
                 let mut dep_ids_to_patch: Vec<i64> = vec![];
-                for (sv, vpack) in versions {
+                for (sv, vpack) in &versions {
                     let prod_dep_ids = insert_deps(&vpack.prod_dependencies);
                     let dev_dep_ids = insert_deps(&vpack.dev_dependencies);
                     let optional_dep_ids = insert_deps(&vpack.optional_dependencies);
@@ -173,9 +176,9 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
                     let ver = Version::create(
                         package_id,
                         sv.clone(),
-                        vpack.dist.tarball_url,
+                        vpack.dist.tarball_url.clone(),
                         vpack.repository.as_ref().map(|r| r.raw.clone()),
-                        vpack.repository.map(|r| r.info),
+                        vpack.repository.as_ref().map(|r| r.info.clone()),
                         created,
                         false,
                         serde_json::to_value(&vpack.extra_metadata).unwrap(),
@@ -188,13 +191,21 @@ fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packu
 
                     let ver_id = postgres_db::versions::insert_version(conn, ver);
 
-                    // TODO: what do we do if latest is none?
-                    if latest.is_some() && latest.as_ref().unwrap() == &sv {
+                    if latest.is_some() && latest.as_ref().unwrap() == sv {
                         postgres_db::packages::patch_latest_version_id(conn, package_id, ver_id);
                     }
                 }
+
+                // check versions that might have been deleted if this is a package change update
+                if pkg_already_existed {
+                    postgres_db::versions::delete_versions_not_in(
+                        conn,
+                        package_id,
+                        versions.keys().collect(),
+                    );
+                }
             }
-            // TODO: what do we do with these?
+            // TODO: do we do something with these other than inserting the package?
             Packument::Unpublished {
                 created: _,
                 modified: _,

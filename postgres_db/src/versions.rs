@@ -1,14 +1,12 @@
-use crate::custom_types::PackageMetadata;
 use crate::custom_types::RepoInfo;
 use crate::custom_types::Semver;
 
 use super::schema::versions;
 use chrono::{DateTime, Utc};
-use diesel::sql_types::BigInt;
+use diesel::pg::upsert::excluded;
 use diesel::Queryable;
 use serde_json::Value;
 
-use super::schema;
 use super::DbConnection;
 use diesel::prelude::*;
 
@@ -69,7 +67,33 @@ pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
 
     diesel::insert_into(versions)
         .values(&version)
-        .get_result::<(
+        .on_conflict((package_id, semver))
+        .do_update()
+        .set((
+            tarball_url.eq(excluded(tarball_url)),
+            repository_raw.eq(excluded(repository_raw)),
+            repository_parsed.eq(excluded(repository_parsed)),
+            created.eq(excluded(created)),
+            deleted.eq(excluded(deleted)),
+            extra_metadata.eq(excluded(extra_metadata)),
+            prod_dependencies.eq(excluded(prod_dependencies)),
+            dev_dependencies.eq(excluded(dev_dependencies)),
+            peer_dependencies.eq(excluded(peer_dependencies)),
+            optional_dependencies.eq(excluded(optional_dependencies)),
+            secret.eq(excluded(secret)),
+        ))
+        .returning(id)
+        .get_result::<i64>(&conn.conn)
+        .expect("Error saving new version")
+}
+
+pub fn delete_versions_not_in(conn: &DbConnection, pkg_id: i64, vers: Vec<&Semver>) {
+    use super::schema::versions::dsl::*;
+
+    // get all versions with the given package id
+    let all_vers = versions
+        .filter(package_id.eq(pkg_id))
+        .load::<(
             i64,
             i64,
             Semver,
@@ -85,6 +109,14 @@ pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
             Vec<i64>,
             bool,
         )>(&conn.conn)
-        .expect("Error saving new version")
-        .0
+        .expect("Error loading versions");
+
+    for (ver_id, _, server_semver, _, _, _, _, _, _, _, _, _, _, _) in &all_vers {
+        if !vers.contains(&server_semver) {
+            diesel::update(versions.find(ver_id))
+                .set(deleted.eq(true))
+                .execute(&conn.conn)
+                .expect("Error deleting version");
+        }
+    }
 }

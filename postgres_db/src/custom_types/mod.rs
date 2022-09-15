@@ -25,11 +25,45 @@ pub struct Semver {
     pub build: Vec<String>,
 }
 
+impl std::fmt::Display for Semver {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}.{}.{}", self.major, self.minor, self.bug)?;
+        if !self.prerelease.is_empty() {
+            write!(f, "-")?;
+            for (i, tag) in self.prerelease.iter().enumerate() {
+                if i != 0 {
+                    write!(f, ".")?;
+                }
+                write!(f, "{}", tag)?;
+            }
+        }
+        if !self.build.is_empty() {
+            write!(f, "+")?;
+            for (i, tag) in self.build.iter().enumerate() {
+                if i != 0 {
+                    write!(f, ".")?;
+                }
+                write!(f, "{}", tag)?;
+            }
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
     Int(i64),
+}
+
+impl std::fmt::Display for PrereleaseTag {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PrereleaseTag::String(s) => write!(f, "{}", s),
+            PrereleaseTag::Int(i) => write!(f, "{}", i),
+        }
+    }
 }
 
 #[derive(Debug, Hash, FromSqlRow, AsExpression, Serialize, Deserialize, Clone, PartialEq, Eq)]
@@ -84,62 +118,61 @@ pub enum PackageMetadata {
     Deleted,
 }
 
-
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[sql_type = "RepoInfoSql"]
 pub struct RepoInfo {
     pub cloneable_repo_url: String,
     pub cloneable_repo_dir: String,
     pub vcs: Vcs,
-    pub host_info: RepoHostInfo
+    pub host_info: RepoHostInfo,
 }
 
 impl RepoInfo {
     pub fn new_github(dir: String, user: String, repo: String) -> RepoInfo {
-        RepoInfo { 
+        RepoInfo {
             cloneable_repo_url: format!("https://github.com/{}/{}", user, repo),
             cloneable_repo_dir: dir,
             vcs: Vcs::Git,
-            host_info: RepoHostInfo::Github { user, repo }
+            host_info: RepoHostInfo::Github { user, repo },
         }
     }
     pub fn new_bitbucket(dir: String, user: String, repo: String) -> RepoInfo {
-        RepoInfo { 
+        RepoInfo {
             cloneable_repo_url: format!("https://bitbucket.org/{}/{}", user, repo),
             cloneable_repo_dir: dir,
             vcs: Vcs::Git,
-            host_info: RepoHostInfo::Bitbucket { user, repo }
+            host_info: RepoHostInfo::Bitbucket { user, repo },
         }
     }
     pub fn new_gitlab(dir: String, user: String, repo: String) -> RepoInfo {
-        RepoInfo { 
+        RepoInfo {
             cloneable_repo_url: format!("https://gitlab.com/{}/{}.git", user, repo),
             cloneable_repo_dir: dir,
             vcs: Vcs::Git,
-            host_info: RepoHostInfo::Gitlab { user, repo }
+            host_info: RepoHostInfo::Gitlab { user, repo },
         }
     }
     pub fn new_gist(id: String) -> RepoInfo {
-        RepoInfo { 
+        RepoInfo {
             cloneable_repo_url: format!("https://gist.github.com/{}", id),
             cloneable_repo_dir: "/".to_string(),
             vcs: Vcs::Git,
-            host_info: RepoHostInfo::Gist { id }
+            host_info: RepoHostInfo::Gist { id },
         }
     }
     pub fn new_thirdparty(url: String, dir: String) -> RepoInfo {
-        RepoInfo { 
+        RepoInfo {
             cloneable_repo_url: url,
             cloneable_repo_dir: dir,
             vcs: Vcs::Git,
-            host_info: RepoHostInfo::Thirdparty
+            host_info: RepoHostInfo::Thirdparty,
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Vcs {
-    Git
+    Git,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -148,12 +181,8 @@ pub enum RepoHostInfo {
     Bitbucket { user: String, repo: String },
     Gitlab { user: String, repo: String },
     Gist { id: String },
-    Thirdparty
+    Thirdparty,
 }
-
-
-
-
 
 pub mod sql_types {
     #[derive(SqlType, QueryId)]
@@ -198,7 +227,7 @@ pub mod sql_type_names {
 mod download_failed;
 mod package_metadata;
 mod parsed_spec;
+mod repo_info;
 mod semver;
 mod version_comparator;
 mod version_constraint;
-mod repo_info;
