@@ -93,6 +93,15 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
 
     let repository_blob = version_blob.remove("repository")
                                                       .and_then(|x| x.null_to_none());
+
+    let repo = match repository_blob.as_ref().map(|r| super::deserialize_repo::deserialize_repo_blob(r.clone())) {
+        Some(Some(repo)) => Some(repo),
+        Some(None) => {
+            version_blob.insert("repo".to_string(), repository_blob.unwrap());
+            None
+        },
+        _ => None,
+    };
     
     VersionPackument {
         prod_dependencies,
@@ -100,7 +109,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         peer_dependencies,
         optional_dependencies,
         dist,
-        repository: repository_blob.map(super::deserialize_repo::deserialize_repo_blob),
+        repository: repo,
         extra_metadata: version_blob.into_iter().collect()
     }
 }

@@ -23,9 +23,9 @@ fn try_parse_user_repo_shorthand(x: &str) -> Option<(&str, &str)> {
 fn match_strip_start(x: &mut &str, p: &str) -> bool {
     if let Some(new_x) = x.strip_prefix(p) {
         *x = new_x;
-        return true;
+        true
     } else {
-        return false;
+        false
     }
 }
 
@@ -58,39 +58,45 @@ fn parse_gist_path(gist_path: &str) -> RepoInfo {
     }
 }
 
-fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
+fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
     // Lets try to parse git ssh format first.
     if let Some((host, path)) = try_parse_git_ssh_format(url_or_ssh) {
         if host == "github.com" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_github(
+            return Some(RepoInfo::new_github(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
-            );
+            ));
         } else if host == "bitbucket.org" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_bitbucket(
+            return Some(RepoInfo::new_bitbucket(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
-            );
+            ));
         } else if host == "gitlab.com" {
             let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
-            return RepoInfo::new_gitlab(
+            return Some(RepoInfo::new_gitlab(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
-            );
+            ));
         } else if host == "gist.github.com" {
-            return parse_gist_path(path);
+            return Some(parse_gist_path(path));
         } else {
-            return RepoInfo::new_thirdparty(url_or_ssh.to_owned(), "/".to_owned());
+            return Some(RepoInfo::new_thirdparty(
+                url_or_ssh.to_owned(),
+                "/".to_owned(),
+            ));
         }
     }
 
     // Otherwise, we should have a valid URL to parse.
-    let repo_url = Url::parse(url_or_ssh).unwrap();
+    let repo_url = match Url::parse(url_or_ssh) {
+        Ok(u) => u,
+        Err(_) => return None,
+    };
     let scheme = repo_url.scheme();
     let host = repo_url.host_str().unwrap();
     let maybe_user = repo_url.username();
@@ -103,43 +109,47 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
 
     if host == "github.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_github(
+            return Some(RepoInfo::new_github(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
-            );
+            ));
         } else {
             // Else we handle github tree directory case
             // Example url_path = "babel/babel/tree/master/packages/babel-plugin-syntax-async-generators"
             let comps: Vec<_> = url_path.split("/").collect();
             let num_comps = comps.len();
-            assert!(num_comps >= 4);
+            if num_comps < 4 {
+                return None; // bad
+            }
             let user = comps[0];
             let repo = comps[1];
-            assert!(comps[2] == "tree");
+            if comps[2] != "tree" {
+                return None; // bad
+            }
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
-                return RepoInfo::new_github(
+                return Some(RepoInfo::new_github(
                     "/".to_string(),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
-                );
+                ));
             } else {
                 let dir_path = comps[4..].join("/");
-                return RepoInfo::new_github(
+                return Some(RepoInfo::new_github(
                     format!("/{}", dir_path),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
-                );
+                ));
             }
         }
     } else if host == "bitbucket.org" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_bitbucket(
+            return Some(RepoInfo::new_bitbucket(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
-            );
+            ));
         } else {
             // Else we handle bitbucket tree directory case
             // Example url_path = "janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties"
@@ -151,68 +161,72 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> RepoInfo {
             assert!(comps[2] == "src");
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
-                return RepoInfo::new_bitbucket(
+                return Some(RepoInfo::new_bitbucket(
                     "/".to_string(),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
-                );
+                ));
             } else {
                 let dir_path = comps[4..].join("/");
-                return RepoInfo::new_bitbucket(
+                return Some(RepoInfo::new_bitbucket(
                     format!("/{}", dir_path),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
-                );
+                ));
             }
         }
     } else if host == "gitlab.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
-            return RepoInfo::new_gitlab(
+            return Some(RepoInfo::new_gitlab(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
-            );
+            ));
         } else {
             // Else we handle gitlab tree directory case
             // Example url_path = "gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition"
             let comps: Vec<_> = url_path.split("/").collect();
             let num_comps = comps.len();
-            assert!(num_comps >= 5);
+            if num_comps < 5 {
+                return None; // bad
+            }
             let user = comps[0];
             let repo = comps[1];
-            assert!(comps[2] == "-");
-            assert!(comps[3] == "tree");
+            if comps[2] != "-" && comps[3] != "tree" {
+                return None; // bad
+            }
             let _branch = comps[4]; // We ignore the branch
             if num_comps == 5 {
-                return RepoInfo::new_gitlab(
+                return Some(RepoInfo::new_gitlab(
                     "/".to_string(),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
-                );
+                ));
             } else {
                 let dir_path = comps[5..].join("/");
-                return RepoInfo::new_gitlab(
+                return Some(RepoInfo::new_gitlab(
                     format!("/{}", dir_path),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
-                );
+                ));
             }
         }
     } else if host == "gist.github.com" {
-        return parse_gist_path(url_path);
+        Some(parse_gist_path(url_path))
+    } else if scheme == "git" {
+        // Convert to https and strip .git
+        let mut new_url = repo_url.clone();
+        new_url.set_path(strip_dot_git(url_path));
+        let https_url_str = new_url.to_string().replacen("git://", "https://", 1);
+        Some(RepoInfo::new_thirdparty(https_url_str, "/".to_owned()))
     } else {
-        if scheme == "git" {
-            // Convert to https and strip .git
-            let mut new_url = repo_url.clone();
-            new_url.set_path(strip_dot_git(url_path));
-            let https_url_str = new_url.to_string().replacen("git://", "https://", 1);
-            return RepoInfo::new_thirdparty(https_url_str, "/".to_owned());
-        } else {
-            // Strip .git
-            let mut new_url = repo_url.clone();
-            new_url.set_path(strip_dot_git(url_path));
-            return RepoInfo::new_thirdparty(new_url.to_string(), "/".to_owned());
-        }
+        // Strip .git
+        let mut new_url = repo_url.clone();
+        new_url.set_path(strip_dot_git(url_path));
+        Some(RepoInfo::new_thirdparty(
+            new_url.to_string(),
+            "/".to_owned(),
+        ))
     }
 }
 
@@ -220,37 +234,37 @@ fn strip_dot_git(repo: &str) -> &str {
     repo.strip_suffix(".git").unwrap_or(repo)
 }
 
-fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
+fn deserialize_repo_infer_type_str(full_repo_string: String) -> Option<RepoInfo> {
     let mut repo_str: &str = &full_repo_string;
     if match_strip_start(&mut repo_str, "github:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_github(
+        return Some(RepoInfo::new_github(
             "/".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
-        );
+        ));
     } else if match_strip_start(&mut repo_str, "bitbucket:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_bitbucket(
+        return Some(RepoInfo::new_bitbucket(
             "/".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
-        );
+        ));
     } else if match_strip_start(&mut repo_str, "gitlab:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
-        return RepoInfo::new_gitlab(
+        return Some(RepoInfo::new_gitlab(
             "/".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
-        );
+        ));
     } else if match_strip_start(&mut repo_str, "gist:") {
-        return parse_gist_path(repo_str);
+        return Some(parse_gist_path(repo_str));
     } else if let Some((user, repo)) = try_parse_user_repo_shorthand(repo_str) {
-        return RepoInfo::new_github(
+        return Some(RepoInfo::new_github(
             "/".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
-        );
+        ));
     }
 
     // In this case, we are dealig with either some URL, or some git ssh format.
@@ -271,27 +285,30 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> RepoInfo {
     }
 }
 
-fn deserialize_repo_check_git_type_str(repo: String) -> RepoInfo {
+fn deserialize_repo_check_git_type_str(repo: String) -> Option<RepoInfo> {
     // for now its the same parsing logic, but maybe we handle this differently in the future
-    let info = deserialize_repo_infer_type_str(repo);
+    let info = deserialize_repo_infer_type_str(repo)?;
     assert_eq!(info.vcs, Vcs::Git);
-    info
+    Some(info)
 }
 
-pub fn deserialize_repo_blob(repo_blob: Value) -> RepositoryInfo {
+pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
     let info = match repo_blob.clone() {
-        Value::String(repo) => deserialize_repo_infer_type_str(repo),
+        Value::String(repo) => deserialize_repo_infer_type_str(repo)?,
         Value::Object(mut repo_obj) => {
             let t = repo_obj.remove_key_unwrap_type::<String>("type");
             let dir = repo_obj.remove_key_unwrap_type::<String>("directory");
-            let url = repo_obj.remove_key_unwrap_type::<String>("url").unwrap();
+            let url = repo_obj.remove_key_unwrap_type::<String>("url")?;
 
             let info = match t.as_deref() {
-                None => deserialize_repo_infer_type_str(url),
-                Some("git" | "github" | "bitbucket" | "gitlab" | "gist") => {
-                    deserialize_repo_check_git_type_str(url)
-                }
-                _ => panic!("Unknown repo type: {:?}", t),
+                None => deserialize_repo_infer_type_str(url)?,
+                Some(s) => match s.to_lowercase().as_str() {
+                    "git" | "github" | "bitbucket" | "gitlab" | "gist" => {
+                        deserialize_repo_check_git_type_str(url)?
+                    }
+                    "" | "tarball" => return None,
+                    _ => panic!("Unknown repo type: {:?}", t),
+                },
             };
 
             let parsed_dir = match dir {
@@ -303,20 +320,18 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> RepositoryInfo {
                 }
             };
 
-            let final_info = RepoInfo {
+            RepoInfo {
                 cloneable_repo_dir: parsed_dir,
                 ..info
-            };
-
-            final_info
+            }
         }
         _ => panic!("Can't parse repo: {:?}", repo_blob),
     };
 
-    RepositoryInfo {
+    Some(RepositoryInfo {
         raw: repo_blob,
         info,
-    }
+    })
 }
 
 #[cfg(test)]
@@ -551,10 +566,10 @@ mod tests {
             info: answer_info,
         };
 
-        assert_eq!(deserialize_repo_blob(blob1), answer1);
-        assert_eq!(deserialize_repo_blob(blob2), answer2);
-        assert_eq!(deserialize_repo_blob(blob3), answer3);
-        assert_eq!(deserialize_repo_blob(blob4), answer4);
+        assert_eq!(deserialize_repo_blob(blob1).unwrap(), answer1);
+        assert_eq!(deserialize_repo_blob(blob2).unwrap(), answer2);
+        assert_eq!(deserialize_repo_blob(blob3).unwrap(), answer3);
+        assert_eq!(deserialize_repo_blob(blob4).unwrap(), answer4);
     }
 
     // normal bitbucket case
@@ -621,10 +636,10 @@ mod tests {
             info: answer_info,
         };
 
-        assert_eq!(deserialize_repo_blob(blob1), answer1);
-        assert_eq!(deserialize_repo_blob(blob2), answer2);
-        assert_eq!(deserialize_repo_blob(blob3), answer3);
-        assert_eq!(deserialize_repo_blob(blob4), answer4);
+        assert_eq!(deserialize_repo_blob(blob1).unwrap(), answer1);
+        assert_eq!(deserialize_repo_blob(blob2).unwrap(), answer2);
+        assert_eq!(deserialize_repo_blob(blob3).unwrap(), answer3);
+        assert_eq!(deserialize_repo_blob(blob4).unwrap(), answer4);
     }
 
     // normal gitlab case
@@ -691,10 +706,10 @@ mod tests {
             info: answer_info,
         };
 
-        assert_eq!(deserialize_repo_blob(blob1), answer1);
-        assert_eq!(deserialize_repo_blob(blob2), answer2);
-        assert_eq!(deserialize_repo_blob(blob3), answer3);
-        assert_eq!(deserialize_repo_blob(blob4), answer4);
+        assert_eq!(deserialize_repo_blob(blob1).unwrap(), answer1);
+        assert_eq!(deserialize_repo_blob(blob2).unwrap(), answer2);
+        assert_eq!(deserialize_repo_blob(blob3).unwrap(), answer3);
+        assert_eq!(deserialize_repo_blob(blob4).unwrap(), answer4);
     }
 
     // other gist url cases
@@ -756,10 +771,10 @@ mod tests {
             info: answer_info,
         };
 
-        assert_eq!(deserialize_repo_blob(blob1), answer1);
-        assert_eq!(deserialize_repo_blob(blob2), answer2);
-        assert_eq!(deserialize_repo_blob(blob3), answer3);
-        assert_eq!(deserialize_repo_blob(blob4), answer4);
+        assert_eq!(deserialize_repo_blob(blob1).unwrap(), answer1);
+        assert_eq!(deserialize_repo_blob(blob2).unwrap(), answer2);
+        assert_eq!(deserialize_repo_blob(blob3).unwrap(), answer3);
+        assert_eq!(deserialize_repo_blob(blob4).unwrap(), answer4);
     }
 
     // 3rd party git host
@@ -804,9 +819,9 @@ mod tests {
             info: answer_info.clone(),
         };
 
-        assert_eq!(deserialize_repo_blob(blob1), answer1);
-        assert_eq!(deserialize_repo_blob(blob2), answer2);
-        assert_eq!(deserialize_repo_blob(blob3), answer3);
+        assert_eq!(deserialize_repo_blob(blob1).unwrap(), answer1);
+        assert_eq!(deserialize_repo_blob(blob2).unwrap(), answer2);
+        assert_eq!(deserialize_repo_blob(blob3).unwrap(), answer3);
     }
 
     // github implied shorthand cases
@@ -1011,7 +1026,7 @@ mod tests {
             },
         };
         assert_eq!(
-            deserialize_repo_infer_type_str(url_str.to_string()),
+            deserialize_repo_infer_type_str(url_str.to_string()).unwrap(),
             answer_info
         );
     }
@@ -1058,7 +1073,7 @@ mod tests {
             },
         };
         assert_eq!(
-            deserialize_repo_infer_type_str(url_str.to_string()),
+            deserialize_repo_infer_type_str(url_str.to_string()).unwrap(),
             answer_info
         );
     }
@@ -1105,7 +1120,7 @@ mod tests {
             },
         };
         assert_eq!(
-            deserialize_repo_infer_type_str(url_str.to_string()),
+            deserialize_repo_infer_type_str(url_str.to_string()).unwrap(),
             answer_info
         );
     }
@@ -1147,7 +1162,7 @@ mod tests {
             },
         };
         assert_eq!(
-            deserialize_repo_infer_type_str(url_str.to_string()),
+            deserialize_repo_infer_type_str(url_str.to_string()).unwrap(),
             answer_info
         );
     }
@@ -1177,9 +1192,8 @@ mod tests {
             host_info: RepoHostInfo::Thirdparty,
         };
         assert_eq!(
-            deserialize_repo_infer_type_str(url_str.to_string()),
+            deserialize_repo_infer_type_str(url_str.to_string()).unwrap(),
             answer_info
         );
     }
 }
-
