@@ -1,0 +1,100 @@
+Some(("@buckpkg/libunwind", Normal(
+    latest: Some((
+        major: 1,
+        minor: 2,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2017-08-03T05:53:42.665Z",
+    modified: "2017-08-03T05:53:42.665Z",
+    other_dist_tags: {},
+    version_times: {
+        (
+            major: 1,
+            minor: 2,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2017-08-03T05:53:42.665Z",
+    },
+    versions: {
+        (
+            major: 1,
+            minor: 2,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("@buckpkg/xz", (
+                    raw: "*",
+                    parsed: Range(([
+                        [
+                            Any,
+                        ],
+                    ])),
+                )),
+                ("@buckpkg/buckit", (
+                    raw: "*",
+                    parsed: Range(([
+                        [
+                            Any,
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@buckpkg/libunwind/-/libunwind-1.2.0.tgz",
+                shasum: Some("4e4eac5cd7da3c046e355700b3f12bc99bd89611"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: None,
+            extra_metadata: {
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/libunwind-1.2.0.tgz_1501739622565_0.20099027082324028",
+                    "host": "s3://npm-registry-packages",
+                },
+                "author": {
+                    "name": "Dave Watson",
+                },
+                "flat": true,
+                "name": "@buckpkg/libunwind",
+                "_from": ".",
+                "version": "1.2.0",
+                "_nodeVersion": "4.3.2",
+                "_shasum": "4e4eac5cd7da3c046e355700b3f12bc99bd89611",
+                "_npmVersion": "3.10.10",
+                "maintainers": [
+                    {
+                        "name": "pjameson",
+                        "email": "pjameson@pjameson.us",
+                    },
+                ],
+                "repo": {
+                    "url": "http://download.savannah.nongnu.org/releases/libunwind/libunwind-1.2.tar.gz",
+                    "type": "tarball",
+                    "sha256": "1de38ffbdc88bd694d10081865871cd2bfbb02ad8ef9e1606aee18d65532b992",
+                },
+                "_npmUser": {
+                    "name": "pjameson",
+                    "email": "pjameson@pjameson.us",
+                },
+                "scripts": {
+                    "postinstall": "buckit fetch",
+                },
+                "description": "libunwind package that sets up the system libunwind",
+                "_id": "@buckpkg/libunwind@1.2.0",
+                "license": "X11 License",
+            },
+        ),
+    },
+)))
