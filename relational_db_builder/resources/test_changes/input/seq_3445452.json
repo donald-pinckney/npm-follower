@@ -1,0 +1,132 @@
+{
+    "id": "@laiju_soft/weixin",
+    "doc": {
+        "_id": "@laiju_soft/weixin",
+        "_rev": "5-b367d148fed536818b64a1fe3ad37996",
+        "name": "@laiju_soft/weixin",
+        "time": {
+            "0.0.1": "2019-05-06T08:02:42.696Z",
+            "0.0.2": "2019-05-06T09:00:59.732Z",
+            "created": "2019-05-06T08:02:42.351Z",
+            "modified": "2019-05-06T09:26:47.280Z"
+        },
+        "readme": "ERROR: No README data found!",
+        "license": "ISC",
+        "versions": {
+            "0.0.1": {
+                "_id": "@laiju_soft/weixin@0.0.1",
+                "dist": {
+                    "shasum": "b456aa37c56062e27b61fad85f574b9f0852583f",
+                    "tarball": "https://registry.npmjs.org/@laiju_soft/weixin/-/weixin-0.0.1.tgz",
+                    "fileCount": 2,
+                    "integrity": "sha512-pCvbqDqTAXRLDgVzI0k14rtergkh+rPfgvN19KED4F+IAw1y8zeaGCLHrqYGALpHJt/SgR2ddEjKMND2G+fmdg==",
+                    "unpackedSize": 305,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcz+ojCRA9TVsSAnZWagAAZlAP+QDV5Gdm+8EQBRUCHxVt\ntcMnTiifSHR861jsS0Vx22SzJvh88tyXa9oC98itn9FcxxEBdiT8x6otf0t3\nvxsXj1WVYjED364uk03PdGpug/+MwVWROYn5K/+qWTXmM9FU1szcwcMvCiDj\neueYvoD07QyFNSC1H8W0pof8ilf6ihn8fWRy1EbCBjc4R3L6cCHq1L/8JahJ\nlPD0A1ZpIF/7BO+gUK4nmQ369eV1nv5FeGu+gMdxx/AoCmq9StWxSPMneDkT\nCoz4OsLxXGIIaz0gy8GZysPmJaHuALtCW3pLz/B7hjm9SKD78tmj64xv6nSd\ntV8QEh6XieBDaVidNVtPx2L9BGJncdI/l37XldTdVTCcBK1aGcWxiFw226CU\n21yDBVxMFWk0PP9FAwNp/zzEuZMGapaWiHx3cwOZidkYDcHFii0tqHf5Hd9k\nzOLLOQNnDuZGucBCLjYUTvboBltCaheLYB0kz/0hmqj1UE6VHo7kCTntdw7a\nV2KQqqVoat5D1XkMe8EZgNwEe0O/vzQGFg07FL9isL6wuFFoqILh7wIt2D4K\nrqv6QzKf+eKZKAxy1w07HRnwr8RCGC0+xezdS2EsBRNvPypsWODg3msVzaph\nvJjIpBiXib+scKHQhjIS7d6QOEvqfurcByqsOGKQqdvyuHniJX24J3PrSoUv\nAqEW\r\n=N6wK\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "index.js",
+                "name": "@laiju_soft/weixin",
+                "author": "",
+                "license": "ISC",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "version": "0.0.1",
+                "_npmUser": {
+                    "name": "tianlei",
+                    "email": "1043997208@qq.com"
+                },
+                "repository": {
+                    "url": "git://git-remote-url",
+                    "type": "git"
+                },
+                "_npmVersion": "6.4.1",
+                "description": "\u83b1\u805a\u5fae\u4fe1\u7aef",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "tianlei",
+                        "email": "1043997208@qq.com"
+                    }
+                ],
+                "_nodeVersion": "10.14.2",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/weixin_0.0.1_1557129762555_0.6351122447982833",
+                    "host": "s3://npm-registry-packages"
+                }
+            },
+            "0.0.2": {
+                "_id": "@laiju_soft/weixin@0.0.2",
+                "dist": {
+                    "shasum": "038552b08d57b4d56fe921fc6809fb06a1299ee7",
+                    "tarball": "https://registry.npmjs.org/@laiju_soft/weixin/-/weixin-0.0.2.tgz",
+                    "fileCount": 2,
+                    "integrity": "sha512-W33Fs9OjGBoS6sZQe7nkymJ8EkhE2ruvZbtkY3G2cnwenYuHBz+wNjbmaCCvBkNrcGY2gfjoSU/1rg7d5JLhmw==",
+                    "unpackedSize": 373,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcz/fNCRA9TVsSAnZWagAA3YMP/1ewui8HdkWL3tPyrl0i\n1pxZNbgHgBfOwZkL4eB1FN7Ow7QsejtpZF94H5p+j1J4EYXVcLGZyI1a63Pi\nyV5iIWY8l7Rac7MKBymGwbet2DNIDOR3ty4rS8YLJJZ5hQcBzDLBw6KaupOd\nH3oeAqmvLHvI1JkrFoXXlaCIUvd27Cu/u6D+esiLA7zyfX15usFYJy3VBC/z\nuRx91Fvk9ec191/TPcGNj8kRLfxBWUkBFRlKnMc42g7l8/e3CRqPis2i2xtu\nCvWasLBqaSo1aU110pWfdsrHt3oZnpIheQxOA7OOiyQudxM4dlSOwCQdvb43\nBbyXs2U1d++a1iUq8WLzQbVrJRMACgk7BYAYsmefl9IABgb8o2cba13nww2i\nvbWOHDDxLekkRUpfUerrJIgWAHsWfbcOaZj1qzY7z4pjkJC5MSRxObKJRzAm\nFn7SfFWANCGF0R7IqIhkFVLtpaDJY6j18uo5E5uXZdo2V7nK2yr6N8sVAe0i\nAkq/uFxvLt+UBSRNyq8C/qtvgVrqZCh1t7bKQVbNT6pfs2OhW6zQ2s2gINhk\nGHUxPWn6HHgr3nNRx9BRW4WBPgCaDG4CBSfqNshqGI1zZQT1pZb5mmQyEbUo\nGO71mWnsrVOUE2f8jBq6khyl2KAQaSo/HjPhaDojXR1ZQahP9tGL+p5U6lJ9\nOOum\r\n=awBz\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "index.js",
+                "name": "@laiju_soft/weixin",
+                "author": "",
+                "license": "ISC",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "version": "0.0.2",
+                "_npmUser": {
+                    "name": "tianlei",
+                    "email": "1043997208@qq.com"
+                },
+                "repository": {
+                    "url": "git@code.aliyun.com:laiju_weixin/weixin_package.git",
+                    "type": "git"
+                },
+                "_npmVersion": "6.4.1",
+                "description": "\u83b1\u805a\u5fae\u4fe1\u7aef",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "tianlei",
+                        "email": "1043997208@qq.com"
+                    }
+                ],
+                "_nodeVersion": "10.14.2",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/weixin_0.0.2_1557133259598_0.2133934190382636",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "0.0.2"
+        },
+        "repository": {
+            "url": "git@code.aliyun.com:laiju_weixin/weixin_package.git",
+            "type": "git"
+        },
+        "description": "\u83b1\u805a\u5fae\u4fe1\u7aef",
+        "maintainers": [
+            {
+                "name": "uncoseason",
+                "email": "uncoseason@163.com"
+            },
+            {
+                "name": "luoming",
+                "email": "1661391985@qq.com"
+            },
+            {
+                "name": "tianlei",
+                "email": "1043997208@qq.com"
+            }
+        ],
+        "readmeFilename": ""
+    },
+    "seq": 3445452,
+    "changes": [
+        {
+            "rev": "5-b367d148fed536818b64a1fe3ad37996"
+        }
+    ],
+    "deleted": false
+}

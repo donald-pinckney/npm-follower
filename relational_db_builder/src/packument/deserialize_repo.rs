@@ -38,14 +38,14 @@ fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
         let left = components[0];
         let right = components[1];
         assert!(
-            !left.contains(":")
-                && !left.contains("@")
-                && !right.contains(":")
-                && !right.contains("@")
+            !left.contains(':')
+                && !left.contains('@')
+                && !right.contains(':')
+                && !right.contains('@')
         );
-        return Some((left, right));
+        Some((left, right))
     } else {
-        return None;
+        None
     }
 }
 
@@ -62,21 +62,22 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
     // Lets try to parse git ssh format first.
     if let Some((host, path)) = try_parse_git_ssh_format(url_or_ssh) {
         if host == "github.com" {
-            let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
+            let (user, repo) = try_parse_user_repo_shorthand(path)?;
             return Some(RepoInfo::new_github(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
         } else if host == "bitbucket.org" {
-            let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
+            let (user, repo) = try_parse_user_repo_shorthand(path)?;
             return Some(RepoInfo::new_bitbucket(
                 "/".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
         } else if host == "gitlab.com" {
-            let (user, repo) = try_parse_user_repo_shorthand(path).unwrap();
+            println!("path: {}", path);
+            let (user, repo) = try_parse_user_repo_shorthand(path)?;
             return Some(RepoInfo::new_gitlab(
                 "/".to_string(),
                 user.to_owned(),
@@ -98,9 +99,9 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
         Err(_) => return None,
     };
     let scheme = repo_url.scheme();
-    let host = repo_url.host_str().unwrap();
+    let host = repo_url.host_str()?;
     let maybe_user = repo_url.username();
-    let url_path = repo_url.path().strip_prefix("/").unwrap();
+    let url_path = repo_url.path().strip_prefix("/")?;
     let url_path = url_path.strip_suffix("/").unwrap_or(url_path);
 
     if scheme == "git+ssh" {
@@ -155,10 +156,14 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
             // Example url_path = "janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties"
             let comps: Vec<_> = url_path.split("/").collect();
             let num_comps = comps.len();
-            assert!(num_comps >= 4);
+            if num_comps < 4 {
+                return None;
+            }
             let user = comps[0];
             let repo = comps[1];
-            assert!(comps[2] == "src");
+            if comps[2] != "src" {
+                return None;
+            }
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
                 return Some(RepoInfo::new_bitbucket(

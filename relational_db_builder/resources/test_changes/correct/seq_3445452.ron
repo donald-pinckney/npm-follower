@@ -1,0 +1,151 @@
+Some(("@laiju_soft/weixin", Normal(
+    latest: Some((
+        major: 0,
+        minor: 0,
+        bug: 2,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2019-05-06T08:02:42.351Z",
+    modified: "2019-05-06T09:26:47.280Z",
+    other_dist_tags: {},
+    version_times: {
+        (
+            major: 0,
+            minor: 0,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): "2019-05-06T09:00:59.732Z",
+        (
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2019-05-06T08:02:42.696Z",
+    },
+    versions: {
+        (
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@laiju_soft/weixin/-/weixin-0.0.1.tgz",
+                shasum: Some("b456aa37c56062e27b61fad85f574b9f0852583f"),
+                unpacked_size: Some(305),
+                file_count: Some(2),
+                integrity: Some("sha512-pCvbqDqTAXRLDgVzI0k14rtergkh+rPfgvN19KED4F+IAw1y8zeaGCLHrqYGALpHJt/SgR2ddEjKMND2G+fmdg=="),
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcz+ojCRA9TVsSAnZWagAAZlAP+QDV5Gdm+8EQBRUCHxVt\ntcMnTiifSHR861jsS0Vx22SzJvh88tyXa9oC98itn9FcxxEBdiT8x6otf0t3\nvxsXj1WVYjED364uk03PdGpug/+MwVWROYn5K/+qWTXmM9FU1szcwcMvCiDj\neueYvoD07QyFNSC1H8W0pof8ilf6ihn8fWRy1EbCBjc4R3L6cCHq1L/8JahJ\nlPD0A1ZpIF/7BO+gUK4nmQ369eV1nv5FeGu+gMdxx/AoCmq9StWxSPMneDkT\nCoz4OsLxXGIIaz0gy8GZysPmJaHuALtCW3pLz/B7hjm9SKD78tmj64xv6nSd\ntV8QEh6XieBDaVidNVtPx2L9BGJncdI/l37XldTdVTCcBK1aGcWxiFw226CU\n21yDBVxMFWk0PP9FAwNp/zzEuZMGapaWiHx3cwOZidkYDcHFii0tqHf5Hd9k\nzOLLOQNnDuZGucBCLjYUTvboBltCaheLYB0kz/0hmqj1UE6VHo7kCTntdw7a\nV2KQqqVoat5D1XkMe8EZgNwEe0O/vzQGFg07FL9isL6wuFFoqILh7wIt2D4K\nrqv6QzKf+eKZKAxy1w07HRnwr8RCGC0+xezdS2EsBRNvPypsWODg3msVzaph\nvJjIpBiXib+scKHQhjIS7d6QOEvqfurcByqsOGKQqdvyuHniJX24J3PrSoUv\nAqEW\r\n=N6wK\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            repository: None,
+            extra_metadata: {
+                "maintainers": [
+                    {
+                        "name": "tianlei",
+                        "email": "1043997208@qq.com",
+                    },
+                ],
+                "_id": "@laiju_soft/weixin@0.0.1",
+                "repo": {
+                    "url": "git://git-remote-url",
+                    "type": "git",
+                },
+                "name": "@laiju_soft/weixin",
+                "main": "index.js",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
+                },
+                "license": "ISC",
+                "directories": {},
+                "description": "莱聚微信端",
+                "_npmUser": {
+                    "name": "tianlei",
+                    "email": "1043997208@qq.com",
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/weixin_0.0.1_1557129762555_0.6351122447982833",
+                    "host": "s3://npm-registry-packages",
+                },
+                "version": "0.0.1",
+                "_hasShrinkwrap": false,
+                "_nodeVersion": "10.14.2",
+                "_npmVersion": "6.4.1",
+                "author": "",
+            },
+        ),
+        (
+            major: 0,
+            minor: 0,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@laiju_soft/weixin/-/weixin-0.0.2.tgz",
+                shasum: Some("038552b08d57b4d56fe921fc6809fb06a1299ee7"),
+                unpacked_size: Some(373),
+                file_count: Some(2),
+                integrity: Some("sha512-W33Fs9OjGBoS6sZQe7nkymJ8EkhE2ruvZbtkY3G2cnwenYuHBz+wNjbmaCCvBkNrcGY2gfjoSU/1rg7d5JLhmw=="),
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcz/fNCRA9TVsSAnZWagAA3YMP/1ewui8HdkWL3tPyrl0i\n1pxZNbgHgBfOwZkL4eB1FN7Ow7QsejtpZF94H5p+j1J4EYXVcLGZyI1a63Pi\nyV5iIWY8l7Rac7MKBymGwbet2DNIDOR3ty4rS8YLJJZ5hQcBzDLBw6KaupOd\nH3oeAqmvLHvI1JkrFoXXlaCIUvd27Cu/u6D+esiLA7zyfX15usFYJy3VBC/z\nuRx91Fvk9ec191/TPcGNj8kRLfxBWUkBFRlKnMc42g7l8/e3CRqPis2i2xtu\nCvWasLBqaSo1aU110pWfdsrHt3oZnpIheQxOA7OOiyQudxM4dlSOwCQdvb43\nBbyXs2U1d++a1iUq8WLzQbVrJRMACgk7BYAYsmefl9IABgb8o2cba13nww2i\nvbWOHDDxLekkRUpfUerrJIgWAHsWfbcOaZj1qzY7z4pjkJC5MSRxObKJRzAm\nFn7SfFWANCGF0R7IqIhkFVLtpaDJY6j18uo5E5uXZdo2V7nK2yr6N8sVAe0i\nAkq/uFxvLt+UBSRNyq8C/qtvgVrqZCh1t7bKQVbNT6pfs2OhW6zQ2s2gINhk\nGHUxPWn6HHgr3nNRx9BRW4WBPgCaDG4CBSfqNshqGI1zZQT1pZb5mmQyEbUo\nGO71mWnsrVOUE2f8jBq6khyl2KAQaSo/HjPhaDojXR1ZQahP9tGL+p5U6lJ9\nOOum\r\n=awBz\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            repository: Some((
+                raw: {
+                    "url": "git@code.aliyun.com:laiju_weixin/weixin_package.git",
+                    "type": "git",
+                },
+                info: (
+                    cloneable_repo_url: "git@code.aliyun.com:laiju_weixin/weixin_package.git",
+                    cloneable_repo_dir: "/",
+                    vcs: Git,
+                    host_info: Thirdparty,
+                ),
+            )),
+            extra_metadata: {
+                "maintainers": [
+                    {
+                        "name": "tianlei",
+                        "email": "1043997208@qq.com",
+                    },
+                ],
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/weixin_0.0.2_1557133259598_0.2133934190382636",
+                    "host": "s3://npm-registry-packages",
+                },
+                "name": "@laiju_soft/weixin",
+                "_id": "@laiju_soft/weixin@0.0.2",
+                "main": "index.js",
+                "_hasShrinkwrap": false,
+                "description": "莱聚微信端",
+                "_npmVersion": "6.4.1",
+                "_nodeVersion": "10.14.2",
+                "author": "",
+                "license": "ISC",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
+                },
+                "_npmUser": {
+                    "name": "tianlei",
+                    "email": "1043997208@qq.com",
+                },
+                "directories": {},
+                "version": "0.0.2",
+            },
+        ),
+    },
+)))
