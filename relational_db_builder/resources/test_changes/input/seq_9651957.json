@@ -1,0 +1,104 @@
+{
+    "id": "video-express",
+    "doc": {
+        "_id": "video-express",
+        "_rev": "1-eedb29eb2fd6cffd6ce12a239ba7bd59",
+        "name": "video-express",
+        "time": {
+            "0.0.0": "2022-04-02T14:58:02.932Z",
+            "created": "2022-04-02T14:58:02.786Z",
+            "modified": "2022-04-02T14:58:03.046Z"
+        },
+        "readme": "# video",
+        "keywords": [
+            "video",
+            "video service",
+            "video-service"
+        ],
+        "versions": {
+            "0.0.0": {
+                "_id": "video-express@0.0.0",
+                "dist": {
+                    "shasum": "7c135fe0098c9090180e3f903d009e84cbf9bbaa",
+                    "tarball": "https://registry.npmjs.org/video-express/-/video-express-0.0.0.tgz",
+                    "fileCount": 12,
+                    "integrity": "sha512-x/vzksT9P7LoDEHZWhWXUJaqMd7uOt0pfn/aJiR982iecosZjzXHeDkoz5oC3ySm5Xa0zrO0E7/5aHBTKsU4Yw==",
+                    "signatures": [
+                        {
+                            "sig": "MEUCIDUs82Jn6XmG5IgmRaFvFTx1FFFSYFOxd/FYk582fVk2AiEA9htvP6r0BmqBeuOFqn2OeBK37cloO2OMeeyJCKd9spA=",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 144550,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v4.10.10\r\nComment: https://openpgpjs.org\r\n\r\nwsFzBAEBCAAGBQJiSGR6ACEJED1NWxICdlZqFiEECWMYAoorWMhJKdjhPU1b\r\nEgJ2Vmrszw/+J6/63UNXx0W1jWh7AjOKvFkVv/MEB0iuPyZcTHfhVlOFnPTh\r\nslJwMMa8+rgl5FLNQswXF/edAOH1+7hv9tnBQG9wzhh32Ekt5deBlOU8LwEC\r\nnfpYXgcW8PYsKHeWh/gwSCa24AGqeEuLBvg2PVXmxe2CcozMSrQHAncWiddG\r\nMFzmykZMbuy9nqiU3bCJDBE7tzQRLi4Gq/l2IqZ0ZkMG/l/Vqg8bEjYjF5x5\r\n4zOPMbaTobCPnMU0EYpHvov1G1Bmr/HyvKtd3Xeh6AokqsXMUUnPpz3307c6\r\n1XYpt2qieXIgjH+/WUAmDqGExp+uz/ul2VESYAE2qdna8UPf7JLGulISTWIt\r\nh4ERllbQwMCC1d6hyPlfipWOHA4AkKlBXbXA+4cRYVzkYg8xVy25Rdd00iCW\r\n8lzFo3VH+yKbPZU3Pen5L5ptjUwt6VFqD/etPh7McGROFnHZpEIAvZx63WKw\r\nM8gSQxgpW/wsmGP2y16NegPE7CE9AjQpl6u5l9vgWTl/fZ4hETJGHZ3PTxwL\r\nFTICuuvJcCg78J27FzS3GG9oUAl7UbFEX7rQJ7pkOmVUO1Yh9uvjdEH6aFum\r\npb8MdxA2sSpemPd2PB4APzfXLZ03fISTCIm8x3OitrCp3PqLgVw8eL6izXwv\r\nw10wHSQGUictQ2e+3ys3geKg8KjbLYWgMHE=\r\n=ak5q\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "./lib/index.js",
+                "name": "video-express",
+                "types": "./src/index.ts",
+                "gitHead": "565f1fb6ad8396bd373f23f48d0b4a74a7055bac",
+                "scripts": {
+                    "build:lib": "tsc",
+                    "clean:lib": "rimraf lib"
+                },
+                "version": "0.0.0",
+                "_npmUser": {
+                    "name": "minhduc140583",
+                    "email": "minhduc140583@gmail.com"
+                },
+                "keywords": [
+                    "video",
+                    "video service",
+                    "video-service"
+                ],
+                "repository": {
+                    "url": "git@github.com/core-ts/video",
+                    "type": "git"
+                },
+                "_npmVersion": "6.14.11",
+                "description": "video",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "minhduc140583",
+                        "email": "minhduc140583@gmail.com"
+                    }
+                ],
+                "_nodeVersion": "14.15.5",
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/"
+                },
+                "_hasShrinkwrap": false,
+                "devDependencies": {
+                    "tslint": "5.10.0",
+                    "typescript": "^3.8.3"
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/video-express_0.0.0_1648911482786_0.4209009339419376",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "0.0.0"
+        },
+        "repository": {
+            "url": "git@github.com/core-ts/video",
+            "type": "git"
+        },
+        "description": "video",
+        "maintainers": [
+            {
+                "name": "minhduc140583",
+                "email": "minhduc140583@gmail.com"
+            }
+        ],
+        "readmeFilename": "README.md"
+    },
+    "seq": 9651957,
+    "changes": [
+        {
+            "rev": "1-eedb29eb2fd6cffd6ce12a239ba7bd59"
+        }
+    ],
+    "deleted": false
+}

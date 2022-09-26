@@ -33,16 +33,15 @@ fn match_strip_start(x: &mut &str, p: &str) -> bool {
 fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
     let mut x_copy = x;
     if match_strip_start(&mut x_copy, "git@") {
-        let components: Vec<_> = x_copy.split(":").collect();
-        assert!(components.len() == 2);
+        let components: Vec<_> = x_copy.split(':').collect();
+        if components.len() != 2 {
+            return None;
+        };
         let left = components[0];
         let right = components[1];
-        assert!(
-            !left.contains(':')
-                && !left.contains('@')
-                && !right.contains(':')
-                && !right.contains('@')
-        );
+        if left.contains(':') || left.contains('@') || right.contains(':') || right.contains('@') {
+            return None;
+        }
         Some((left, right))
     } else {
         None
@@ -311,8 +310,10 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
                     "git" | "github" | "bitbucket" | "gitlab" | "gist" => {
                         deserialize_repo_check_git_type_str(url)?
                     }
-                    "" | "tarball" => return None,
-                    _ => panic!("Unknown repo type: {:?}", t),
+                    _ => {
+                        eprintln!("Unknown repo type: {:?}", t);
+                        return None;
+                    }
                 },
             };
 
