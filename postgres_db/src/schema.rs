@@ -20,6 +20,7 @@ table! {
         spec -> Parsed_spec_struct,
         secret -> Bool,
         freq_count -> Int8,
+        md5digest -> Text,
     }
 }
 

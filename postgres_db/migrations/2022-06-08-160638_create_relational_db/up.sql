@@ -322,6 +322,7 @@ CREATE TABLE dependencies (
   secret                        BOOLEAN NOT NULL,
 
   freq_count                    BIGINT NOT NULL,
+  md5digest                     TEXT NOT NULL,
 
   FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id),
   UNIQUE(dst_package_name, raw_spec)
@@ -331,3 +332,4 @@ CREATE TABLE dependencies (
 
 CREATE INDEX dependencies_dst_package_name_idx ON dependencies (dst_package_name) WHERE dst_package_id_if_exists IS NULL;
 CREATE INDEX dependencies_alias_package_name_idx ON dependencies (((spec).alias_package_name)) WHERE (spec).dep_type = 'alias' AND (spec).alias_package_id_if_exists IS NULL;
+CREATE INDEX dependencies_md5digest_idx ON dependencies (md5digest);
