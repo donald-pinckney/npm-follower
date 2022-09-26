@@ -103,8 +103,8 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
     let url_path = repo_url.path().strip_prefix("/")?;
     let url_path = url_path.strip_suffix("/").unwrap_or(url_path);
 
-    if scheme == "git+ssh" {
-        assert!(maybe_user == "git");
+    if scheme == "git+ssh" && maybe_user != "git" {
+        return None;
     }
 
     if host == "github.com" {
