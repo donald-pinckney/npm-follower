@@ -80,16 +80,6 @@ impl Dependencie {
         secret: bool,
         freq_count: i64,
     ) -> Dependencie {
-        // trim the package name to max 1000 chars
-        let dst_package_name = {
-            if dst_package_name.len() > 1000 {
-                eprintln!("WARNING: package name is too long, trimming it");
-                format!("{}...", &dst_package_name[..1000])
-            } else {
-                dst_package_name
-            }
-        };
-
         // md5 hash of both the package name and the spec
         let md5digest = format!(
             "{:x}",
