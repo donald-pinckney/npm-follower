@@ -1,16 +1,9 @@
-use crate::custom_types::PackageMetadata;
 use crate::custom_types::ParsedSpec;
-use crate::custom_types::RepoInfo;
-use crate::custom_types::Semver;
 
 use super::schema::dependencies;
-use chrono::{DateTime, Utc};
-use diesel::pg::upsert::excluded;
-use diesel::sql_types::BigInt;
 use diesel::Queryable;
 use serde_json::Value;
 
-use super::schema;
 use super::DbConnection;
 use diesel::prelude::*;
 
