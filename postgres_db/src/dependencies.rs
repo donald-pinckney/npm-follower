@@ -60,13 +60,18 @@ pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i
 pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
     use super::schema::dependencies::dsl::*;
 
-    let inserted = diesel::insert_into(dependencies)
-        .values(&deps)
-        .on_conflict((dst_package_name, raw_spec))
-        .do_update()
-        .set(freq_count.eq(freq_count + excluded(freq_count)))
-        .get_results::<(i64, String, Option<i64>, Value, ParsedSpec, bool, i64)>(&conn.conn)
-        .expect("Error saving new dependencies");
+    // chunking the dependencies to avoid the 2000 limit
+    let mut ids = Vec::new();
+    for chunk in deps.chunks(2000) {
+        let inserted = diesel::insert_into(dependencies)
+            .values(chunk)
+            .on_conflict((dst_package_name, raw_spec))
+            .do_update()
+            .set(freq_count.eq(freq_count + excluded(freq_count)))
+            .get_results::<(i64, String, Option<i64>, Value, ParsedSpec, bool, i64)>(&conn.conn)
+            .expect("Error saving new dependencies");
+        ids.extend(inserted.into_iter().map(|(_id, _, _, _, _, _, _)| _id));
+    }
 
-    inserted.into_iter().map(|x| x.0).collect()
+    ids
 }
