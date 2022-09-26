@@ -90,7 +90,11 @@ impl Dependencie {
             }
         };
 
-        let md5digest = format!("{:x}", md5::compute(&dst_package_name));
+        // md5 hash of both the package name and the spec
+        let md5digest = format!(
+            "{:x}",
+            md5::compute(format!("{}{}", dst_package_name, raw_spec))
+        );
 
         Dependencie {
             dst_package_name,
