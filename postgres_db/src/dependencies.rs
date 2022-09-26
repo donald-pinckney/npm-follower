@@ -36,6 +36,16 @@ impl Dependencie {
         secret: bool,
         freq_count: i64,
     ) -> Dependencie {
+        // trim the package name to max 1000 chars
+        let dst_package_name = {
+            if dst_package_name.len() > 1000 {
+                eprintln!("WARNING: package name is too long, trimming it");
+                format!("{}...", &dst_package_name[..1000])
+            } else {
+                dst_package_name
+            }
+        };
+
         Dependencie {
             dst_package_name,
             dst_package_id_if_exists,
@@ -62,15 +72,19 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
 
     // chunking the dependencies to avoid the 2000 limit
     let mut ids = Vec::new();
-    for chunk in deps.chunks(2000) {
+    for dep in deps {
         let inserted = diesel::insert_into(dependencies)
-            .values(chunk)
+            .values(&dep)
             .on_conflict((dst_package_name, raw_spec))
             .do_update()
             .set(freq_count.eq(freq_count + excluded(freq_count)))
-            .get_results::<(i64, String, Option<i64>, Value, ParsedSpec, bool, i64)>(&conn.conn)
-            .expect("Error saving new dependencies");
-        ids.extend(inserted.into_iter().map(|(_id, _, _, _, _, _, _)| _id));
+            .get_result::<(i64, String, Option<i64>, Value, ParsedSpec, bool, i64)>(&conn.conn)
+            .unwrap_or_else(|e| {
+                eprintln!("Got error: {}", e);
+                eprintln!("on dep: {:?}", dep);
+                panic!("Error inserting dependency");
+            });
+        ids.push(inserted.0);
     }
 
     ids
