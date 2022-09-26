@@ -17,7 +17,7 @@ pub fn check_no_concurrent_processes(name: &str) {
     let mut pids: HashSet<_> = String::from_utf8(pidof_output.stdout).unwrap().split_whitespace().map(|s| s.parse::<u32>().unwrap()).collect();
     pids.remove(&my_pid);
 
-    if pids.len() != 0 {
+    if !pids.is_empty() {
         println!("Cannot run download_queuer concurrently. Already running with PIDs: {}", 
             pids.iter()
                 .map(|pid| format!("{}", pid))
@@ -59,7 +59,7 @@ impl FilterJsonCases for Value {
 
     fn empty_array_to_none(self) -> Option<Self> {
         match self {
-            Value::Array(xs) if xs.len() == 0 => None,
+            Value::Array(xs) if xs.is_empty() => None,
             _ => Some(self)
         }
     }

@@ -29,7 +29,7 @@ fn main() {
         let last_seq_in_page = changes.last().unwrap().seq;
         
         let downloads_to_enqueue: Vec<_> = changes.into_iter()
-            .flat_map(|c| download_tasks_for_change(c))
+            .flat_map(download_tasks_for_change)
             .collect();
 
         download_queue::enqueue_downloads(downloads_to_enqueue, &conn);

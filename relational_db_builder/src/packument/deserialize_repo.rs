@@ -6,11 +6,11 @@ use utils::RemoveInto;
 
 /// This attempts to parse the common repo shorthand form of: xxx/yyy
 fn try_parse_user_repo_shorthand(x: &str) -> Option<(&str, &str)> {
-    let components: Vec<_> = x.split("/").collect();
+    let components: Vec<_> = x.split('/').collect();
     if components.len() == 2 {
         let left = components[0];
         let right = components[1];
-        if left.contains(":") || left.contains("@") || right.contains(":") || right.contains("@") {
+        if left.contains(':') || left.contains('@') || right.contains(':') || right.contains('@') {
             None
         } else {
             Some((left, right))
@@ -49,7 +49,7 @@ fn try_parse_git_ssh_format(x: &str) -> Option<(&str, &str)> {
 }
 
 fn parse_gist_path(gist_path: &str) -> RepoInfo {
-    if gist_path.contains("/") {
+    if gist_path.contains('/') {
         let (_user, id) = try_parse_user_repo_shorthand(gist_path).unwrap();
         return RepoInfo::new_gist(strip_dot_git(id).to_owned());
     } else {
@@ -100,8 +100,8 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
     let scheme = repo_url.scheme();
     let host = repo_url.host_str()?;
     let maybe_user = repo_url.username();
-    let url_path = repo_url.path().strip_prefix("/")?;
-    let url_path = url_path.strip_suffix("/").unwrap_or(url_path);
+    let url_path = repo_url.path().strip_prefix('/')?;
+    let url_path = url_path.strip_suffix('/').unwrap_or(url_path);
 
     if scheme == "git+ssh" && maybe_user != "git" {
         return None;
@@ -117,7 +117,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
         } else {
             // Else we handle github tree directory case
             // Example url_path = "babel/babel/tree/master/packages/babel-plugin-syntax-async-generators"
-            let comps: Vec<_> = url_path.split("/").collect();
+            let comps: Vec<_> = url_path.split('/').collect();
             let num_comps = comps.len();
             if num_comps < 4 {
                 return None; // bad
@@ -153,7 +153,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
         } else {
             // Else we handle bitbucket tree directory case
             // Example url_path = "janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties"
-            let comps: Vec<_> = url_path.split("/").collect();
+            let comps: Vec<_> = url_path.split('/').collect();
             let num_comps = comps.len();
             if num_comps < 4 {
                 return None;
@@ -189,7 +189,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
         } else {
             // Else we handle gitlab tree directory case
             // Example url_path = "gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition"
-            let comps: Vec<_> = url_path.split("/").collect();
+            let comps: Vec<_> = url_path.split('/').collect();
             let num_comps = comps.len();
             if num_comps < 5 {
                 return None; // bad
@@ -279,7 +279,7 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> Option<RepoInfo>
         // https://github.com:crypto-browserify/browserify-rsa.git
         let fixed_url_string = "https://github.com/".to_owned() + repo_str;
         parse_url_or_ssh_case(&fixed_url_string)
-    } else if repo_str.split("/").count() == 3 && repo_str.starts_with("github.com/") {
+    } else if repo_str.split('/').count() == 3 && repo_str.starts_with("github.com/") {
         // github.com/makindotcc/McHttpFrida
         assert!(match_strip_start(&mut repo_str, "github.com/"));
         let new_repo_str = format!("https://github.com/{}", repo_str);
@@ -822,7 +822,7 @@ mod tests {
         };
         let answer3 = RepositoryInfo {
             raw: blob3.clone(),
-            info: answer_info.clone(),
+            info: answer_info,
         };
 
         assert_eq!(deserialize_repo_blob(blob1).unwrap(), answer1);

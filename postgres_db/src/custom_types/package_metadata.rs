@@ -242,7 +242,7 @@ mod tests {
                     dist_tag_latest_version: Some(5),
                     created: date1,
                     modified: date2,
-                    other_dist_tags: empty_odts.clone(),
+                    other_dist_tags: empty_odts,
                 },
             },
             TestPackageMetadataToSql {
@@ -251,7 +251,7 @@ mod tests {
                     dist_tag_latest_version: None,
                     created: date2,
                     modified: date1,
-                    other_dist_tags: some_odts.clone(),
+                    other_dist_tags: some_odts,
                 },
             },
             TestPackageMetadataToSql {
@@ -259,7 +259,7 @@ mod tests {
                 m: PackageMetadata::Unpublished {
                     created: date1,
                     modified: date2,
-                    other_time_data: empty_otd.clone(),
+                    other_time_data: empty_otd,
                     unpublished_data: ud.clone(),
                 },
             },
@@ -268,8 +268,8 @@ mod tests {
                 m: PackageMetadata::Unpublished {
                     created: date2,
                     modified: date1,
-                    other_time_data: some_otd.clone(),
-                    unpublished_data: ud.clone(),
+                    other_time_data: some_otd,
+                    unpublished_data: ud,
                 },
             },
             TestPackageMetadataToSql {

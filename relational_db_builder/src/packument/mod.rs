@@ -69,12 +69,12 @@ impl From<Packument> for PackageMetadata {
     fn from(pack: Packument) -> Self {
         match pack {
             Packument::Normal {
-                latest,
+                latest: _,
                 created,
                 modified,
                 other_dist_tags,
-                version_times,
-                versions,
+                version_times: _,
+                versions: _,
             } => PackageMetadata::Normal {
                 dist_tag_latest_version: None,
                 created,

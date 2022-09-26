@@ -4,7 +4,7 @@ extern crate lazy_static;
 use postgres_db::custom_types::{
     AliasSubspec, ParsedSpec, PrereleaseTag, Semver, VersionComparator, VersionConstraint,
 };
-use semver_spec_serialization::{parse_spec_via_node, ParseSpecError};
+use semver_spec_serialization::{parse_spec_via_node};
 
 lazy_static! {
     static ref SUCCESS_CASES: Vec<(&'static str, ParsedSpec)> = vec![

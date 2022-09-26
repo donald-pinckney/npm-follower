@@ -100,7 +100,7 @@ pub enum VersionComparator {
 #[sql_type = "Array<ConstraintConjunctsSql>"]
 pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone)]
+#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone)]
 #[sql_type = "PackageMetadataStructSql"]
 pub enum PackageMetadata {
     Normal {

@@ -5,7 +5,7 @@ use std::panic;
 use postgres_db::change_log;
 use postgres_db::change_log::Change;
 
-use postgres_db::custom_types::ParsedSpec;
+
 use postgres_db::custom_types::Semver;
 use postgres_db::dependencies::Dependencie;
 use postgres_db::internal_state;

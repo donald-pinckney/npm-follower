@@ -79,11 +79,11 @@ fn parse_prerelease_tag(s: &str) -> PrereleaseTag {
 }
 
 fn parse_prerelease_tags(s: &str) -> Vec<PrereleaseTag> {
-    s.split(".").map(|t| parse_prerelease_tag(t)).collect()
+    s.split('.').map(parse_prerelease_tag).collect()
 }
 
 fn parse_build_tags(s: &str) -> Vec<String> {
-    s.split(".").map(|t| t.to_owned()).collect()
+    s.split('.').map(|t| t.to_owned()).collect()
 }
 
 pub fn parse_semver(v_str: &str) -> Result<Semver, ParseSemverError> {

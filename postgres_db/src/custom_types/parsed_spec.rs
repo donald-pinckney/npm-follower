@@ -225,7 +225,7 @@ mod tests {
 
         let c3 = VersionComparator::Any;
 
-        let vc = VersionConstraint(vec![vec![c1.clone(), c2.clone(), c3.clone()]]);
+        let vc = VersionConstraint(vec![vec![c1, c2, c3]]);
 
 
         let data = vec![

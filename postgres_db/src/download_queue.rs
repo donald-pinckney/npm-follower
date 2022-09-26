@@ -283,7 +283,7 @@ pub fn update_from_tarballs(conn: &DbConnection, tarballs: &Vec<DownloadedTarbal
     {
         use schema::downloaded_tarballs::dsl::*; // have to scope the imports as they conflict.
         diesel::insert_into(schema::downloaded_tarballs::table)
-            .values(&*tarballs)
+            .values(tarballs)
             .on_conflict(tarball_url)
             .do_update()
             .set((

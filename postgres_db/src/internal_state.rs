@@ -42,6 +42,6 @@ fn set_key_value_state(the_key: &str, the_value: i64, conn: &DbConnection) {
         .do_update()
         .set(new_pair)
         .execute(&conn.conn)
-        .expect(&format!("Failed to set key/value pair: {:?}", new_pair));
+        .unwrap_or_else(|_| panic!("Failed to set key/value pair: {:?}", new_pair));
 }
 

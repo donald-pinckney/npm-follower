@@ -32,7 +32,7 @@ pub fn deserialize_change(c: Change) -> Option<(String, Packument)> {
     }
 
     if del {
-        if doc.len() != 0 {
+        if !doc.is_empty() {
             panic!("ERROR: extra keys in deleted doc");
         }
         Some((package_name, Packument::Deleted))

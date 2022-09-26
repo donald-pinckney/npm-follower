@@ -53,7 +53,7 @@ pub fn update_from_tarball_queue(conn: &DbConnection, tarballs: &mut Vec<Downloa
     if tarballs.is_empty() {
         return;
     }
-    update_from_tarballs(conn, &tarballs);
+    update_from_tarballs(conn, tarballs);
     tarballs.clear();
 }
 

@@ -12,7 +12,7 @@ pub fn test_connect() -> DbConnection {
     let database_url = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
     let conn = PgConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url));
+        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
 
     match conn.execute("CREATE SCHEMA IF NOT EXISTS testing") {
         Ok(_) => (),
@@ -20,12 +20,12 @@ pub fn test_connect() -> DbConnection {
             if err.message().contains("pg_namespace_nspname_index") {
                 // the schema may fail due to race conditions with concurrently created schema.
                 // but that's ok, the schema was still made, by someone else.
-                ()
+                
             } else {
                 Err(diesel::result::Error::DatabaseError(DatabaseErrorKind::UniqueViolation, err)).unwrap()
             }
         },
-        err => { err.unwrap(); () }
+        err => { err.unwrap();  }
     };
     
     conn.execute("SET search_path TO testing,public").unwrap();

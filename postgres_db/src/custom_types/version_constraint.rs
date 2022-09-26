@@ -122,7 +122,7 @@ mod tests {
             },
             TestVersionConstraintToSql {
                 id: 5,
-                c: VersionConstraint(vec![vec![c3], vec![c1.clone(), c2.clone()]])
+                c: VersionConstraint(vec![vec![c3], vec![c1, c2.clone()]])
             },
             
         ];
@@ -189,7 +189,7 @@ mod tests {
         let bad_data4 = vec![
             TestVersionConstraintToSql {
                 id: 6,
-                c: VersionConstraint(vec![vec![], vec![c2.clone()]])
+                c: VersionConstraint(vec![vec![], vec![c2]])
             },
         ];
         let (_, info) = unwrap_db_error(

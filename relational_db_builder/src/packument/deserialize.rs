@@ -30,7 +30,7 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
 
     if let Some(dependencies_val) = dependencies_maybe_val {
         match dependencies_val {
-            Value::Array(xs) if xs.len() > 0 => {
+            Value::Array(xs) if !xs.is_empty() => {
                 version_blob.insert(key.to_string(), Value::Array(xs));
                 vec![]
             },
@@ -132,7 +132,7 @@ fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateT
         }), t)
     ).collect();
 
-    return (created, modified, version_times)
+    (created, modified, version_times)
 }
 
 fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
@@ -166,8 +166,8 @@ fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTi
                 parse_datetime(v_created_raw)
             },
             (None, None) => {
-                let fake_time = parse_datetime("2015-01-01T00:00:00.000Z".to_string());
-                fake_time
+                
+                parse_datetime("2015-01-01T00:00:00.000Z".to_string())
             },
             _ => panic!("Unknown ctime / mtime combination.") // we expect there to be either: ctime & mtime, or neither of them.
         };
@@ -279,8 +279,8 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
 
     Packument::Normal {
         latest: latest_semver,
-        created: created,
-        modified: modified,
+        created,
+        modified,
         other_dist_tags: dist_tags,
         version_times: only_keep_ok_version_times(version_times),
         versions: version_packuments
