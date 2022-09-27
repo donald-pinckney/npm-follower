@@ -46,290 +46,6 @@ Some(("auta", Normal(
             minor: 0,
             bug: 0,
             prerelease: [
-                String("R2"),
-            ],
-            build: [],
-        ): (
-            prod_dependencies: [
-                ("axios", (
-                    raw: "^0.19.2",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 19,
-                                bug: 2,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 20,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [
-                ("jest", (
-                    raw: "^25.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 25,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 26,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("eslint", (
-                    raw: "^6.8.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 6,
-                                minor: 8,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 7,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("babel-jest", (
-                    raw: "^25.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 25,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 26,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("create-index", (
-                    raw: "^2.5.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 5,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@babel/polyfill", (
-                    raw: "^7.8.3",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 7,
-                                minor: 8,
-                                bug: 3,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 8,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@babel/preset-env", (
-                    raw: "^7.8.6",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 7,
-                                minor: 8,
-                                bug: 6,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 8,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("eslint-plugin-import", (
-                    raw: "^2.20.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 20,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("eslint-config-airbnb-base", (
-                    raw: "^14.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 14,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 15,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/auta/-/auta-2.0.0-R2.tgz",
-                shasum: Some("7126885ae4175851d8e32d6abfe6c138aa27c34d"),
-                unpacked_size: Some(93962),
-                file_count: Some(34),
-                integrity: Some("sha512-xKH+LXC2MPR4JgXz6OX7r/gJsRldD7yhiuWmHhHsHZDz3i/pJxgkQ5inezbhlP6E7CIEg9Gvp+KqUqNqK7bDNA=="),
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJeXkyOCRA9TVsSAnZWagAAprkP/jILT5CmPBtmMCE8IkKL\nNeQhT1ay+az+Uy0MyDF9BcOz4cyca4rJd1zrbo8Ucga6fDx0jT3OhHpZLbJy\n3Ayn0dfU7PzGJ3Hq50n/GFxA5j2FjrX2/QocfCvjm3a/cpgw3h+OpJ/ZRi3Z\nfhovoMxe4RjtbKwAdSwanv8hM7zrSLyRxqvdHgbINVH4nxE2WMOU3KxkQxK3\nYqFmrCBgu2NpMotOg89lcRui0AO+z1XprMNodOC/56sufRhYSnASJEVqrp34\n/jGCExbNP9WZO2vP5jqz+ITb4mS6pVLccpTk7JsTZunq7ob5WguhMDceTM6f\neMEkQDCNpncct/MrTkT0kEN2fDLEysP/OIWtBPzjaDuwUXWt0GXF+Nyodhq0\nmJFp2i3QlinY7X+N5iSd9uyU8x5IWiStK5Uttbo6MU3wELK63PKXHdLCz76F\no47Td5wKQapS7qkPM+n6RWXm2VBGB2+HhlKt+vBDKKRY80DlzUomMI7P6U4D\n2VwpSgw2MPHvvGw6wOv1sijFcISXfSBJoxFqe54Yen6ZbfJDnOcXPP2aC/o8\nVuZvjQrZhbuhcnITi7AMTpqtkiWDk5gOs4yTeNbNTMH92aMmt2D6Jkr0FZHw\nx9/XdO7PapX/wtn3v3wFPssjbQaJsojGFRjQv5dTnGHtS16l/G/ydIfScNUa\nEAjr\r\n=bY2a\r\n-----END PGP SIGNATURE-----\r\n"),
-            ),
-            repository: None,
-            extra_metadata: {
-                "description": "Provides a simple JavaScript interface for the AuTA API",
-                "directories": {},
-                "maintainers": [
-                    {
-                        "name": "timvdh123",
-                        "email": "timvanderhorst@gmail.com",
-                    },
-                    {
-                        "name": "wukl",
-                        "email": "luc+npm@wukl.net",
-                    },
-                ],
-                "repo": {
-                    "url": "gitlab.ewi.tudelft.nl:eip/labrador/auta/auta.js",
-                    "type": "git",
-                },
-                "_nodeVersion": "13.9.0",
-                "homepage": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js",
-                "_npmVersion": "6.14.1",
-                "_npmUser": {
-                    "name": "wukl",
-                    "email": "luc+npm@wukl.net",
-                },
-                "keywords": [
-                    "AuTA",
-                    "api",
-                ],
-                "license": "AGPL-3.0-only",
-                "version": "2.0.0-R2",
-                "name": "auta",
-                "_hasShrinkwrap": false,
-                "main": "src/index.js",
-                "bugs": {
-                    "url": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js/issues",
-                },
-                "type": "module",
-                "author": "",
-                "scripts": {
-                    "test": "jest",
-                    "build": "node make-index.js",
-                    "prepare": "npm test; npm run build",
-                },
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/auta_2.0.0-R2_1583238286283_0.9810652812887808",
-                    "host": "s3://npm-registry-packages",
-                },
-                "_id": "auta@2.0.0-R2",
-                "gitHead": "2b194512f30bca1a1c4dbc7579ad6124c1b8072b",
-            },
-        ),
-        (
-            major: 2,
-            minor: 0,
-            bug: 0,
-            prerelease: [
                 String("R3"),
             ],
             build: [],
@@ -559,20 +275,14 @@ Some(("auta", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_nodeVersion": "13.9.0",
-                "directories": {},
-                "_id": "auta@2.0.0-R3",
-                "main": "src/index.js",
-                "bugs": {
-                    "url": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js/issues",
-                },
-                "gitHead": "a57276cbe1b8a959f25c0e64e4559e7e723014f4",
+                "author": "",
                 "homepage": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js",
                 "_npmOperationalInternal": {
                     "tmp": "tmp/auta_2.0.0-R3_1583238802009_0.6456178711308893",
                     "host": "s3://npm-registry-packages",
                 },
-                "description": "Provides a simple JavaScript interface for the AuTA API",
+                "license": "AGPL-3.0-only",
+                "directories": {},
                 "maintainers": [
                     {
                         "name": "timvdh123",
@@ -583,30 +293,36 @@ Some(("auta", Normal(
                         "email": "luc+npm@wukl.net",
                     },
                 ],
+                "_nodeVersion": "13.9.0",
+                "_npmVersion": "6.14.1",
+                "version": "2.0.0-R3",
+                "repo": {
+                    "url": "gitlab.ewi.tudelft.nl:eip/labrador/auta/auta.js",
+                    "type": "git",
+                },
                 "scripts": {
                     "test": "jest",
                     "build": "node make-index.js",
                     "prepare": "npm test; npm run build",
                 },
-                "keywords": [
-                    "AuTA",
-                    "api",
-                ],
-                "author": "",
-                "_npmVersion": "6.14.1",
-                "license": "AGPL-3.0-only",
-                "version": "2.0.0-R3",
+                "_id": "auta@2.0.0-R3",
+                "name": "auta",
                 "_hasShrinkwrap": false,
+                "main": "src/index.js",
+                "type": "module",
+                "gitHead": "a57276cbe1b8a959f25c0e64e4559e7e723014f4",
+                "description": "Provides a simple JavaScript interface for the AuTA API",
                 "_npmUser": {
                     "name": "wukl",
                     "email": "luc+npm@wukl.net",
                 },
-                "repo": {
-                    "url": "gitlab.ewi.tudelft.nl:eip/labrador/auta/auta.js",
-                    "type": "git",
+                "bugs": {
+                    "url": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js/issues",
                 },
-                "name": "auta",
-                "type": "module",
+                "keywords": [
+                    "AuTA",
+                    "api",
+                ],
             },
         ),
         (
@@ -843,50 +559,334 @@ Some(("auta", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "scripts": {
-                    "test": "jest",
-                    "build": "node make-index.js",
-                    "prepare": "npm test; npm run build",
-                },
-                "_npmUser": {
-                    "name": "wukl",
-                    "email": "luc+npm@wukl.net",
-                },
                 "_npmOperationalInternal": {
                     "tmp": "tmp/auta_2.0.0-R1_1583236707209_0.352001892706419",
                     "host": "s3://npm-registry-packages",
                 },
+                "_npmVersion": "6.14.1",
+                "bugs": {
+                    "url": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js/issues",
+                },
+                "type": "module",
+                "_npmUser": {
+                    "name": "wukl",
+                    "email": "luc+npm@wukl.net",
+                },
+                "version": "2.0.0-R1",
+                "description": "Provides a simple JavaScript interface for the AuTA API",
+                "_nodeVersion": "13.9.0",
+                "_id": "auta@2.0.0-R1",
                 "repo": {
                     "url": "gitlab.ewi.tudelft.nl:eip/labrador/auta/auta.js",
                     "type": "git",
                 },
-                "_hasShrinkwrap": false,
+                "homepage": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js",
                 "maintainers": [
                     {
                         "name": "wukl",
                         "email": "luc+npm@wukl.net",
                     },
                 ],
-                "homepage": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js",
+                "main": "src/index.js",
+                "name": "auta",
                 "keywords": [
                     "AuTA",
                     "api",
                 ],
-                "version": "2.0.0-R1",
-                "description": "Provides a simple JavaScript interface for the AuTA API",
-                "name": "auta",
-                "type": "module",
-                "main": "src/index.js",
-                "author": "",
-                "gitHead": "2b194512f30bca1a1c4dbc7579ad6124c1b8072b",
-                "_npmVersion": "6.14.1",
+                "scripts": {
+                    "test": "jest",
+                    "build": "node make-index.js",
+                    "prepare": "npm test; npm run build",
+                },
                 "directories": {},
-                "_id": "auta@2.0.0-R1",
+                "gitHead": "2b194512f30bca1a1c4dbc7579ad6124c1b8072b",
+                "_hasShrinkwrap": false,
+                "author": "",
                 "license": "AGPL-3.0-only",
-                "_nodeVersion": "13.9.0",
+            },
+        ),
+        (
+            major: 2,
+            minor: 0,
+            bug: 0,
+            prerelease: [
+                String("R2"),
+            ],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("axios", (
+                    raw: "^0.19.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 19,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 20,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [
+                ("jest", (
+                    raw: "^25.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 25,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 26,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint", (
+                    raw: "^6.8.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 6,
+                                minor: 8,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 7,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("babel-jest", (
+                    raw: "^25.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 25,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 26,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("create-index", (
+                    raw: "^2.5.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 5,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@babel/polyfill", (
+                    raw: "^7.8.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 7,
+                                minor: 8,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 8,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@babel/preset-env", (
+                    raw: "^7.8.6",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 7,
+                                minor: 8,
+                                bug: 6,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 8,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint-plugin-import", (
+                    raw: "^2.20.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 20,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint-config-airbnb-base", (
+                    raw: "^14.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 14,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 15,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/auta/-/auta-2.0.0-R2.tgz",
+                shasum: Some("7126885ae4175851d8e32d6abfe6c138aa27c34d"),
+                unpacked_size: Some(93962),
+                file_count: Some(34),
+                integrity: Some("sha512-xKH+LXC2MPR4JgXz6OX7r/gJsRldD7yhiuWmHhHsHZDz3i/pJxgkQ5inezbhlP6E7CIEg9Gvp+KqUqNqK7bDNA=="),
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJeXkyOCRA9TVsSAnZWagAAprkP/jILT5CmPBtmMCE8IkKL\nNeQhT1ay+az+Uy0MyDF9BcOz4cyca4rJd1zrbo8Ucga6fDx0jT3OhHpZLbJy\n3Ayn0dfU7PzGJ3Hq50n/GFxA5j2FjrX2/QocfCvjm3a/cpgw3h+OpJ/ZRi3Z\nfhovoMxe4RjtbKwAdSwanv8hM7zrSLyRxqvdHgbINVH4nxE2WMOU3KxkQxK3\nYqFmrCBgu2NpMotOg89lcRui0AO+z1XprMNodOC/56sufRhYSnASJEVqrp34\n/jGCExbNP9WZO2vP5jqz+ITb4mS6pVLccpTk7JsTZunq7ob5WguhMDceTM6f\neMEkQDCNpncct/MrTkT0kEN2fDLEysP/OIWtBPzjaDuwUXWt0GXF+Nyodhq0\nmJFp2i3QlinY7X+N5iSd9uyU8x5IWiStK5Uttbo6MU3wELK63PKXHdLCz76F\no47Td5wKQapS7qkPM+n6RWXm2VBGB2+HhlKt+vBDKKRY80DlzUomMI7P6U4D\n2VwpSgw2MPHvvGw6wOv1sijFcISXfSBJoxFqe54Yen6ZbfJDnOcXPP2aC/o8\nVuZvjQrZhbuhcnITi7AMTpqtkiWDk5gOs4yTeNbNTMH92aMmt2D6Jkr0FZHw\nx9/XdO7PapX/wtn3v3wFPssjbQaJsojGFRjQv5dTnGHtS16l/G/ydIfScNUa\nEAjr\r\n=bY2a\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            repository: None,
+            extra_metadata: {
+                "type": "module",
+                "_hasShrinkwrap": false,
+                "name": "auta",
+                "_npmVersion": "6.14.1",
+                "repo": {
+                    "url": "gitlab.ewi.tudelft.nl:eip/labrador/auta/auta.js",
+                    "type": "git",
+                },
+                "homepage": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js",
+                "description": "Provides a simple JavaScript interface for the AuTA API",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/auta_2.0.0-R2_1583238286283_0.9810652812887808",
+                    "host": "s3://npm-registry-packages",
+                },
+                "scripts": {
+                    "test": "jest",
+                    "build": "node make-index.js",
+                    "prepare": "npm test; npm run build",
+                },
+                "main": "src/index.js",
+                "directories": {},
+                "gitHead": "2b194512f30bca1a1c4dbc7579ad6124c1b8072b",
+                "_npmUser": {
+                    "name": "wukl",
+                    "email": "luc+npm@wukl.net",
+                },
+                "maintainers": [
+                    {
+                        "name": "timvdh123",
+                        "email": "timvanderhorst@gmail.com",
+                    },
+                    {
+                        "name": "wukl",
+                        "email": "luc+npm@wukl.net",
+                    },
+                ],
                 "bugs": {
                     "url": "https://gitlab.ewi.tudelft.nl/eip/labrador/auta/auta.js/issues",
                 },
+                "author": "",
+                "version": "2.0.0-R2",
+                "_id": "auta@2.0.0-R2",
+                "license": "AGPL-3.0-only",
+                "keywords": [
+                    "AuTA",
+                    "api",
+                ],
+                "_nodeVersion": "13.9.0",
             },
         ),
     },

@@ -47,7 +47,7 @@ Some(("h5-1810-npm", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/Jiang-Xiaoming/h5-1810",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "Jiang-Xiaoming",
@@ -56,44 +56,44 @@ Some(("h5-1810-npm", Normal(
                 ),
             )),
             extra_metadata: {
-                "directories": {},
-                "license": "MIT",
-                "homepage": "https://github.com/Jiang-Xiaoming/h5-1810#readme",
-                "version": "0.0.1",
-                "_npmUser": {
-                    "name": "jiangxiaoming",
-                    "email": "2218215702@qq.com",
-                },
-                "_nodeVersion": "8.9.0",
                 "author": {
                     "name": "Ming",
                 },
-                "bugs": {
-                    "url": "https://github.com/Jiang-Xiaoming/h5-1810/issues",
-                },
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/h5-1810-npm_0.0.1_1537330343443_0.8290061945508465",
-                    "host": "s3://npm-registry-packages",
-                },
-                "scripts": {
-                    "test": "mocha",
-                },
+                "name": "h5-1810-npm",
+                "gitHead": "d8716fc34d1e2a71ec2aad165e7450e3972bdf29",
+                "_npmVersion": "5.5.1",
+                "license": "MIT",
+                "directories": {},
+                "keywords": [
+                    "h5-1810",
+                ],
                 "maintainers": [
                     {
                         "name": "jiangxiaoming",
                         "email": "2218215702@qq.com",
                     },
                 ],
-                "main": "index.js",
-                "name": "h5-1810-npm",
-                "keywords": [
-                    "h5-1810",
-                ],
-                "_npmVersion": "5.5.1",
-                "gitHead": "d8716fc34d1e2a71ec2aad165e7450e3972bdf29",
-                "description": "A test pageage",
+                "_nodeVersion": "8.9.0",
                 "_id": "h5-1810-npm@0.0.1",
+                "scripts": {
+                    "test": "mocha",
+                },
+                "bugs": {
+                    "url": "https://github.com/Jiang-Xiaoming/h5-1810/issues",
+                },
+                "main": "index.js",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/h5-1810-npm_0.0.1_1537330343443_0.8290061945508465",
+                    "host": "s3://npm-registry-packages",
+                },
+                "version": "0.0.1",
+                "_npmUser": {
+                    "name": "jiangxiaoming",
+                    "email": "2218215702@qq.com",
+                },
+                "homepage": "https://github.com/Jiang-Xiaoming/h5-1810#readme",
                 "_hasShrinkwrap": false,
+                "description": "A test pageage",
             },
         ),
     },

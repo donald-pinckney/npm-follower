@@ -80,47 +80,47 @@ Some(("video-express", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_npmVersion": "6.14.11",
-                "name": "video-express",
                 "_npmUser": {
                     "name": "minhduc140583",
                     "email": "minhduc140583@gmail.com",
                 },
-                "maintainers": [
-                    {
-                        "name": "minhduc140583",
-                        "email": "minhduc140583@gmail.com",
-                    },
-                ],
                 "repo": {
                     "url": "git@github.com/core-ts/video",
                     "type": "git",
                 },
-                "_hasShrinkwrap": false,
-                "version": "0.0.0",
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
-                "main": "./lib/index.js",
                 "_id": "video-express@0.0.0",
+                "_npmVersion": "6.14.11",
                 "_npmOperationalInternal": {
                     "tmp": "tmp/video-express_0.0.0_1648911482786_0.4209009339419376",
                     "host": "s3://npm-registry-packages",
                 },
-                "scripts": {
-                    "build:lib": "tsc",
-                    "clean:lib": "rimraf lib",
-                },
+                "name": "video-express",
                 "keywords": [
                     "video",
                     "video service",
                     "video-service",
                 ],
                 "directories": {},
-                "gitHead": "565f1fb6ad8396bd373f23f48d0b4a74a7055bac",
-                "_nodeVersion": "14.15.5",
-                "description": "video",
                 "types": "./src/index.ts",
+                "gitHead": "565f1fb6ad8396bd373f23f48d0b4a74a7055bac",
+                "version": "0.0.0",
+                "maintainers": [
+                    {
+                        "name": "minhduc140583",
+                        "email": "minhduc140583@gmail.com",
+                    },
+                ],
+                "description": "video",
+                "_hasShrinkwrap": false,
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
+                },
+                "_nodeVersion": "14.15.5",
+                "scripts": {
+                    "build:lib": "tsc",
+                    "clean:lib": "rimraf lib",
+                },
+                "main": "./lib/index.js",
             },
         ),
     },

@@ -42,11 +42,11 @@ Some(("testing234", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "author": {
+                "_npmUser": {
                     "name": "teste4",
                 },
                 "name": "testing234",
-                "_npmUser": {
+                "author": {
                     "name": "teste4",
                 },
                 "version": "0.0.1",

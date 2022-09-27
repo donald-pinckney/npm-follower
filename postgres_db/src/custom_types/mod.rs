@@ -155,7 +155,7 @@ impl RepoInfo {
     pub fn new_gist(id: String) -> RepoInfo {
         RepoInfo {
             cloneable_repo_url: format!("https://gist.github.com/{}", id),
-            cloneable_repo_dir: "/".to_string(),
+            cloneable_repo_dir: "".to_string(),
             vcs: Vcs::Git,
             host_info: RepoHostInfo::Gist { id },
         }

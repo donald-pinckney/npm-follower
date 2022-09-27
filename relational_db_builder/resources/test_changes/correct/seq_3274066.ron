@@ -13,13 +13,6 @@ Some(("sinopib", Normal(
         (
             major: 1,
             minor: 4,
-            bug: 0,
-            prerelease: [],
-            build: [],
-        ): "2016-01-18T18:53:19.778Z",
-        (
-            major: 1,
-            minor: 4,
             bug: 1,
             prerelease: [],
             build: [],
@@ -27,974 +20,26 @@ Some(("sinopib", Normal(
         (
             major: 1,
             minor: 4,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): "2016-01-18T19:20:47.345Z",
-        (
-            major: 1,
-            minor: 4,
             bug: 3,
             prerelease: [],
             build: [],
         ): "2016-01-18T19:50:13.563Z",
-    },
-    versions: {
         (
             major: 1,
             minor: 4,
             bug: 0,
             prerelease: [],
             build: [],
-        ): (
-            prod_dependencies: [
-                ("JSONStream", (
-                    raw: "1.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("async", (
-                    raw: ">=0.9.0 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 9,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("body-parser", (
-                    raw: ">=1.9.2 <2.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 9,
-                                bug: 2,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("bunyan", (
-                    raw: ">=0.22.1 <2.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 22,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("commander", (
-                    raw: ">=2.3.0 <3.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 3,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("compression", (
-                    raw: ">=1.2.0 <2.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 2,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("cookies", (
-                    raw: ">=0.5.0 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 5,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("es6-shim", (
-                    raw: "0.21.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 21,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 22,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("express", (
-                    raw: ">=5.0.0-0 <6.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 5,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 6,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("express-json5", (
-                    raw: ">=0.1.0 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("handlebars", (
-                    raw: "2.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("highlight.js", (
-                    raw: "8.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 8,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 9,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("http-errors", (
-                    raw: ">=1.2.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 2,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("jju", (
-                    raw: "1.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("js-yaml", (
-                    raw: ">=3.0.1 <4.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 3,
-                                minor: 0,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 4,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("lunr", (
-                    raw: ">=0.5.2 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 5,
-                                bug: 2,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("minimatch", (
-                    raw: ">=0.2.14 <2.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 2,
-                                bug: 14,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("mkdirp", (
-                    raw: ">=0.3.5 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 3,
-                                bug: 5,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("readable-stream", (
-                    raw: "~1.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 2,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("render-readme", (
-                    raw: ">=0.2.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 2,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("request", (
-                    raw: ">=2.31.0 <3.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 31,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("rwlock-plus", (
-                    raw: "1.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("semver", (
-                    raw: ">=2.2.1 <5.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 2,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 5,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("sinopia-htpasswd", (
-                    raw: ">= 0.4.3",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 4,
-                                bug: 3,
-                                prerelease: [],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [
-                ("bluebird", (
-                    raw: "2 >=2.9",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                            Gte((
-                                major: 2,
-                                minor: 9,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("browserify", (
-                    raw: "7.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 7,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 8,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("browserify-handlebars", (
-                    raw: "1.x",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("eslint", (
-                    raw: "1 >=1.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                            Gte((
-                                major: 1,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("grunt", (
-                    raw: ">=0.4.4 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 4,
-                                bug: 4,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("grunt-browserify", (
-                    raw: ">=2.0.8 <3.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 0,
-                                bug: 8,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("grunt-cli", (
-                    raw: "*",
-                    parsed: Range(([
-                        [
-                            Any,
-                        ],
-                    ])),
-                )),
-                ("grunt-contrib-less", (
-                    raw: ">=0.11.0 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 11,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("grunt-contrib-watch", (
-                    raw: ">=0.6.1 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 6,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("mocha", (
-                    raw: "2 >=2.2.3",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                            Gte((
-                                major: 2,
-                                minor: 2,
-                                bug: 3,
-                                prerelease: [],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("onclick", (
-                    raw: ">=0.1.0 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("rimraf", (
-                    raw: ">=2.2.5 <3.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 2,
-                                minor: 2,
-                                bug: 5,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("transition-complete", (
-                    raw: ">=0.0.2 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 0,
-                                bug: 2,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("unopinionate", (
-                    raw: ">=0.0.4 <1.0.0-0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 0,
-                                bug: 4,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 1,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.0.tgz",
-                shasum: Some("38825dcfcf650c3f79506b073b37fe3c284333e6"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: Some((
-                raw: {
-                    "type": "git",
-                    "url": "git://github.com/rlidwka/sinopia",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/rlidwka/sinopia",
-                    cloneable_repo_dir: "/",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "rlidwka",
-                        repo: "sinopia",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "_nodeVersion": "4.0.0",
-                "version": "1.4.0",
-                "author": {
-                    "email": "alex@kocharin.ru",
-                    "name": "Alex Kocharin",
-                },
-                "_from": ".",
-                "homepage": "https://github.com/rlidwka/sinopia",
-                "description": "Private npm repository server",
-                "bugs": {
-                    "url": "https://github.com/rlidwka/sinopia/issues",
-                },
-                "keywords": [
-                    "private",
-                    "package",
-                    "repository",
-                    "registry",
-                    "modules",
-                    "proxy",
-                    "server",
-                ],
-                "bin": {
-                    "sinopia": "./bin/sinopia",
-                },
-                "license": {
-                    "type": "WTFPL",
-                    "url": "http://www.wtfpl.net/txt/copying/",
-                },
-                "main": "index.js",
-                "maintainers": [
-                    {
-                        "email": "mathieumg@gmail.com",
-                        "name": "mathieumg",
-                    },
-                ],
-                "engines": {
-                    "node": ">=0.10",
-                },
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
-                "scripts": {
-                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
-                    "lint": "eslint .",
-                    "prepublish": "js-yaml package.yaml > package.json",
-                    "test": "eslint . && mocha ./test/functional ./test/unit",
-                    "test-only": "mocha ./test/functional ./test/unit",
-                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
-                },
-                "gitHead": "a168d4a12ac45c1ba6814df9a39b168bb3cdf97e",
-                "_npmVersion": "2.4.2",
-                "_npmUser": {
-                    "email": "mathieumg@gmail.com",
-                    "name": "mathieumg",
-                },
-                "preferGlobal": true,
-                "_shasum": "38825dcfcf650c3f79506b073b37fe3c284333e6",
-                "name": "sinopib",
-                "_id": "sinopib@1.4.0",
-            },
-        ),
+        ): "2016-01-18T18:53:19.778Z",
+        (
+            major: 1,
+            minor: 4,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): "2016-01-18T19:20:47.345Z",
+    },
+    versions: {
         (
             major: 1,
             minor: 4,
@@ -1880,7 +925,7 @@ Some(("sinopib", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/rlidwka/sinopia",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "rlidwka",
@@ -1889,13 +934,23 @@ Some(("sinopib", Normal(
                 ),
             )),
             extra_metadata: {
-                "version": "1.4.3",
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
+                },
+                "preferGlobal": true,
                 "_id": "sinopib@1.4.3",
+                "_npmUser": {
+                    "email": "mathieumg@gmail.com",
+                    "name": "mathieumg",
+                },
                 "bin": {
                     "sinopia": "./bin/sinopia",
                 },
-                "_from": ".",
-                "preferGlobal": true,
+                "author": {
+                    "email": "alex@kocharin.ru",
+                    "name": "Alex Kocharin",
+                },
+                "description": "Private npm repository server",
                 "scripts": {
                     "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
                     "lint": "eslint .",
@@ -1904,37 +959,13 @@ Some(("sinopib", Normal(
                     "test-only": "mocha ./test/functional ./test/unit",
                     "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
                 },
-                "_npmUser": {
-                    "email": "mathieumg@gmail.com",
-                    "name": "mathieumg",
-                },
-                "author": {
-                    "email": "alex@kocharin.ru",
-                    "name": "Alex Kocharin",
-                },
+                "homepage": "https://github.com/rlidwka/sinopia",
                 "main": "index.js",
-                "maintainers": [
-                    {
-                        "email": "mathieumg@gmail.com",
-                        "name": "mathieumg",
-                    },
-                ],
-                "gitHead": "4fbc97717cbd0acb11253ef420f73cfd14695780",
+                "_shasum": "09d810aee8df3dfee3066a698b22ed1ab11ce087",
+                "_npmVersion": "2.4.2",
                 "engines": {
                     "node": ">=0.10",
                 },
-                "_npmVersion": "2.4.2",
-                "_shasum": "09d810aee8df3dfee3066a698b22ed1ab11ce087",
-                "description": "Private npm repository server",
-                "license": {
-                    "type": "WTFPL",
-                    "url": "http://www.wtfpl.net/txt/copying/",
-                },
-                "_nodeVersion": "4.0.0",
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
-                "homepage": "https://github.com/rlidwka/sinopia",
                 "keywords": [
                     "private",
                     "package",
@@ -1944,10 +975,979 @@ Some(("sinopib", Normal(
                     "proxy",
                     "server",
                 ],
+                "name": "sinopib",
+                "version": "1.4.3",
+                "maintainers": [
+                    {
+                        "email": "mathieumg@gmail.com",
+                        "name": "mathieumg",
+                    },
+                ],
+                "_nodeVersion": "4.0.0",
+                "_from": ".",
                 "bugs": {
                     "url": "https://github.com/rlidwka/sinopia/issues",
                 },
+                "gitHead": "4fbc97717cbd0acb11253ef420f73cfd14695780",
+                "license": {
+                    "type": "WTFPL",
+                    "url": "http://www.wtfpl.net/txt/copying/",
+                },
+            },
+        ),
+        (
+            major: 1,
+            minor: 4,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("JSONStream", (
+                    raw: "1.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("async", (
+                    raw: ">=0.9.0 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 9,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("body-parser", (
+                    raw: ">=1.9.2 <2.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 9,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("bunyan", (
+                    raw: ">=0.22.1 <2.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 22,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("commander", (
+                    raw: ">=2.3.0 <3.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 3,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("compression", (
+                    raw: ">=1.2.0 <2.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("cookies", (
+                    raw: ">=0.5.0 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 5,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("es6-shim", (
+                    raw: "0.21.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 21,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 22,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("express", (
+                    raw: ">=5.0.0-0 <6.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 6,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("express-json5", (
+                    raw: ">=0.1.0 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("handlebars", (
+                    raw: "2.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("highlight.js", (
+                    raw: "8.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 8,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 9,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("http-errors", (
+                    raw: ">=1.2.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("jju", (
+                    raw: "1.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("js-yaml", (
+                    raw: ">=3.0.1 <4.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("lunr", (
+                    raw: ">=0.5.2 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 5,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("minimatch", (
+                    raw: ">=0.2.14 <2.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 2,
+                                bug: 14,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("mkdirp", (
+                    raw: ">=0.3.5 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 3,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("readable-stream", (
+                    raw: "~1.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("render-readme", (
+                    raw: ">=0.2.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 2,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("request", (
+                    raw: ">=2.31.0 <3.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 31,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("rwlock-plus", (
+                    raw: "1.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("semver", (
+                    raw: ">=2.2.1 <5.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 2,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("sinopia-htpasswd", (
+                    raw: ">= 0.4.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 4,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [
+                ("bluebird", (
+                    raw: "2 >=2.9",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                            Gte((
+                                major: 2,
+                                minor: 9,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("browserify", (
+                    raw: "7.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 7,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 8,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("browserify-handlebars", (
+                    raw: "1.x",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("eslint", (
+                    raw: "1 >=1.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                            Gte((
+                                major: 1,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("grunt", (
+                    raw: ">=0.4.4 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 4,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("grunt-browserify", (
+                    raw: ">=2.0.8 <3.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 0,
+                                bug: 8,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("grunt-cli", (
+                    raw: "*",
+                    parsed: Range(([
+                        [
+                            Any,
+                        ],
+                    ])),
+                )),
+                ("grunt-contrib-less", (
+                    raw: ">=0.11.0 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 11,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("grunt-contrib-watch", (
+                    raw: ">=0.6.1 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 6,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("mocha", (
+                    raw: "2 >=2.2.3",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                            Gte((
+                                major: 2,
+                                minor: 2,
+                                bug: 3,
+                                prerelease: [],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("onclick", (
+                    raw: ">=0.1.0 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("rimraf", (
+                    raw: ">=2.2.5 <3.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 2,
+                                minor: 2,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("transition-complete", (
+                    raw: ">=0.0.2 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 0,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("unopinionate", (
+                    raw: ">=0.0.4 <1.0.0-0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 0,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 1,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.0.tgz",
+                shasum: Some("38825dcfcf650c3f79506b073b37fe3c284333e6"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some((
+                raw: {
+                    "type": "git",
+                    "url": "git://github.com/rlidwka/sinopia",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/rlidwka/sinopia",
+                    cloneable_repo_dir: "",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "rlidwka",
+                        repo: "sinopia",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "license": {
+                    "type": "WTFPL",
+                    "url": "http://www.wtfpl.net/txt/copying/",
+                },
+                "_npmUser": {
+                    "email": "mathieumg@gmail.com",
+                    "name": "mathieumg",
+                },
+                "version": "1.4.0",
+                "_shasum": "38825dcfcf650c3f79506b073b37fe3c284333e6",
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
+                },
+                "_from": ".",
+                "bugs": {
+                    "url": "https://github.com/rlidwka/sinopia/issues",
+                },
+                "maintainers": [
+                    {
+                        "email": "mathieumg@gmail.com",
+                        "name": "mathieumg",
+                    },
+                ],
+                "description": "Private npm repository server",
+                "_nodeVersion": "4.0.0",
+                "engines": {
+                    "node": ">=0.10",
+                },
+                "bin": {
+                    "sinopia": "./bin/sinopia",
+                },
+                "keywords": [
+                    "private",
+                    "package",
+                    "repository",
+                    "registry",
+                    "modules",
+                    "proxy",
+                    "server",
+                ],
+                "_id": "sinopib@1.4.0",
+                "homepage": "https://github.com/rlidwka/sinopia",
                 "name": "sinopib",
+                "scripts": {
+                    "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
+                    "lint": "eslint .",
+                    "prepublish": "js-yaml package.yaml > package.json",
+                    "test": "eslint . && mocha ./test/functional ./test/unit",
+                    "test-only": "mocha ./test/functional ./test/unit",
+                    "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
+                },
+                "_npmVersion": "2.4.2",
+                "main": "index.js",
+                "author": {
+                    "email": "alex@kocharin.ru",
+                    "name": "Alex Kocharin",
+                },
+                "gitHead": "a168d4a12ac45c1ba6814df9a39b168bb3cdf97e",
+                "preferGlobal": true,
             },
         ),
         (
@@ -2835,7 +2835,7 @@ Some(("sinopib", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/rlidwka/sinopia",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "rlidwka",
@@ -2844,30 +2844,13 @@ Some(("sinopib", Normal(
                 ),
             )),
             extra_metadata: {
-                "_from": ".",
-                "name": "sinopib",
-                "maintainers": [
-                    {
-                        "email": "mathieumg@gmail.com",
-                        "name": "mathieumg",
-                    },
-                ],
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
-                "_nodeVersion": "4.0.0",
-                "bugs": {
-                    "url": "https://github.com/rlidwka/sinopia/issues",
-                },
-                "gitHead": "146281609f567fb8f4deeb4fc6a86dc974e766a0",
-                "author": {
-                    "email": "alex@kocharin.ru",
-                    "name": "Alex Kocharin",
-                },
-                "_id": "sinopib@1.4.1",
                 "version": "1.4.1",
+                "_nodeVersion": "4.0.0",
+                "_from": ".",
                 "_npmVersion": "2.4.2",
                 "_shasum": "4745b387791de6af5d5361a3b045d59e031d7633",
+                "gitHead": "146281609f567fb8f4deeb4fc6a86dc974e766a0",
+                "homepage": "https://github.com/rlidwka/sinopia",
                 "keywords": [
                     "private",
                     "package",
@@ -2877,23 +2860,41 @@ Some(("sinopib", Normal(
                     "proxy",
                     "server",
                 ],
+                "bin": {
+                    "sinopia": "./bin/sinopia",
+                },
+                "preferGlobal": true,
                 "_npmUser": {
                     "email": "mathieumg@gmail.com",
                     "name": "mathieumg",
-                },
-                "engines": {
-                    "node": ">=0.10",
                 },
                 "license": {
                     "type": "WTFPL",
                     "url": "http://www.wtfpl.net/txt/copying/",
                 },
-                "main": "index.js",
-                "preferGlobal": true,
-                "description": "Private npm repository server",
-                "bin": {
-                    "sinopia": "./bin/sinopia",
+                "author": {
+                    "email": "alex@kocharin.ru",
+                    "name": "Alex Kocharin",
                 },
+                "main": "index.js",
+                "_id": "sinopib@1.4.1",
+                "maintainers": [
+                    {
+                        "email": "mathieumg@gmail.com",
+                        "name": "mathieumg",
+                    },
+                ],
+                "description": "Private npm repository server",
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
+                },
+                "bugs": {
+                    "url": "https://github.com/rlidwka/sinopia/issues",
+                },
+                "engines": {
+                    "node": ">=0.10",
+                },
+                "name": "sinopib",
                 "scripts": {
                     "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
                     "lint": "eslint .",
@@ -2902,7 +2903,6 @@ Some(("sinopib", Normal(
                     "test-only": "mocha ./test/functional ./test/unit",
                     "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
                 },
-                "homepage": "https://github.com/rlidwka/sinopia",
             },
         ),
         (
@@ -3790,7 +3790,7 @@ Some(("sinopib", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/rlidwka/sinopia",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "rlidwka",
@@ -3799,27 +3799,6 @@ Some(("sinopib", Normal(
                 ),
             )),
             extra_metadata: {
-                "_from": ".",
-                "_npmVersion": "2.4.2",
-                "preferGlobal": true,
-                "maintainers": [
-                    {
-                        "email": "mathieumg@gmail.com",
-                        "name": "mathieumg",
-                    },
-                ],
-                "description": "Private npm repository server",
-                "bin": {
-                    "sinopia": "./bin/sinopia",
-                },
-                "version": "1.4.2",
-                "_id": "sinopib@1.4.2",
-                "publishConfig": {
-                    "registry": "https://registry.npmjs.org/",
-                },
-                "engines": {
-                    "node": ">=0.10",
-                },
                 "keywords": [
                     "private",
                     "package",
@@ -3829,15 +3808,12 @@ Some(("sinopib", Normal(
                     "proxy",
                     "server",
                 ],
-                "_nodeVersion": "4.0.0",
-                "license": {
-                    "type": "WTFPL",
-                    "url": "http://www.wtfpl.net/txt/copying/",
-                },
                 "name": "sinopib",
-                "gitHead": "09006c6ad981102f66d0f1002ad8f70c9e01b37b",
-                "_shasum": "13d7de795ff7e81e0c74d20be41f7a330f73c7fd",
-                "homepage": "https://github.com/rlidwka/sinopia",
+                "main": "index.js",
+                "bugs": {
+                    "url": "https://github.com/rlidwka/sinopia/issues",
+                },
+                "_nodeVersion": "4.0.0",
                 "scripts": {
                     "clean-shrinkwrap": "node -e \'\n  function clean(j) {\n    if (!j) return\n    for (var k in j) {\n      delete j[k].from\n      delete j[k].resolved\n      if (j[k].dependencies) clean(j[k].dependencies)\n    }\n  }\n  x = JSON.parse(require(\"fs\").readFileSync(\"./npm-shrinkwrap.json\"))\n  clean(x.dependencies)\n  x = JSON.stringify(x, null, \"  \")\n  require(\"fs\").writeFileSync(\"./npm-shrinkwrap.json\", x + \"\\n\")\n\'\n",
                     "lint": "eslint .",
@@ -3846,18 +3822,42 @@ Some(("sinopib", Normal(
                     "test-only": "mocha ./test/functional ./test/unit",
                     "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
                 },
-                "bugs": {
-                    "url": "https://github.com/rlidwka/sinopia/issues",
+                "version": "1.4.2",
+                "gitHead": "09006c6ad981102f66d0f1002ad8f70c9e01b37b",
+                "homepage": "https://github.com/rlidwka/sinopia",
+                "preferGlobal": true,
+                "publishConfig": {
+                    "registry": "https://registry.npmjs.org/",
                 },
-                "author": {
-                    "email": "alex@kocharin.ru",
-                    "name": "Alex Kocharin",
+                "engines": {
+                    "node": ">=0.10",
                 },
-                "main": "index.js",
+                "description": "Private npm repository server",
+                "license": {
+                    "type": "WTFPL",
+                    "url": "http://www.wtfpl.net/txt/copying/",
+                },
+                "_from": ".",
+                "_shasum": "13d7de795ff7e81e0c74d20be41f7a330f73c7fd",
+                "bin": {
+                    "sinopia": "./bin/sinopia",
+                },
+                "maintainers": [
+                    {
+                        "email": "mathieumg@gmail.com",
+                        "name": "mathieumg",
+                    },
+                ],
                 "_npmUser": {
                     "email": "mathieumg@gmail.com",
                     "name": "mathieumg",
                 },
+                "_npmVersion": "2.4.2",
+                "author": {
+                    "email": "alex@kocharin.ru",
+                    "name": "Alex Kocharin",
+                },
+                "_id": "sinopib@1.4.2",
             },
         ),
     },

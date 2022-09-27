@@ -59,41 +59,41 @@ Some(("@buckpkg/libunwind", Normal(
             ),
             repository: None,
             extra_metadata: {
+                "_shasum": "4e4eac5cd7da3c046e355700b3f12bc99bd89611",
+                "_npmVersion": "3.10.10",
+                "repo": {
+                    "url": "http://download.savannah.nongnu.org/releases/libunwind/libunwind-1.2.tar.gz",
+                    "type": "tarball",
+                    "sha256": "1de38ffbdc88bd694d10081865871cd2bfbb02ad8ef9e1606aee18d65532b992",
+                },
+                "name": "@buckpkg/libunwind",
+                "_nodeVersion": "4.3.2",
                 "_npmOperationalInternal": {
                     "tmp": "tmp/libunwind-1.2.0.tgz_1501739622565_0.20099027082324028",
                     "host": "s3://npm-registry-packages",
                 },
+                "description": "libunwind package that sets up the system libunwind",
+                "version": "1.2.0",
+                "_id": "@buckpkg/libunwind@1.2.0",
+                "_from": ".",
+                "scripts": {
+                    "postinstall": "buckit fetch",
+                },
                 "author": {
                     "name": "Dave Watson",
                 },
+                "license": "X11 License",
                 "flat": true,
-                "name": "@buckpkg/libunwind",
-                "_from": ".",
-                "version": "1.2.0",
-                "_nodeVersion": "4.3.2",
-                "_shasum": "4e4eac5cd7da3c046e355700b3f12bc99bd89611",
-                "_npmVersion": "3.10.10",
                 "maintainers": [
                     {
                         "name": "pjameson",
                         "email": "pjameson@pjameson.us",
                     },
                 ],
-                "repo": {
-                    "url": "http://download.savannah.nongnu.org/releases/libunwind/libunwind-1.2.tar.gz",
-                    "type": "tarball",
-                    "sha256": "1de38ffbdc88bd694d10081865871cd2bfbb02ad8ef9e1606aee18d65532b992",
-                },
                 "_npmUser": {
                     "name": "pjameson",
                     "email": "pjameson@pjameson.us",
                 },
-                "scripts": {
-                    "postinstall": "buckit fetch",
-                },
-                "description": "libunwind package that sets up the system libunwind",
-                "_id": "@buckpkg/libunwind@1.2.0",
-                "license": "X11 License",
             },
         ),
     },

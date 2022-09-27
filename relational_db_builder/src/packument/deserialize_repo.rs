@@ -63,14 +63,14 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
         if host == "github.com" {
             let (user, repo) = try_parse_user_repo_shorthand(path)?;
             return Some(RepoInfo::new_github(
-                "/".to_string(),
+                "".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
         } else if host == "bitbucket.org" {
             let (user, repo) = try_parse_user_repo_shorthand(path)?;
             return Some(RepoInfo::new_bitbucket(
-                "/".to_string(),
+                "".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
@@ -78,7 +78,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
             println!("path: {}", path);
             let (user, repo) = try_parse_user_repo_shorthand(path)?;
             return Some(RepoInfo::new_gitlab(
-                "/".to_string(),
+                "".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
@@ -87,7 +87,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
         } else {
             return Some(RepoInfo::new_thirdparty(
                 url_or_ssh.to_owned(),
-                "/".to_owned(),
+                "".to_owned(),
             ));
         }
     }
@@ -110,7 +110,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
     if host == "github.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
             return Some(RepoInfo::new_github(
-                "/".to_string(),
+                "".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
@@ -130,14 +130,14 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
                 return Some(RepoInfo::new_github(
-                    "/".to_string(),
+                    "".to_string(),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
                 ));
             } else {
                 let dir_path = comps[4..].join("/");
                 return Some(RepoInfo::new_github(
-                    format!("/{}", dir_path),
+                    dir_path,
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
                 ));
@@ -146,7 +146,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
     } else if host == "bitbucket.org" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
             return Some(RepoInfo::new_bitbucket(
-                "/".to_string(),
+                "".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
@@ -166,14 +166,14 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
             let _branch = comps[3]; // We ignore the branch
             if num_comps == 4 {
                 return Some(RepoInfo::new_bitbucket(
-                    "/".to_string(),
+                    "".to_string(),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
                 ));
             } else {
                 let dir_path = comps[4..].join("/");
                 return Some(RepoInfo::new_bitbucket(
-                    format!("/{}", dir_path),
+                    dir_path,
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
                 ));
@@ -182,7 +182,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
     } else if host == "gitlab.com" {
         if let Some((user, repo)) = try_parse_user_repo_shorthand(url_path) {
             return Some(RepoInfo::new_gitlab(
-                "/".to_string(),
+                "".to_string(),
                 user.to_owned(),
                 strip_dot_git(repo).to_owned(),
             ));
@@ -202,14 +202,14 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
             let _branch = comps[4]; // We ignore the branch
             if num_comps == 5 {
                 return Some(RepoInfo::new_gitlab(
-                    "/".to_string(),
+                    "".to_string(),
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
                 ));
             } else {
                 let dir_path = comps[5..].join("/");
                 return Some(RepoInfo::new_gitlab(
-                    format!("/{}", dir_path),
+                    dir_path,
                     user.to_owned(),
                     strip_dot_git(repo).to_owned(),
                 ));
@@ -222,15 +222,12 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
         let mut new_url = repo_url.clone();
         new_url.set_path(strip_dot_git(url_path));
         let https_url_str = new_url.to_string().replacen("git://", "https://", 1);
-        Some(RepoInfo::new_thirdparty(https_url_str, "/".to_owned()))
+        Some(RepoInfo::new_thirdparty(https_url_str, "".to_owned()))
     } else {
         // Strip .git
         let mut new_url = repo_url.clone();
         new_url.set_path(strip_dot_git(url_path));
-        Some(RepoInfo::new_thirdparty(
-            new_url.to_string(),
-            "/".to_owned(),
-        ))
+        Some(RepoInfo::new_thirdparty(new_url.to_string(), "".to_owned()))
     }
 }
 
@@ -243,21 +240,21 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> Option<RepoInfo>
     if match_strip_start(&mut repo_str, "github:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
         return Some(RepoInfo::new_github(
-            "/".to_string(),
+            "".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
         ));
     } else if match_strip_start(&mut repo_str, "bitbucket:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
         return Some(RepoInfo::new_bitbucket(
-            "/".to_string(),
+            "".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
         ));
     } else if match_strip_start(&mut repo_str, "gitlab:") {
         let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
         return Some(RepoInfo::new_gitlab(
-            "/".to_string(),
+            "".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
         ));
@@ -265,7 +262,7 @@ fn deserialize_repo_infer_type_str(full_repo_string: String) -> Option<RepoInfo>
         return Some(parse_gist_path(repo_str));
     } else if let Some((user, repo)) = try_parse_user_repo_shorthand(repo_str) {
         return Some(RepoInfo::new_github(
-            "/".to_string(),
+            "".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
         ));
@@ -319,11 +316,8 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
 
             let parsed_dir = match dir {
                 None => info.cloneable_repo_dir,
-                Some(json_dir) if info.cloneable_repo_dir == "/" => json_dir,
-                Some(json_dir) => {
-                    assert_eq!(json_dir, info.cloneable_repo_dir);
-                    json_dir
-                }
+                Some(json_dir) if info.cloneable_repo_dir.is_empty() => json_dir,
+                Some(json_dir) => json_dir,
             };
 
             RepoInfo {
@@ -352,46 +346,46 @@ mod tests {
     #[test_case(
         "github/fetch",
         "https://github.com/github/fetch",
-        "/",
+        "",
         "github",
         "fetch"
     )]
     #[test_case(
         "stuff/stuff.com",
         "https://github.com/stuff/stuff.com",
-        "/",
+        "",
         "stuff",
         "stuff.com"
     )]
     #[test_case(
         "jshttp/accepts",
         "https://github.com/jshttp/accepts",
-        "/",
+        "",
         "jshttp",
         "accepts"
     )]
-    #[test_case("git/git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("git/git.git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("git/git", "https://github.com/git/git", "", "git", "git")]
+    #[test_case("git/git.git", "https://github.com/git/git", "", "git", "git")]
     #[test_case(
         "github/github",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
     #[test_case(
         "github/github.git",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
-    #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
-    #[test_case("https/https", "https://github.com/https/https", "/", "https", "https")]
+    #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "", "ssh", "ssh")]
+    #[test_case("https/https", "https://github.com/https/https", "", "https", "https")]
     #[test_case(
         "https/github",
         "https://github.com/https/github",
-        "/",
+        "",
         "https",
         "github"
     )]
@@ -399,45 +393,45 @@ mod tests {
     #[test_case(
         "github:eemeli/yaml",
         "https://github.com/eemeli/yaml",
-        "/",
+        "",
         "eemeli",
         "yaml"
     )]
     #[test_case(
         "github:stuff.com/stuff.com",
         "https://github.com/stuff.com/stuff.com",
-        "/",
+        "",
         "stuff.com",
         "stuff.com"
     )]
-    #[test_case("github:git/git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("github:git/git.git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("github:git/git", "https://github.com/git/git", "", "git", "git")]
+    #[test_case("github:git/git.git", "https://github.com/git/git", "", "git", "git")]
     #[test_case(
         "github:github/github",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
     #[test_case(
         "github:github/github.git",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
-    #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
+    #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "", "ssh", "ssh")]
     #[test_case(
         "github:https/https",
         "https://github.com/https/https",
-        "/",
+        "",
         "https",
         "https"
     )]
     #[test_case(
         "github:https/github",
         "https://github.com/https/github",
-        "/",
+        "",
         "https",
         "github"
     )]
@@ -445,14 +439,14 @@ mod tests {
     #[test_case(
         "https://github.com/npm/cacache",
         "https://github.com/npm/cacache",
-        "/",
+        "",
         "npm",
         "cacache"
     )]
     #[test_case(
         "https://github.com/kornelski/https.git-github.git",
         "https://github.com/kornelski/https.git-github",
-        "/",
+        "",
         "kornelski",
         "https.git-github"
     )]
@@ -460,7 +454,7 @@ mod tests {
     #[test_case(
         "http://github.com/isaacs/abbrev-js",
         "https://github.com/isaacs/abbrev-js",
-        "/",
+        "",
         "isaacs",
         "abbrev-js"
     )]
@@ -468,14 +462,14 @@ mod tests {
     #[test_case(
         "https://github.com:crypto-browserify/browserify-rsa.git",
         "https://github.com/crypto-browserify/browserify-rsa",
-        "/",
+        "",
         "crypto-browserify",
         "browserify-rsa"
     )]
     #[test_case(
         "github.com/makindotcc/McHttpFrida",
         "https://github.com/makindotcc/McHttpFrida",
-        "/",
+        "",
         "makindotcc",
         "McHttpFrida"
     )]
@@ -483,7 +477,7 @@ mod tests {
     #[test_case(
         "https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators",
         "https://github.com/babel/babel",
-        "/packages/babel-plugin-syntax-async-generators",
+        "packages/babel-plugin-syntax-async-generators",
         "babel",
         "babel"
     )]
@@ -491,14 +485,14 @@ mod tests {
     #[test_case(
         "git://github.com/whitequark/ipaddr.js",
         "https://github.com/whitequark/ipaddr.js",
-        "/",
+        "",
         "whitequark",
         "ipaddr.js"
     )]
     #[test_case(
         "git://github.com/browserify/console-browserify.git",
         "https://github.com/browserify/console-browserify",
-        "/",
+        "",
         "browserify",
         "console-browserify"
     )]
@@ -506,7 +500,7 @@ mod tests {
     #[test_case(
         "git+https://github.com/yargs/set-blocking.git",
         "https://github.com/yargs/set-blocking",
-        "/",
+        "",
         "yargs",
         "set-blocking"
     )]
@@ -514,14 +508,14 @@ mod tests {
     #[test_case(
         "git+ssh://git@github.com/mikaelbr/node-notifier.git",
         "https://github.com/mikaelbr/node-notifier",
-        "/",
+        "",
         "mikaelbr",
         "node-notifier"
     )]
     #[test_case(
         "git+ssh://git@github.com/istanbuljs/istanbuljs.git",
         "https://github.com/istanbuljs/istanbuljs",
-        "/",
+        "",
         "istanbuljs",
         "istanbuljs"
     )]
@@ -529,7 +523,7 @@ mod tests {
     #[test_case(
         "git@github.com:tsertkov/exec-sh.git",
         "https://github.com/tsertkov/exec-sh",
-        "/",
+        "",
         "tsertkov",
         "exec-sh"
     )]
@@ -582,14 +576,14 @@ mod tests {
     #[test_case(
         "https://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
         "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
-        "/",
+        "",
         "janouwehand",
         "stuff-stuff-stuff"
     )]
     #[test_case(
         "http://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
         "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
-        "/",
+        "",
         "janouwehand",
         "stuff-stuff-stuff"
     )]
@@ -597,12 +591,12 @@ mod tests {
     #[test_case(
         "bitbucket:github/git",
         "https://bitbucket.org/github/git",
-        "/",
+        "",
         "github",
         "git"
     )]
     // bitbucket tree directory case
-    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
+    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
     fn test_deserialize_repo_blob_bitbucket(
         url_str: &str,
         answer_url: &str,
@@ -652,14 +646,14 @@ mod tests {
     #[test_case(
         "https://gitlab.com/gitlab-org/gitlab.git",
         "https://gitlab.com/gitlab-org/gitlab.git",
-        "/",
+        "",
         "gitlab-org",
         "gitlab"
     )]
     #[test_case(
         "http://gitlab.com/gitlab-org/gitlab.git",
         "https://gitlab.com/gitlab-org/gitlab.git",
-        "/",
+        "",
         "gitlab-org",
         "gitlab"
     )]
@@ -667,12 +661,12 @@ mod tests {
     #[test_case(
         "gitlab:bitbucket-gist/github",
         "https://gitlab.com/bitbucket-gist/github.git",
-        "/",
+        "",
         "bitbucket-gist",
         "github"
     )]
     // gitlab tree directory case
-    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "/generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
+    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
     fn test_deserialize_repo_blob_gitlab(
         url_str: &str,
         answer_url: &str,
@@ -753,7 +747,7 @@ mod tests {
 
         let answer_info = RepoInfo {
             cloneable_repo_url: answer_url.into(),
-            cloneable_repo_dir: "/".into(),
+            cloneable_repo_dir: "".into(),
             vcs: Vcs::Git,
             host_info: RepoHostInfo::Gist {
                 id: answer_id.into(),
@@ -807,7 +801,7 @@ mod tests {
 
         let answer_info = RepoInfo {
             cloneable_repo_url: answer_url.into(),
-            cloneable_repo_dir: "/".into(),
+            cloneable_repo_dir: "".into(),
             vcs: Vcs::Git,
             host_info: RepoHostInfo::Thirdparty,
         };
@@ -834,46 +828,46 @@ mod tests {
     #[test_case(
         "github/fetch",
         "https://github.com/github/fetch",
-        "/",
+        "",
         "github",
         "fetch"
     )]
     #[test_case(
         "stuff/stuff.com",
         "https://github.com/stuff/stuff.com",
-        "/",
+        "",
         "stuff",
         "stuff.com"
     )]
     #[test_case(
         "jshttp/accepts",
         "https://github.com/jshttp/accepts",
-        "/",
+        "",
         "jshttp",
         "accepts"
     )]
-    #[test_case("git/git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("git/git.git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("git/git", "https://github.com/git/git", "", "git", "git")]
+    #[test_case("git/git.git", "https://github.com/git/git", "", "git", "git")]
     #[test_case(
         "github/github",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
     #[test_case(
         "github/github.git",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
-    #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
-    #[test_case("https/https", "https://github.com/https/https", "/", "https", "https")]
+    #[test_case("ssh/ssh", "https://github.com/ssh/ssh", "", "ssh", "ssh")]
+    #[test_case("https/https", "https://github.com/https/https", "", "https", "https")]
     #[test_case(
         "https/github",
         "https://github.com/https/github",
-        "/",
+        "",
         "https",
         "github"
     )]
@@ -881,45 +875,45 @@ mod tests {
     #[test_case(
         "github:eemeli/yaml",
         "https://github.com/eemeli/yaml",
-        "/",
+        "",
         "eemeli",
         "yaml"
     )]
     #[test_case(
         "github:stuff.com/stuff.com",
         "https://github.com/stuff.com/stuff.com",
-        "/",
+        "",
         "stuff.com",
         "stuff.com"
     )]
-    #[test_case("github:git/git", "https://github.com/git/git", "/", "git", "git")]
-    #[test_case("github:git/git.git", "https://github.com/git/git", "/", "git", "git")]
+    #[test_case("github:git/git", "https://github.com/git/git", "", "git", "git")]
+    #[test_case("github:git/git.git", "https://github.com/git/git", "", "git", "git")]
     #[test_case(
         "github:github/github",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
     #[test_case(
         "github:github/github.git",
         "https://github.com/github/github",
-        "/",
+        "",
         "github",
         "github"
     )]
-    #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "/", "ssh", "ssh")]
+    #[test_case("github:ssh/ssh", "https://github.com/ssh/ssh", "", "ssh", "ssh")]
     #[test_case(
         "github:https/https",
         "https://github.com/https/https",
-        "/",
+        "",
         "https",
         "https"
     )]
     #[test_case(
         "github:https/github",
         "https://github.com/https/github",
-        "/",
+        "",
         "https",
         "github"
     )]
@@ -927,14 +921,14 @@ mod tests {
     #[test_case(
         "https://github.com/npm/cacache",
         "https://github.com/npm/cacache",
-        "/",
+        "",
         "npm",
         "cacache"
     )]
     #[test_case(
         "https://github.com/kornelski/https.git-github.git",
         "https://github.com/kornelski/https.git-github",
-        "/",
+        "",
         "kornelski",
         "https.git-github"
     )]
@@ -942,7 +936,7 @@ mod tests {
     #[test_case(
         "http://github.com/isaacs/abbrev-js",
         "https://github.com/isaacs/abbrev-js",
-        "/",
+        "",
         "isaacs",
         "abbrev-js"
     )]
@@ -950,14 +944,14 @@ mod tests {
     #[test_case(
         "https://github.com:crypto-browserify/browserify-rsa.git",
         "https://github.com/crypto-browserify/browserify-rsa",
-        "/",
+        "",
         "crypto-browserify",
         "browserify-rsa"
     )]
     #[test_case(
         "github.com/makindotcc/McHttpFrida",
         "https://github.com/makindotcc/McHttpFrida",
-        "/",
+        "",
         "makindotcc",
         "McHttpFrida"
     )]
@@ -965,7 +959,7 @@ mod tests {
     #[test_case(
         "https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators",
         "https://github.com/babel/babel",
-        "/packages/babel-plugin-syntax-async-generators",
+        "packages/babel-plugin-syntax-async-generators",
         "babel",
         "babel"
     )]
@@ -973,14 +967,14 @@ mod tests {
     #[test_case(
         "git://github.com/whitequark/ipaddr.js",
         "https://github.com/whitequark/ipaddr.js",
-        "/",
+        "",
         "whitequark",
         "ipaddr.js"
     )]
     #[test_case(
         "git://github.com/browserify/console-browserify.git",
         "https://github.com/browserify/console-browserify",
-        "/",
+        "",
         "browserify",
         "console-browserify"
     )]
@@ -988,7 +982,7 @@ mod tests {
     #[test_case(
         "git+https://github.com/yargs/set-blocking.git",
         "https://github.com/yargs/set-blocking",
-        "/",
+        "",
         "yargs",
         "set-blocking"
     )]
@@ -996,14 +990,14 @@ mod tests {
     #[test_case(
         "git+ssh://git@github.com/mikaelbr/node-notifier.git",
         "https://github.com/mikaelbr/node-notifier",
-        "/",
+        "",
         "mikaelbr",
         "node-notifier"
     )]
     #[test_case(
         "git+ssh://git@github.com/istanbuljs/istanbuljs.git",
         "https://github.com/istanbuljs/istanbuljs",
-        "/",
+        "",
         "istanbuljs",
         "istanbuljs"
     )]
@@ -1011,7 +1005,7 @@ mod tests {
     #[test_case(
         "git@github.com:tsertkov/exec-sh.git",
         "https://github.com/tsertkov/exec-sh",
-        "/",
+        "",
         "tsertkov",
         "exec-sh"
     )]
@@ -1041,14 +1035,14 @@ mod tests {
     #[test_case(
         "https://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
         "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
-        "/",
+        "",
         "janouwehand",
         "stuff-stuff-stuff"
     )]
     #[test_case(
         "http://bitbucket.org/janouwehand/stuff-stuff-stuff.git",
         "https://bitbucket.org/janouwehand/stuff-stuff-stuff",
-        "/",
+        "",
         "janouwehand",
         "stuff-stuff-stuff"
     )]
@@ -1056,12 +1050,12 @@ mod tests {
     #[test_case(
         "bitbucket:github/git",
         "https://bitbucket.org/github/git",
-        "/",
+        "",
         "github",
         "git"
     )]
     // bitbucket tree directory case
-    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "/ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
+    #[test_case("https://bitbucket.org/janouwehand/stuff-stuff-stuff/src/master/ReplacePackageRefs/Properties/", "https://bitbucket.org/janouwehand/stuff-stuff-stuff", "ReplacePackageRefs/Properties", "janouwehand", "stuff-stuff-stuff")]
     fn test_deserialize_repo_infer_type_str_bitbucket(
         url_str: &str,
         answer_url: &str,
@@ -1088,14 +1082,14 @@ mod tests {
     #[test_case(
         "https://gitlab.com/gitlab-org/gitlab.git",
         "https://gitlab.com/gitlab-org/gitlab.git",
-        "/",
+        "",
         "gitlab-org",
         "gitlab"
     )]
     #[test_case(
         "http://gitlab.com/gitlab-org/gitlab.git",
         "https://gitlab.com/gitlab-org/gitlab.git",
-        "/",
+        "",
         "gitlab-org",
         "gitlab"
     )]
@@ -1103,12 +1097,12 @@ mod tests {
     #[test_case(
         "gitlab:bitbucket-gist/github",
         "https://gitlab.com/bitbucket-gist/github.git",
-        "/",
+        "",
         "bitbucket-gist",
         "github"
     )]
     // gitlab tree directory case
-    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "/generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
+    #[test_case("https://gitlab.com/gitlab-org/gitlab/-/tree/master/generator_templates/snowplow_event_definition", "https://gitlab.com/gitlab-org/gitlab.git", "generator_templates/snowplow_event_definition", "gitlab-org", "gitlab")]
     fn test_deserialize_repo_infer_type_str_gitlab(
         url_str: &str,
         answer_url: &str,
@@ -1161,7 +1155,7 @@ mod tests {
     fn test_deserialize_repo_infer_type_str_gist(url_str: &str, answer_url: &str, answer_id: &str) {
         let answer_info = RepoInfo {
             cloneable_repo_url: answer_url.into(),
-            cloneable_repo_dir: "/".into(),
+            cloneable_repo_dir: "".into(),
             vcs: Vcs::Git,
             host_info: RepoHostInfo::Gist {
                 id: answer_id.into(),
@@ -1193,7 +1187,7 @@ mod tests {
     fn test_deserialize_repo_infer_type_str_3rd(url_str: &str, answer_url: &str) {
         let answer_info = RepoInfo {
             cloneable_repo_url: answer_url.into(),
-            cloneable_repo_dir: "/".into(),
+            cloneable_repo_dir: "".into(),
             vcs: Vcs::Git,
             host_info: RepoHostInfo::Thirdparty,
         };

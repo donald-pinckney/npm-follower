@@ -366,48 +366,48 @@ Some(("vue-loading-ihui", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/vue-loading-ihui_1.0.0_1534747398117_0.007077976746529657",
-                    "host": "s3://npm-registry-packages",
-                },
-                "repo": {
-                    "url": "",
-                    "type": "git",
-                },
-                "main": "dist/loading.js",
-                "private": false,
-                "author": {
-                    "name": "\'ihui\'",
-                    "email": "\'2873991890@qq.com\'",
-                },
                 "scripts": {
                     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
                     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
                 },
-                "_nodeVersion": "8.9.3",
-                "homepage": "",
-                "keywords": [
-                    "vue",
-                    "ihui",
-                ],
-                "directories": {},
-                "description": "A Vue.js project",
-                "_npmVersion": "5.5.1",
-                "license": "MIT",
-                "name": "vue-loading-ihui",
                 "_hasShrinkwrap": false,
+                "license": "MIT",
+                "homepage": "",
+                "name": "vue-loading-ihui",
+                "main": "dist/loading.js",
+                "directories": {},
+                "_nodeVersion": "8.9.3",
+                "_npmUser": {
+                    "name": "ihui",
+                    "email": "2873991890@qq.com",
+                },
+                "author": {
+                    "name": "\'ihui\'",
+                    "email": "\'2873991890@qq.com\'",
+                },
+                "_npmVersion": "5.5.1",
                 "maintainers": [
                     {
                         "name": "ihui",
                         "email": "2873991890@qq.com",
                     },
                 ],
+                "repo": {
+                    "url": "",
+                    "type": "git",
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/vue-loading-ihui_1.0.0_1534747398117_0.007077976746529657",
+                    "host": "s3://npm-registry-packages",
+                },
+                "private": false,
+                "keywords": [
+                    "vue",
+                    "ihui",
+                ],
+                "description": "A Vue.js project",
                 "version": "1.0.0",
                 "_id": "vue-loading-ihui@1.0.0",
-                "_npmUser": {
-                    "name": "ihui",
-                    "email": "2873991890@qq.com",
-                },
                 "browserslist": [
                     "> 1%",
                     "last 2 versions",

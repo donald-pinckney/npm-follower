@@ -11,13 +11,6 @@ Some(("stabryla-mateusz-3id-nodeapi", Normal(
     other_dist_tags: {},
     version_times: {
         (
-            major: 2,
-            minor: 0,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): "2017-01-18T07:21:30.517Z",
-        (
             major: 1,
             minor: 0,
             bug: 1,
@@ -27,10 +20,10 @@ Some(("stabryla-mateusz-3id-nodeapi", Normal(
         (
             major: 2,
             minor: 0,
-            bug: 1,
+            bug: 2,
             prerelease: [],
             build: [],
-        ): "2017-01-18T07:19:47.514Z",
+        ): "2017-01-18T07:21:30.517Z",
         (
             major: 2,
             minor: 0,
@@ -38,6 +31,13 @@ Some(("stabryla-mateusz-3id-nodeapi", Normal(
             prerelease: [],
             build: [],
         ): "2017-01-18T07:13:44.677Z",
+        (
+            major: 2,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2017-01-18T07:19:47.514Z",
     },
     versions: {
         (
@@ -92,35 +92,35 @@ Some(("stabryla-mateusz-3id-nodeapi", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_npmOperationalInternal": {
-                    "host": "packages-12-west.internal.npmjs.com",
-                    "tmp": "tmp/stabryla-mateusz-3id-nodeapi-2.0.2.tgz_1484724088639_0.5181692121550441",
-                },
-                "main": "NodeAPI.js",
-                "author": {
-                    "name": "Mateusz\tStabryła",
-                },
-                "_nodeVersion": "6.9.4",
-                "version": "2.0.2",
+                "name": "stabryla-mateusz-3id-nodeapi",
+                "description": "API do szybkiego zarządzania stroną w Node.js",
+                "_npmVersion": "3.10.10",
                 "maintainers": [
                     {
                         "email": "mstabryla@op.pl",
                         "name": "morteniusz",
                     },
                 ],
-                "_shasum": "c0a8803a515bcdf7987bc744f57adb5f9f55aa4e",
-                "license": "ISC",
                 "_id": "stabryla-mateusz-3id-nodeapi@2.0.2",
-                "name": "stabryla-mateusz-3id-nodeapi",
                 "_from": ".",
-                "description": "API do szybkiego zarządzania stroną w Node.js",
+                "_nodeVersion": "6.9.4",
+                "version": "2.0.2",
                 "_npmUser": {
                     "email": "mstabryla@op.pl",
                     "name": "morteniusz",
                 },
-                "_npmVersion": "3.10.10",
+                "main": "NodeAPI.js",
+                "author": {
+                    "name": "Mateusz\tStabryła",
+                },
                 "scripts": {
                     "test": "console.log(\"Start API\")",
+                },
+                "_shasum": "c0a8803a515bcdf7987bc744f57adb5f9f55aa4e",
+                "license": "ISC",
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/stabryla-mateusz-3id-nodeapi-2.0.2.tgz_1484724088639_0.5181692121550441",
                 },
             },
         ),
