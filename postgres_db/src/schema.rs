@@ -21,6 +21,7 @@ table! {
         secret -> Bool,
         freq_count -> Int8,
         md5digest -> Text,
+        md5digest_with_version -> Text,
     }
 }
 

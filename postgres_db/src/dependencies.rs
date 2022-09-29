@@ -19,6 +19,7 @@ pub struct Dependencie {
     pub secret: bool,
     pub freq_count: i64,
     pub md5digest: String,
+    pub md5digest_with_version: String,
 }
 
 #[derive(Debug)]
@@ -31,19 +32,21 @@ pub struct QueriedDependency {
     pub secret: bool,
     pub freq_count: i64,
     pub md5digest: String,
+    pub md5digest_with_version: String,
 }
 
 impl<ST, SB: diesel::backend::Backend> Queryable<ST, SB> for QueriedDependency
 where
     (
         i64,
-        std::string::String,
-        std::option::Option<i64>,
+        String,
+        Option<i64>,
         serde_json::Value,
-        crate::custom_types::ParsedSpec,
+        ParsedSpec,
         bool,
         i64,
-        std::string::String,
+        String,
+        String,
     ): diesel::deserialize::FromSqlRow<ST, SB>,
 {
     type Row = (
@@ -54,6 +57,7 @@ where
         ParsedSpec,
         bool,
         i64,
+        String,
         String,
     );
 
@@ -67,6 +71,7 @@ where
             secret: row.5,
             freq_count: row.6,
             md5digest: row.7,
+            md5digest_with_version: row.8,
         }
     }
 }
@@ -80,8 +85,11 @@ impl Dependencie {
         secret: bool,
         freq_count: i64,
     ) -> Dependencie {
+        // md5 hash of only the package name
+        let md5digest = format!("{:x}", md5::compute(&dst_package_name));
+
         // md5 hash of both the package name and the spec
-        let md5digest = format!(
+        let md5digest_with_version = format!(
             "{:x}",
             md5::compute(format!("{}{}", dst_package_name, raw_spec))
         );
@@ -94,6 +102,7 @@ impl Dependencie {
             secret,
             freq_count,
             md5digest,
+            md5digest_with_version,
         }
     }
 }
@@ -101,11 +110,26 @@ impl Dependencie {
 pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i64) {
     use super::schema::dependencies::dsl::*;
 
-    diesel::update(dependencies)
-        .filter(dst_package_name.eq(pack_name))
-        .set(dst_package_id_if_exists.eq(pack_id))
-        .execute(&conn.conn)
-        .expect("Error updating dependencies");
+    let name_digest = format!("{:x}", md5::compute(&pack_name));
+
+    // find all dependencies that have the same name digest
+    let deps = dependencies
+        .filter(md5digest.eq(name_digest))
+        .filter(dst_package_id_if_exists.is_null())
+        .load::<QueriedDependency>(&conn.conn)
+        .expect("Error loading dependencies");
+
+    // find the package id of the package with the same name
+    // and update the dependency with the package id
+    for dep in deps {
+        if dep.dst_package_name == pack_name {
+            diesel::update(dependencies.find(dep.id))
+                .set(dst_package_id_if_exists.eq(pack_id))
+                .execute(&conn.conn)
+                .expect("Error updating dependencies");
+            break;
+        }
+    }
 }
 
 pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
@@ -115,7 +139,7 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
     for dep in deps {
         // find all deps with the same hash
         let deps_with_same_hash: Vec<QueriedDependency> = dependencies
-            .filter(md5digest.eq(&dep.md5digest))
+            .filter(md5digest_with_version.eq(&dep.md5digest_with_version))
             .load(&conn.conn)
             .expect("Error loading dependencies");
 

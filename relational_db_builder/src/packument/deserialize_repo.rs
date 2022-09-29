@@ -238,21 +238,22 @@ fn strip_dot_git(repo: &str) -> &str {
 fn deserialize_repo_infer_type_str(full_repo_string: String) -> Option<RepoInfo> {
     let mut repo_str: &str = &full_repo_string;
     if match_strip_start(&mut repo_str, "github:") {
-        let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
+        println!("{}", repo_str);
+        let (user, repo) = try_parse_user_repo_shorthand(repo_str)?;
         return Some(RepoInfo::new_github(
             "".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
         ));
     } else if match_strip_start(&mut repo_str, "bitbucket:") {
-        let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
+        let (user, repo) = try_parse_user_repo_shorthand(repo_str)?;
         return Some(RepoInfo::new_bitbucket(
             "".to_string(),
             user.to_owned(),
             strip_dot_git(repo).to_owned(),
         ));
     } else if match_strip_start(&mut repo_str, "gitlab:") {
-        let (user, repo) = try_parse_user_repo_shorthand(repo_str).unwrap();
+        let (user, repo) = try_parse_user_repo_shorthand(repo_str)?;
         return Some(RepoInfo::new_gitlab(
             "".to_string(),
             user.to_owned(),
