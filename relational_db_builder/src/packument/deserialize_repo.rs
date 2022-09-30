@@ -295,37 +295,42 @@ fn deserialize_repo_check_git_type_str(repo: String) -> Option<RepoInfo> {
 }
 
 pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
+    fn deserialize_help(mut repo_obj: serde_json::Map<String, Value>) -> Option<RepoInfo> {
+        let t = repo_obj.remove_key_unwrap_type::<String>("type");
+        let dir = repo_obj.remove_key_unwrap_type::<String>("directory");
+        let url = repo_obj.remove_key_unwrap_type::<String>("url")?;
+
+        let info = match t.as_deref() {
+            None => deserialize_repo_infer_type_str(url)?,
+            Some(s) => match s.to_lowercase().as_str() {
+                "git" | "github" | "public" | "bitbucket" | "gitlab" | "gist" => {
+                    deserialize_repo_check_git_type_str(url)?
+                }
+                _ => {
+                    eprintln!("Unknown repo type: {:?}", t);
+                    return None;
+                }
+            },
+        };
+
+        let parsed_dir = match dir {
+            None => info.cloneable_repo_dir,
+            Some(json_dir) if info.cloneable_repo_dir.is_empty() => json_dir,
+            Some(json_dir) => json_dir,
+        };
+
+        Some(RepoInfo {
+            cloneable_repo_dir: parsed_dir,
+            ..info
+        })
+    }
     let info = match repo_blob.clone() {
         Value::String(repo) => deserialize_repo_infer_type_str(repo)?,
-        Value::Object(mut repo_obj) => {
-            let t = repo_obj.remove_key_unwrap_type::<String>("type");
-            let dir = repo_obj.remove_key_unwrap_type::<String>("directory");
-            let url = repo_obj.remove_key_unwrap_type::<String>("url")?;
-
-            let info = match t.as_deref() {
-                None => deserialize_repo_infer_type_str(url)?,
-                Some(s) => match s.to_lowercase().as_str() {
-                    "git" | "github" | "bitbucket" | "gitlab" | "gist" => {
-                        deserialize_repo_check_git_type_str(url)?
-                    }
-                    _ => {
-                        eprintln!("Unknown repo type: {:?}", t);
-                        return None;
-                    }
-                },
-            };
-
-            let parsed_dir = match dir {
-                None => info.cloneable_repo_dir,
-                Some(json_dir) if info.cloneable_repo_dir.is_empty() => json_dir,
-                Some(json_dir) => json_dir,
-            };
-
-            RepoInfo {
-                cloneable_repo_dir: parsed_dir,
-                ..info
-            }
+        Value::Array(l) if l.len() == 1 => {
+            let repo = &l[0];
+            deserialize_help(repo.as_object()?.clone())?
         }
+        Value::Object(repo_obj) => deserialize_help(repo_obj)?,
         _ => {
             eprintln!("Can't parse repo: {:?}", repo_blob);
             return None;

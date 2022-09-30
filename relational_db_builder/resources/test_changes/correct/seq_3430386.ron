@@ -49,33 +49,22 @@ Some(("@dennisvanhomoet/npmpackage", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "directories": {},
-                "main": "index.js",
+                "description": "Removes all spaces from a string",
+                "name": "@dennisvanhomoet/npmpackage",
                 "license": "MIT",
-                "_npmVersion": "6.4.1",
-                "version": "2.0.1",
-                "_id": "@dennisvanhomoet/npmpackage@2.0.1",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/npmpackage_2.0.1_1555487437355_0.2426005943833418",
-                    "host": "s3://npm-registry-packages",
-                },
-                "_nodeVersion": "10.15.0",
                 "repo": {
                     "url": "https://bitbucket.org/Brokks/npm-package-test/dennisvanhomoet/npmpackage",
                     "type": "git",
                 },
-                "gitHead": "1d1e9735746ca023c0ec1b82cdc53acd03ac86d3",
-                "description": "Removes all spaces from a string",
-                "name": "@dennisvanhomoet/npmpackage",
+                "main": "index.js",
                 "_npmUser": {
                     "name": "dennisvanhomoet",
                     "email": "dennis@brokks.nl",
                 },
-                "keywords": [
-                    "tiny",
-                    "npm",
-                    "package",
-                ],
+                "version": "2.0.1",
+                "_npmVersion": "6.4.1",
+                "directories": {},
+                "gitHead": "1d1e9735746ca023c0ec1b82cdc53acd03ac86d3",
                 "_hasShrinkwrap": false,
                 "maintainers": [
                     {
@@ -83,6 +72,17 @@ Some(("@dennisvanhomoet/npmpackage", Normal(
                         "email": "dennis@brokks.nl",
                     },
                 ],
+                "_nodeVersion": "10.15.0",
+                "_id": "@dennisvanhomoet/npmpackage@2.0.1",
+                "keywords": [
+                    "tiny",
+                    "npm",
+                    "package",
+                ],
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/npmpackage_2.0.1_1555487437355_0.2426005943833418",
+                    "host": "s3://npm-registry-packages",
+                },
             },
         ),
         (
@@ -122,40 +122,40 @@ Some(("@dennisvanhomoet/npmpackage", Normal(
                 ),
             )),
             extra_metadata: {
-                "directories": {},
-                "bugs": {
-                    "url": "https://github.com/dennisvanhomoet/npmpackage/issues",
+                "_hasShrinkwrap": false,
+                "gitHead": "1d1e9735746ca023c0ec1b82cdc53acd03ac86d3",
+                "version": "2.0.0",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/npmpackage_2.0.0_1555427688672_0.6141673130589353",
+                    "host": "s3://npm-registry-packages",
                 },
-                "main": "index.js",
-                "_id": "@dennisvanhomoet/npmpackage@2.0.0",
                 "_npmUser": {
                     "name": "dennisvanhomoet",
                     "email": "dennis@brokks.nl",
                 },
+                "_id": "@dennisvanhomoet/npmpackage@2.0.0",
+                "main": "index.js",
                 "_nodeVersion": "10.15.0",
-                "name": "@dennisvanhomoet/npmpackage",
                 "license": "MIT",
-                "_npmVersion": "6.4.1",
+                "bugs": {
+                    "url": "https://github.com/dennisvanhomoet/npmpackage/issues",
+                },
+                "name": "@dennisvanhomoet/npmpackage",
+                "keywords": [
+                    "tiny",
+                    "npm",
+                    "package",
+                ],
                 "maintainers": [
                     {
                         "name": "dennisvanhomoet",
                         "email": "dennis@brokks.nl",
                     },
                 ],
-                "_hasShrinkwrap": false,
+                "directories": {},
                 "homepage": "https://github.com/dennisvanhomoet/npmpackage#readme",
-                "keywords": [
-                    "tiny",
-                    "npm",
-                    "package",
-                ],
-                "version": "2.0.0",
-                "gitHead": "1d1e9735746ca023c0ec1b82cdc53acd03ac86d3",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/npmpackage_2.0.0_1555427688672_0.6141673130589353",
-                    "host": "s3://npm-registry-packages",
-                },
                 "description": "Removes all spaces from a string",
+                "_npmVersion": "6.4.1",
             },
         ),
     },

@@ -15,102 +15,21 @@ Some(("Sheet", Normal(
         (
             major: 1,
             minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2010-11-09T23:35:16Z",
+        (
+            major: 1,
+            minor: 0,
             bug: 2,
             prerelease: [
                 String("rc1"),
             ],
             build: [],
         ): "2010-11-09T23:35:16Z",
-        (
-            major: 1,
-            minor: 0,
-            bug: 1,
-            prerelease: [],
-            build: [],
-        ): "2010-11-09T23:35:16Z",
     },
     versions: {
-        (
-            major: 1,
-            minor: 0,
-            bug: 1,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/Sheet/-/Sheet-1.0.1.tgz",
-                shasum: Some("35e7fb60873f0022193342d0b9218ad79d18d01f"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: None,
-            extra_metadata: {
-                "main": "./Source/Sheet",
-                "version": "1.0.1",
-                "_nodeVersion": "v0.3.1-pre",
-                "engines": {
-                    "node": "*",
-                },
-                "licenses": [
-                    {
-                        "type": "MIT",
-                        "url": "http://creativecommons.org/licenses/MIT/",
-                    },
-                ],
-                "_nodeSupported": true,
-                "_id": "Sheet@1.0.1",
-                "contributors": [
-                    {
-                        "email": "thomas@subtlegradient.com",
-                        "name": "Thomas Aylott",
-                        "web": "http://subtlegradient.com",
-                    },
-                ],
-                "directories": {
-                    "doc": ".",
-                    "lib": "./Source",
-                    "src": "./Source",
-                    "test": "./Test",
-                },
-                "repositories": [
-                    {
-                        "type": "git",
-                        "url": "http://github.com/subtleGradient/Sheet.js/",
-                    },
-                ],
-                "license": "MIT License",
-                "_npmVersion": "0.2.7-2",
-                "authors": [
-                    "Thomas Aylott",
-                ],
-                "copyright": "© 2010 Thomas Aylott",
-                "name": "Sheet",
-                "keywords": [
-                    "CSS",
-                    "CSSOM",
-                    "styleSheet",
-                    "cssRule",
-                    "style",
-                    "parse",
-                ],
-                "bugs": {
-                    "web": "http://github.com/subtleGradient/Sheet.js/issues",
-                },
-                "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
-                "sources": [
-                    "Source/Sheet.js",
-                    "Source/SheetParser.CSS.js",
-                ],
-            },
-        ),
         (
             major: 1,
             minor: 0,
@@ -136,26 +55,127 @@ Some(("Sheet", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "license": "MIT License",
+                "name": "Sheet",
+                "_id": "Sheet@1.0.2rc1",
+                "repositories": [
+                    {
+                        "type": "git",
+                        "url": "http://github.com/subtleGradient/Sheet.js/",
+                    },
+                ],
+                "copyright": "© 2010 Thomas Aylott",
+                "contributors": [
+                    {
+                        "email": "thomas@subtlegradient.com",
+                        "name": "Thomas Aylott",
+                        "web": "http://subtlegradient.com",
+                    },
+                ],
+                "keywords": [
+                    "CSS",
+                    "CSSOM",
+                    "styleSheet",
+                    "cssRule",
+                    "style",
+                    "parse",
+                ],
+                "_nodeVersion": "v0.3.1-pre",
+                "bugs": {
+                    "web": "http://github.com/subtleGradient/Sheet.js/issues",
+                },
+                "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
+                "authors": [
+                    "Thomas Aylott",
+                ],
                 "directories": {
                     "doc": ".",
                     "lib": "./Source",
                     "src": "./Source",
                     "test": "./Test",
                 },
-                "_nodeSupported": true,
-                "bugs": {
-                    "web": "http://github.com/subtleGradient/Sheet.js/issues",
-                },
-                "authors": [
-                    "Thomas Aylott",
-                ],
-                "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
                 "engines": {
                     "node": "*",
                 },
+                "_npmVersion": "0.2.7-2",
+                "version": "1.0.2rc1",
+                "licenses": [
+                    {
+                        "type": "MIT",
+                        "url": "http://creativecommons.org/licenses/MIT/",
+                    },
+                ],
+                "_nodeSupported": true,
+                "sources": [
+                    "Source/Sheet.js",
+                    "Source/SheetParser.CSS.js",
+                ],
+                "license": "MIT License",
+                "main": "./Source/Sheet",
+            },
+        ),
+        (
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/Sheet/-/Sheet-1.0.1.tgz",
+                shasum: Some("35e7fb60873f0022193342d0b9218ad79d18d01f"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: None,
+            extra_metadata: {
+                "engines": {
+                    "node": "*",
+                },
+                "keywords": [
+                    "CSS",
+                    "CSSOM",
+                    "styleSheet",
+                    "cssRule",
+                    "style",
+                    "parse",
+                ],
+                "bugs": {
+                    "web": "http://github.com/subtleGradient/Sheet.js/issues",
+                },
+                "sources": [
+                    "Source/Sheet.js",
+                    "Source/SheetParser.CSS.js",
+                ],
+                "_npmVersion": "0.2.7-2",
+                "licenses": [
+                    {
+                        "type": "MIT",
+                        "url": "http://creativecommons.org/licenses/MIT/",
+                    },
+                ],
+                "directories": {
+                    "doc": ".",
+                    "lib": "./Source",
+                    "src": "./Source",
+                    "test": "./Test",
+                },
+                "version": "1.0.1",
+                "license": "MIT License",
                 "_nodeVersion": "v0.3.1-pre",
-                "name": "Sheet",
+                "main": "./Source/Sheet",
+                "_id": "Sheet@1.0.1",
+                "_nodeSupported": true,
+                "authors": [
+                    "Thomas Aylott",
+                ],
                 "contributors": [
                     {
                         "email": "thomas@subtlegradient.com",
@@ -170,28 +190,8 @@ Some(("Sheet", Normal(
                         "url": "http://github.com/subtleGradient/Sheet.js/",
                     },
                 ],
-                "keywords": [
-                    "CSS",
-                    "CSSOM",
-                    "styleSheet",
-                    "cssRule",
-                    "style",
-                    "parse",
-                ],
-                "_id": "Sheet@1.0.2rc1",
-                "main": "./Source/Sheet",
-                "_npmVersion": "0.2.7-2",
-                "licenses": [
-                    {
-                        "type": "MIT",
-                        "url": "http://creativecommons.org/licenses/MIT/",
-                    },
-                ],
-                "version": "1.0.2rc1",
-                "sources": [
-                    "Source/Sheet.js",
-                    "Source/SheetParser.CSS.js",
-                ],
+                "name": "Sheet",
+                "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
             },
         ),
     },

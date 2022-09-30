@@ -13,17 +13,17 @@ Some(("angular-noconflict", Normal(
         (
             major: 1,
             minor: 0,
-            bug: 0,
-            prerelease: [],
-            build: [],
-        ): "2017-01-03T19:44:56.059Z",
-        (
-            major: 1,
-            minor: 0,
             bug: 1,
             prerelease: [],
             build: [],
         ): "2017-01-03T19:47:25.491Z",
+        (
+            major: 1,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2017-01-03T19:44:56.059Z",
     },
     versions: {
         (
@@ -68,40 +68,40 @@ Some(("angular-noconflict", Normal(
                 ),
             )),
             extra_metadata: {
-                "gitHead": "963bba6913a31dd493cba9a062ba1f2bd9a7b821",
-                "_from": ".",
+                "_shasum": "5f9ae0ee3e292b266f21d476c9e3d406a53d353d",
+                "_npmUser": {
+                    "email": "tagrain@gmail.com",
+                    "name": "graingert",
+                },
+                "description": "import angular without window.angular",
+                "scripts": {},
                 "homepage": "https://github.com/graingert/angular-noconflict#readme",
                 "_npmOperationalInternal": {
                     "host": "packages-12-west.internal.npmjs.com",
                     "tmp": "tmp/angular-noconflict-1.0.1.tgz_1483472843628_0.5705059610772878",
                 },
-                "_npmUser": {
-                    "email": "tagrain@gmail.com",
-                    "name": "graingert",
-                },
                 "author": {
                     "email": "angular-noconflict@graingert.co.uk",
                     "name": "Thomas Grainger",
                 },
-                "scripts": {},
-                "bugs": {
-                    "url": "https://github.com/graingert/angular-noconflict/issues",
-                },
-                "version": "1.0.1",
+                "gitHead": "963bba6913a31dd493cba9a062ba1f2bd9a7b821",
+                "_npmVersion": "3.10.10",
                 "maintainers": [
                     {
                         "email": "tagrain@gmail.com",
                         "name": "graingert",
                     },
                 ],
-                "_shasum": "5f9ae0ee3e292b266f21d476c9e3d406a53d353d",
                 "name": "angular-noconflict",
-                "_nodeVersion": "7.3.0",
-                "_npmVersion": "3.10.10",
-                "_id": "angular-noconflict@1.0.1",
-                "description": "import angular without window.angular",
+                "version": "1.0.1",
+                "_from": ".",
                 "license": "MIT",
+                "_id": "angular-noconflict@1.0.1",
+                "_nodeVersion": "7.3.0",
                 "main": "index.js",
+                "bugs": {
+                    "url": "https://github.com/graingert/angular-noconflict/issues",
+                },
             },
         ),
     },

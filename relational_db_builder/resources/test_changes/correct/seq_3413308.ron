@@ -66,22 +66,21 @@ Some(("@y3ticorp/vue-cli-plugin-commons", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_npmUser": {
-                    "name": "olivi3r",
-                    "email": "olivier@riberi.me",
-                },
                 "_npmOperationalInternal": {
                     "tmp": "tmp/vue-cli-plugin-commons_1.0.0_1553857712969_0.3642115175277596",
                     "host": "s3://npm-registry-packages",
                 },
+                "name": "@y3ticorp/vue-cli-plugin-commons",
+                "gitHead": "d84d70985c02ca466afa78cfe9963e4a323ebc8a",
+                "main": "index.js",
                 "_npmVersion": "6.9.0",
-                "_hasShrinkwrap": false,
-                "directories": {},
-                "_nodeVersion": "8.11.4",
-                "repo": {
-                    "url": "git+https://gitlab.com/Y3TI/vue-cli/vue-cli-plugin-commons.git",
-                    "type": "git",
+                "_npmUser": {
+                    "name": "olivi3r",
+                    "email": "olivier@riberi.me",
                 },
+                "_hasShrinkwrap": false,
+                "description": "Highly opinionated Vue CLI 3 plugin for preparing project to @y3ticorp plugins",
+                "_id": "@y3ticorp/vue-cli-plugin-commons@1.0.0",
                 "maintainers": [
                     {
                         "name": "stanto",
@@ -92,12 +91,13 @@ Some(("@y3ticorp/vue-cli-plugin-commons", Normal(
                         "email": "olivier@riberi.me",
                     },
                 ],
-                "gitHead": "d84d70985c02ca466afa78cfe9963e4a323ebc8a",
-                "description": "Highly opinionated Vue CLI 3 plugin for preparing project to @y3ticorp plugins",
-                "name": "@y3ticorp/vue-cli-plugin-commons",
-                "_id": "@y3ticorp/vue-cli-plugin-commons@1.0.0",
-                "main": "index.js",
+                "_nodeVersion": "8.11.4",
+                "repo": {
+                    "url": "git+https://gitlab.com/Y3TI/vue-cli/vue-cli-plugin-commons.git",
+                    "type": "git",
+                },
                 "version": "1.0.0",
+                "directories": {},
             },
         ),
     },

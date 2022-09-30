@@ -133,37 +133,37 @@ Some(("subtoilet", Normal(
                 ),
             )),
             extra_metadata: {
+                "_nodeVersion": "4.6.0",
+                "_npmVersion": "2.15.9",
+                "_from": ".",
+                "bugs": {
+                    "url": "https://github.com/juliangruber/subtoilet/issues",
+                },
+                "license": "MIT",
+                "name": "subtoilet",
+                "_npmUser": {
+                    "email": "julian@juliangruber.com",
+                    "name": "juliangruber",
+                },
                 "_npmOperationalInternal": {
                     "host": "packages-18-east.internal.npmjs.com",
                     "tmp": "tmp/subtoilet-1.0.1.tgz_1488709731741_0.7845627213828266",
                 },
-                "bugs": {
-                    "url": "https://github.com/juliangruber/subtoilet/issues",
-                },
-                "_from": ".",
-                "_nodeVersion": "4.6.0",
-                "_npmVersion": "2.15.9",
                 "gitHead": "329eababaf07818aaf31835ed0e6a91d08760d46",
-                "license": "MIT",
+                "_id": "subtoilet@1.0.1",
                 "maintainers": [
                     {
                         "email": "julian@juliangruber.com",
                         "name": "juliangruber",
                     },
                 ],
-                "_npmUser": {
-                    "email": "julian@juliangruber.com",
-                    "name": "juliangruber",
-                },
-                "homepage": "https://github.com/juliangruber/subtoilet#readme",
-                "name": "subtoilet",
                 "_shasum": "21046bfd133fb9861285832f533d37e318a43b4f",
+                "homepage": "https://github.com/juliangruber/subtoilet#readme",
                 "description": "Marrying toiletdb and level-sublevel",
                 "scripts": {
                     "test": "prettier-standard-formatter *.js && tape test.js",
                 },
                 "version": "1.0.1",
-                "_id": "subtoilet@1.0.1",
             },
         ),
         (
@@ -274,36 +274,36 @@ Some(("subtoilet", Normal(
             )),
             extra_metadata: {
                 "_shasum": "68c3391452e5700b7e406c4c0e44848b58291a36",
-                "description": "Marrying toiletdb and level-sublevel",
-                "gitHead": "61240112cd783e19f0b7d6bcd3ca534579389246",
+                "_npmVersion": "2.15.9",
+                "bugs": {
+                    "url": "https://github.com/juliangruber/subtoilet/issues",
+                },
+                "_npmOperationalInternal": {
+                    "host": "packages-12-west.internal.npmjs.com",
+                    "tmp": "tmp/subtoilet-1.0.0.tgz_1488709688078_0.1540002420078963",
+                },
+                "_npmUser": {
+                    "email": "julian@juliangruber.com",
+                    "name": "juliangruber",
+                },
                 "maintainers": [
                     {
                         "email": "julian@juliangruber.com",
                         "name": "juliangruber",
                     },
                 ],
-                "name": "subtoilet",
-                "_npmVersion": "2.15.9",
-                "_npmOperationalInternal": {
-                    "host": "packages-12-west.internal.npmjs.com",
-                    "tmp": "tmp/subtoilet-1.0.0.tgz_1488709688078_0.1540002420078963",
-                },
                 "homepage": "https://github.com/juliangruber/subtoilet#readme",
-                "_npmUser": {
-                    "email": "julian@juliangruber.com",
-                    "name": "juliangruber",
-                },
+                "license": "MIT",
+                "name": "subtoilet",
+                "gitHead": "61240112cd783e19f0b7d6bcd3ca534579389246",
                 "_from": ".",
-                "_id": "subtoilet@1.0.0",
+                "_nodeVersion": "4.6.0",
+                "version": "1.0.0",
                 "scripts": {
                     "test": "prettier-standard-formatter *.js && tape test.js",
                 },
-                "bugs": {
-                    "url": "https://github.com/juliangruber/subtoilet/issues",
-                },
-                "license": "MIT",
-                "_nodeVersion": "4.6.0",
-                "version": "1.0.0",
+                "_id": "subtoilet@1.0.0",
+                "description": "Marrying toiletdb and level-sublevel",
             },
         ),
     },

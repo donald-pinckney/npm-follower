@@ -20,17 +20,10 @@ Some(("@8trhieu/ckeditor5-build-classic-custom", Normal(
         (
             major: 0,
             minor: 0,
-            bug: 1,
+            bug: 2,
             prerelease: [],
             build: [],
-        ): "2022-01-03T16:04:18.395Z",
-        (
-            major: 0,
-            minor: 0,
-            bug: 5,
-            prerelease: [],
-            build: [],
-        ): "2022-01-09T09:40:29.072Z",
+        ): "2022-01-03T16:27:18.502Z",
         (
             major: 0,
             minor: 0,
@@ -41,1124 +34,19 @@ Some(("@8trhieu/ckeditor5-build-classic-custom", Normal(
         (
             major: 0,
             minor: 0,
-            bug: 2,
+            bug: 5,
             prerelease: [],
             build: [],
-        ): "2022-01-03T16:27:18.502Z",
-    },
-    versions: {
+        ): "2022-01-09T09:40:29.072Z",
         (
             major: 0,
             minor: 0,
             bug: 1,
             prerelease: [],
             build: [],
-        ): (
-            prod_dependencies: [
-                ("@ckeditor/ckeditor5-font", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-link", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-list", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-image", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-table", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-indent", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-typing", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-upload", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-heading", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-mention", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-alignment", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-utils", (
-                    raw: "^25.4.5",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 25,
-                                minor: 4,
-                                bug: 5,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 26,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-highlight", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-paragraph", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-autoformat", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-code-block", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-essentials", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-html-embed", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-theme-lark", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-word-count", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-block-quote", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-media-embed", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-basic-styles", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-html-support", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-markdown-gfm", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-remove-format", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-editor-classic", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-source-editing", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-horizontal-line", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-paste-from-office", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
-                    raw: "^25.4.5",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 25,
-                                minor: 4,
-                                bug: 5,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 26,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-special-characters", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [
-                ("postcss", (
-                    raw: "^8.4.4",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 8,
-                                minor: 4,
-                                bug: 4,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 9,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("webpack", (
-                    raw: "^4.43.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 4,
-                                minor: 43,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 5,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("css-loader", (
-                    raw: "^5.2.7",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 5,
-                                minor: 2,
-                                bug: 7,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 6,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("raw-loader", (
-                    raw: "^4.0.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 4,
-                                minor: 0,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 5,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("webpack-cli", (
-                    raw: "^3.3.11",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 3,
-                                minor: 3,
-                                bug: 11,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 4,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("style-loader", (
-                    raw: "^1.2.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 2,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("postcss-loader", (
-                    raw: "^3.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 4,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("terser-webpack-plugin", (
-                    raw: "^3.0.2",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 3,
-                                minor: 0,
-                                bug: 2,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 4,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-core", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-utils", (
-                    raw: "^27.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 27,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 28,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-theme-lark", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
-                    raw: "^27.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 27,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 28,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/@8trhieu/ckeditor5-build-classic-custom/-/ckeditor5-build-classic-custom-0.0.1.tgz",
-                shasum: Some("a346485cddd08391080946937750913b59984128"),
-                unpacked_size: Some(7931372),
-                file_count: Some(8),
-                integrity: Some("sha512-Da6vJVtG+DWJmydbHKlrlZJZ8KTae4NuV4Ax7B4tEwGWSIQGrEw/2y4ZqjoKXAwhfMeZ8n5r9IxejiDXQBejvw=="),
-                signature0_sig: Some("MEQCICLxUXuz+eTCKsep2tKOwnHlgn5qa/HF2s+kO8f65InsAiA9LK5zv0b3Cb81B+177cynG3feYDE0Mdm7bCmMv3octA=="),
-                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJh0x6CCRA9TVsSAnZWagAAbc0P/0pT1c+aLmNc1bOZfnqF\n5pl9nTxrSUKxeBqLcL/Sn+1SipQb9vVsDz+DaV7J9DW2AcibnWQr9//C4whk\n+E0Ke85ERHAMHvUXyO/2GWL9u8whI6S9RxAm1GzPup/LzUBaFcrN6At5X9gk\ndmOTQetMdl+T2UzOJqBtBurBXQBCNMuNJLt3RGO+T5iztQRNrdNH7dd0hFkb\n+7Sq/cUU/vFv2i/O0A0YFaVGtUVCWm66Zy7c72LivszoDILDBz7cAKuwj1rL\nqZDiuWIx527YjNQItmleSLVHQk6p2NUONZm5K3q9cRJ9ptwPNlJQa7TwCa/L\n3M8yYkZtko6d5vcj9OYUHf4Z2IPwvstram72Tkmu2obkeoI1rRTkAa4GT6RV\nLPenvm2hX5vfp8QxK0h+5y6ehSwQWfbVizXIIVkVLDSq6yur9MAF0WSdEl5M\nnuMujTgjxCuZVWVbVbTltoPFYIJn4iOQy2LGdTmOxksB34N3pPY/sT6AFdw1\nJqwzSXe2LwztezGOsbi8sCMpbFp9T7ISRLL4Ou6HJN2mv6TAMah2OBGzdacU\nRy4bNSQ7jM+7fYfVOzLlav6YB+z0Lans9wJk/Xoq2v0y1+l93Nd9NgQveiVE\nH8Xrp4lg34WDaIPmxqfd8CgUHXm14wgsjV6+qhR+6DyeReNms8cBenoxPaoD\nVc1j\r\n=X43T\r\n-----END PGP SIGNATURE-----\r\n"),
-            ),
-            repository: Some((
-                raw: {
-                    "url": "git+https://github.com/ckeditor/ckeditor5.git",
-                    "type": "git",
-                    "directory": "packages/ckeditor5-build-classic-custom",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/ckeditor/ckeditor5",
-                    cloneable_repo_dir: "packages/ckeditor5-build-classic-custom",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "ckeditor",
-                        repo: "ckeditor5",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "directories": {},
-                "main": "./build/ckeditor.js",
-                "version": "0.0.1",
-                "scripts": {
-                    "build": "webpack --mode production",
-                    "preversion": "npm run build",
-                },
-                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.1",
-                "_npmUser": {
-                    "name": "hieutq1188",
-                    "email": "hieutq1188@gmail.com",
-                },
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.1_1641225858136_0.8122429012122487",
-                    "host": "s3://npm-registry-packages",
-                },
-                "name": "@8trhieu/ckeditor5-build-classic-custom",
-                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
-                "homepage": "https://ckeditor.com/ckeditor-5",
-                "maintainers": [
-                    {
-                        "name": "hieutq1188",
-                        "email": "hieutq1188@gmail.com",
-                    },
-                ],
-                "author": {
-                    "url": "http://cksource.com/",
-                    "name": "CKSource",
-                },
-                "license": "GPL-2.0-or-later",
-                "_npmVersion": "6.14.15",
-                "_hasShrinkwrap": false,
-                "engines": {
-                    "npm": ">=5.7.1",
-                    "node": ">=12.0.0",
-                },
-                "bugs": {
-                    "url": "https://github.com/ckeditor/ckeditor5/issues",
-                },
-                "_nodeVersion": "14.17.6",
-                "keywords": [
-                    "ckeditor5-build",
-                    "ckeditor",
-                    "ckeditor5",
-                    "ckeditor 5",
-                    "wysiwyg",
-                    "rich text",
-                    "editor",
-                    "html",
-                    "contentEditable",
-                    "editing",
-                    "operational transformation",
-                    "ot",
-                    "collaboration",
-                    "collaborative",
-                    "real-time",
-                    "framework",
-                ],
-            },
-        ),
+        ): "2022-01-03T16:04:18.395Z",
+    },
+    versions: {
         (
             major: 0,
             minor: 0,
@@ -2257,21 +1145,31 @@ Some(("@8trhieu/ckeditor5-build-classic-custom", Normal(
                 ),
             )),
             extra_metadata: {
+                "directories": {},
+                "_npmUser": {
+                    "name": "hieutq1188",
+                    "email": "hieutq1188@gmail.com",
+                },
+                "engines": {
+                    "npm": ">=5.7.1",
+                    "node": ">=12.0.0",
+                },
+                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
                 "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.5",
-                "license": "GPL-2.0-or-later",
+                "author": {
+                    "url": "http://cksource.com/",
+                    "name": "CKSource",
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.5_1641721228734_0.2545276811823929",
+                    "host": "s3://npm-registry-packages",
+                },
                 "bugs": {
                     "url": "https://github.com/ckeditor/ckeditor5/issues",
                 },
-                "version": "0.0.5",
-                "_hasShrinkwrap": false,
-                "scripts": {
-                    "build": "webpack --mode production",
-                    "preversion": "npm run build",
-                },
-                "_npmVersion": "6.14.15",
-                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
-                "directories": {},
-                "homepage": "https://ckeditor.com/ckeditor-5",
+                "license": "GPL-2.0-or-later",
+                "_nodeVersion": "14.17.6",
+                "main": "./build/ckeditor.js",
                 "keywords": [
                     "ckeditor5-build",
                     "ckeditor",
@@ -2290,30 +1188,1132 @@ Some(("@8trhieu/ckeditor5-build-classic-custom", Normal(
                     "real-time",
                     "framework",
                 ],
-                "_npmUser": {
-                    "name": "hieutq1188",
-                    "email": "hieutq1188@gmail.com",
-                },
+                "_npmVersion": "6.14.15",
+                "_hasShrinkwrap": false,
                 "name": "@8trhieu/ckeditor5-build-classic-custom",
+                "version": "0.0.5",
                 "maintainers": [
                     {
                         "name": "hieutq1188",
                         "email": "hieutq1188@gmail.com",
                     },
                 ],
-                "engines": {
-                    "npm": ">=5.7.1",
-                    "node": ">=12.0.0",
+                "scripts": {
+                    "build": "webpack --mode production",
+                    "preversion": "npm run build",
                 },
+                "homepage": "https://ckeditor.com/ckeditor-5",
+            },
+        ),
+        (
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("@ckeditor/ckeditor5-font", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-link", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-list", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-image", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-table", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-indent", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-typing", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-upload", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-heading", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-mention", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-alignment", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-utils", (
+                    raw: "^25.4.5",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 25,
+                                minor: 4,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 26,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-highlight", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-paragraph", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-autoformat", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-code-block", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-essentials", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-html-embed", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-theme-lark", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-word-count", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-block-quote", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-media-embed", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-basic-styles", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-html-support", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-markdown-gfm", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-remove-format", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-editor-classic", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-source-editing", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-horizontal-line", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-paste-from-office", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
+                    raw: "^25.4.5",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 25,
+                                minor: 4,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 26,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-special-characters", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [
+                ("postcss", (
+                    raw: "^8.4.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 8,
+                                minor: 4,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 9,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("webpack", (
+                    raw: "^4.43.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 4,
+                                minor: 43,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("css-loader", (
+                    raw: "^5.2.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 5,
+                                minor: 2,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 6,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("raw-loader", (
+                    raw: "^4.0.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 4,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("webpack-cli", (
+                    raw: "^3.3.11",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 3,
+                                bug: 11,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("style-loader", (
+                    raw: "^1.2.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("postcss-loader", (
+                    raw: "^3.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("terser-webpack-plugin", (
+                    raw: "^3.0.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 0,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-core", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-utils", (
+                    raw: "^27.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 27,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 28,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-theme-lark", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
+                    raw: "^27.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 27,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 28,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@8trhieu/ckeditor5-build-classic-custom/-/ckeditor5-build-classic-custom-0.0.1.tgz",
+                shasum: Some("a346485cddd08391080946937750913b59984128"),
+                unpacked_size: Some(7931372),
+                file_count: Some(8),
+                integrity: Some("sha512-Da6vJVtG+DWJmydbHKlrlZJZ8KTae4NuV4Ax7B4tEwGWSIQGrEw/2y4ZqjoKXAwhfMeZ8n5r9IxejiDXQBejvw=="),
+                signature0_sig: Some("MEQCICLxUXuz+eTCKsep2tKOwnHlgn5qa/HF2s+kO8f65InsAiA9LK5zv0b3Cb81B+177cynG3feYDE0Mdm7bCmMv3octA=="),
+                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJh0x6CCRA9TVsSAnZWagAAbc0P/0pT1c+aLmNc1bOZfnqF\n5pl9nTxrSUKxeBqLcL/Sn+1SipQb9vVsDz+DaV7J9DW2AcibnWQr9//C4whk\n+E0Ke85ERHAMHvUXyO/2GWL9u8whI6S9RxAm1GzPup/LzUBaFcrN6At5X9gk\ndmOTQetMdl+T2UzOJqBtBurBXQBCNMuNJLt3RGO+T5iztQRNrdNH7dd0hFkb\n+7Sq/cUU/vFv2i/O0A0YFaVGtUVCWm66Zy7c72LivszoDILDBz7cAKuwj1rL\nqZDiuWIx527YjNQItmleSLVHQk6p2NUONZm5K3q9cRJ9ptwPNlJQa7TwCa/L\n3M8yYkZtko6d5vcj9OYUHf4Z2IPwvstram72Tkmu2obkeoI1rRTkAa4GT6RV\nLPenvm2hX5vfp8QxK0h+5y6ehSwQWfbVizXIIVkVLDSq6yur9MAF0WSdEl5M\nnuMujTgjxCuZVWVbVbTltoPFYIJn4iOQy2LGdTmOxksB34N3pPY/sT6AFdw1\nJqwzSXe2LwztezGOsbi8sCMpbFp9T7ISRLL4Ou6HJN2mv6TAMah2OBGzdacU\nRy4bNSQ7jM+7fYfVOzLlav6YB+z0Lans9wJk/Xoq2v0y1+l93Nd9NgQveiVE\nH8Xrp4lg34WDaIPmxqfd8CgUHXm14wgsjV6+qhR+6DyeReNms8cBenoxPaoD\nVc1j\r\n=X43T\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            repository: Some((
+                raw: {
+                    "url": "git+https://github.com/ckeditor/ckeditor5.git",
+                    "type": "git",
+                    "directory": "packages/ckeditor5-build-classic-custom",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/ckeditor/ckeditor5",
+                    cloneable_repo_dir: "packages/ckeditor5-build-classic-custom",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "ckeditor",
+                        repo: "ckeditor5",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "_npmUser": {
+                    "name": "hieutq1188",
+                    "email": "hieutq1188@gmail.com",
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.1_1641225858136_0.8122429012122487",
+                    "host": "s3://npm-registry-packages",
+                },
+                "_nodeVersion": "14.17.6",
+                "license": "GPL-2.0-or-later",
+                "keywords": [
+                    "ckeditor5-build",
+                    "ckeditor",
+                    "ckeditor5",
+                    "ckeditor 5",
+                    "wysiwyg",
+                    "rich text",
+                    "editor",
+                    "html",
+                    "contentEditable",
+                    "editing",
+                    "operational transformation",
+                    "ot",
+                    "collaboration",
+                    "collaborative",
+                    "real-time",
+                    "framework",
+                ],
                 "author": {
                     "url": "http://cksource.com/",
                     "name": "CKSource",
                 },
-                "_nodeVersion": "14.17.6",
+                "engines": {
+                    "npm": ">=5.7.1",
+                    "node": ">=12.0.0",
+                },
+                "name": "@8trhieu/ckeditor5-build-classic-custom",
+                "version": "0.0.1",
+                "_npmVersion": "6.14.15",
+                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
+                "maintainers": [
+                    {
+                        "name": "hieutq1188",
+                        "email": "hieutq1188@gmail.com",
+                    },
+                ],
+                "_hasShrinkwrap": false,
+                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.1",
+                "scripts": {
+                    "build": "webpack --mode production",
+                    "preversion": "npm run build",
+                },
                 "main": "./build/ckeditor.js",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.5_1641721228734_0.2545276811823929",
-                    "host": "s3://npm-registry-packages",
+                "directories": {},
+                "homepage": "https://ckeditor.com/ckeditor-5",
+                "bugs": {
+                    "url": "https://github.com/ckeditor/ckeditor5/issues",
                 },
             },
         ),
@@ -3369,1176 +3369,64 @@ Some(("@8trhieu/ckeditor5-build-classic-custom", Normal(
                 ),
             )),
             extra_metadata: {
+                "_hasShrinkwrap": false,
+                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.3",
+                "license": "GPL-2.0-or-later",
+                "directories": {},
+                "engines": {
+                    "npm": ">=5.7.1",
+                    "node": ">=12.0.0",
+                },
+                "version": "0.0.3",
+                "keywords": [
+                    "ckeditor5-build",
+                    "ckeditor",
+                    "ckeditor5",
+                    "ckeditor 5",
+                    "wysiwyg",
+                    "rich text",
+                    "editor",
+                    "html",
+                    "contentEditable",
+                    "editing",
+                    "operational transformation",
+                    "ot",
+                    "collaboration",
+                    "collaborative",
+                    "real-time",
+                    "framework",
+                ],
+                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
                 "bugs": {
                     "url": "https://github.com/ckeditor/ckeditor5/issues",
                 },
-                "_hasShrinkwrap": false,
+                "author": {
+                    "url": "http://cksource.com/",
+                    "name": "CKSource",
+                },
+                "main": "./build/ckeditor.js",
                 "_npmOperationalInternal": {
                     "tmp": "tmp/ckeditor5-build-classic-custom_0.0.3_1641227386236_0.9060545669059958",
                     "host": "s3://npm-registry-packages",
                 },
-                "version": "0.0.3",
-                "homepage": "https://ckeditor.com/ckeditor-5",
                 "_npmUser": {
                     "name": "hieutq1188",
                     "email": "hieutq1188@gmail.com",
                 },
-                "_nodeVersion": "14.17.6",
-                "name": "@8trhieu/ckeditor5-build-classic-custom",
-                "license": "GPL-2.0-or-later",
-                "engines": {
-                    "npm": ">=5.7.1",
-                    "node": ">=12.0.0",
-                },
-                "author": {
-                    "url": "http://cksource.com/",
-                    "name": "CKSource",
-                },
-                "directories": {},
-                "main": "./build/ckeditor.js",
-                "scripts": {
-                    "build": "webpack --mode production",
-                    "preversion": "npm run build",
-                },
-                "keywords": [
-                    "ckeditor5-build",
-                    "ckeditor",
-                    "ckeditor5",
-                    "ckeditor 5",
-                    "wysiwyg",
-                    "rich text",
-                    "editor",
-                    "html",
-                    "contentEditable",
-                    "editing",
-                    "operational transformation",
-                    "ot",
-                    "collaboration",
-                    "collaborative",
-                    "real-time",
-                    "framework",
-                ],
-                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
                 "maintainers": [
                     {
                         "name": "hieutq1188",
                         "email": "hieutq1188@gmail.com",
                     },
                 ],
-                "_npmVersion": "6.14.15",
-                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.3",
-            },
-        ),
-        (
-            major: 0,
-            minor: 0,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [
-                ("@ckeditor/ckeditor5-font", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-link", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-list", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-image", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-table", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-indent", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-typing", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-upload", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-heading", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-mention", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-alignment", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-utils", (
-                    raw: "^25.4.5",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 25,
-                                minor: 4,
-                                bug: 5,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 26,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-highlight", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-paragraph", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-autoformat", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-code-block", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-essentials", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-html-embed", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-theme-lark", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-word-count", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-block-quote", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-media-embed", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-basic-styles", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-html-support", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-markdown-gfm", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-remove-format", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-editor-classic", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-source-editing", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-horizontal-line", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-paste-from-office", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
-                    raw: "^25.4.5",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 25,
-                                minor: 4,
-                                bug: 5,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 26,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-special-characters", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [
-                ("postcss", (
-                    raw: "^8.4.4",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 8,
-                                minor: 4,
-                                bug: 4,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 9,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("webpack", (
-                    raw: "^4.43.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 4,
-                                minor: 43,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 5,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("css-loader", (
-                    raw: "^5.2.7",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 5,
-                                minor: 2,
-                                bug: 7,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 6,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("raw-loader", (
-                    raw: "^4.0.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 4,
-                                minor: 0,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 5,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("webpack-cli", (
-                    raw: "^3.3.11",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 3,
-                                minor: 3,
-                                bug: 11,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 4,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("style-loader", (
-                    raw: "^1.2.1",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 1,
-                                minor: 2,
-                                bug: 1,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 2,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("postcss-loader", (
-                    raw: "^3.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 3,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 4,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("terser-webpack-plugin", (
-                    raw: "^3.0.2",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 3,
-                                minor: 0,
-                                bug: 2,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 4,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-core", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-utils", (
-                    raw: "^27.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 27,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 28,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-theme-lark", (
-                    raw: "^31.1.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 31,
-                                minor: 1,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 32,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
-                    raw: "^27.0.0",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 27,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 28,
-                                minor: 0,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/@8trhieu/ckeditor5-build-classic-custom/-/ckeditor5-build-classic-custom-0.0.2.tgz",
-                shasum: Some("255630e29033740ad3f767568142e29c1c66ce4d"),
-                unpacked_size: Some(7931420),
-                file_count: Some(8),
-                integrity: Some("sha512-DKyMgizhGZMjabeAZtNdQD3SmpTq/HOwaiokM50NeOcyBkTtvo9gaOrRNsivMcdx954yy8Qlt0YWgw/Y9nMgQA=="),
-                signature0_sig: Some("MEYCIQDAQ0JL5D4NCq/+VQiRM+Pr3ocaRYVDsC5utm0vsy49AgIhAJ4McI6n8PXVjovho8wSGItpafD95gzbn4qV0qlhRIMP"),
-                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJh0yPmCRA9TVsSAnZWagAAa1cQAJz7WdlXuad6iP2WBSlU\namDrfgDM1G2vJfoBB4XAqXCg49V05zJTOR4ZVcDnzblc4s+0vf0XDqL2TzK9\nVfl0Gjh+EY43upELWj6TL23TSdqxk7/aRRrxvfVbUtBNjK80bmg2gLTm4uJc\n4IlOZl7j5ahM8jeGuia//f9QALZjfIrjQg3xxdX0IIok12wIzzCgfc2eRLZ3\nU0yVWLX6i0/7lAq6Cm7ZjUjc39yy03EqVOby2fj4i7aRR6OKNnj5Ilretnku\nk1+IjOYZrIPE+BTreZRv1xPLn0MJ+cvNhabvhBeGMuQjpYshMXMby5AjzlLC\nMAG+fkxekE8BfCcDc5LH9zJQhFaa4QcTkPCqhs18N3mUM0SvgJkzS36byVw7\nS68d87ndmHlwCXgXNan/fCf/lqG24bwhRFFapZeu1idxbQ4BI+srktYTLFs3\nQ2RZ+CVoNUmy1IUs+QtjCZLyixV9IvdzE4Vri9tSuQ1cxgcwckZNSPgAAJRI\nUdrpG5Yap2mkw4sIA/vJjBYafJamVkEugmErLjlo60hIBnB7Jmwj14X9f1Uu\nIozL9N2NUHgEa2CExe474xlzPWzBZN7vAK0TjNOK4hjsvnW7Xdc0zow1Akho\nHKq86m2mRl6tsOYlmkQIdyg78ERdcnP4dfGc6ohz26gc71ImYzYsh1n9rCQS\n6ASX\r\n=P0ex\r\n-----END PGP SIGNATURE-----\r\n"),
-            ),
-            repository: Some((
-                raw: {
-                    "url": "https://github.com/quanhieu/ckeditor5/tree/stable/packages/ckeditor5-build-classic-custom",
-                    "type": "git",
-                    "directory": "packages/ckeditor5-build-classic-custom",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/quanhieu/ckeditor5",
-                    cloneable_repo_dir: "packages/ckeditor5-build-classic-custom",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "quanhieu",
-                        repo: "ckeditor5",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "engines": {
-                    "npm": ">=5.7.1",
-                    "node": ">=12.0.0",
-                },
-                "_npmUser": {
-                    "name": "hieutq1188",
-                    "email": "hieutq1188@gmail.com",
-                },
                 "homepage": "https://ckeditor.com/ckeditor-5",
-                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.2",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.2_1641227238259_0.6536121083529516",
-                    "host": "s3://npm-registry-packages",
-                },
-                "bugs": {
-                    "url": "https://github.com/ckeditor/ckeditor5/issues",
-                },
-                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
-                "maintainers": [
-                    {
-                        "name": "hieutq1188",
-                        "email": "hieutq1188@gmail.com",
-                    },
-                ],
-                "_nodeVersion": "14.17.6",
-                "keywords": [
-                    "ckeditor5-build",
-                    "ckeditor",
-                    "ckeditor5",
-                    "ckeditor 5",
-                    "wysiwyg",
-                    "rich text",
-                    "editor",
-                    "html",
-                    "contentEditable",
-                    "editing",
-                    "operational transformation",
-                    "ot",
-                    "collaboration",
-                    "collaborative",
-                    "real-time",
-                    "framework",
-                ],
-                "version": "0.0.2",
-                "directories": {},
-                "author": {
-                    "url": "http://cksource.com/",
-                    "name": "CKSource",
-                },
-                "_npmVersion": "6.14.15",
                 "name": "@8trhieu/ckeditor5-build-classic-custom",
-                "license": "GPL-2.0-or-later",
+                "_nodeVersion": "14.17.6",
+                "_npmVersion": "6.14.15",
                 "scripts": {
                     "build": "webpack --mode production",
                     "preversion": "npm run build",
                 },
-                "_hasShrinkwrap": false,
-                "main": "./build/ckeditor.js",
             },
         ),
         (
@@ -5593,17 +4481,28 @@ Some(("@8trhieu/ckeditor5-build-classic-custom", Normal(
                 ),
             )),
             extra_metadata: {
-                "_npmUser": {
-                    "name": "hieutq1188",
-                    "email": "hieutq1188@gmail.com",
+                "main": "./build/ckeditor.js",
+                "directories": {},
+                "engines": {
+                    "npm": ">=5.7.1",
+                    "node": ">=12.0.0",
                 },
-                "_nodeVersion": "14.17.6",
-                "bugs": {
-                    "url": "https://github.com/ckeditor/ckeditor5/issues",
+                "version": "0.0.4",
+                "maintainers": [
+                    {
+                        "name": "hieutq1188",
+                        "email": "hieutq1188@gmail.com",
+                    },
+                ],
+                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
+                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.4",
+                "name": "@8trhieu/ckeditor5-build-classic-custom",
+                "author": {
+                    "url": "http://cksource.com/",
+                    "name": "CKSource",
                 },
                 "_npmVersion": "6.14.15",
-                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
-                "name": "@8trhieu/ckeditor5-build-classic-custom",
+                "_hasShrinkwrap": false,
                 "keywords": [
                     "ckeditor5-build",
                     "ckeditor",
@@ -5622,35 +4521,1136 @@ Some(("@8trhieu/ckeditor5-build-classic-custom", Normal(
                     "real-time",
                     "framework",
                 ],
+                "scripts": {
+                    "build": "webpack --mode production",
+                    "preversion": "npm run build",
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.4_1641227587765_0.8119394593053999",
+                    "host": "s3://npm-registry-packages",
+                },
+                "_nodeVersion": "14.17.6",
+                "homepage": "https://ckeditor.com/ckeditor-5",
+                "license": "GPL-2.0-or-later",
+                "bugs": {
+                    "url": "https://github.com/ckeditor/ckeditor5/issues",
+                },
+                "_npmUser": {
+                    "name": "hieutq1188",
+                    "email": "hieutq1188@gmail.com",
+                },
+            },
+        ),
+        (
+            major: 0,
+            minor: 0,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("@ckeditor/ckeditor5-font", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-link", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-list", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-image", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-table", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-indent", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-typing", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-upload", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-heading", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-mention", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-alignment", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-utils", (
+                    raw: "^25.4.5",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 25,
+                                minor: 4,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 26,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-highlight", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-paragraph", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-autoformat", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-code-block", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-essentials", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-html-embed", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-theme-lark", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-word-count", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-block-quote", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-media-embed", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-basic-styles", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-html-support", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-markdown-gfm", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-remove-format", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-editor-classic", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-source-editing", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-horizontal-line", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-paste-from-office", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
+                    raw: "^25.4.5",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 25,
+                                minor: 4,
+                                bug: 5,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 26,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-special-characters", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [
+                ("postcss", (
+                    raw: "^8.4.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 8,
+                                minor: 4,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 9,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("webpack", (
+                    raw: "^4.43.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 4,
+                                minor: 43,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("css-loader", (
+                    raw: "^5.2.7",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 5,
+                                minor: 2,
+                                bug: 7,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 6,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("raw-loader", (
+                    raw: "^4.0.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 4,
+                                minor: 0,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 5,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("webpack-cli", (
+                    raw: "^3.3.11",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 3,
+                                bug: 11,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("style-loader", (
+                    raw: "^1.2.1",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 1,
+                                minor: 2,
+                                bug: 1,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 2,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("postcss-loader", (
+                    raw: "^3.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("terser-webpack-plugin", (
+                    raw: "^3.0.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 3,
+                                minor: 0,
+                                bug: 2,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 4,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-core", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-utils", (
+                    raw: "^27.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 27,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 28,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-theme-lark", (
+                    raw: "^31.1.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 31,
+                                minor: 1,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 32,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+                ("@ckeditor/ckeditor5-dev-webpack-plugin", (
+                    raw: "^27.0.0",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 27,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 28,
+                                minor: 0,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@8trhieu/ckeditor5-build-classic-custom/-/ckeditor5-build-classic-custom-0.0.2.tgz",
+                shasum: Some("255630e29033740ad3f767568142e29c1c66ce4d"),
+                unpacked_size: Some(7931420),
+                file_count: Some(8),
+                integrity: Some("sha512-DKyMgizhGZMjabeAZtNdQD3SmpTq/HOwaiokM50NeOcyBkTtvo9gaOrRNsivMcdx954yy8Qlt0YWgw/Y9nMgQA=="),
+                signature0_sig: Some("MEYCIQDAQ0JL5D4NCq/+VQiRM+Pr3ocaRYVDsC5utm0vsy49AgIhAJ4McI6n8PXVjovho8wSGItpafD95gzbn4qV0qlhRIMP"),
+                signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJh0yPmCRA9TVsSAnZWagAAa1cQAJz7WdlXuad6iP2WBSlU\namDrfgDM1G2vJfoBB4XAqXCg49V05zJTOR4ZVcDnzblc4s+0vf0XDqL2TzK9\nVfl0Gjh+EY43upELWj6TL23TSdqxk7/aRRrxvfVbUtBNjK80bmg2gLTm4uJc\n4IlOZl7j5ahM8jeGuia//f9QALZjfIrjQg3xxdX0IIok12wIzzCgfc2eRLZ3\nU0yVWLX6i0/7lAq6Cm7ZjUjc39yy03EqVOby2fj4i7aRR6OKNnj5Ilretnku\nk1+IjOYZrIPE+BTreZRv1xPLn0MJ+cvNhabvhBeGMuQjpYshMXMby5AjzlLC\nMAG+fkxekE8BfCcDc5LH9zJQhFaa4QcTkPCqhs18N3mUM0SvgJkzS36byVw7\nS68d87ndmHlwCXgXNan/fCf/lqG24bwhRFFapZeu1idxbQ4BI+srktYTLFs3\nQ2RZ+CVoNUmy1IUs+QtjCZLyixV9IvdzE4Vri9tSuQ1cxgcwckZNSPgAAJRI\nUdrpG5Yap2mkw4sIA/vJjBYafJamVkEugmErLjlo60hIBnB7Jmwj14X9f1Uu\nIozL9N2NUHgEa2CExe474xlzPWzBZN7vAK0TjNOK4hjsvnW7Xdc0zow1Akho\nHKq86m2mRl6tsOYlmkQIdyg78ERdcnP4dfGc6ohz26gc71ImYzYsh1n9rCQS\n6ASX\r\n=P0ex\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            repository: Some((
+                raw: {
+                    "url": "https://github.com/quanhieu/ckeditor5/tree/stable/packages/ckeditor5-build-classic-custom",
+                    "type": "git",
+                    "directory": "packages/ckeditor5-build-classic-custom",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/quanhieu/ckeditor5",
+                    cloneable_repo_dir: "packages/ckeditor5-build-classic-custom",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "quanhieu",
+                        repo: "ckeditor5",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "scripts": {
+                    "build": "webpack --mode production",
+                    "preversion": "npm run build",
+                },
+                "license": "GPL-2.0-or-later",
+                "version": "0.0.2",
+                "keywords": [
+                    "ckeditor5-build",
+                    "ckeditor",
+                    "ckeditor5",
+                    "ckeditor 5",
+                    "wysiwyg",
+                    "rich text",
+                    "editor",
+                    "html",
+                    "contentEditable",
+                    "editing",
+                    "operational transformation",
+                    "ot",
+                    "collaboration",
+                    "collaborative",
+                    "real-time",
+                    "framework",
+                ],
+                "_npmVersion": "6.14.15",
+                "bugs": {
+                    "url": "https://github.com/ckeditor/ckeditor5/issues",
+                },
+                "_npmUser": {
+                    "name": "hieutq1188",
+                    "email": "hieutq1188@gmail.com",
+                },
                 "engines": {
                     "npm": ">=5.7.1",
                     "node": ">=12.0.0",
                 },
+                "directories": {},
                 "maintainers": [
                     {
                         "name": "hieutq1188",
                         "email": "hieutq1188@gmail.com",
                     },
                 ],
-                "license": "GPL-2.0-or-later",
-                "scripts": {
-                    "build": "webpack --mode production",
-                    "preversion": "npm run build",
-                },
+                "homepage": "https://ckeditor.com/ckeditor-5",
+                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.2",
+                "main": "./build/ckeditor.js",
+                "description": "The classic editor build of CKEditor 5 – the best browser-based rich text editor.",
                 "_hasShrinkwrap": false,
+                "name": "@8trhieu/ckeditor5-build-classic-custom",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.2_1641227238259_0.6536121083529516",
+                    "host": "s3://npm-registry-packages",
+                },
+                "_nodeVersion": "14.17.6",
                 "author": {
                     "url": "http://cksource.com/",
                     "name": "CKSource",
                 },
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/ckeditor5-build-classic-custom_0.0.4_1641227587765_0.8119394593053999",
-                    "host": "s3://npm-registry-packages",
-                },
-                "version": "0.0.4",
-                "main": "./build/ckeditor.js",
-                "homepage": "https://ckeditor.com/ckeditor-5",
-                "directories": {},
-                "_id": "@8trhieu/ckeditor5-build-classic-custom@0.0.4",
             },
         ),
     },

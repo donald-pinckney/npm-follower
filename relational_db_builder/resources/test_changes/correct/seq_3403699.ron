@@ -274,22 +274,10 @@ Some(("myfirst-react-publish", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "_npmUser": {
-                    "name": "suchism",
-                    "email": "suchi.hyd@gmail.com",
-                },
-                "_npmVersion": "6.5.0",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/myfirst-react-publish_1.0.0_1553170001039_0.09057132251014055",
-                    "host": "s3://npm-registry-packages",
-                },
                 "repo": {
                     "url": "",
                     "type": "",
                 },
-                "license": "ISC",
-                "main": "build/index.js",
-                "directories": {},
                 "author": {
                     "name": "xxx",
                 },
@@ -298,6 +286,18 @@ Some(("myfirst-react-publish", Normal(
                     "build": "webpack --env publish --mode production",
                     "start": "webpack --env publish --mode production --watch",
                 },
+                "_hasShrinkwrap": false,
+                "_nodeVersion": "11.9.0",
+                "_id": "myfirst-react-publish@1.0.0",
+                "_npmUser": {
+                    "name": "suchism",
+                    "email": "suchi.hyd@gmail.com",
+                },
+                "directories": {},
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/myfirst-react-publish_1.0.0_1553170001039_0.09057132251014055",
+                    "host": "s3://npm-registry-packages",
+                },
                 "version": "1.0.0",
                 "maintainers": [
                     {
@@ -305,11 +305,11 @@ Some(("myfirst-react-publish", Normal(
                         "email": "suchi.hyd@gmail.com",
                     },
                 ],
-                "_hasShrinkwrap": false,
-                "_nodeVersion": "11.9.0",
-                "description": "test",
+                "license": "ISC",
                 "name": "myfirst-react-publish",
-                "_id": "myfirst-react-publish@1.0.0",
+                "description": "test",
+                "_npmVersion": "6.5.0",
+                "main": "build/index.js",
             },
         ),
     },

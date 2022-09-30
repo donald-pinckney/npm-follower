@@ -42,41 +42,41 @@ Some(("iamsap-first-nodejs-package", Normal(
             ),
             repository: None,
             extra_metadata: {
+                "description": "Node.js for C# by Sap",
+                "_id": "iamsap-first-nodejs-package@0.0.0",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/iamsap-first-nodejs-package_0.0.0_1537626011950_0.9505955068616994",
+                    "host": "s3://npm-registry-packages",
+                },
+                "_npmUser": {
+                    "name": "iamsap",
+                    "email": "robbymillsap@gmail.com",
+                },
+                "_npmVersion": "6.4.1",
+                "author": {
+                    "name": "Sap",
+                    "email": "robbymillsap@gmail.com",
+                },
+                "main": "index.js",
+                "name": "iamsap-first-nodejs-package",
+                "repo": {
+                    "url": "http://github.com/iamsap",
+                    "type": "git",
+                },
+                "license": "MIT",
+                "version": "0.0.0",
+                "scripts": {
+                    "test": "jasmine",
+                },
                 "directories": {},
+                "_nodeVersion": "8.12.0",
                 "maintainers": [
                     {
                         "name": "iamsap",
                         "email": "robbymillsap@gmail.com",
                     },
                 ],
-                "_nodeVersion": "8.12.0",
-                "main": "index.js",
-                "name": "iamsap-first-nodejs-package",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/iamsap-first-nodejs-package_0.0.0_1537626011950_0.9505955068616994",
-                    "host": "s3://npm-registry-packages",
-                },
-                "author": {
-                    "name": "Sap",
-                    "email": "robbymillsap@gmail.com",
-                },
-                "scripts": {
-                    "test": "jasmine",
-                },
-                "_hasShrinkwrap": false,
-                "repo": {
-                    "url": "http://github.com/iamsap",
-                    "type": "git",
-                },
-                "_npmUser": {
-                    "name": "iamsap",
-                    "email": "robbymillsap@gmail.com",
-                },
-                "version": "0.0.0",
-                "description": "Node.js for C# by Sap",
-                "license": "MIT",
-                "_npmVersion": "6.4.1",
-                "_id": "iamsap-first-nodejs-package@0.0.0",
             },
         ),
     },

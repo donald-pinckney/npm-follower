@@ -366,53 +366,53 @@ Some(("vue-loading-ihui", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "scripts": {
-                    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-                    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
-                },
-                "_hasShrinkwrap": false,
-                "license": "MIT",
-                "homepage": "",
-                "name": "vue-loading-ihui",
-                "main": "dist/loading.js",
                 "directories": {},
                 "_nodeVersion": "8.9.3",
-                "_npmUser": {
-                    "name": "ihui",
-                    "email": "2873991890@qq.com",
+                "_id": "vue-loading-ihui@1.0.0",
+                "main": "dist/loading.js",
+                "name": "vue-loading-ihui",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/vue-loading-ihui_1.0.0_1534747398117_0.007077976746529657",
+                    "host": "s3://npm-registry-packages",
                 },
+                "_hasShrinkwrap": false,
                 "author": {
                     "name": "\'ihui\'",
                     "email": "\'2873991890@qq.com\'",
                 },
+                "homepage": "",
+                "version": "1.0.0",
+                "license": "MIT",
                 "_npmVersion": "5.5.1",
+                "browserslist": [
+                    "> 1%",
+                    "last 2 versions",
+                    "not ie <= 8",
+                ],
+                "repo": {
+                    "url": "",
+                    "type": "git",
+                },
+                "keywords": [
+                    "vue",
+                    "ihui",
+                ],
+                "private": false,
+                "description": "A Vue.js project",
                 "maintainers": [
                     {
                         "name": "ihui",
                         "email": "2873991890@qq.com",
                     },
                 ],
-                "repo": {
-                    "url": "",
-                    "type": "git",
+                "scripts": {
+                    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+                    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
                 },
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/vue-loading-ihui_1.0.0_1534747398117_0.007077976746529657",
-                    "host": "s3://npm-registry-packages",
+                "_npmUser": {
+                    "name": "ihui",
+                    "email": "2873991890@qq.com",
                 },
-                "private": false,
-                "keywords": [
-                    "vue",
-                    "ihui",
-                ],
-                "description": "A Vue.js project",
-                "version": "1.0.0",
-                "_id": "vue-loading-ihui@1.0.0",
-                "browserslist": [
-                    "> 1%",
-                    "last 2 versions",
-                    "not ie <= 8",
-                ],
             },
         ),
     },

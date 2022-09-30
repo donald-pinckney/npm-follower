@@ -56,17 +56,20 @@ Some(("h5-1810-npm", Normal(
                 ),
             )),
             extra_metadata: {
-                "author": {
-                    "name": "Ming",
-                },
-                "name": "h5-1810-npm",
                 "gitHead": "d8716fc34d1e2a71ec2aad165e7450e3972bdf29",
-                "_npmVersion": "5.5.1",
                 "license": "MIT",
+                "_npmUser": {
+                    "name": "jiangxiaoming",
+                    "email": "2218215702@qq.com",
+                },
+                "version": "0.0.1",
+                "bugs": {
+                    "url": "https://github.com/Jiang-Xiaoming/h5-1810/issues",
+                },
                 "directories": {},
-                "keywords": [
-                    "h5-1810",
-                ],
+                "_id": "h5-1810-npm@0.0.1",
+                "main": "index.js",
+                "homepage": "https://github.com/Jiang-Xiaoming/h5-1810#readme",
                 "maintainers": [
                     {
                         "name": "jiangxiaoming",
@@ -74,26 +77,23 @@ Some(("h5-1810-npm", Normal(
                     },
                 ],
                 "_nodeVersion": "8.9.0",
-                "_id": "h5-1810-npm@0.0.1",
+                "keywords": [
+                    "h5-1810",
+                ],
+                "description": "A test pageage",
+                "_hasShrinkwrap": false,
+                "author": {
+                    "name": "Ming",
+                },
                 "scripts": {
                     "test": "mocha",
                 },
-                "bugs": {
-                    "url": "https://github.com/Jiang-Xiaoming/h5-1810/issues",
-                },
-                "main": "index.js",
+                "name": "h5-1810-npm",
+                "_npmVersion": "5.5.1",
                 "_npmOperationalInternal": {
                     "tmp": "tmp/h5-1810-npm_0.0.1_1537330343443_0.8290061945508465",
                     "host": "s3://npm-registry-packages",
                 },
-                "version": "0.0.1",
-                "_npmUser": {
-                    "name": "jiangxiaoming",
-                    "email": "2218215702@qq.com",
-                },
-                "homepage": "https://github.com/Jiang-Xiaoming/h5-1810#readme",
-                "_hasShrinkwrap": false,
-                "description": "A test pageage",
             },
         ),
     },

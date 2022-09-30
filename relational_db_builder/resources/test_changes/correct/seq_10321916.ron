@@ -42,7 +42,28 @@ Some(("actest", Normal(
             ),
             repository: None,
             extra_metadata: {
+                "directories": {},
+                "_npmVersion": "5.6.0",
+                "name": "actest",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/actest_1.0.0_1549380398535_0.03779759076339828",
+                },
+                "author": {
+                    "name": "nick yermak",
+                },
+                "_npmUser": {
+                    "email": "nickolas.yermak@alignedcode.com",
+                    "name": "nickyermak",
+                },
+                "_hasShrinkwrap": false,
+                "_nodeVersion": "8.11.3",
                 "main": "index.js",
+                "scripts": {
+                    "test": "test",
+                },
+                "description": "ac test npm pacakge",
+                "version": "1.0.0",
                 "license": "ISC",
                 "maintainers": [
                     {
@@ -50,28 +71,7 @@ Some(("actest", Normal(
                         "name": "nickyermak",
                     },
                 ],
-                "_hasShrinkwrap": false,
-                "directories": {},
-                "author": {
-                    "name": "nick yermak",
-                },
-                "_npmOperationalInternal": {
-                    "host": "s3://npm-registry-packages",
-                    "tmp": "tmp/actest_1.0.0_1549380398535_0.03779759076339828",
-                },
-                "_npmVersion": "5.6.0",
-                "description": "ac test npm pacakge",
                 "_id": "actest@1.0.0",
-                "_npmUser": {
-                    "email": "nickolas.yermak@alignedcode.com",
-                    "name": "nickyermak",
-                },
-                "version": "1.0.0",
-                "_nodeVersion": "8.11.3",
-                "scripts": {
-                    "test": "test",
-                },
-                "name": "actest",
             },
         ),
     },

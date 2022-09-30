@@ -27,17 +27,17 @@ Some(("@cran/psql.lodash", Normal(
         (
             major: 0,
             minor: 0,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): "2021-05-05T03:11:34.222Z",
-        (
-            major: 0,
-            minor: 0,
             bug: 1,
             prerelease: [],
             build: [],
         ): "2021-01-06T13:47:21.780Z",
+        (
+            major: 0,
+            minor: 0,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): "2021-05-05T03:11:34.222Z",
     },
     versions: {
         (
@@ -63,103 +63,42 @@ Some(("@cran/psql.lodash", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "description": "PostgresQL Lodash Functionality",
+                "_npmVersion": "6.14.9",
+                "gitHead": "483346855ae2004b86219db503de3c29c8ed2c2f",
+                "license": "CC-BY-ND-4.0",
+                "maintainers": [
+                    {
+                        "name": "common-cranberry",
+                        "email": "chris@cranberry.ink",
+                    },
+                ],
                 "_npmOperationalInternal": {
                     "tmp": "tmp/psql.lodash_0.0.1_1609940841594_0.01600675671070939",
                     "host": "s3://npm-registry-packages",
                 },
+                "version": "0.0.1",
+                "_id": "@cran/psql.lodash@0.0.1",
+                "scripts": {},
                 "keywords": [
                     "cranberry",
                 ],
-                "_npmVersion": "6.14.9",
-                "name": "@cran/psql.lodash",
-                "license": "CC-BY-ND-4.0",
                 "_nodeVersion": "15.5.0",
-                "_npmUser": {
-                    "name": "common-cranberry",
-                    "email": "chris@cranberry.ink",
-                },
-                "repo": {
-                    "url": "git@gitlab.com:c6s/lib/psql/lodash.git",
-                    "type": "git",
-                },
-                "version": "0.0.1",
-                "author": {
-                    "name": "Cranberry",
-                },
-                "directories": {},
-                "gitHead": "483346855ae2004b86219db503de3c29c8ed2c2f",
-                "scripts": {},
-                "_hasShrinkwrap": false,
-                "maintainers": [
-                    {
-                        "name": "common-cranberry",
-                        "email": "chris@cranberry.ink",
-                    },
-                ],
-                "_id": "@cran/psql.lodash@0.0.1",
-                "main": "out/migrate.sql",
-            },
-        ),
-        (
-            major: 0,
-            minor: 0,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/@cran/psql.lodash/-/psql.lodash-0.0.2.tgz",
-                shasum: Some("ff460e021f21eb7aaf4c2d588508bc18525a4229"),
-                unpacked_size: Some(5901),
-                file_count: Some(16),
-                integrity: Some("sha512-MkzbOFzm3vhUunvQb7rpy04pH1Bzmn0gUyYBmk+pZ+ECr6KuD6YC8VomQzOxMg3fNab5pmVVu72n88eMOde0lQ=="),
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgkgzmCRA9TVsSAnZWagAA2AYP/39GFEsmThgsdZKGwa7G\nC/0PAbhi80jFw4F2foK09f7d2xlygp0M/teWougVznpY/dWhETSJNt3+JVuS\ndADmMqqjJ7Zq4AYM1enUjz8Ss30Xtjk0WMQ3ww0BaszOlkpESmwWOgFDYVK1\nfL6xcHC2SRrbgkcE3GX6lkQF31ARHWSx0cllgjxMz5Z/mEyH7Lbrq3Fa7Qpo\nHPFrpjVdf68rjYYeb8RnqDdCQsD/nxUMhGx4wA5sIWMlEbM89FEtsKB89who\nvaJVtUjuaErIBz77T2M/1d7g8rKrF6/7i1Z+vv2X9+2zbBYIouCGWvdjz4uV\nIZAd6GaLnN2avBhYtk8jr09aWHICx3QA6K69i+17mWt6u3ifrl/JfHApbbUn\nYSB/LYtGq3SoOmKZrM5rvftOVKWsPLran9tFBPumftXb+i6t+oahoUo7PQ/v\nFzWwe1puZz71/4fwr9ipwPYL9MPGouEG2lPoRKChRZIcnBrRgpGSR+811hH/\nqFV3pttq6EOhEaL8wVB61kU0rGXFSS6ZDFs9+BKfuD06iZq1KgV/8o5+JFEr\nwUgUpVV5oLmG7LbS1aHp8pP8PZ5vkSr4GMGqnGq9+XZlLXA7RxcrXoi+KAls\nrot2TSPggitLqsmLRXpxYl+uWblLiaL62PiBjKe4F5LeRisLCDmeBOwQxoAo\nGsuV\r\n=RhRq\r\n-----END PGP SIGNATURE-----\r\n"),
-            ),
-            repository: None,
-            extra_metadata: {
-                "license": "CC-BY-ND-4.0",
-                "gitHead": "2bfbad9f773c047eafed3daac8f86376ef7ad8d7",
-                "main": "out/migrate.sql",
-                "scripts": {},
                 "author": {
                     "name": "Cranberry",
                 },
                 "description": "PostgresQL Lodash Functionality",
-                "_hasShrinkwrap": false,
-                "version": "0.0.2",
-                "maintainers": [
-                    {
-                        "name": "common-cranberry",
-                        "email": "chris@cranberry.ink",
-                    },
-                ],
-                "_nodeVersion": "15.5.0",
+                "main": "out/migrate.sql",
+                "name": "@cran/psql.lodash",
+                "directories": {},
                 "_npmUser": {
                     "name": "common-cranberry",
                     "email": "chris@cranberry.ink",
                 },
-                "_id": "@cran/psql.lodash@0.0.2",
-                "keywords": [
-                    "cranberry",
-                ],
-                "directories": {},
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/psql.lodash_0.0.2_1620184294068_0.44929745611204086",
-                    "host": "s3://npm-registry-packages",
-                },
-                "name": "@cran/psql.lodash",
-                "_npmVersion": "6.14.9",
                 "repo": {
                     "url": "git@gitlab.com:c6s/lib/psql/lodash.git",
                     "type": "git",
                 },
+                "_hasShrinkwrap": false,
             },
         ),
         (
@@ -186,41 +125,41 @@ Some(("@cran/psql.lodash", Normal(
             repository: None,
             extra_metadata: {
                 "_hasShrinkwrap": false,
-                "_id": "@cran/psql.lodash@0.0.3",
                 "gitHead": "cdd3b8c83043bd934400df7291923c174bf23e47",
-                "main": "out/migrate.sql",
-                "_npmUser": {
-                    "name": "common-cranberry",
-                    "email": "chris@cranberry.ink",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/psql.lodash_0.0.3_1620187033693_0.5316389211758743",
+                    "host": "s3://npm-registry-packages",
                 },
-                "_npmVersion": "6.14.9",
+                "main": "out/migrate.sql",
+                "_nodeVersion": "15.5.0",
+                "version": "0.0.3",
                 "maintainers": [
                     {
                         "name": "common-cranberry",
                         "email": "chris@cranberry.ink",
                     },
                 ],
-                "directories": {},
-                "author": {
-                    "name": "Cranberry",
-                },
-                "_nodeVersion": "15.5.0",
-                "license": "CC-BY-ND-4.0",
-                "description": "PostgresQL Lodash Functionality",
-                "keywords": [
-                    "cranberry",
-                ],
-                "name": "@cran/psql.lodash",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/psql.lodash_0.0.3_1620187033693_0.5316389211758743",
-                    "host": "s3://npm-registry-packages",
-                },
                 "repo": {
                     "url": "git@gitlab.com:c6s/lib/psql/lodash.git",
                     "type": "git",
                 },
-                "version": "0.0.3",
+                "description": "PostgresQL Lodash Functionality",
+                "license": "CC-BY-ND-4.0",
+                "name": "@cran/psql.lodash",
                 "scripts": {},
+                "author": {
+                    "name": "Cranberry",
+                },
+                "_npmUser": {
+                    "name": "common-cranberry",
+                    "email": "chris@cranberry.ink",
+                },
+                "_id": "@cran/psql.lodash@0.0.3",
+                "_npmVersion": "6.14.9",
+                "directories": {},
+                "keywords": [
+                    "cranberry",
+                ],
             },
         ),
         (
@@ -246,42 +185,103 @@ Some(("@cran/psql.lodash", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "description": "PostgresQL Lodash Functionality",
-                "_npmVersion": "6.14.9",
-                "version": "0.0.5",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/psql.lodash_0.0.5_1620265251005_0.488770440419817",
-                    "host": "s3://npm-registry-packages",
-                },
-                "gitHead": "5667091a2d1fea35ec770664afd43b174b6b6141",
                 "keywords": [
                     "cranberry",
                 ],
-                "_id": "@cran/psql.lodash@0.0.5",
-                "author": {
-                    "name": "Cranberry",
+                "description": "PostgresQL Lodash Functionality",
+                "repo": {
+                    "url": "git@gitlab.com:c6s/lib/psql/lodash.git",
+                    "type": "git",
                 },
                 "_npmUser": {
                     "name": "common-cranberry",
                     "email": "chris@cranberry.ink",
                 },
                 "_hasShrinkwrap": false,
+                "main": "out/migrate.sql",
+                "author": {
+                    "name": "Cranberry",
+                },
+                "gitHead": "5667091a2d1fea35ec770664afd43b174b6b6141",
+                "scripts": {},
+                "version": "0.0.5",
+                "_id": "@cran/psql.lodash@0.0.5",
+                "_nodeVersion": "15.5.0",
+                "license": "CC-BY-ND-4.0",
                 "maintainers": [
                     {
                         "name": "common-cranberry",
                         "email": "chris@cranberry.ink",
                     },
                 ],
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/psql.lodash_0.0.5_1620265251005_0.488770440419817",
+                    "host": "s3://npm-registry-packages",
+                },
+                "name": "@cran/psql.lodash",
+                "directories": {},
+                "_npmVersion": "6.14.9",
+            },
+        ),
+        (
+            major: 0,
+            minor: 0,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/@cran/psql.lodash/-/psql.lodash-0.0.2.tgz",
+                shasum: Some("ff460e021f21eb7aaf4c2d588508bc18525a4229"),
+                unpacked_size: Some(5901),
+                file_count: Some(16),
+                integrity: Some("sha512-MkzbOFzm3vhUunvQb7rpy04pH1Bzmn0gUyYBmk+pZ+ECr6KuD6YC8VomQzOxMg3fNab5pmVVu72n88eMOde0lQ=="),
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgkgzmCRA9TVsSAnZWagAA2AYP/39GFEsmThgsdZKGwa7G\nC/0PAbhi80jFw4F2foK09f7d2xlygp0M/teWougVznpY/dWhETSJNt3+JVuS\ndADmMqqjJ7Zq4AYM1enUjz8Ss30Xtjk0WMQ3ww0BaszOlkpESmwWOgFDYVK1\nfL6xcHC2SRrbgkcE3GX6lkQF31ARHWSx0cllgjxMz5Z/mEyH7Lbrq3Fa7Qpo\nHPFrpjVdf68rjYYeb8RnqDdCQsD/nxUMhGx4wA5sIWMlEbM89FEtsKB89who\nvaJVtUjuaErIBz77T2M/1d7g8rKrF6/7i1Z+vv2X9+2zbBYIouCGWvdjz4uV\nIZAd6GaLnN2avBhYtk8jr09aWHICx3QA6K69i+17mWt6u3ifrl/JfHApbbUn\nYSB/LYtGq3SoOmKZrM5rvftOVKWsPLran9tFBPumftXb+i6t+oahoUo7PQ/v\nFzWwe1puZz71/4fwr9ipwPYL9MPGouEG2lPoRKChRZIcnBrRgpGSR+811hH/\nqFV3pttq6EOhEaL8wVB61kU0rGXFSS6ZDFs9+BKfuD06iZq1KgV/8o5+JFEr\nwUgUpVV5oLmG7LbS1aHp8pP8PZ5vkSr4GMGqnGq9+XZlLXA7RxcrXoi+KAls\nrot2TSPggitLqsmLRXpxYl+uWblLiaL62PiBjKe4F5LeRisLCDmeBOwQxoAo\nGsuV\r\n=RhRq\r\n-----END PGP SIGNATURE-----\r\n"),
+            ),
+            repository: None,
+            extra_metadata: {
+                "_npmUser": {
+                    "name": "common-cranberry",
+                    "email": "chris@cranberry.ink",
+                },
+                "maintainers": [
+                    {
+                        "name": "common-cranberry",
+                        "email": "chris@cranberry.ink",
+                    },
+                ],
+                "main": "out/migrate.sql",
+                "_nodeVersion": "15.5.0",
+                "description": "PostgresQL Lodash Functionality",
+                "license": "CC-BY-ND-4.0",
+                "name": "@cran/psql.lodash",
+                "scripts": {},
+                "_id": "@cran/psql.lodash@0.0.2",
+                "_hasShrinkwrap": false,
+                "author": {
+                    "name": "Cranberry",
+                },
+                "version": "0.0.2",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/psql.lodash_0.0.2_1620184294068_0.44929745611204086",
+                    "host": "s3://npm-registry-packages",
+                },
+                "gitHead": "2bfbad9f773c047eafed3daac8f86376ef7ad8d7",
                 "directories": {},
                 "repo": {
                     "url": "git@gitlab.com:c6s/lib/psql/lodash.git",
                     "type": "git",
                 },
-                "main": "out/migrate.sql",
-                "scripts": {},
-                "_nodeVersion": "15.5.0",
-                "license": "CC-BY-ND-4.0",
-                "name": "@cran/psql.lodash",
+                "_npmVersion": "6.14.9",
+                "keywords": [
+                    "cranberry",
+                ],
             },
         ),
     },

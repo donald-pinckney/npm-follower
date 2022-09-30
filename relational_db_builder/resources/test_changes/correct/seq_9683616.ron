@@ -13,20 +13,6 @@ Some(("@3fv/serverless-offline", Normal(
         (
             major: 6,
             minor: 8,
-            bug: 3,
-            prerelease: [],
-            build: [],
-        ): "2020-11-22T22:46:08.285Z",
-        (
-            major: 6,
-            minor: 8,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): "2020-11-22T22:44:48.201Z",
-        (
-            major: 6,
-            minor: 8,
             bug: 4,
             prerelease: [],
             build: [],
@@ -38,12 +24,26 @@ Some(("@3fv/serverless-offline", Normal(
             prerelease: [],
             build: [],
         ): "2020-12-07T20:26:32.660Z",
+        (
+            major: 6,
+            minor: 8,
+            bug: 3,
+            prerelease: [],
+            build: [],
+        ): "2020-11-22T22:46:08.285Z",
+        (
+            major: 6,
+            minor: 8,
+            bug: 2,
+            prerelease: [],
+            build: [],
+        ): "2020-11-22T22:44:48.201Z",
     },
     versions: {
         (
             major: 6,
             minor: 8,
-            bug: 4,
+            bug: 5,
             prerelease: [],
             build: [],
         ): (
@@ -1302,24 +1302,47 @@ Some(("@3fv/serverless-offline", Normal(
             ],
             optional_dependencies: [],
             dist: (
-                tarball_url: "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.4.tgz",
-                shasum: Some("66b8643272ef5698898d5d71214fc56d38762dec"),
-                unpacked_size: Some(416590),
+                tarball_url: "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.5.tgz",
+                shasum: Some("f4d3e8ca96653121e2e64d29bb2b66cd829d5c37"),
+                unpacked_size: Some(417143),
                 file_count: Some(144),
-                integrity: Some("sha512-hDtgg+oVJhjlP3dud/A+9adBnIkIYM4L+O8lSlifhEBkUEWmbfidgZ7ncqlKPE+m/VZmJN3R+uTydc7/Pz9eRQ=="),
-                signature0_sig: Some("MEQCIGed1J8f5NgK+zshKUrxoZuRoZl8DV+brYfyMSpJYkVdAiAIqwRouvGz6EoV0mpgbsotF2z2kmrKI/4JJOnUMnZg5g=="),
+                integrity: Some("sha512-9u4UJDg0qxXstWaLVojjAFoGRJKBr3pStaZjXOtR9FVYI1qF62MrHC8Pz6iTcFCDnKwPN9EOw+4rE1TstJaBeA=="),
+                signature0_sig: Some("MEUCICGbxd2oEqvmn4/0F/7RQlbHERcMT5DhUzxm94CXExJiAiEAzabvcwf9Yvr8KMxX2DAItAxf0OHv+IhdNb/SZYf04BE="),
                 signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfvEtVCRA9TVsSAnZWagAAjuUP/jVDRZaliIiIyojbRn58\nq0n1YZlSoLDnr3261rWD0p3b3arV/lbTw/uOvZo9QZ+Sof3XSBdMcELyfd0d\n/dDJA/9U/SZ0BuEjW2hTR7E0fBXRLrE+0W+hjLfllJzhEAMmqBbqh1R9K1Ou\ndgTSWjoIGfFmbVvLwpV3IH7z+FvS+WeIDdPLg+sFKCNvYK0VIQupGuOlWOIM\ncvhPinBXArzA381fFOoPZAuYsqom+0hP7vDIyKKIXED9Z26ZXFiGAYMWt3pb\nxwTfIWTR43Cr98NU5NmokrBsxDt39aHjKnZXeUOJIpZjTJEode1CqPRTYnh2\ndAxrby5sd5nA5uQFNnmWvJnJBg+MFtHPHu9nSK4w9Y7pl3DBO0mcE+chgwfh\nMQcIXqcHO6Gw5NHZ8Ro4U+jndY7Du532MnwxJPvcHbn9uPUPt91OBB92reQH\nMF3PdoWj36baW9sJJx8J4OHIGjOdt5LnSUmhFqp2uhBVe4ls+rJ1t6Inj+GS\nYON+S0xPfmjqcimRxWaPxNfq+bjpUlRvEZs+/KcN5AbOLuP2Z0Fgr4Vt6MFw\nI2XytxP7wPfB+UCXJZSNh5w3j2Y4dJ3F1DwmtsTudqn/kkeyx/AjmBQIMrzd\nM20FnREv/1WRTz9zb0Scz20qF8UuGhK9GYH+zkiLpWbWGaYIeHXoSV1DGwlv\nEGjD\r\n=Zif0\r\n-----END PGP SIGNATURE-----\r\n"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfzo/5CRA9TVsSAnZWagAAEmgP/jgF5co7nDFXKVY8uQdp\n7rA8x/YzQb8Tc8JBy3TtEQnpuZd0JYLWoqEDZyJevrPkPz8CHAc9DjBrGvJ+\n4EGr7LP8ev/Quy/F9ewhwJlTeBe60SsazFg1HMP95QTvTgQhrx11p95eqRrf\nTcfKKYmVjuXSVHwZcZEVwVqy4ltw+Zp3guZvWU4GGX+Wm18AzWkPfymhiduU\n/3dZOvTiSxSaLgvIv6c9uoISx88n6L7lm1s5Vk8mvwv4AIoSjoY4zHTevN8w\n7ws3rVLhzyTpgo0VVNptpYK5bzAWG3IiV29M1spkbn0ph+oUMBf5SQpV6BKW\njPqQ8S1SrhXYwmKZwRFm1ii3ix5EEEf48+2iUrW82msk9WXW52CrJ0QAqaDg\nLXzkxCvp6mhk9/U+Y3SwYSMXFwWCIhHzUqJm4qsaVQnwBJnNyx7+VYV6t9De\nXy4ylVUhjWfYy0YkUgb3KqEXnxap+hRRhuCkX8R5TwgBjQYqe7o53/9PvyOU\nZfjFAu+8V4z0FZnw7NaaWh3/neqDnY0axflK6rdl1UZ0hr0lZ+/WGjfuf0tr\ne1CS/JDRZZ5u/d1oQqzo7KDdBmn+GfZAG6DLyimlrYQhBHyCXrkIv5V50Xjm\npH2HpCqCvv6JdC8ZmN7IlzjpvFIKxBlzBGzBd4NrxH7dWUIxvPINJY6W75LG\nc7di\r\n=SeyU\r\n-----END PGP SIGNATURE-----\r\n"),
             ),
             repository: None,
             extra_metadata: {
-                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
-                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
+                "maintainers": [
+                    {
+                        "name": "jglanz",
+                        "email": "jonathan.glanz@gmail.com",
+                    },
+                ],
                 "_hasShrinkwrap": false,
+                "bugs": {
+                    "url": "https://github.com/dherault/serverless-offline/issues",
+                },
+                "version": "6.8.5",
                 "main": "dist/main.js",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/serverless-offline_6.8.4_1606175573117_0.18680352169627357",
-                    "host": "s3://npm-registry-packages",
+                "keywords": [
+                    "serverless",
+                    "serverless framework",
+                    "serverless local",
+                    "serverless offline",
+                    "serverless plugin",
+                    "aws",
+                    "amazon web services",
+                    "api gateway",
+                    "http",
+                    "lambda",
+                    "schedule",
+                    "websocket",
+                ],
+                "dedicatedTo": "Blue, a great migrating bird.",
+                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
+                "engines": {
+                    "node": ">=10.13.0",
                 },
                 "scripts": {
                     "lint": "eslint .",
@@ -1338,37 +1361,27 @@ Some(("@3fv/serverless-offline", Normal(
                     "//prepublishOnly": "npm run lint && npm run build",
                     "list-contributors": "echo \'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install\' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md",
                 },
-                "engines": {
-                    "node": ">=10.13.0",
+                "directories": {},
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+                "type": "commonjs",
+                "resolutions": {
+                    "bl": "^4.0.3",
+                    "node-fetch": "^2.6.1",
                 },
-                "_id": "@3fv/serverless-offline@6.8.4",
-                "version": "6.8.4",
-                "homepage": "https://github.com/dherault/serverless-offline",
-                "keywords": [
-                    "serverless",
-                    "serverless framework",
-                    "serverless local",
-                    "serverless offline",
-                    "serverless plugin",
-                    "aws",
-                    "amazon web services",
-                    "api gateway",
-                    "http",
-                    "lambda",
-                    "schedule",
-                    "websocket",
-                ],
                 "publishConfig": {
                     "access": "public",
                 },
-                "dedicatedTo": "Blue, a great migrating bird.",
-                "type": "commonjs",
-                "maintainers": [
-                    {
-                        "name": "jglanz",
-                        "email": "jonathan.glanz@gmail.com",
-                    },
-                ],
+                "_id": "@3fv/serverless-offline@6.8.5",
+                "author": {
+                    "url": "https://github.com/dherault",
+                    "name": "David Hérault",
+                    "email": "dherault@gmail.com",
+                },
+                "license": "MIT",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com",
+                },
                 "contributors": [
                     {
                         "url": "https://github.com/adamelliottsweeting",
@@ -1740,27 +1753,14 @@ Some(("@3fv/serverless-offline", Normal(
                         "name": "Bryan Vaz",
                     },
                 ],
-                "license": "MIT",
-                "author": {
-                    "url": "https://github.com/dherault",
-                    "name": "David Hérault",
-                    "email": "dherault@gmail.com",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.5_1607372792480_0.5810110681924752",
+                    "host": "s3://npm-registry-packages",
                 },
+                "homepage": "https://github.com/dherault/serverless-offline",
                 "repo": {
                     "url": "git+ssh://github.com/3fv/serverless-offline.git",
                     "type": "git",
-                },
-                "resolutions": {
-                    "bl": "^4.0.3",
-                    "node-fetch": "^2.6.1",
-                },
-                "_npmUser": {
-                    "name": "jglanz",
-                    "email": "jonathan.glanz@gmail.com",
-                },
-                "directories": {},
-                "bugs": {
-                    "url": "https://github.com/dherault/serverless-offline/issues",
                 },
                 "name": "@3fv/serverless-offline",
             },
@@ -3038,50 +3038,10 @@ Some(("@3fv/serverless-offline", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "license": "MIT",
-                "maintainers": [
-                    {
-                        "name": "jglanz",
-                        "email": "jonathan.glanz@gmail.com",
-                    },
-                ],
-                "_id": "@3fv/serverless-offline@6.8.2",
-                "name": "@3fv/serverless-offline",
-                "main": "dist/main.js",
-                "type": "commonjs",
-                "engines": {
-                    "node": ">=10.13.0",
+                "repo": {
+                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
+                    "type": "git",
                 },
-                "keywords": [
-                    "serverless",
-                    "serverless framework",
-                    "serverless local",
-                    "serverless offline",
-                    "serverless plugin",
-                    "aws",
-                    "amazon web services",
-                    "api gateway",
-                    "http",
-                    "lambda",
-                    "schedule",
-                    "websocket",
-                ],
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/serverless-offline_6.8.2_1606085088028_0.47661111467350614",
-                    "host": "s3://npm-registry-packages",
-                },
-                "author": {
-                    "url": "https://github.com/dherault",
-                    "name": "David Hérault",
-                    "email": "dherault@gmail.com",
-                },
-                "dedicatedTo": "Blue, a great migrating bird.",
-                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
-                "version": "6.8.2",
-                "bugs": {
-                    "url": "https://github.com/dherault/serverless-offline/issues",
-                },
-                "_hasShrinkwrap": false,
                 "scripts": {
                     "lint": "eslint .",
                     "test": "npm run build && jest --verbose --silent --runInBand",
@@ -3099,7 +3059,32 @@ Some(("@3fv/serverless-offline", Normal(
                     "//prepublishOnly": "npm run lint && npm run build",
                     "list-contributors": "echo \'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install\' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md",
                 },
-                "directories": {},
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+                "version": "6.8.2",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.2_1606085088028_0.47661111467350614",
+                    "host": "s3://npm-registry-packages",
+                },
+                "maintainers": [
+                    {
+                        "name": "jglanz",
+                        "email": "jonathan.glanz@gmail.com",
+                    },
+                ],
+                "_hasShrinkwrap": false,
+                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
+                "type": "commonjs",
+                "bugs": {
+                    "url": "https://github.com/dherault/serverless-offline/issues",
+                },
+                "_id": "@3fv/serverless-offline@6.8.2",
+                "main": "dist/main.js",
+                "license": "MIT",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com",
+                },
+                "homepage": "https://github.com/dherault/serverless-offline",
                 "contributors": [
                     {
                         "url": "https://github.com/adamelliottsweeting",
@@ -3471,20 +3456,35 @@ Some(("@3fv/serverless-offline", Normal(
                         "name": "Bryan Vaz",
                     },
                 ],
-                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
-                "repo": {
-                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
-                    "type": "git",
+                "author": {
+                    "url": "https://github.com/dherault",
+                    "name": "David Hérault",
+                    "email": "dherault@gmail.com",
                 },
+                "name": "@3fv/serverless-offline",
+                "engines": {
+                    "node": ">=10.13.0",
+                },
+                "keywords": [
+                    "serverless",
+                    "serverless framework",
+                    "serverless local",
+                    "serverless offline",
+                    "serverless plugin",
+                    "aws",
+                    "amazon web services",
+                    "api gateway",
+                    "http",
+                    "lambda",
+                    "schedule",
+                    "websocket",
+                ],
+                "dedicatedTo": "Blue, a great migrating bird.",
+                "directories": {},
                 "resolutions": {
                     "bl": "^4.0.3",
                     "node-fetch": "^2.6.1",
                 },
-                "_npmUser": {
-                    "name": "jglanz",
-                    "email": "jonathan.glanz@gmail.com",
-                },
-                "homepage": "https://github.com/dherault/serverless-offline",
             },
         ),
         (
@@ -4760,14 +4760,28 @@ Some(("@3fv/serverless-offline", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
-                "repo": {
-                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
-                    "type": "git",
-                },
                 "_id": "@3fv/serverless-offline@6.8.3",
-                "version": "6.8.3",
-                "main": "dist/main.js",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com",
+                },
+                "directories": {},
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.3_1606085168130_0.28617475655746727",
+                    "host": "s3://npm-registry-packages",
+                },
+                "engines": {
+                    "node": ">=10.13.0",
+                },
+                "dedicatedTo": "Blue, a great migrating bird.",
+                "bugs": {
+                    "url": "https://github.com/dherault/serverless-offline/issues",
+                },
+                "author": {
+                    "url": "https://github.com/dherault",
+                    "name": "David Hérault",
+                    "email": "dherault@gmail.com",
+                },
                 "keywords": [
                     "serverless",
                     "serverless framework",
@@ -4782,24 +4796,19 @@ Some(("@3fv/serverless-offline", Normal(
                     "schedule",
                     "websocket",
                 ],
-                "dedicatedTo": "Blue, a great migrating bird.",
-                "_hasShrinkwrap": false,
+                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
+                "main": "dist/main.js",
                 "license": "MIT",
-                "author": {
-                    "url": "https://github.com/dherault",
-                    "name": "David Hérault",
-                    "email": "dherault@gmail.com",
-                },
-                "directories": {},
+                "type": "commonjs",
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
                 "maintainers": [
                     {
                         "name": "jglanz",
                         "email": "jonathan.glanz@gmail.com",
                     },
                 ],
-                "resolutions": {
-                    "bl": "^4.0.3",
-                    "node-fetch": "^2.6.1",
+                "publishConfig": {
+                    "access": "public",
                 },
                 "contributors": [
                     {
@@ -5172,16 +5181,8 @@ Some(("@3fv/serverless-offline", Normal(
                         "name": "Bryan Vaz",
                     },
                 ],
-                "bugs": {
-                    "url": "https://github.com/dherault/serverless-offline/issues",
-                },
-                "publishConfig": {
-                    "access": "public",
-                },
-                "engines": {
-                    "node": ">=10.13.0",
-                },
-                "type": "commonjs",
+                "homepage": "https://github.com/dherault/serverless-offline",
+                "_hasShrinkwrap": false,
                 "scripts": {
                     "lint": "eslint .",
                     "test": "npm run build && jest --verbose --silent --runInBand",
@@ -5199,23 +5200,22 @@ Some(("@3fv/serverless-offline", Normal(
                     "//prepublishOnly": "npm run lint && npm run build",
                     "list-contributors": "echo \'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install\' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md",
                 },
+                "resolutions": {
+                    "bl": "^4.0.3",
+                    "node-fetch": "^2.6.1",
+                },
+                "version": "6.8.3",
                 "name": "@3fv/serverless-offline",
-                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
-                "_npmUser": {
-                    "name": "jglanz",
-                    "email": "jonathan.glanz@gmail.com",
+                "repo": {
+                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
+                    "type": "git",
                 },
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/serverless-offline_6.8.3_1606085168130_0.28617475655746727",
-                    "host": "s3://npm-registry-packages",
-                },
-                "homepage": "https://github.com/dherault/serverless-offline",
             },
         ),
         (
             major: 6,
             minor: 8,
-            bug: 5,
+            bug: 4,
             prerelease: [],
             build: [],
         ): (
@@ -6474,38 +6474,31 @@ Some(("@3fv/serverless-offline", Normal(
             ],
             optional_dependencies: [],
             dist: (
-                tarball_url: "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.5.tgz",
-                shasum: Some("f4d3e8ca96653121e2e64d29bb2b66cd829d5c37"),
-                unpacked_size: Some(417143),
+                tarball_url: "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.4.tgz",
+                shasum: Some("66b8643272ef5698898d5d71214fc56d38762dec"),
+                unpacked_size: Some(416590),
                 file_count: Some(144),
-                integrity: Some("sha512-9u4UJDg0qxXstWaLVojjAFoGRJKBr3pStaZjXOtR9FVYI1qF62MrHC8Pz6iTcFCDnKwPN9EOw+4rE1TstJaBeA=="),
-                signature0_sig: Some("MEUCICGbxd2oEqvmn4/0F/7RQlbHERcMT5DhUzxm94CXExJiAiEAzabvcwf9Yvr8KMxX2DAItAxf0OHv+IhdNb/SZYf04BE="),
+                integrity: Some("sha512-hDtgg+oVJhjlP3dud/A+9adBnIkIYM4L+O8lSlifhEBkUEWmbfidgZ7ncqlKPE+m/VZmJN3R+uTydc7/Pz9eRQ=="),
+                signature0_sig: Some("MEQCIGed1J8f5NgK+zshKUrxoZuRoZl8DV+brYfyMSpJYkVdAiAIqwRouvGz6EoV0mpgbsotF2z2kmrKI/4JJOnUMnZg5g=="),
                 signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfzo/5CRA9TVsSAnZWagAAEmgP/jgF5co7nDFXKVY8uQdp\n7rA8x/YzQb8Tc8JBy3TtEQnpuZd0JYLWoqEDZyJevrPkPz8CHAc9DjBrGvJ+\n4EGr7LP8ev/Quy/F9ewhwJlTeBe60SsazFg1HMP95QTvTgQhrx11p95eqRrf\nTcfKKYmVjuXSVHwZcZEVwVqy4ltw+Zp3guZvWU4GGX+Wm18AzWkPfymhiduU\n/3dZOvTiSxSaLgvIv6c9uoISx88n6L7lm1s5Vk8mvwv4AIoSjoY4zHTevN8w\n7ws3rVLhzyTpgo0VVNptpYK5bzAWG3IiV29M1spkbn0ph+oUMBf5SQpV6BKW\njPqQ8S1SrhXYwmKZwRFm1ii3ix5EEEf48+2iUrW82msk9WXW52CrJ0QAqaDg\nLXzkxCvp6mhk9/U+Y3SwYSMXFwWCIhHzUqJm4qsaVQnwBJnNyx7+VYV6t9De\nXy4ylVUhjWfYy0YkUgb3KqEXnxap+hRRhuCkX8R5TwgBjQYqe7o53/9PvyOU\nZfjFAu+8V4z0FZnw7NaaWh3/neqDnY0axflK6rdl1UZ0hr0lZ+/WGjfuf0tr\ne1CS/JDRZZ5u/d1oQqzo7KDdBmn+GfZAG6DLyimlrYQhBHyCXrkIv5V50Xjm\npH2HpCqCvv6JdC8ZmN7IlzjpvFIKxBlzBGzBd4NrxH7dWUIxvPINJY6W75LG\nc7di\r\n=SeyU\r\n-----END PGP SIGNATURE-----\r\n"),
+                npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfvEtVCRA9TVsSAnZWagAAjuUP/jVDRZaliIiIyojbRn58\nq0n1YZlSoLDnr3261rWD0p3b3arV/lbTw/uOvZo9QZ+Sof3XSBdMcELyfd0d\n/dDJA/9U/SZ0BuEjW2hTR7E0fBXRLrE+0W+hjLfllJzhEAMmqBbqh1R9K1Ou\ndgTSWjoIGfFmbVvLwpV3IH7z+FvS+WeIDdPLg+sFKCNvYK0VIQupGuOlWOIM\ncvhPinBXArzA381fFOoPZAuYsqom+0hP7vDIyKKIXED9Z26ZXFiGAYMWt3pb\nxwTfIWTR43Cr98NU5NmokrBsxDt39aHjKnZXeUOJIpZjTJEode1CqPRTYnh2\ndAxrby5sd5nA5uQFNnmWvJnJBg+MFtHPHu9nSK4w9Y7pl3DBO0mcE+chgwfh\nMQcIXqcHO6Gw5NHZ8Ro4U+jndY7Du532MnwxJPvcHbn9uPUPt91OBB92reQH\nMF3PdoWj36baW9sJJx8J4OHIGjOdt5LnSUmhFqp2uhBVe4ls+rJ1t6Inj+GS\nYON+S0xPfmjqcimRxWaPxNfq+bjpUlRvEZs+/KcN5AbOLuP2Z0Fgr4Vt6MFw\nI2XytxP7wPfB+UCXJZSNh5w3j2Y4dJ3F1DwmtsTudqn/kkeyx/AjmBQIMrzd\nM20FnREv/1WRTz9zb0Scz20qF8UuGhK9GYH+zkiLpWbWGaYIeHXoSV1DGwlv\nEGjD\r\n=Zif0\r\n-----END PGP SIGNATURE-----\r\n"),
             ),
             repository: None,
             extra_metadata: {
-                "_id": "@3fv/serverless-offline@6.8.5",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com",
+                },
+                "homepage": "https://github.com/dherault/serverless-offline",
                 "author": {
                     "url": "https://github.com/dherault",
                     "name": "David Hérault",
                     "email": "dherault@gmail.com",
                 },
-                "homepage": "https://github.com/dherault/serverless-offline",
-                "dedicatedTo": "Blue, a great migrating bird.",
-                "directories": {},
-                "version": "6.8.5",
                 "bugs": {
                     "url": "https://github.com/dherault/serverless-offline/issues",
                 },
-                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
-                "publishConfig": {
-                    "access": "public",
-                },
-                "resolutions": {
-                    "bl": "^4.0.3",
-                    "node-fetch": "^2.6.1",
-                },
+                "version": "6.8.4",
                 "name": "@3fv/serverless-offline",
                 "contributors": [
                     {
@@ -6878,13 +6871,18 @@ Some(("@3fv/serverless-offline", Normal(
                         "name": "Bryan Vaz",
                     },
                 ],
-                "repo": {
-                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
-                    "type": "git",
+                "main": "dist/main.js",
+                "license": "MIT",
+                "resolutions": {
+                    "bl": "^4.0.3",
+                    "node-fetch": "^2.6.1",
                 },
+                "description": "Emulate AWS λ and API Gateway locally when developing your Serverless project",
                 "engines": {
                     "node": ">=10.13.0",
                 },
+                "_id": "@3fv/serverless-offline@6.8.4",
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
                 "type": "commonjs",
                 "scripts": {
                     "lint": "eslint .",
@@ -6903,18 +6901,16 @@ Some(("@3fv/serverless-offline", Normal(
                     "//prepublishOnly": "npm run lint && npm run build",
                     "list-contributors": "echo \'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install\' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md",
                 },
-                "license": "MIT",
-                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David Hérault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
-                "_hasShrinkwrap": false,
+                "dedicatedTo": "Blue, a great migrating bird.",
                 "maintainers": [
                     {
                         "name": "jglanz",
                         "email": "jonathan.glanz@gmail.com",
                     },
                 ],
-                "_npmUser": {
-                    "name": "jglanz",
-                    "email": "jonathan.glanz@gmail.com",
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.4_1606175573117_0.18680352169627357",
+                    "host": "s3://npm-registry-packages",
                 },
                 "keywords": [
                     "serverless",
@@ -6930,11 +6926,15 @@ Some(("@3fv/serverless-offline", Normal(
                     "schedule",
                     "websocket",
                 ],
-                "main": "dist/main.js",
-                "_npmOperationalInternal": {
-                    "tmp": "tmp/serverless-offline_6.8.5_1607372792480_0.5810110681924752",
-                    "host": "s3://npm-registry-packages",
+                "publishConfig": {
+                    "access": "public",
                 },
+                "directories": {},
+                "repo": {
+                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
+                    "type": "git",
+                },
+                "_hasShrinkwrap": false,
             },
         ),
     },

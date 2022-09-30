@@ -42,13 +42,15 @@ Some(("Graph", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "engines": {
-                    "node": ">= 0.1.99",
-                },
-                "author": {
-                    "email": "yoni.bmesh@gmail.com",
-                    "name": "Yoni Ben-Meshulam",
-                },
+                "_nodeVersion": "v0.3.1-pre",
+                "licenses": [
+                    {
+                        "type": "GPLv2",
+                        "url": "http://www.example.com/licenses/gpl.html",
+                    },
+                ],
+                "_nodeSupported": true,
+                "ctime": "2010-11-09T23:25:38Z",
                 "scripts": {
                     "test": "Test/Graph.js",
                 },
@@ -60,28 +62,26 @@ Some(("Graph", Normal(
                     "node",
                     "connection",
                 ],
-                "main": "Graph",
+                "version": "0.0.1",
+                "description": "A mathematical Graph theory library.",
+                "engines": {
+                    "node": ">= 0.1.99",
+                },
                 "contributors": [
                     {
                         "email": "yoni.bmesh@gmail.com",
                         "name": "Yoni Ben-Meshulam",
                     },
                 ],
-                "_nodeVersion": "v0.3.1-pre",
-                "ctime": "2010-11-09T23:25:38Z",
-                "_id": "Graph@0.0.1",
-                "version": "0.0.1",
-                "name": "Graph",
+                "main": "Graph",
+                "author": {
+                    "email": "yoni.bmesh@gmail.com",
+                    "name": "Yoni Ben-Meshulam",
+                },
                 "mtime": "2010-11-09T23:25:38Z",
-                "licenses": [
-                    {
-                        "type": "GPLv2",
-                        "url": "http://www.example.com/licenses/gpl.html",
-                    },
-                ],
-                "_nodeSupported": true,
+                "name": "Graph",
+                "_id": "Graph@0.0.1",
                 "_npmVersion": "0.2.7-2",
-                "description": "A mathematical Graph theory library.",
             },
         ),
     },
