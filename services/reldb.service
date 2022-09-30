@@ -1,0 +1,15 @@
+[Unit]
+Description=The relative db builder for npm-follower
+
+[Service]
+Type=simple
+StandardOutput=journal
+StandardError=journal
+
+Restart=always
+RestartSec=30
+
+ExecStart=/zfs-raidz1/federico/npm-follower/services/reldb_start.sh
+
+[Install]
+WantedBy=default.target
