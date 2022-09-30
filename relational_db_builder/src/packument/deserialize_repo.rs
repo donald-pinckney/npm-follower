@@ -326,7 +326,10 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
                 ..info
             }
         }
-        _ => panic!("Can't parse repo: {:?}", repo_blob),
+        _ => {
+            eprintln!("Can't parse repo: {:?}", repo_blob);
+            return None;
+        }
     };
 
     Some(RepositoryInfo {
