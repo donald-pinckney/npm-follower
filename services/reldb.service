@@ -1,5 +1,5 @@
 [Unit]
-Description=The relative db builder for npm-follower
+Description=The relational db builder for npm-follower
 
 [Service]
 Type=simple
