@@ -306,6 +306,9 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
                 "git" | "github" | "public" | "bitbucket" | "gitlab" | "gist" => {
                     deserialize_repo_check_git_type_str(url)?
                 }
+                "hg" | "https" | "http" => {
+                    return None; 
+                }
                 _ => {
                     eprintln!("Unknown repo type: {:?}", t);
                     return None;
