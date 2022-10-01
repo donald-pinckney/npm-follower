@@ -33,7 +33,7 @@ pub fn query_num_changes_after_seq(after_seq: i64, conn: &DbConnection) -> i64 {
         .filter(seq.gt(after_seq))
         .select(count(seq))
         .first(&conn.conn)
-        .expect(&format!("Error querying DB for number of changes after seq: {}", after_seq))
+        .unwrap_or_else(|_| panic!("Error querying DB for number of changes after seq: {}", after_seq))
 }
 
 pub fn query_changes_after_seq(after_seq: i64, limit_size: i64, conn: &DbConnection) -> Vec<Change> {
@@ -44,7 +44,7 @@ pub fn query_changes_after_seq(after_seq: i64, limit_size: i64, conn: &DbConnect
         .limit(limit_size)
         .order(seq)
         .load(&conn.conn)
-        .expect(&format!("Error querying DB for changes after seq: {} (limit size = {})", after_seq, limit_size))
+        .unwrap_or_else(|_| panic!("Error querying DB for changes after seq: {} (limit size = {})", after_seq, limit_size))
 }
 
 
@@ -62,7 +62,7 @@ pub fn insert_change(conn: &DbConnection, seq: i64, raw_json: serde_json::Value)
     let unsanitized_json_str = serde_json::to_string(&raw_json).unwrap();
     let sanitized_json_str = sanitize_null_escapes(&unsanitized_json_str);
     let sanitized_value: serde_json::Value = serde_json::from_str(&sanitized_json_str)
-        .expect(&format!("Failed to parse sanitized JSON string: {}\n\n->\n\n{}", unsanitized_json_str, sanitized_json_str));
+        .unwrap_or_else(|_| panic!("Failed to parse sanitized JSON string: {}\n\n->\n\n{}", unsanitized_json_str, sanitized_json_str));
 
 
     let new_change = NewChange {
@@ -73,7 +73,7 @@ pub fn insert_change(conn: &DbConnection, seq: i64, raw_json: serde_json::Value)
     diesel::insert_into(change_log::table)
         .values(&new_change)
         .execute(&conn.conn)
-        .expect(&format!("Error saving new row: {:?}.\n\nunsanitized:\n{}\n\nsanitized:\n{}\n\nseq:\n{}", new_change, unsanitized_json_str, sanitized_json_str, seq));
+        .unwrap_or_else(|_| panic!("Error saving new row: {:?}.\n\nunsanitized:\n{}\n\nsanitized:\n{}\n\nseq:\n{}", new_change, unsanitized_json_str, sanitized_json_str, seq));
 }
 
 

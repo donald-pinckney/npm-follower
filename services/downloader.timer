@@ -1,0 +1,11 @@
+[Unit]
+Description=Timer for the npm-follower downloader
+Requires=downloader.service
+
+[Timer]
+Unit=downloader.service
+# every 30 minutes
+OnCalendar=*:0/30
+
+[Install]
+WantedBy=timers.target

@@ -46,22 +46,45 @@ Some(("@avalos/extjs-gpl", Normal(
                     "skip.sass": 1,
                     "skip.slice": 1,
                 },
-                "resource": {
-                    "paths": [
-                        "resources",
+                "version": "7.0.0",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/extjs-gpl_7.0.0_1635196074923_0.19884833814998726",
+                },
+                "subpkgs": {
+                    "dir": "${package.dir}",
+                    "packages": [
+                        "classic/classic",
+                        "modern/modern",
+                        "packages/charts",
+                        "packages/amf",
+                        "packages/soap",
+                        "packages/ux",
+                        "packages/google",
+                        "packages/legacy",
+                        "packages/font-awesome",
+                        "packages/font-pictos",
+                        "packages/font-ext",
                     ],
                 },
-                "signatures": [
-                    {
-                        "algorithm": "SHA1withRSA",
-                        "created": "2020-01-14T07:08:07Z",
-                        "name": "Sencha",
-                        "nonce": "7nieRql1fas=",
-                        "signature": "UjGi4mP+Kp+YsuDnMvsGW+WAq1tB3AxpaZUL9VKqj8M7rPHwTAa11w5AG8hYisuic+h2sqEevIL0UQ6CBwBGQHsZOC0qpYi5wmYGouiGPAkTiGyZv1Qh0Ocvy2EVHMstXgjwkIGG64Pe5rP1wfgu+3of0Qpi0vu/XhPTaCAKkr5GVHoLbSPlsBIxjeKSro7C/m4eeQDCIxjwypW2aVk3kpyqqQmhDQjRxy+qEK652uWDUgOB6wIXLK2fVzhqgRSPudOm6HB7uS5re3qEHN0JmICW8sTnPTrYeUVilBoibBrcltwg3PPZqMpcwRvSumnE+60U1GYZTpd9Cq1OiiEusw==",
-                        "uuid": "1d6b0d9c-3333-4e65-885f-5b07a1fc3198",
-                    },
-                ],
+                "_nodeVersion": "16.11.1",
+                "_npmVersion": "8.1.0",
+                "namespace": "Ext",
+                "build": {
+                    "dir": "${package.output.base}",
+                },
+                "sass": {
+                    "etc": "${package.dir}/sass/etc/all.scss",
+                    "fashion": true,
+                    "namespace": "Ext",
+                    "src": "${package.dir}/sass/src",
+                    "var": "${package.dir}/sass/var",
+                },
                 "summary": "Ext JS",
+                "type": "framework",
+                "creator": "Sencha",
+                "overrides": "${package.dir}/overrides",
                 "example": {
                     "apps": [
                         "admin-dashboard",
@@ -88,40 +111,11 @@ Some(("@avalos/extjs-gpl", Normal(
                         "templates",
                     ],
                 },
-                "version": "7.0.0",
-                "_id": "@avalos/extjs-gpl@7.0.0",
-                "overrides": "${package.dir}/overrides",
-                "description": "This is the Sencha Ext JS Framework Package, or just \"ext\" for short.",
-                "format": "1",
-                "sass": {
-                    "etc": "${package.dir}/sass/etc/all.scss",
-                    "fashion": true,
-                    "namespace": "Ext",
-                    "src": "${package.dir}/sass/src",
-                    "var": "${package.dir}/sass/var",
-                },
-                "creator": "Sencha",
-                "build": {
-                    "dir": "${package.output.base}",
-                },
-                "output": "${package.dir}/build",
-                "_nodeVersion": "16.11.1",
                 "name": "@avalos/extjs-gpl",
-                "directories": {},
-                "classpath": "${package.dir}/src",
-                "_npmUser": {
-                    "email": "avalos@disroot.org",
-                    "name": "avalos",
-                },
+                "_id": "@avalos/extjs-gpl@7.0.0",
+                "description": "This is the Sencha Ext JS Framework Package, or just \"ext\" for short.",
                 "detailedDescription": "Sencha Ext JS JavaScript Framework",
-                "compatVersion": "7.0.0",
-                "_hasShrinkwrap": false,
-                "_npmOperationalInternal": {
-                    "host": "s3://npm-registry-packages",
-                    "tmp": "tmp/extjs-gpl_7.0.0_1635196074923_0.19884833814998726",
-                },
-                "type": "framework",
-                "namespace": "Ext",
+                "format": "1",
                 "language": {
                     "js": {
                         "input": {
@@ -129,29 +123,35 @@ Some(("@avalos/extjs-gpl", Normal(
                         },
                     },
                 },
-                "_npmVersion": "8.1.0",
+                "output": "${package.dir}/build",
+                "signatures": [
+                    {
+                        "algorithm": "SHA1withRSA",
+                        "created": "2020-01-14T07:08:07Z",
+                        "name": "Sencha",
+                        "nonce": "7nieRql1fas=",
+                        "signature": "UjGi4mP+Kp+YsuDnMvsGW+WAq1tB3AxpaZUL9VKqj8M7rPHwTAa11w5AG8hYisuic+h2sqEevIL0UQ6CBwBGQHsZOC0qpYi5wmYGouiGPAkTiGyZv1Qh0Ocvy2EVHMstXgjwkIGG64Pe5rP1wfgu+3of0Qpi0vu/XhPTaCAKkr5GVHoLbSPlsBIxjeKSro7C/m4eeQDCIxjwypW2aVk3kpyqqQmhDQjRxy+qEK652uWDUgOB6wIXLK2fVzhqgRSPudOm6HB7uS5re3qEHN0JmICW8sTnPTrYeUVilBoibBrcltwg3PPZqMpcwRvSumnE+60U1GYZTpd9Cq1OiiEusw==",
+                        "uuid": "1d6b0d9c-3333-4e65-885f-5b07a1fc3198",
+                    },
+                ],
+                "compatVersion": "7.0.0",
+                "_npmUser": {
+                    "email": "avalos@disroot.org",
+                    "name": "avalos",
+                },
                 "maintainers": [
                     {
                         "email": "avalos@disroot.org",
                         "name": "avalos",
                     },
                 ],
-                "subpkgs": {
-                    "dir": "${package.dir}",
-                    "packages": [
-                        "classic/classic",
-                        "modern/modern",
-                        "packages/charts",
-                        "packages/amf",
-                        "packages/soap",
-                        "packages/ux",
-                        "packages/google",
-                        "packages/legacy",
-                        "packages/font-awesome",
-                        "packages/font-pictos",
-                        "packages/font-ext",
+                "resource": {
+                    "paths": [
+                        "resources",
                     ],
                 },
+                "classpath": "${package.dir}/src",
+                "directories": {},
             },
         ),
     },

@@ -19,6 +19,9 @@ table! {
         raw_spec -> Jsonb,
         spec -> Parsed_spec_struct,
         secret -> Bool,
+        freq_count -> Int8,
+        md5digest -> Text,
+        md5digest_with_version -> Text,
     }
 }
 

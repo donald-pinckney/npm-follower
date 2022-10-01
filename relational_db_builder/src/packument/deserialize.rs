@@ -30,7 +30,7 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
 
     if let Some(dependencies_val) = dependencies_maybe_val {
         match dependencies_val {
-            Value::Array(xs) if xs.len() > 0 => {
+            Value::Array(xs) if !xs.is_empty() => {
                 version_blob.insert(key.to_string(), Value::Array(xs));
                 vec![]
             },
@@ -93,6 +93,15 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
 
     let repository_blob = version_blob.remove("repository")
                                                       .and_then(|x| x.null_to_none());
+
+    let repo = match repository_blob.as_ref().map(|r| super::deserialize_repo::deserialize_repo_blob(r.clone())) {
+        Some(Some(repo)) => Some(repo),
+        Some(None) => {
+            version_blob.insert("repo".to_string(), repository_blob.unwrap());
+            None
+        },
+        _ => None,
+    };
     
     VersionPackument {
         prod_dependencies,
@@ -100,7 +109,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         peer_dependencies,
         optional_dependencies,
         dist,
-        repository: repository_blob.map(super::deserialize_repo::deserialize_repo_blob),
+        repository: repo,
         extra_metadata: version_blob.into_iter().collect()
     }
 }
@@ -123,7 +132,7 @@ fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateT
         }), t)
     ).collect();
 
-    return (created, modified, version_times)
+    (created, modified, version_times)
 }
 
 fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, HashMap<Result<Semver, String>, DateTime<Utc>>) {
@@ -157,8 +166,8 @@ fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTi
                 parse_datetime(v_created_raw)
             },
             (None, None) => {
-                let fake_time = parse_datetime("2015-01-01T00:00:00.000Z".to_string());
-                fake_time
+                
+                parse_datetime("2015-01-01T00:00:00.000Z".to_string())
             },
             _ => panic!("Unknown ctime / mtime combination.") // we expect there to be either: ctime & mtime, or neither of them.
         };
@@ -246,18 +255,32 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
 
     // We have to have versions, and it must be a dictionary
     let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
-    let version_packuments = version_packuments_map.into_iter().map(|(v_str, blob)|
+    let version_packuments: HashMap<Semver, VersionPackument> = version_packuments_map.into_iter().map(|(v_str, blob)|
         (
             semver_spec_serialization::parse_semver(&v_str).unwrap(), // each version string must parse ok
             deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap()) // and each version data must be a dictionary
         )
     ).collect();
+
+    let latest_semver = {
+        match latest_semver {
+            Some(l) => {
+                if version_packuments.contains_key(&l) {
+                    Some(l)
+                } else {
+                    dist_tags.insert("latest".to_string(), Value::String(l.to_string()));
+                    None
+                }
+            },
+            None => None,
+        }
+    };
     
 
     Packument::Normal {
         latest: latest_semver,
-        created: created,
-        modified: modified,
+        created,
+        modified,
         other_dist_tags: dist_tags,
         version_times: only_keep_ok_version_times(version_times),
         versions: version_packuments

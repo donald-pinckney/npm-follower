@@ -12,11 +12,25 @@ Some(("xdiff", Normal(
     version_times: {
         (
             major: 0,
+            minor: 1,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2012-04-18T07:13:10.416Z",
+        (
+            major: 0,
             minor: 2,
+            bug: 6,
+            prerelease: [],
+            build: [],
+        ): "2012-04-20T05:02:36.301Z",
+        (
+            major: 0,
+            minor: 1,
             bug: 1,
             prerelease: [],
             build: [],
-        ): "2012-04-18T15:20:10.435Z",
+        ): "2012-04-18T08:23:32.305Z",
         (
             major: 0,
             minor: 2,
@@ -34,45 +48,24 @@ Some(("xdiff", Normal(
         (
             major: 0,
             minor: 2,
-            bug: 9,
-            prerelease: [],
-            build: [],
-        ): "2012-04-21T12:11:44.021Z",
-        (
-            major: 0,
-            minor: 2,
-            bug: 11,
-            prerelease: [],
-            build: [],
-        ): "2012-07-04T09:17:39.054Z",
-        (
-            major: 0,
-            minor: 2,
-            bug: 5,
-            prerelease: [],
-            build: [],
-        ): "2012-04-20T04:54:09.415Z",
-        (
-            major: 0,
-            minor: 2,
-            bug: 0,
-            prerelease: [],
-            build: [],
-        ): "2012-04-18T15:18:13.699Z",
-        (
-            major: 0,
-            minor: 2,
             bug: 2,
             prerelease: [],
             build: [],
         ): "2012-04-18T15:22:23.065Z",
         (
             major: 0,
-            minor: 1,
-            bug: 0,
+            minor: 2,
+            bug: 3,
             prerelease: [],
             build: [],
-        ): "2012-04-18T07:13:10.416Z",
+        ): "2012-04-19T14:02:03.030Z",
+        (
+            major: 0,
+            minor: 2,
+            bug: 9,
+            prerelease: [],
+            build: [],
+        ): "2012-04-21T12:11:44.021Z",
         (
             major: 0,
             minor: 2,
@@ -83,24 +76,10 @@ Some(("xdiff", Normal(
         (
             major: 0,
             minor: 2,
-            bug: 3,
+            bug: 5,
             prerelease: [],
             build: [],
-        ): "2012-04-19T14:02:03.030Z",
-        (
-            major: 0,
-            minor: 1,
-            bug: 1,
-            prerelease: [],
-            build: [],
-        ): "2012-04-18T08:23:32.305Z",
-        (
-            major: 0,
-            minor: 2,
-            bug: 6,
-            prerelease: [],
-            build: [],
-        ): "2012-04-20T05:02:36.301Z",
+        ): "2012-04-20T04:54:09.415Z",
         (
             major: 0,
             minor: 2,
@@ -108,6 +87,27 @@ Some(("xdiff", Normal(
             prerelease: [],
             build: [],
         ): "2012-04-20T05:55:49.412Z",
+        (
+            major: 0,
+            minor: 2,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): "2012-04-18T15:20:10.435Z",
+        (
+            major: 0,
+            minor: 2,
+            bug: 11,
+            prerelease: [],
+            build: [],
+        ): "2012-07-04T09:17:39.054Z",
+        (
+            major: 0,
+            minor: 2,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2012-04-18T15:18:13.699Z",
     },
     versions: {
         (
@@ -161,7 +161,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -170,35 +170,35 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "_id": "xdiff@0.2.9",
+                "version": "0.2.9",
+                "description": "calc diffs of complex javascript objects.",
+                "_engineSupported": true,
                 "readme": "",
-                "_npmVersion": "1.1.0-3",
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
+                "name": "xdiff",
                 "author": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "Dominic Tarr",
                     "url": "dominictarr.com",
                 },
-                "_engineSupported": true,
+                "directories": {},
+                "_npmVersion": "1.1.0-3",
+                "_nodeVersion": "v0.6.10",
+                "_id": "xdiff@0.2.9",
+                "engines": {
+                    "node": "*",
+                },
                 "maintainers": [
                     {
                         "email": "dominic.tarr@gmail.com",
                         "name": "dominictarr",
                     },
                 ],
-                "_defaultsLoaded": true,
-                "directories": {},
-                "_nodeVersion": "v0.6.10",
-                "version": "0.2.9",
-                "name": "xdiff",
-                "engines": {
-                    "node": "*",
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
                 },
-                "description": "calc diffs of complex javascript objects.",
+                "_defaultsLoaded": true,
+                "homepage": "http://github.com/dominictarr/xdiff",
             },
         ),
         (
@@ -252,7 +252,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -261,112 +261,45 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
-                "readme": "",
-                "directories": {},
-                "engines": {
-                    "node": "*",
-                },
                 "author": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "Dominic Tarr",
                     "url": "dominictarr.com",
                 },
-                "maintainers": [
-                    {
-                        "email": "dominic.tarr@gmail.com",
-                        "name": "dominictarr",
-                    },
-                ],
-                "name": "xdiff",
-                "version": "0.2.11",
-                "description": "calc diffs of complex javascript objects.",
-                "homepage": "http://github.com/dominictarr/xdiff",
+                "readme": "",
                 "_id": "xdiff@0.2.11",
-            },
-        ),
-        (
-            major: 0,
-            minor: 1,
-            bug: 0,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.1.0.tgz",
-                shasum: Some("ff0bb8aae83246a58d451c77d9bf4a2c54749faa"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: Some((
-                raw: {
-                    "url": "git://github.com/dominictarr/xdiff.git",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "dominictarr",
-                        repo: "xdiff",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "readme": "",
-                "version": "0.1.0",
+                "version": "0.2.11",
                 "name": "xdiff",
+                "directories": {},
+                "engines": {
+                    "node": "*",
+                },
+                "description": "calc diffs of complex javascript objects.",
+                "homepage": "http://github.com/dominictarr/xdiff",
                 "maintainers": [
                     {
                         "email": "dominic.tarr@gmail.com",
                         "name": "dominictarr",
                     },
                 ],
-                "_id": "xdiff@0.1.0",
-                "engines": {
-                    "node": "*",
-                },
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
-                },
-                "description": "calc diffs of complex javascript objects.",
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "_engineSupported": true,
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
-                "_nodeVersion": "v0.6.10",
-                "_npmVersion": "1.1.0-3",
-                "_defaultsLoaded": true,
-                "directories": {},
             },
         ),
         (
             major: 0,
             minor: 2,
-            bug: 10,
+            bug: 2,
             prerelease: [],
             build: [],
         ): (
             prod_dependencies: [
                 ("adiff", (
-                    raw: "~0.2.4",
+                    raw: "0.2",
                     parsed: Range(([
                         [
                             Gte((
                                 major: 0,
                                 minor: 2,
-                                bug: 4,
+                                bug: 0,
                                 prerelease: [],
                                 build: [],
                             )),
@@ -387,8 +320,8 @@ Some(("xdiff", Normal(
             peer_dependencies: [],
             optional_dependencies: [],
             dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.10.tgz",
-                shasum: Some("665dfd5be3d522b6b6d274966eca4ea4166e0f54"),
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.2.tgz",
+                shasum: Some("0b2e538e67682224cb47bc1f82515b5967053358"),
                 unpacked_size: None,
                 file_count: None,
                 integrity: None,
@@ -402,7 +335,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -411,35 +344,35 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
-                "_nodeVersion": "v0.6.10",
-                "description": "calc diffs of complex javascript objects.",
-                "name": "xdiff",
                 "_defaultsLoaded": true,
-                "engines": {
-                    "node": "*",
-                },
+                "_id": "xdiff@0.2.2",
                 "author": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "Dominic Tarr",
                     "url": "dominictarr.com",
                 },
-                "version": "0.2.10",
-                "readme": "",
                 "directories": {},
-                "_engineSupported": true,
-                "_npmVersion": "1.1.0-3",
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
+                "homepage": "http://github.com/dominictarr/xdiff",
+                "engines": {
+                    "node": "*",
+                },
+                "readme": "",
                 "maintainers": [
                     {
                         "email": "dominic.tarr@gmail.com",
                         "name": "dominictarr",
                     },
                 ],
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
-                "_id": "xdiff@0.2.10",
-                "homepage": "http://github.com/dominictarr/xdiff",
+                "description": "calc diffs of complex javascript objects.",
+                "_engineSupported": true,
+                "_npmVersion": "1.1.0-3",
+                "version": "0.2.2",
+                "name": "xdiff",
+                "_nodeVersion": "v0.6.10",
             },
         ),
         (
@@ -493,7 +426,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -502,14 +435,79 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
+                "readme": "",
+                "_id": "xdiff@0.2.5",
+                "maintainers": [
+                    {
+                        "email": "dominic.tarr@gmail.com",
+                        "name": "dominictarr",
+                    },
+                ],
+                "_nodeVersion": "v0.6.10",
+                "directories": {},
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
+                },
+                "version": "0.2.5",
                 "_npmUser": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "dominictarr",
                 },
-                "directories": {},
-                "_nodeVersion": "v0.6.10",
-                "_defaultsLoaded": true,
+                "_npmVersion": "1.1.0-3",
+                "engines": {
+                    "node": "*",
+                },
+                "description": "calc diffs of complex javascript objects.",
                 "_engineSupported": true,
+                "_defaultsLoaded": true,
+                "name": "xdiff",
+                "homepage": "http://github.com/dominictarr/xdiff",
+            },
+        ),
+        (
+            major: 0,
+            minor: 1,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.1.1.tgz",
+                shasum: Some("eac1010b20112e3543102f8a30b0138a200eea12"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some((
+                raw: {
+                    "url": "git://github.com/dominictarr/xdiff.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
+                    cloneable_repo_dir: "",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "dominictarr",
+                        repo: "xdiff",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "_engineSupported": true,
+                "version": "0.1.1",
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
                 "author": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "Dominic Tarr",
@@ -518,9 +516,14 @@ Some(("xdiff", Normal(
                 "engines": {
                     "node": "*",
                 },
-                "_id": "xdiff@0.2.5",
+                "description": "calc diffs of complex javascript objects.",
+                "_id": "xdiff@0.1.1",
                 "_npmVersion": "1.1.0-3",
+                "_defaultsLoaded": true,
                 "readme": "",
+                "name": "xdiff",
+                "directories": {},
+                "_nodeVersion": "v0.6.10",
                 "homepage": "http://github.com/dominictarr/xdiff",
                 "maintainers": [
                     {
@@ -528,9 +531,231 @@ Some(("xdiff", Normal(
                         "name": "dominictarr",
                     },
                 ],
-                "description": "calc diffs of complex javascript objects.",
-                "version": "0.2.5",
+            },
+        ),
+        (
+            major: 0,
+            minor: 2,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.0.tgz",
+                shasum: Some("30f8336bb31805bdb1cdbf84251a1ec1328209f8"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some((
+                raw: {
+                    "url": "git://github.com/dominictarr/xdiff.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
+                    cloneable_repo_dir: "",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "dominictarr",
+                        repo: "xdiff",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "_engineSupported": true,
                 "name": "xdiff",
+                "_id": "xdiff@0.2.0",
+                "engines": {
+                    "node": "*",
+                },
+                "homepage": "http://github.com/dominictarr/xdiff",
+                "directories": {},
+                "version": "0.2.0",
+                "readme": "",
+                "_nodeVersion": "v0.6.10",
+                "description": "calc diffs of complex javascript objects.",
+                "maintainers": [
+                    {
+                        "email": "dominic.tarr@gmail.com",
+                        "name": "dominictarr",
+                    },
+                ],
+                "_npmVersion": "1.1.0-3",
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
+                },
+                "_defaultsLoaded": true,
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
+            },
+        ),
+        (
+            major: 0,
+            minor: 2,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.1.tgz",
+                shasum: Some("160a96643577f9edee43db703d78e0325f3faae6"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some((
+                raw: {
+                    "url": "git://github.com/dominictarr/xdiff.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
+                    cloneable_repo_dir: "",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "dominictarr",
+                        repo: "xdiff",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "_engineSupported": true,
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
+                },
+                "description": "calc diffs of complex javascript objects.",
+                "readme": "",
+                "engines": {
+                    "node": "*",
+                },
+                "directories": {},
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
+                "_npmVersion": "1.1.0-3",
+                "homepage": "http://github.com/dominictarr/xdiff",
+                "_defaultsLoaded": true,
+                "_id": "xdiff@0.2.1",
+                "_nodeVersion": "v0.6.10",
+                "maintainers": [
+                    {
+                        "email": "dominic.tarr@gmail.com",
+                        "name": "dominictarr",
+                    },
+                ],
+                "name": "xdiff",
+                "version": "0.2.1",
+            },
+        ),
+        (
+            major: 0,
+            minor: 2,
+            bug: 3,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("adiff", (
+                    raw: "0.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 3,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.3.tgz",
+                shasum: Some("bbcf2cbb2851aa50cae876009db0fc258379a35f"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some((
+                raw: {
+                    "url": "git://github.com/dominictarr/xdiff.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
+                    cloneable_repo_dir: "",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "dominictarr",
+                        repo: "xdiff",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "_npmVersion": "1.1.0-3",
+                "maintainers": [
+                    {
+                        "email": "dominic.tarr@gmail.com",
+                        "name": "dominictarr",
+                    },
+                ],
+                "homepage": "http://github.com/dominictarr/xdiff",
+                "_defaultsLoaded": true,
+                "readme": "",
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
+                "_nodeVersion": "v0.6.10",
+                "version": "0.2.3",
+                "directories": {},
+                "description": "calc diffs of complex javascript objects.",
+                "_engineSupported": true,
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
+                },
+                "name": "xdiff",
+                "engines": {
+                    "node": "*",
+                },
+                "_id": "xdiff@0.2.3",
             },
         ),
         (
@@ -584,7 +809,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -593,15 +818,23 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
+                "_id": "xdiff@0.2.4",
+                "directories": {},
+                "_nodeVersion": "v0.6.10",
+                "homepage": "http://github.com/dominictarr/xdiff",
+                "_engineSupported": true,
                 "_npmUser": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "dominictarr",
                 },
-                "_nodeVersion": "v0.6.10",
-                "_npmVersion": "1.1.0-3",
-                "engines": {
-                    "node": "*",
+                "description": "calc diffs of complex javascript objects.",
+                "_defaultsLoaded": true,
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
                 },
+                "version": "0.2.4",
                 "maintainers": [
                     {
                         "email": "dominic.tarr@gmail.com",
@@ -609,24 +842,107 @@ Some(("xdiff", Normal(
                     },
                 ],
                 "name": "xdiff",
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "directories": {},
-                "_engineSupported": true,
-                "description": "calc diffs of complex javascript objects.",
-                "_id": "xdiff@0.2.4",
-                "readme": "",
-                "version": "0.2.4",
-                "_defaultsLoaded": true,
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
+                "engines": {
+                    "node": "*",
                 },
+                "readme": "",
+                "_npmVersion": "1.1.0-3",
             },
         ),
         (
             major: 0,
             minor: 2,
+            bug: 7,
+            prerelease: [],
+            build: [],
+        ): (
+            prod_dependencies: [
+                ("adiff", (
+                    raw: "0.2",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 2,
+                                bug: 0,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 3,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
+            dev_dependencies: [],
+            peer_dependencies: [],
+            optional_dependencies: [],
+            dist: (
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.7.tgz",
+                shasum: Some("4e8873f4c402af746ea7e82e9cad2d36f883a3ce"),
+                unpacked_size: None,
+                file_count: None,
+                integrity: None,
+                signature0_sig: None,
+                signature0_keyid: None,
+                npm_signature: None,
+            ),
+            repository: Some((
+                raw: {
+                    "url": "git://github.com/dominictarr/xdiff.git",
+                },
+                info: (
+                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
+                    cloneable_repo_dir: "",
+                    vcs: Git,
+                    host_info: Github(
+                        user: "dominictarr",
+                        repo: "xdiff",
+                    ),
+                ),
+            )),
+            extra_metadata: {
+                "name": "xdiff",
+                "_nodeVersion": "v0.6.10",
+                "_npmVersion": "1.1.0-3",
+                "_engineSupported": true,
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
+                "homepage": "http://github.com/dominictarr/xdiff",
+                "version": "0.2.7",
+                "_id": "xdiff@0.2.7",
+                "description": "calc diffs of complex javascript objects.",
+                "readme": "",
+                "directories": {},
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
+                },
+                "engines": {
+                    "node": "*",
+                },
+                "_defaultsLoaded": true,
+                "maintainers": [
+                    {
+                        "email": "dominic.tarr@gmail.com",
+                        "name": "dominictarr",
+                    },
+                ],
+            },
+        ),
+        (
+            major: 0,
+            minor: 1,
             bug: 0,
             prerelease: [],
             build: [],
@@ -636,8 +952,8 @@ Some(("xdiff", Normal(
             peer_dependencies: [],
             optional_dependencies: [],
             dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.0.tgz",
-                shasum: Some("30f8336bb31805bdb1cdbf84251a1ec1328209f8"),
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.1.0.tgz",
+                shasum: Some("ff0bb8aae83246a58d451c77d9bf4a2c54749faa"),
                 unpacked_size: None,
                 file_count: None,
                 integrity: None,
@@ -651,7 +967,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -660,51 +976,75 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
-                "_engineSupported": true,
-                "_id": "xdiff@0.2.0",
+                "_nodeVersion": "v0.6.10",
+                "_defaultsLoaded": true,
+                "engines": {
+                    "node": "*",
+                },
+                "homepage": "http://github.com/dominictarr/xdiff",
                 "author": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "Dominic Tarr",
                     "url": "dominictarr.com",
                 },
-                "version": "0.2.0",
-                "directories": {},
-                "engines": {
-                    "node": "*",
-                },
-                "homepage": "http://github.com/dominictarr/xdiff",
                 "description": "calc diffs of complex javascript objects.",
+                "readme": "",
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
+                "_npmVersion": "1.1.0-3",
+                "_engineSupported": true,
+                "_id": "xdiff@0.1.0",
+                "directories": {},
+                "version": "0.1.0",
                 "maintainers": [
                     {
                         "email": "dominic.tarr@gmail.com",
                         "name": "dominictarr",
                     },
                 ],
-                "readme": "",
-                "_nodeVersion": "v0.6.10",
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
                 "name": "xdiff",
-                "_defaultsLoaded": true,
-                "_npmVersion": "1.1.0-3",
             },
         ),
         (
             major: 0,
             minor: 2,
-            bug: 1,
+            bug: 10,
             prerelease: [],
             build: [],
         ): (
-            prod_dependencies: [],
+            prod_dependencies: [
+                ("adiff", (
+                    raw: "~0.2.4",
+                    parsed: Range(([
+                        [
+                            Gte((
+                                major: 0,
+                                minor: 2,
+                                bug: 4,
+                                prerelease: [],
+                                build: [],
+                            )),
+                            Lt((
+                                major: 0,
+                                minor: 3,
+                                bug: 0,
+                                prerelease: [
+                                    Int(0),
+                                ],
+                                build: [],
+                            )),
+                        ],
+                    ])),
+                )),
+            ],
             dev_dependencies: [],
             peer_dependencies: [],
             optional_dependencies: [],
             dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.1.tgz",
-                shasum: Some("160a96643577f9edee43db703d78e0325f3faae6"),
+                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.10.tgz",
+                shasum: Some("665dfd5be3d522b6b6d274966eca4ea4166e0f54"),
                 unpacked_size: None,
                 file_count: None,
                 integrity: None,
@@ -718,7 +1058,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -727,30 +1067,30 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
-                "version": "0.2.1",
-                "_nodeVersion": "v0.6.10",
-                "description": "calc diffs of complex javascript objects.",
-                "directories": {},
+                "homepage": "http://github.com/dominictarr/xdiff",
                 "_defaultsLoaded": true,
+                "engines": {
+                    "node": "*",
+                },
+                "_engineSupported": true,
+                "_id": "xdiff@0.2.10",
                 "name": "xdiff",
+                "description": "calc diffs of complex javascript objects.",
                 "maintainers": [
                     {
                         "email": "dominic.tarr@gmail.com",
                         "name": "dominictarr",
                     },
                 ],
-                "_npmVersion": "1.1.0-3",
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "readme": "",
                 "_npmUser": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "dominictarr",
                 },
-                "engines": {
-                    "node": "*",
-                },
-                "_id": "xdiff@0.2.1",
-                "_engineSupported": true,
+                "directories": {},
+                "readme": "",
+                "version": "0.2.10",
+                "_npmVersion": "1.1.0-3",
+                "_nodeVersion": "v0.6.10",
                 "author": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "Dominic Tarr",
@@ -809,7 +1149,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -818,13 +1158,8 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
-                "_nodeVersion": "v0.6.10",
-                "name": "xdiff",
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
                 "_engineSupported": true,
+                "readme": "",
                 "maintainers": [
                     {
                         "email": "dominic.tarr@gmail.com",
@@ -832,270 +1167,26 @@ Some(("xdiff", Normal(
                     },
                 ],
                 "version": "0.2.6",
+                "homepage": "http://github.com/dominictarr/xdiff",
+                "_defaultsLoaded": true,
+                "description": "calc diffs of complex javascript objects.",
+                "directories": {},
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
+                },
                 "_npmVersion": "1.1.0-3",
+                "_nodeVersion": "v0.6.10",
+                "name": "xdiff",
                 "_id": "xdiff@0.2.6",
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
-                },
-                "directories": {},
                 "engines": {
                     "node": "*",
                 },
-                "description": "calc diffs of complex javascript objects.",
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "readme": "",
-                "_defaultsLoaded": true,
-            },
-        ),
-        (
-            major: 0,
-            minor: 1,
-            bug: 1,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.1.1.tgz",
-                shasum: Some("eac1010b20112e3543102f8a30b0138a200eea12"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: Some((
-                raw: {
-                    "url": "git://github.com/dominictarr/xdiff.git",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "dominictarr",
-                        repo: "xdiff",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "engines": {
-                    "node": "*",
-                },
-                "_nodeVersion": "v0.6.10",
-                "maintainers": [
-                    {
-                        "email": "dominic.tarr@gmail.com",
-                        "name": "dominictarr",
-                    },
-                ],
-                "_id": "xdiff@0.1.1",
                 "_npmUser": {
                     "email": "dominic.tarr@gmail.com",
                     "name": "dominictarr",
                 },
-                "_npmVersion": "1.1.0-3",
-                "_defaultsLoaded": true,
-                "_engineSupported": true,
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
-                },
-                "version": "0.1.1",
-                "directories": {},
-                "description": "calc diffs of complex javascript objects.",
-                "readme": "",
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "name": "xdiff",
-            },
-        ),
-        (
-            major: 0,
-            minor: 2,
-            bug: 7,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [
-                ("adiff", (
-                    raw: "0.2",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 2,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 3,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.7.tgz",
-                shasum: Some("4e8873f4c402af746ea7e82e9cad2d36f883a3ce"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: Some((
-                raw: {
-                    "url": "git://github.com/dominictarr/xdiff.git",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "dominictarr",
-                        repo: "xdiff",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "directories": {},
-                "_npmVersion": "1.1.0-3",
-                "_engineSupported": true,
-                "name": "xdiff",
-                "engines": {
-                    "node": "*",
-                },
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "description": "calc diffs of complex javascript objects.",
-                "readme": "",
-                "_id": "xdiff@0.2.7",
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
-                },
-                "version": "0.2.7",
-                "maintainers": [
-                    {
-                        "email": "dominic.tarr@gmail.com",
-                        "name": "dominictarr",
-                    },
-                ],
-                "_nodeVersion": "v0.6.10",
-                "_defaultsLoaded": true,
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
-            },
-        ),
-        (
-            major: 0,
-            minor: 2,
-            bug: 3,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [
-                ("adiff", (
-                    raw: "0.2",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 2,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 3,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.3.tgz",
-                shasum: Some("bbcf2cbb2851aa50cae876009db0fc258379a35f"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: Some((
-                raw: {
-                    "url": "git://github.com/dominictarr/xdiff.git",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "dominictarr",
-                        repo: "xdiff",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "_engineSupported": true,
-                "readme": "",
-                "_nodeVersion": "v0.6.10",
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
-                },
-                "_npmVersion": "1.1.0-3",
-                "description": "calc diffs of complex javascript objects.",
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "directories": {},
-                "version": "0.2.3",
-                "name": "xdiff",
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
-                "maintainers": [
-                    {
-                        "email": "dominic.tarr@gmail.com",
-                        "name": "dominictarr",
-                    },
-                ],
-                "_id": "xdiff@0.2.3",
-                "engines": {
-                    "node": "*",
-                },
-                "_defaultsLoaded": true,
             },
         ),
         (
@@ -1149,7 +1240,7 @@ Some(("xdiff", Normal(
                 },
                 info: (
                     cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
+                    cloneable_repo_dir: "",
                     vcs: Git,
                     host_info: Github(
                         user: "dominictarr",
@@ -1158,126 +1249,35 @@ Some(("xdiff", Normal(
                 ),
             )),
             extra_metadata: {
+                "_engineSupported": true,
+                "maintainers": [
+                    {
+                        "email": "dominic.tarr@gmail.com",
+                        "name": "dominictarr",
+                    },
+                ],
+                "_npmVersion": "1.1.0-3",
+                "author": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "Dominic Tarr",
+                    "url": "dominictarr.com",
+                },
                 "description": "calc diffs of complex javascript objects.",
+                "readme": "",
+                "engines": {
+                    "node": "*",
+                },
+                "_npmUser": {
+                    "email": "dominic.tarr@gmail.com",
+                    "name": "dominictarr",
+                },
                 "version": "0.2.8",
-                "readme": "",
-                "maintainers": [
-                    {
-                        "email": "dominic.tarr@gmail.com",
-                        "name": "dominictarr",
-                    },
-                ],
-                "_npmVersion": "1.1.0-3",
+                "_defaultsLoaded": true,
                 "directories": {},
+                "name": "xdiff",
+                "homepage": "http://github.com/dominictarr/xdiff",
                 "_id": "xdiff@0.2.8",
-                "name": "xdiff",
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "_defaultsLoaded": true,
-                "engines": {
-                    "node": "*",
-                },
                 "_nodeVersion": "v0.6.10",
-                "_engineSupported": true,
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
-                },
-            },
-        ),
-        (
-            major: 0,
-            minor: 2,
-            bug: 2,
-            prerelease: [],
-            build: [],
-        ): (
-            prod_dependencies: [
-                ("adiff", (
-                    raw: "0.2",
-                    parsed: Range(([
-                        [
-                            Gte((
-                                major: 0,
-                                minor: 2,
-                                bug: 0,
-                                prerelease: [],
-                                build: [],
-                            )),
-                            Lt((
-                                major: 0,
-                                minor: 3,
-                                bug: 0,
-                                prerelease: [
-                                    Int(0),
-                                ],
-                                build: [],
-                            )),
-                        ],
-                    ])),
-                )),
-            ],
-            dev_dependencies: [],
-            peer_dependencies: [],
-            optional_dependencies: [],
-            dist: (
-                tarball_url: "https://registry.npmjs.org/xdiff/-/xdiff-0.2.2.tgz",
-                shasum: Some("0b2e538e67682224cb47bc1f82515b5967053358"),
-                unpacked_size: None,
-                file_count: None,
-                integrity: None,
-                signature0_sig: None,
-                signature0_keyid: None,
-                npm_signature: None,
-            ),
-            repository: Some((
-                raw: {
-                    "url": "git://github.com/dominictarr/xdiff.git",
-                },
-                info: (
-                    cloneable_repo_url: "https://github.com/dominictarr/xdiff",
-                    cloneable_repo_dir: "/",
-                    vcs: Git,
-                    host_info: Github(
-                        user: "dominictarr",
-                        repo: "xdiff",
-                    ),
-                ),
-            )),
-            extra_metadata: {
-                "_engineSupported": true,
-                "directories": {},
-                "version": "0.2.2",
-                "_nodeVersion": "v0.6.10",
-                "author": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "Dominic Tarr",
-                    "url": "dominictarr.com",
-                },
-                "homepage": "http://github.com/dominictarr/xdiff",
-                "name": "xdiff",
-                "_defaultsLoaded": true,
-                "_npmVersion": "1.1.0-3",
-                "_id": "xdiff@0.2.2",
-                "_npmUser": {
-                    "email": "dominic.tarr@gmail.com",
-                    "name": "dominictarr",
-                },
-                "description": "calc diffs of complex javascript objects.",
-                "engines": {
-                    "node": "*",
-                },
-                "maintainers": [
-                    {
-                        "email": "dominic.tarr@gmail.com",
-                        "name": "dominictarr",
-                    },
-                ],
-                "readme": "",
             },
         ),
     },

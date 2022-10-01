@@ -1,0 +1,137 @@
+{
+    "id": "@dennisvanhomoet/npmpackage",
+    "doc": {
+        "_id": "@dennisvanhomoet/npmpackage",
+        "_rev": "3-368d29cfbc451fb86e21b835e6b37489",
+        "name": "@dennisvanhomoet/npmpackage",
+        "time": {
+            "2.0.0": "2019-04-16T15:14:48.814Z",
+            "2.0.1": "2019-04-17T07:50:37.478Z",
+            "created": "2019-04-16T15:14:48.485Z",
+            "modified": "2019-04-17T07:50:40.258Z"
+        },
+        "readme": "# npm package test\n\n",
+        "license": "MIT",
+        "keywords": [
+            "tiny",
+            "npm",
+            "package"
+        ],
+        "versions": {
+            "2.0.0": {
+                "_id": "@dennisvanhomoet/npmpackage@2.0.0",
+                "bugs": {
+                    "url": "https://github.com/dennisvanhomoet/npmpackage/issues"
+                },
+                "dist": {
+                    "shasum": "cb842815539ec988117a93fe61a225098e97e1a7",
+                    "tarball": "https://registry.npmjs.org/@dennisvanhomoet/npmpackage/-/npmpackage-2.0.0.tgz",
+                    "fileCount": 3,
+                    "integrity": "sha512-tAvyq4XFvimToSXLYL5WAmxhnPLmHaBeKMNzgi38vzGt45tuGgdf8LexGqeVUBDa9Hlv15zXoNR4gGmPpfjSHg==",
+                    "unpackedSize": 443,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJctfFpCRA9TVsSAnZWagAAsj4P/iMRRXXHuV7iSWljTPUx\n4ht/0+6z7xishkBIrB9rEvfITHMsmzqWiAPxIalI1v8A2dPwAXeWcMMnNzbL\noqz64cP7954hBl6ko5PNjFsy4y6/K5ilAtAS3jD84diGtnGnY/x4ZwKPfLoy\nyXxo3JVKxvuz0eIAbuYDOmBZNJ1I3tSJ0ujHVFa3cgnQAm4+88S0LM5WSXBv\neI61i9QOdkv0IDvKTI/r56Pcnf2G7z+rjbNB7c3uQMf5sttecVNSNrzy7NCV\nMfqTu0gOBGKlOavAUECJBcsw0NFozQjHRQ5JwVE+I1Ac/cWhm+67RiiK62XT\ntf6OgHRboxXvZD4Jdhf+grj+Dm4rpHg6hAJuwR7amL08l3Tcoe2YDpObK5n6\nsTloQOCiCHKwmCxec2SPd2iAok83zXxvbZFPH7pD1Sr8RIYtC8VQ9FEGM50G\nXLaNm9UX4QaQIrEdLQWvHQ5Z4tvLHgeGm1QvcOykpFUs+gPxXZhw63YPBDOb\n5Qeb1WV3hdgJJsaU1RZJBNA9I471R7oop3qN0hFvlwkIJ0eSbrXu7HKTEnfH\nkbsn8eJkHyGB5VT57jEl4/0e0TkybCK2HEynHxWDqVKeTqtlEJ4oCngdQ2Nf\nNnlsHZo0vbs4aODgOgh3oiRs55NGFOh89CSolVSD7FTV1btcPXhM6AWTWFTH\nIIha\r\n=QDWu\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "index.js",
+                "name": "@dennisvanhomoet/npmpackage",
+                "gitHead": "1d1e9735746ca023c0ec1b82cdc53acd03ac86d3",
+                "license": "MIT",
+                "version": "2.0.0",
+                "_npmUser": {
+                    "name": "dennisvanhomoet",
+                    "email": "dennis@brokks.nl"
+                },
+                "homepage": "https://github.com/dennisvanhomoet/npmpackage#readme",
+                "keywords": [
+                    "tiny",
+                    "npm",
+                    "package"
+                ],
+                "repository": {
+                    "url": "git+https://github.com/dennisvanhomoet/npmpackage.git",
+                    "type": "git"
+                },
+                "_npmVersion": "6.4.1",
+                "description": "Removes all spaces from a string",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "dennisvanhomoet",
+                        "email": "dennis@brokks.nl"
+                    }
+                ],
+                "_nodeVersion": "10.15.0",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/npmpackage_2.0.0_1555427688672_0.6141673130589353",
+                    "host": "s3://npm-registry-packages"
+                }
+            },
+            "2.0.1": {
+                "_id": "@dennisvanhomoet/npmpackage@2.0.1",
+                "dist": {
+                    "shasum": "1f2b8e55f89861c3a494159d2f30e059ed0c43aa",
+                    "tarball": "https://registry.npmjs.org/@dennisvanhomoet/npmpackage/-/npmpackage-2.0.1.tgz",
+                    "fileCount": 3,
+                    "integrity": "sha512-4dWbaCHDeTBqjL41fe5sYgDWtqZKlf7MbTn65mwZdCobjs+ts6aNxWzUOrdYagBXDxPvDZ0R8s2+4nuGvQySeA==",
+                    "unpackedSize": 489,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcttrOCRA9TVsSAnZWagAAQTQP/A8AMCMRw8w87QJ6F6sF\nJSfYdPNgoAdzApFfcFnHx1npyS+iCzAnqgGhm4daUwRpvDgMm/Wa27Ez5sEk\nRMSq+qwVYWibtDWokfJMHEDJQIgAFfv6sUBdymYl43qdVuIdqHjoCFuU+XuD\nKJHX68iqsxfVTfI6z6iCm0rRGeAI17RklZIucXYdQ+tNO/CSN/P2M6BTg3Ut\ntIMhjJj3ijKf48bCXYl2RyPGdgQ1rlQ0HiGgwS/2ydkvhCdCZQMJJvkCO4V1\ngCy9M0xh1XTq1wtZ8L2Y5A/i33BKeMOaGDCb82LzcSQgtuulN5hQ1aYEqTco\nVojp1eCJol3LHhiOeDvbaXOzwY09gjBFgkdiFcijrpVY/2hwX2I6LjbyODg2\nxLirBtC/5A32yCi/aOIXz5wGKfO9NTKhCmR+Mhy/EDq+OPetWNK1tytMSevS\nUsrD75LIpdUNm+WbcqL+N2n1WbgFGxku95QEwv6prIFZlcVC3Dib8rPILtp/\n/kQq1oWcVqW5258kpEfOzI7qu+aYXd+bw9s/3pPJPqbW20bTrjq2tAykjBt5\nLKoCF23VxfjT2d5phUkoeoxOIOhyYSyR7aPdSx+P2ci7f+ieZbG2IYjXEiN6\nWj+i53Wx+qZYQQXX5oKZ5oSK8eXBCM27jxp6JvWOSqx9ER0KyfP9vrwbskQG\n0qEp\r\n=OLUK\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "index.js",
+                "name": "@dennisvanhomoet/npmpackage",
+                "gitHead": "1d1e9735746ca023c0ec1b82cdc53acd03ac86d3",
+                "license": "MIT",
+                "version": "2.0.1",
+                "_npmUser": {
+                    "name": "dennisvanhomoet",
+                    "email": "dennis@brokks.nl"
+                },
+                "keywords": [
+                    "tiny",
+                    "npm",
+                    "package"
+                ],
+                "repository": {
+                    "url": "https://bitbucket.org/Brokks/npm-package-test/dennisvanhomoet/npmpackage",
+                    "type": "git"
+                },
+                "_npmVersion": "6.4.1",
+                "description": "Removes all spaces from a string",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "dennisvanhomoet",
+                        "email": "dennis@brokks.nl"
+                    }
+                ],
+                "_nodeVersion": "10.15.0",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/npmpackage_2.0.1_1555487437355_0.2426005943833418",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "2.0.1"
+        },
+        "repository": {
+            "url": "https://bitbucket.org/Brokks/npm-package-test/dennisvanhomoet/npmpackage",
+            "type": "git"
+        },
+        "description": "Removes all spaces from a string",
+        "maintainers": [
+            {
+                "name": "dennisvanhomoet",
+                "email": "dennis@brokks.nl"
+            }
+        ],
+        "readmeFilename": "README.md"
+    },
+    "seq": 3430386,
+    "changes": [
+        {
+            "rev": "3-368d29cfbc451fb86e21b835e6b37489"
+        }
+    ],
+    "deleted": false
+}

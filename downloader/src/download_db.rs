@@ -19,11 +19,16 @@ pub async fn download_task(
     dest: &str,
 ) -> Result<DownloadedTarball, DownloadError> {
     // get the file and download it to dir
-    let res = reqwest::get(&task.url).await?;
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(300)) // timeout of 5 minutes
+        .build()?;
+
+    let res = client.get(&task.url).send().await?;
     let status = res.status();
     if status != reqwest::StatusCode::OK {
         return Err(DownloadError::StatusNotOk(status));
     }
+
     let name = DownloadTask::get_filename(&task.url)?;
     let path = std::path::Path::new(dest).join(name);
     let mut file = std::fs::File::create(path.clone())?;
@@ -48,7 +53,7 @@ pub fn update_from_tarball_queue(conn: &DbConnection, tarballs: &mut Vec<Downloa
     if tarballs.is_empty() {
         return;
     }
-    update_from_tarballs(conn, &tarballs);
+    update_from_tarballs(conn, tarballs);
     tarballs.clear();
 }
 
@@ -99,7 +104,10 @@ pub fn download_to_dest(
     pool.download_chunk(tasks);
 
     for i in 0..tasks_len {
-        println!("{}/{}", i, tasks_len);
+        println!(
+            "Status: {}/{} - Chunkwise: {}/{}",
+            i, tasks_len, download_counter, last_chunk_size
+        );
         if (download_counter + 1) == last_chunk_size {
             update_from_tarball_queue(conn, &mut tarballs_queue);
 

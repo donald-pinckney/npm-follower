@@ -321,10 +321,15 @@ CREATE TABLE dependencies (
 
   secret                        BOOLEAN NOT NULL,
 
+  freq_count                    BIGINT NOT NULL,
+  md5digest                     TEXT NOT NULL, -- digest of only pkgname
+  md5digest_with_version        TEXT NOT NULL, -- digest of "{pkgname}{raw_spec}"
+
   FOREIGN KEY(dst_package_id_if_exists) REFERENCES packages(id)
   -- We would like to specify this, but we can't
   -- FOREIGN KEY((spec).alias_package_id_if_exists) REFERENCES packages(id)
 );
 
-CREATE INDEX dependencies_dst_package_name_idx ON dependencies (dst_package_name) WHERE dst_package_id_if_exists IS NULL;
 CREATE INDEX dependencies_alias_package_name_idx ON dependencies (((spec).alias_package_name)) WHERE (spec).dep_type = 'alias' AND (spec).alias_package_id_if_exists IS NULL;
+CREATE INDEX dependencies_md5digest_idx ON dependencies (md5digest) WHERE dst_package_id_if_exists IS NULL;
+CREATE INDEX dependencies_md5digest_with_version_idx ON dependencies (md5digest_with_version);

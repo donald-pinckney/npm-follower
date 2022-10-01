@@ -1,0 +1,2541 @@
+{
+    "id": "@3fv/serverless-offline",
+    "doc": {
+        "_id": "@3fv/serverless-offline",
+        "_rev": "6-e83b8939652405994e7d48ee4e9c3ff7",
+        "bugs": {
+            "url": "https://github.com/dherault/serverless-offline/issues"
+        },
+        "name": "@3fv/serverless-offline",
+        "time": {
+            "6.8.2": "2020-11-22T22:44:48.201Z",
+            "6.8.3": "2020-11-22T22:46:08.285Z",
+            "6.8.4": "2020-11-23T23:52:53.260Z",
+            "6.8.5": "2020-12-07T20:26:32.660Z",
+            "created": "2020-11-22T22:44:48.027Z",
+            "modified": "2022-04-04T10:44:45.765Z"
+        },
+        "author": {
+            "url": "https://github.com/dherault",
+            "name": "David H\u00e9rault",
+            "email": "dherault@gmail.com"
+        },
+        "readme": "# Serverless Offline\n\n<p>\n  <a href=\"https://www.serverless.com\">\n    <img src=\"http://public.serverless.com/badges/v3.svg\">\n  </a>\n  <a href=\"https://www.npmjs.com/package/serverless-offline\">\n    <img src=\"https://img.shields.io/npm/v/serverless-offline.svg?style=flat-square\">\n  </a>\n  <a href=\"https://travis-ci.com/dherault/serverless-offline\">\n    <img src=\"https://img.shields.io/travis/dherault/serverless-offline/master.svg?style=flat-square\">\n  </a>\n  <img src=\"https://img.shields.io/node/v/serverless-offline.svg?style=flat-square\">\n  <a href=\"https://github.com/serverless/serverless\">\n    <img src=\"https://img.shields.io/npm/dependency-version/serverless-offline/peer/serverless.svg?style=flat-square\">\n  </a>\n  <a href=\"https://github.com/prettier/prettier\">\n    <img src=\"https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square\">\n  </a>\n  <img src=\"https://img.shields.io/npm/l/serverless-offline.svg?style=flat-square\">\n  <a href=\"#contributing\">\n    <img src=\"https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square\">\n  </a>\n  <a href=\"https://gitter.im/serverless-offline/community\">\n    <img src=\"https://badges.gitter.im/serverless-offline.png\">\n  </a>\n</p>\n\n*NOTE* This is only published until the [PR 1130 is approved in the base repo](https://github.com/dherault/serverless-offline/pull/1130)\n\nThis [Serverless](https://github.com/serverless/serverless) plugin emulates [AWS \u03bb](https://aws.amazon.com/lambda) and [API Gateway](https://aws.amazon.com/api-gateway) on your local machine to speed up your development cycles.\nTo do so, it starts an HTTP server that handles the request's lifecycle like APIG does and invokes your handlers.\n\n**Features:**\n\n- [Node.js](https://nodejs.org), [Python](https://www.python.org), [Ruby](https://www.ruby-lang.org) <!-- and [Go](https://golang.org) --> \u03bb runtimes.\n- Velocity templates support.\n- Lazy loading of your handler files.\n- And more: integrations, authorizers, proxies, timeouts, responseParameters, HTTPS, CORS, etc...\n\nThis plugin is updated by its users, I just do maintenance and ensure that PRs are relevant to the community. In other words, if you [find a bug or want a new feature](https://github.com/dherault/serverless-offline/issues), please help us by becoming one of the [contributors](https://github.com/dherault/serverless-offline/graphs/contributors) :v: ! See the [contributing section](#contributing).\n\n## Documentation\n\n- [Installation](#installation)\n- [Usage and command line options](#usage-and-command-line-options)\n- [Usage with `invoke`](#usage-with-invoke)\n- [The `process.env.IS_OFFLINE` variable](#the-processenvis_offline-variable)\n- [Docker and Layers](#docker-and-layers)\n- [Token authorizers](#token-authorizers)\n- [Custom authorizers](#custom-authorizers)\n- [Remote authorizers](#remote-authorizers)\n- [JWT authorizers](#jwt-authorizers)\n- [Custom headers](#custom-headers)\n- [Environment variables](#environment-variables)\n- [AWS API Gateway Features](#aws-api-gateway-features)\n  - [Velocity Templates](#velocity-templates)\n  - [CORS](#cors)\n  - [Catch-all Path Variables](#catch-all-path-variables)\n  - [ANY method](#any-method)\n  - [Lambda and Lambda Proxy Integrations](#lambda-and-lambda-proxy-integrations)\n  - [HTTP Proxy](#http-proxy)\n  - [Response parameters](#response-parameters)\n- [WebSocket](#websocket)\n- [Usage with Webpack](#usage-with-webpack)\n- [Velocity nuances](#velocity-nuances)\n- [Debug process](#debug-process)\n- [Resource permissions and AWS profile](#resource-permissions-and-aws-profile)\n- [Scoped execution](#scoped-execution)\n- [Simulation quality](#simulation-quality)\n- [Usage with serverless-dynamodb-local and serverless-webpack plugin](#usage-with-serverless-dynamodb-local-and-serverless-webpack-plugin)\n- [Credits and inspiration](#credits-and-inspiration)\n- [License](#license)\n- [Contributing](#contributing)\n- [Contributors](#contributors)\n\n## Installation\n\nFirst, add Serverless Offline to your project:\n\n`npm install serverless-offline --save-dev`\n\nThen inside your project's `serverless.yml` file add following entry to the plugins section: `serverless-offline`. If there is no plugin section you will need to add it to the file.\n\n**Note that the \"plugin\" section for serverless-offline must be at root level on serverless.yml.**\n\nIt should look something like this:\n\n```YAML\nplugins:\n  - serverless-offline\n```\n\nYou can check wether you have successfully installed the plugin by running the serverless command line:\n\n`serverless --verbose`\n\nthe console should display _Offline_ as one of the plugins now available in your Serverless project.\n\n## Usage and command line options\n\nIn your project root run:\n\n`serverless offline` or `sls offline`.\n\nto list all the options for the plugin run:\n\n`sls offline --help`\n\nAll CLI options are optional:\n\n```bash\n--apiKey                    Defines the API key value to be used for endpoints marked as private Defaults to a random hash.\n--corsAllowHeaders          Used as default Access-Control-Allow-Headers header value for responses. Delimit multiple values with commas. Default: 'accept,content-type,x-api-key'\n--corsAllowOrigin           Used as default Access-Control-Allow-Origin header value for responses. Delimit multiple values with commas. Default: '*'\n--corsDisallowCredentials   When provided, the default Access-Control-Allow-Credentials header value will be passed as 'false'. Default: true\n--corsExposedHeaders        Used as additional Access-Control-Exposed-Headers header value for responses. Delimit multiple values with commas. Default: 'WWW-Authenticate,Server-Authorization'\n--disableCookieValidation   Used to disable cookie-validation on hapi.js-server\n--enforceSecureCookies      Enforce secure cookies\n--hideStackTraces           Hide the stack trace on lambda failure. Default: false\n--host                  -o  Host name to listen on. Default: localhost\n--httpPort                  Http port to listen on. Default: 3000\n--httpsProtocol         -H  To enable HTTPS, specify directory (relative to your cwd, typically your project dir) for both cert.pem and key.pem files\n--ignoreJWTSignature        When using HttpApi with a JWT authorizer, don't check the signature of the JWT token. This should only be used for local development.\n--lambdaPort                Lambda http port to listen on. Default: 3002\n--noPrependStageInUrl       Don't prepend http routes with the stage.\n--noAuth                    Turns off all authorizers\n--noTimeout             -t  Disables the timeout feature.\n--prefix                -p  Adds a prefix to every path, to send your requests to http://localhost:3000/[prefix]/[your_path] instead. Default: ''\n--printOutput               Turns on logging of your lambda outputs in the terminal.\n--resourceRoutes            Turns on loading of your HTTP proxy settings from serverless.yml\n--useChildProcesses         Run handlers in a child process\n--useWorkerThreads          Uses worker threads for handlers. Requires node.js v11.7.0 or higher\n--websocketPort             WebSocket port to listen on. Default: 3001\n--webSocketHardTimeout      Set WebSocket hard timeout in seconds to reproduce AWS limits (https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html#apigateway-execution-service-websocket-limits-table). Default: 7200 (2 hours)\n--webSocketIdleTimeout      Set WebSocket idle timeout in seconds to reproduce AWS limits (https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html#apigateway-execution-service-websocket-limits-table). Default: 600 (10 minutes)\n--useDocker                 Run handlers in a docker container.\n--layersDir                 The directory layers should be stored in. Default: ${codeDir}/.serverless-offline/layers'\n--dockerReadOnly            Marks if the docker code layer should be read only. Default: true\n--allowCache                Allows the code of lambda functions to cache if supported.\n--overrideLayersDir         Forces docker to use a mapped host directory instead of downloading layers, incredibly useful for debugging\n--overrideCodeDir           Forces docker to use a mapped host directory instead of package artifact of named handler, incredibly useful for debugging\n```\n\nAny of the CLI options can be added to your `serverless.yml`. For example:\n\n```yaml\ncustom:\n  serverless-offline:\n    httpsProtocol: \"dev-certs\"\n    httpPort: 4000\n    stageVariables:\n      foo: \"bar\"\n```\n\nOptions passed on the command line override YAML options.\n\nBy default, you can send your requests to `http://localhost:3000/`. Please note that:\n\n- You'll need to restart the plugin if you modify your `serverless.yml` or any of the default velocity template files.\n- When no Content-Type header is set on a request, API Gateway defaults to `application/json`, and so does the plugin.\n  But if you send an `application/x-www-form-urlencoded` or a `multipart/form-data` body with an `application/json` (or no) Content-Type, API Gateway won't parse your data (you'll get the ugly raw as input), whereas the plugin will answer 400 (malformed JSON).\n  Please consider explicitly setting your requests' Content-Type and using separate templates.\n\n## Usage with `invoke`\n\nTo use `Lambda.invoke` you need to set the lambda endpoint to the serverless-offline endpoint:\n\n```js\nconst { Lambda } = require('aws-sdk')\n\nconst lambda = new Lambda({\n  apiVersion: '2015-03-31',\n  // endpoint needs to be set only if it deviates from the default, e.g. in a dev environment\n  // process.env.SOME_VARIABLE could be set in e.g. serverless.yml for provider.environment or function.environment\n  endpoint: process.env.SOME_VARIABLE\n    ? 'http://localhost:3002'\n    : 'https://lambda.us-east-1.amazonaws.com',\n})\n```\n\nAll your lambdas can then be invoked in a handler using\n\n```js\nexports.handler = async function() {\n  const params = {\n    // FunctionName is composed of: service name - stage - function name, e.g.\n    FunctionName: 'myServiceName-dev-invokedHandler',\n    InvocationType: 'RequestResponse',\n    Payload: JSON.stringify({ data: 'foo' }),\n  }\n\n  const response = await lambda.invoke(params).promise()\n}\n```\n\nYou can also invoke using the aws cli by specifying `--endpoint-url`\n\n```\naws lambda invoke /dev/null \\\n  --endpoint-url http://localhost:3002 \\\n  --function-name myServiceName-dev-invokedHandler\n```\n\nList of available function names and their corresponding serverless.yml function keys\nare listed after the server starts. This is important if you use a custom naming\nscheme for your functions as `serverless-offline` will use your custom name.\nThe left side is the function's key in your `serverless.yml`\n(`invokedHandler` in the example below) and the right side is the function name\nthat is used to call the function externally such as `aws-sdk`\n(`myServiceName-dev-invokedHandler` in the example below):\n\n```\nserverless offline\n...\noffline: Starting Offline: local/us-east-1.\noffline: Offline [http for lambda] listening on http://localhost:3002\noffline: Function names exposed for local invocation by aws-sdk:\n           * invokedHandler: myServiceName-dev-invokedHandler\n```\n\nTo list the available manual invocation paths exposed for targeting\nby `aws-sdk` and `aws-cli`, use `SLS_DEBUG=*` with `serverless offline`. After the invoke server starts up, full list of endpoints will be displayed:\n```\nSLS_DEBUG=* serverless offline\n...\noffline: Starting Offline: local/us-east-1.\n...\noffline: Offline [http for lambda] listening on http://localhost:3002\noffline: Function names exposed for local invocation by aws-sdk:\n           * invokedHandler: myServiceName-dev-invokedHandler\n[offline] Lambda Invocation Routes (for AWS SDK or AWS CLI):\n           * POST http://localhost:3002/2015-03-31/functions/myServiceName-dev-invokedHandler/invocations\n[offline] Lambda Async Invocation Routes (for AWS SDK or AWS CLI):\n           * POST http://localhost:3002/2014-11-13/functions/myServiceName-dev-invokedHandler/invoke-async/\n```\n\nYou can manually target these endpoints with a REST client to debug your lambda\nfunction if you want to. Your `POST` JSON body will be the `Payload` passed to your function if you were\nto calling it via `aws-sdk`.\n\n## The `process.env.IS_OFFLINE` variable\n\nWill be `\"true\"` in your handlers and thorough the plugin.\n\n## Docker and Layers\n\nTo use layers with serverless-offline, you need to have the `useDocker` option set to true. This can either be by using the `--useDocker` command, or in your serverless.yml like this:\n```yml\ncustom:\n  serverless-offline:\n    useDocker: true\n```\nThis will allow the docker container to look up any information about layers, download and use them. For this to work, you must be using:\n* AWS as a provider, it won't work with other provider types.\n* Layers that are compatible with your runtime.\n* ARNs for layers. Local layers aren't supported as yet.\n* A local AWS account set-up that can query and download layers.\n\nIf you're using least-privilege principals for your AWS roles, this policy should get you by:\n```json\n{\n    \"Version\": \"2012-10-17\",\n    \"Statement\": [\n        {\n            \"Effect\": \"Allow\",\n            \"Action\": \"lambda:GetLayerVersion\",\n            \"Resource\": \"arn:aws:lambda:*:*:layer:*:*\"\n        }\n    ]\n}\n```\nOnce you run a function that boots up the Docker container, it'll look through the layers for that function, download them in order to your layers folder, and save a hash of your layers so it can be re-used in future. You'll only need to re-download your layers if they change in the future. If you want your layers to re-download, simply remove your layers folder.\n\nYou should then be able to invoke functions as normal, and they're executed against the layers in your docker container.\n\n### Additional Options\nThere are 2 additional options available for Docker and Layer usage.\n* layersDir\n* dockerReadOnly\n\n#### layersDir\nBy default layers are downloaded on a per-project basis, however, if you want to share them across projects, you can download them to a common place. For example, `layersDir: /tmp/layers` would allow them to be shared across projects. Make sure when using this setting that the directory you are writing layers to can be shared by docker.\n\n#### dockerReadOnly\nFor certain programming languages and frameworks, it's desirable to be able to write to the filesystem for things like testing with local SQLite databases, or other testing-only modifications. For this, you can set `dockerReadOnly: false`, and this will allow local filesystem modifications. This does not strictly mimic AWS Lambda, as Lambda has a Read-Only filesystem, so this should be used as a last resort.\n\n## Token authorizers\n\nAs defined in the [Serverless Documentation](https://serverless.com/framework/docs/providers/aws/events/apigateway/#setting-api-keys-for-your-rest-api) you can use API Keys as a simple authentication method.\n\nServerless-offline will emulate the behaviour of APIG and create a random token that's printed on the screen. With this token you can access your private methods adding `x-api-key: generatedToken` to your request header. All api keys will share the same token. To specify a custom token use the `--apiKey` cli option.\n\n## Custom authorizers\n\nOnly [custom authorizers](https://aws.amazon.com/blogs/compute/introducing-custom-authorizers-in-amazon-api-gateway/) are supported. Custom authorizers are executed before a Lambda function is executed and return an Error or a Policy document.\n\nThe Custom authorizer is passed an `event` object as below:\n\n```javascript\n{\n  \"type\": \"TOKEN\",\n  \"authorizationToken\": \"<Incoming bearer token>\",\n  \"methodArn\": \"arn:aws:execute-api:<Region id>:<Account id>:<API id>/<Stage>/<Method>/<Resource path>\"\n}\n```\n\nThe `methodArn` does not include the Account id or API id.\n\nThe plugin only supports retrieving Tokens from headers. You can configure the header as below:\n\n```javascript\n\"authorizer\": {\n  \"type\": \"TOKEN\",\n  \"identitySource\": \"method.request.header.Authorization\", // or method.request.header.SomeOtherHeader\n  \"authorizerResultTtlInSeconds\": \"0\"\n}\n```\n\n## Remote authorizers\n\nYou are able to mock the response from remote authorizers by setting the environmental variable `AUTHORIZER` before running `sls offline start`\n\nExample:\n\n> Unix: `export AUTHORIZER='{\"principalId\": \"123\"}'`\n\n> Windows: `SET AUTHORIZER='{\"principalId\": \"123\"}'`\n\n## JWT authorizers\n\nFor HTTP APIs, [JWT authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)\ndefined in the `serverless.yml` can be used to validate the token and scopes in the token. However at this time,\nthe signature of the JWT is not validated with the defined issuer. Since this is a security risk, this feature is\nonly enabled with the `--ignoreJWTSignature` flag. Make sure to only set this flag for local development work.\n\n## Custom headers\n\nYou are able to use some custom headers in your request to gain more control over the requestContext object.\n\n| Header                          | Event key                                                   |\n| ------------------------------- | ----------------------------------------------------------- |\n| cognito-identity-id             | event.requestContext.identity.cognitoIdentityId             |\n| cognito-authentication-provider | event.requestContext.identity.cognitoAuthenticationProvider |\n\nBy doing this you are now able to change those values using a custom header. This can help you with easier authentication or retrieving the userId from a `cognitoAuthenticationProvider` value.\n\n## Environment variables\n\nYou are able to use environment variables to customize identity params in event context.\n\n| Environment Variable                | Event key                                                   |\n| ----------------------------------- | ----------------------------------------------------------- |\n| SLS_COGNITO_IDENTITY_POOL_ID        | event.requestContext.identity.cognitoIdentityPoolId         |\n| SLS_ACCOUNT_ID                      | event.requestContext.identity.accountId                     |\n| SLS_COGNITO_IDENTITY_ID             | event.requestContext.identity.cognitoIdentityId             |\n| SLS_CALLER                          | event.requestContext.identity.caller                        |\n| SLS_API_KEY                         | event.requestContext.identity.apiKey                        |\n| SLS_COGNITO_AUTHENTICATION_TYPE     | event.requestContext.identity.cognitoAuthenticationType     |\n| SLS_COGNITO_AUTHENTICATION_PROVIDER | event.requestContext.identity.cognitoAuthenticationProvider |\n\nYou can use [serverless-dotenv-plugin](https://github.com/colynb/serverless-dotenv-plugin) to load environment variables from your `.env` file.\n\n## AWS API Gateway Features\n\n### Velocity Templates\n\n[Serverless doc](https://serverless.com/framework/docs/providers/aws/events/apigateway#request-templates)\n~ [AWS doc](http://docs.aws.amazon.com/apigateway/latest/developerguide/models-mappings.html#models-mappings-mappings)\n\nYou can supply response and request templates for each function. This is optional. To do so you will have to place function specific template files in the same directory as your function file and add the .req.vm extension to the template filename.\nFor example,\nif your function is in code-file: `helloworld.js`,\nyour response template should be in file: `helloworld.res.vm` and your request template in file `helloworld.req.vm`.\n\n### CORS\n\n[Serverless doc](https://serverless.com/framework/docs/providers/aws/events/apigateway#enabling-cors)\n\nIf the endpoint config has CORS set to true, the plugin will use the CLI CORS options for the associated route.\nOtherwise, no CORS headers will be added.\n\n### Catch-all Path Variables\n\n[AWS doc](https://aws.amazon.com/blogs/aws/api-gateway-update-new-features-simplify-api-development/)\n\nSet greedy paths like `/store/{proxy+}` that will intercept requests made to `/store/list-products`, `/store/add-product`, etc...\n\n### ANY method\n\n[AWS doc](https://aws.amazon.com/blogs/aws/api-gateway-update-new-features-simplify-api-development/)\n\nWorks out of the box.\n\n### Lambda and Lambda Proxy Integrations\n\n[Serverless doc](https://serverless.com/framework/docs/providers/aws/events/apigateway#lambda-proxy-integration)\n~ [AWS doc](http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html)\n\nWorks out of the box. See examples in the manual_test directory.\n\n### HTTP Proxy\n\n[Serverless doc](https://serverless.com/framework/docs/providers/aws/events/apigateway#setting-an-http-proxy-on-api-gateway)\n~\n[AWS doc - AWS::ApiGateway::Method](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html)\n~\n[AWS doc - AWS::ApiGateway::Resource](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html)\n\nExample of enabling proxy:\n\n```\ncustom:\n  serverless-offline:\n    resourceRoutes: true\n```\n\nor\n\n```\n    YourCloudFormationMethodId:\n      Type: AWS::ApiGateway::Method\n      Properties:\n        ......\n        Integration:\n          Type: HTTP_PROXY\n          Uri: 'https://s3-${self:custom.region}.amazonaws.com/${self:custom.yourBucketName}/{proxy}'\n          ......\n```\n\n```\ncustom:\n  serverless-offline:\n    resourceRoutes:\n      YourCloudFormationMethodId:\n        Uri: 'http://localhost:3001/assets/{proxy}'\n```\n\n### Response parameters\n\n[AWS doc](http://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html#mapping-response-parameters)\n\nYou can set your response's headers using ResponseParameters.\n\nMay not work properly. Please PR. (Difficulty: hard?)\n\nExample response velocity template:\n\n```javascript\n\"responseParameters\": {\n  \"method.response.header.X-Powered-By\": \"Serverless\", // a string\n  \"method.response.header.Warning\": \"integration.response.body\", // the whole response\n  \"method.response.header.Location\": \"integration.response.body.some.key\" // a pseudo JSON-path\n},\n```\n\n## WebSocket\n\nUsage in order to send messages back to clients:\n\n`POST http://localhost:3001/@connections/{connectionId}`\n\nOr,\n\n```js\nconst apiGatewayManagementApi = new AWS.ApiGatewayManagementApi({\n  apiVersion: '2018-11-29',\n  endpoint: 'http://localhost:3001',\n});\n\napiGatewayManagementApi.postToConnection({\n  ConnectionId: ...,\n  Data: ...,\n});\n```\n\nWhere the `event` is received in the lambda handler function.\n\nThere's support for [websocketsApiRouteSelectionExpression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html) in it's basic form: `$request.body.x.y.z`, where the default value is `$request.body.action`.\n\nAuthorizers and wss:// are currently not supported.\n\n## Usage with Webpack\n\nUse [serverless-webpack](https://github.com/serverless-heaven/serverless-webpack) to compile and bundle your ES-next code\n\n## Velocity nuances\n\nConsider this requestTemplate for a POST endpoint:\n\n```json\n\"application/json\": {\n  \"payload\": \"$input.json('$')\",\n  \"id_json\": \"$input.json('$.id')\",\n  \"id_path\": \"$input.path('$').id\"\n}\n```\n\nNow let's make a request with this body: `{ \"id\": 1 }`\n\nAWS parses the event as such:\n\n```javascript\n{\n  \"payload\": {\n    \"id\": 1\n  },\n  \"id_json\": 1,\n  \"id_path\": \"1\" // Notice the string\n}\n```\n\nWhereas Offline parses:\n\n```javascript\n{\n  \"payload\": {\n    \"id\": 1\n  },\n  \"id_json\": 1,\n  \"id_path\": 1 // Notice the number\n}\n```\n\nAccessing an attribute after using `$input.path` will return a string on AWS (expect strings like `\"1\"` or `\"true\"`) but not with Offline (`1` or `true`).\nYou may find other differences.\n\n## Debug process\n\nServerless offline plugin will respond to the overall framework settings and output additional information to the console in debug mode. In order to do this you will have to set the `SLS_DEBUG` environmental variable. You can run the following in the command line to switch to debug mode execution.\n\n> Unix: `export SLS_DEBUG=*`\n\n> Windows: `SET SLS_DEBUG=*`\n\nInteractive debugging is also possible for your project if you have installed the node-inspector module and chrome browser. You can then run the following command line inside your project's root.\n\nInitial installation:\n`npm install -g node-inspector`\n\nFor each debug run:\n`node-debug sls offline`\n\nThe system will start in wait status. This will also automatically start the chrome browser and wait for you to set breakpoints for inspection. Set the breakpoints as needed and, then, click the play button for the debugging to continue.\n\nDepending on the breakpoint, you may need to call the URL path for your function in seperate browser window for your serverless function to be run and made available for debugging.\n\n## Resource permissions and AWS profile\n\nLambda functions assume an IAM role during execution: the framework creates this role and set all the permission provided in the `iamRoleStatements` section of `serverless.yml`.\n\nHowever, serverless offline makes use of your local AWS profile credentials to run the lambda functions and that might result in a different set of permissions. By default, the aws-sdk would load credentials for you default AWS profile specified in your configuration file.\n\nYou can change this profile directly in the code or by setting proper environment variables. Setting the `AWS_PROFILE` environment variable before calling `serverless` offline to a different profile would effectively change the credentials, e.g.\n\n`AWS_PROFILE=<profile> serverless offline`\n\n## Scoped execution\n\nDownstream plugins may tie into the `before:offline:start:end` hook to release resources when the server is shutting down.\n\n## Simulation quality\n\nThis plugin simulates API Gateway for many practical purposes, good enough for development - but is not a perfect simulator.\nSpecifically, Lambda currently runs on Node.js v10.x and v12.x ([AWS Docs](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html)), whereas _Offline_ runs on your own runtime where no memory limits are enforced.\n\n## Usage with serverless-dynamodb-local and serverless-webpack plugin\n\nRun `serverless offline start`. In comparison with `serverless offline`, the `start` command will fire an `init` and a `end` lifecycle hook which is needed for serverless-offline and serverless-dynamodb-local to switch off resources.\n\nAdd plugins to your `serverless.yml` file:\n\n```yaml\nplugins:\n  - serverless-webpack\n  - serverless-dynamodb-local\n  - serverless-offline # serverless-offline needs to be last in the list\n```\n\n## Credits and inspiration\n\nThis plugin was initially a fork of [Nopik](https://github.com/Nopik/)'s [Serverless-serve](https://github.com/Nopik/serverless-serve).\n\n## License\n\nMIT\n\n## Contributing\n\nYes, thank you!\nThis plugin is community-driven, most of its features are from different authors.\nPlease update the docs and tests and add your name to the package.json file.\nWe try to follow [Airbnb's JavaScript Style Guide](https://github.com/airbnb/javascript).\n\n## Contributors\n\n[<img alt=\"dnalborczyk\" src=\"https://avatars1.githubusercontent.com/u/2903325?v=4&s=117\" width=\"117\">](https://github.com/dnalborczyk) |[<img alt=\"dherault\" src=\"https://avatars2.githubusercontent.com/u/4154003?v=4&s=117\" width=\"117\">](https://github.com/dherault) |[<img alt=\"computerpunc\" src=\"https://avatars3.githubusercontent.com/u/721008?v=4&s=117\" width=\"117\">](https://github.com/computerpunc) |[<img alt=\"leonardoalifraco\" src=\"https://avatars0.githubusercontent.com/u/2942943?v=4&s=117\" width=\"117\">](https://github.com/leonardoalifraco) |[<img alt=\"daniel-cottone\" src=\"https://avatars3.githubusercontent.com/u/26556340?v=4&s=117\" width=\"117\">](https://github.com/daniel-cottone) |\n:---: |:---: |:---: |:---: |:---: |\n[dnalborczyk](https://github.com/dnalborczyk) |[dherault](https://github.com/dherault) |[computerpunc](https://github.com/computerpunc) |[leonardoalifraco](https://github.com/leonardoalifraco) |[daniel-cottone](https://github.com/daniel-cottone) |\n\n[<img alt=\"mikestaub\" src=\"https://avatars2.githubusercontent.com/u/1254558?v=4&s=117\" width=\"117\">](https://github.com/mikestaub) |[<img alt=\"Bilal-S\" src=\"https://avatars0.githubusercontent.com/u/668901?v=4&s=117\" width=\"117\">](https://github.com/Bilal-S) |[<img alt=\"dl748\" src=\"https://avatars1.githubusercontent.com/u/4815868?v=4&s=117\" width=\"117\">](https://github.com/dl748) |[<img alt=\"frsechet\" src=\"https://avatars3.githubusercontent.com/u/7351940?v=4&s=117\" width=\"117\">](https://github.com/frsechet) |[<img alt=\"zoellner\" src=\"https://avatars2.githubusercontent.com/u/2665319?v=4&s=117\" width=\"117\">](https://github.com/zoellner) |\n:---: |:---: |:---: |:---: |:---: |\n[mikestaub](https://github.com/mikestaub) |[Bilal-S](https://github.com/Bilal-S) |[dl748](https://github.com/dl748) |[frsechet](https://github.com/frsechet) |[zoellner](https://github.com/zoellner) |\n\n[<img alt=\"johncmckim\" src=\"https://avatars2.githubusercontent.com/u/1297227?v=4&s=117\" width=\"117\">](https://github.com/johncmckim) |[<img alt=\"ThisIsNoZaku\" src=\"https://avatars1.githubusercontent.com/u/4680766?v=4&s=117\" width=\"117\">](https://github.com/ThisIsNoZaku) |[<img alt=\"darthtrevino\" src=\"https://avatars0.githubusercontent.com/u/113544?v=4&s=117\" width=\"117\">](https://github.com/darthtrevino) |[<img alt=\"miltador\" src=\"https://avatars3.githubusercontent.com/u/17062283?v=4&s=117\" width=\"117\">](https://github.com/miltador) |[<img alt=\"gertjvr\" src=\"https://avatars0.githubusercontent.com/u/1691062?v=4&s=117\" width=\"117\">](https://github.com/gertjvr) |\n:---: |:---: |:---: |:---: |:---: |\n[johncmckim](https://github.com/johncmckim) |[ThisIsNoZaku](https://github.com/ThisIsNoZaku) |[darthtrevino](https://github.com/darthtrevino) |[miltador](https://github.com/miltador) |[gertjvr](https://github.com/gertjvr) |\n\n[<img alt=\"juanjoDiaz\" src=\"https://avatars0.githubusercontent.com/u/3322485?v=4&s=117\" width=\"117\">](https://github.com/juanjoDiaz) |[<img alt=\"perkyguy\" src=\"https://avatars3.githubusercontent.com/u/4624648?v=4&s=117\" width=\"117\">](https://github.com/perkyguy) |[<img alt=\"jack-seek\" src=\"https://avatars1.githubusercontent.com/u/19676584?v=4&s=117\" width=\"117\">](https://github.com/jack-seek) |[<img alt=\"hueniverse\" src=\"https://avatars2.githubusercontent.com/u/56631?v=4&s=117\" width=\"117\">](https://github.com/hueniverse) |[<img alt=\"robbtraister\" src=\"https://avatars3.githubusercontent.com/u/5815296?v=4&s=117\" width=\"117\">](https://github.com/robbtraister) |\n:---: |:---: |:---: |:---: |:---: |\n[juanjoDiaz](https://github.com/juanjoDiaz) |[perkyguy](https://github.com/perkyguy) |[jack-seek](https://github.com/jack-seek) |[hueniverse](https://github.com/hueniverse) |[robbtraister](https://github.com/robbtraister) |\n\n[<img alt=\"dortega3000\" src=\"https://avatars1.githubusercontent.com/u/6676525?v=4&s=117\" width=\"117\">](https://github.com/dortega3000) |[<img alt=\"ansraliant\" src=\"https://avatars1.githubusercontent.com/u/7121475?v=4&s=117\" width=\"117\">](https://github.com/ansraliant) |[<img alt=\"joubertredrat\" src=\"https://avatars2.githubusercontent.com/u/1520407?v=4&s=117\" width=\"117\">](https://github.com/joubertredrat) |[<img alt=\"andreipopovici\" src=\"https://avatars0.githubusercontent.com/u/1143417?v=4&s=117\" width=\"117\">](https://github.com/andreipopovici) |[<img alt=\"Andorbal\" src=\"https://avatars1.githubusercontent.com/u/579839?v=4&s=117\" width=\"117\">](https://github.com/Andorbal) |\n:---: |:---: |:---: |:---: |:---: |\n[dortega3000](https://github.com/dortega3000) |[ansraliant](https://github.com/ansraliant) |[joubertredrat](https://github.com/joubertredrat) |[andreipopovici](https://github.com/andreipopovici) |[Andorbal](https://github.com/Andorbal) |\n\n[<img alt=\"AyushG3112\" src=\"https://avatars0.githubusercontent.com/u/21307931?v=4&s=117\" width=\"117\">](https://github.com/AyushG3112) |[<img alt=\"franciscocpg\" src=\"https://avatars1.githubusercontent.com/u/3680556?v=4&s=117\" width=\"117\">](https://github.com/franciscocpg) |[<img alt=\"kajwiklund\" src=\"https://avatars2.githubusercontent.com/u/6842806?v=4&s=117\" width=\"117\">](https://github.com/kajwiklund) |[<img alt=\"ondrowan\" src=\"https://avatars2.githubusercontent.com/u/423776?v=4&s=117\" width=\"117\">](https://github.com/ondrowan) |[<img alt=\"sulaysumaria\" src=\"https://avatars3.githubusercontent.com/u/20580362?v=4&s=117\" width=\"117\">](https://github.com/sulaysumaria) |\n:---: |:---: |:---: |:---: |:---: |\n[AyushG3112](https://github.com/AyushG3112) |[franciscocpg](https://github.com/franciscocpg) |[kajwiklund](https://github.com/kajwiklund) |[ondrowan](https://github.com/ondrowan) |[sulaysumaria](https://github.com/sulaysumaria) |\n\n[<img alt=\"jormaechea\" src=\"https://avatars3.githubusercontent.com/u/5612500?v=4&s=117\" width=\"117\">](https://github.com/jormaechea) |[<img alt=\"awwong1\" src=\"https://avatars0.githubusercontent.com/u/2760111?v=4&s=117\" width=\"117\">](https://github.com/awwong1) |[<img alt=\"c24w\" src=\"https://avatars2.githubusercontent.com/u/710406?v=4&s=117\" width=\"117\">](https://github.com/c24w) |[<img alt=\"vmadman\" src=\"https://avatars1.githubusercontent.com/u/1026490?v=4&s=117\" width=\"117\">](https://github.com/vmadman) |[<img alt=\"encounter\" src=\"https://avatars3.githubusercontent.com/u/549122?v=4&s=117\" width=\"117\">](https://github.com/encounter) |\n:---: |:---: |:---: |:---: |:---: |\n[jormaechea](https://github.com/jormaechea) |[awwong1](https://github.com/awwong1) |[c24w](https://github.com/c24w) |[vmadman](https://github.com/vmadman) |[encounter](https://github.com/encounter) |\n\n[<img alt=\"Bob-Thomas\" src=\"https://avatars3.githubusercontent.com/u/2785213?v=4&s=117\" width=\"117\">](https://github.com/Bob-Thomas) |[<img alt=\"njriordan\" src=\"https://avatars2.githubusercontent.com/u/11200170?v=4&s=117\" width=\"117\">](https://github.com/njriordan) |[<img alt=\"bebbi\" src=\"https://avatars0.githubusercontent.com/u/2752391?v=4&s=117\" width=\"117\">](https://github.com/bebbi) |[<img alt=\"trevor-leach\" src=\"https://avatars0.githubusercontent.com/u/39206334?v=4&s=117\" width=\"117\">](https://github.com/trevor-leach) |[<img alt=\"emmoistner\" src=\"https://avatars2.githubusercontent.com/u/5419727?v=4&s=117\" width=\"117\">](https://github.com/emmoistner) |\n:---: |:---: |:---: |:---: |:---: |\n[Bob-Thomas](https://github.com/Bob-Thomas) |[njriordan](https://github.com/njriordan) |[bebbi](https://github.com/bebbi) |[trevor-leach](https://github.com/trevor-leach) |[emmoistner](https://github.com/emmoistner) |\n\n[<img alt=\"OrKoN\" src=\"https://avatars3.githubusercontent.com/u/399150?v=4&s=117\" width=\"117\">](https://github.com/OrKoN) |[<img alt=\"adieuadieu\" src=\"https://avatars1.githubusercontent.com/u/438848?v=4&s=117\" width=\"117\">](https://github.com/adieuadieu) |[<img alt=\"apalumbo\" src=\"https://avatars0.githubusercontent.com/u/1729784?v=4&s=117\" width=\"117\">](https://github.com/apalumbo) |[<img alt=\"anishkny\" src=\"https://avatars0.githubusercontent.com/u/357499?v=4&s=117\" width=\"117\">](https://github.com/anishkny) |[<img alt=\"cameroncooper\" src=\"https://avatars3.githubusercontent.com/u/898689?v=4&s=117\" width=\"117\">](https://github.com/cameroncooper) |\n:---: |:---: |:---: |:---: |:---: |\n[OrKoN](https://github.com/OrKoN) |[adieuadieu](https://github.com/adieuadieu) |[apalumbo](https://github.com/apalumbo) |[anishkny](https://github.com/anishkny) |[cameroncooper](https://github.com/cameroncooper) |\n\n[<img alt=\"cmuto09\" src=\"https://avatars3.githubusercontent.com/u/4679612?v=4&s=117\" width=\"117\">](https://github.com/cmuto09) |[<img alt=\"dschep\" src=\"https://avatars0.githubusercontent.com/u/667763?v=4&s=117\" width=\"117\">](https://github.com/dschep) |[<img alt=\"DimaDK24\" src=\"https://avatars1.githubusercontent.com/u/25607790?v=4&s=117\" width=\"117\">](https://github.com/DimaDK24) |[<img alt=\"dwbelliston\" src=\"https://avatars2.githubusercontent.com/u/11450118?v=4&s=117\" width=\"117\">](https://github.com/dwbelliston) |[<img alt=\"eabadjiev\" src=\"https://avatars0.githubusercontent.com/u/934059?v=4&s=117\" width=\"117\">](https://github.com/eabadjiev) |\n:---: |:---: |:---: |:---: |:---: |\n[cmuto09](https://github.com/cmuto09) |[dschep](https://github.com/dschep) |[DimaDK24](https://github.com/DimaDK24) |[dwbelliston](https://github.com/dwbelliston) |[eabadjiev](https://github.com/eabadjiev) |\n\n[<img alt=\"Arkfille\" src=\"https://avatars2.githubusercontent.com/u/19840740?v=4&s=117\" width=\"117\">](https://github.com/Arkfille) |[<img alt=\"garunski\" src=\"https://avatars0.githubusercontent.com/u/1002770?v=4&s=117\" width=\"117\">](https://github.com/garunski) |[<img alt=\"james-relyea\" src=\"https://avatars0.githubusercontent.com/u/1944491?v=4&s=117\" width=\"117\">](https://github.com/james-relyea) |[<img alt=\"joewestcott\" src=\"https://avatars0.githubusercontent.com/u/11187741?v=4&s=117\" width=\"117\">](https://github.com/joewestcott) |[<img alt=\"LoganArnett\" src=\"https://avatars2.githubusercontent.com/u/8780547?v=4&s=117\" width=\"117\">](https://github.com/LoganArnett) |\n:---: |:---: |:---: |:---: |:---: |\n[Arkfille](https://github.com/Arkfille) |[garunski](https://github.com/garunski) |[james-relyea](https://github.com/james-relyea) |[joewestcott](https://github.com/joewestcott) |[LoganArnett](https://github.com/LoganArnett) |\n\n[<img alt=\"ablythe\" src=\"https://avatars2.githubusercontent.com/u/6164745?v=4&s=117\" width=\"117\">](https://github.com/ablythe) |[<img alt=\"marccampbell\" src=\"https://avatars3.githubusercontent.com/u/173451?v=4&s=117\" width=\"117\">](https://github.com/marccampbell) |[<img alt=\"purefan\" src=\"https://avatars1.githubusercontent.com/u/315880?v=4&s=117\" width=\"117\">](https://github.com/purefan) |[<img alt=\"mzmiric5\" src=\"https://avatars1.githubusercontent.com/u/1480072?v=4&s=117\" width=\"117\">](https://github.com/mzmiric5) |[<img alt=\"paulhbarker\" src=\"https://avatars0.githubusercontent.com/u/7366567?v=4&s=117\" width=\"117\">](https://github.com/paulhbarker) |\n:---: |:---: |:---: |:---: |:---: |\n[ablythe](https://github.com/ablythe) |[marccampbell](https://github.com/marccampbell) |[purefan](https://github.com/purefan) |[mzmiric5](https://github.com/mzmiric5) |[paulhbarker](https://github.com/paulhbarker) |\n\n[<img alt=\"pmuens\" src=\"https://avatars3.githubusercontent.com/u/1606004?v=4&s=117\" width=\"117\">](https://github.com/pmuens) |[<img alt=\"pierreis\" src=\"https://avatars2.githubusercontent.com/u/203973?v=4&s=117\" width=\"117\">](https://github.com/pierreis) |[<img alt=\"ramonEmilio\" src=\"https://avatars2.githubusercontent.com/u/10362370?v=4&s=117\" width=\"117\">](https://github.com/ramonEmilio) |[<img alt=\"rschick\" src=\"https://avatars3.githubusercontent.com/u/423474?v=4&s=117\" width=\"117\">](https://github.com/rschick) |[<img alt=\"selcukcihan\" src=\"https://avatars0.githubusercontent.com/u/7043904?v=4&s=117\" width=\"117\">](https://github.com/selcukcihan) |\n:---: |:---: |:---: |:---: |:---: |\n[pmuens](https://github.com/pmuens) |[pierreis](https://github.com/pierreis) |[ramonEmilio](https://github.com/ramonEmilio) |[rschick](https://github.com/rschick) |[selcukcihan](https://github.com/selcukcihan) |\n\n[<img alt=\"patrickheeney\" src=\"https://avatars3.githubusercontent.com/u/1407228?v=4&s=117\" width=\"117\">](https://github.com/patrickheeney) |[<img alt=\"rma4ok\" src=\"https://avatars1.githubusercontent.com/u/470292?v=4&s=117\" width=\"117\">](https://github.com/rma4ok) |[<img alt=\"clschnei\" src=\"https://avatars3.githubusercontent.com/u/1232625?v=4&s=117\" width=\"117\">](https://github.com/clschnei) |[<img alt=\"djcrabhat\" src=\"https://avatars2.githubusercontent.com/u/803042?v=4&s=117\" width=\"117\">](https://github.com/djcrabhat) |[<img alt=\"adam-nielsen\" src=\"https://avatars0.githubusercontent.com/u/278772?v=4&s=117\" width=\"117\">](https://github.com/adam-nielsen) |\n:---: |:---: |:---: |:---: |:---: |\n[patrickheeney](https://github.com/patrickheeney) |[rma4ok](https://github.com/rma4ok) |[clschnei](https://github.com/clschnei) |[djcrabhat](https://github.com/djcrabhat) |[adam-nielsen](https://github.com/adam-nielsen) |\n\n[<img alt=\"adamelliottsweeting\" src=\"https://avatars2.githubusercontent.com/u/8907331?v=4&s=117\" width=\"117\">](https://github.com/adamelliottsweeting) |[<img alt=\"againer\" src=\"https://avatars3.githubusercontent.com/u/509709?v=4&s=117\" width=\"117\">](https://github.com/againer) |[<img alt=\"alebianco-doxee\" src=\"https://avatars0.githubusercontent.com/u/56639478?v=4&s=117\" width=\"117\">](https://github.com/alebianco-doxee) |[<img alt=\"koterpillar\" src=\"https://avatars0.githubusercontent.com/u/140276?v=4&s=117\" width=\"117\">](https://github.com/koterpillar) |[<img alt=\"triptec\" src=\"https://avatars0.githubusercontent.com/u/240159?v=4&s=117\" width=\"117\">](https://github.com/triptec) |\n:---: |:---: |:---: |:---: |:---: |\n[adamelliottsweeting](https://github.com/adamelliottsweeting) |[againer](https://github.com/againer) |[alebianco-doxee](https://github.com/alebianco-doxee) |[koterpillar](https://github.com/koterpillar) |[triptec](https://github.com/triptec) |\n\n[<img alt=\"constb\" src=\"https://avatars3.githubusercontent.com/u/1006766?v=4&s=117\" width=\"117\">](https://github.com/constb) |[<img alt=\"cspotcode\" src=\"https://avatars1.githubusercontent.com/u/376504?v=4&s=117\" width=\"117\">](https://github.com/cspotcode) |[<img alt=\"aliatsis\" src=\"https://avatars3.githubusercontent.com/u/4140524?v=4&s=117\" width=\"117\">](https://github.com/aliatsis) |[<img alt=\"arnas\" src=\"https://avatars3.githubusercontent.com/u/13507001?v=4&s=117\" width=\"117\">](https://github.com/arnas) |[<img alt=\"akaila\" src=\"https://avatars2.githubusercontent.com/u/484181?v=4&s=117\" width=\"117\">](https://github.com/akaila) |\n:---: |:---: |:---: |:---: |:---: |\n[constb](https://github.com/constb) |[cspotcode](https://github.com/cspotcode) |[aliatsis](https://github.com/aliatsis) |[arnas](https://github.com/arnas) |[akaila](https://github.com/akaila) |\n\n[<img alt=\"ac360\" src=\"https://avatars1.githubusercontent.com/u/2752551?v=4&s=117\" width=\"117\">](https://github.com/ac360) |[<img alt=\"austin-payne\" src=\"https://avatars3.githubusercontent.com/u/29075091?v=4&s=117\" width=\"117\">](https://github.com/austin-payne) |[<img alt=\"bencooling\" src=\"https://avatars3.githubusercontent.com/u/718994?v=4&s=117\" width=\"117\">](https://github.com/bencooling) |[<img alt=\"BorjaMacedo\" src=\"https://avatars1.githubusercontent.com/u/16381759?v=4&s=117\" width=\"117\">](https://github.com/BorjaMacedo) |[<img alt=\"BrandonE\" src=\"https://avatars1.githubusercontent.com/u/542245?v=4&s=117\" width=\"117\">](https://github.com/BrandonE) |\n:---: |:---: |:---: |:---: |:---: |\n[ac360](https://github.com/ac360) |[austin-payne](https://github.com/austin-payne) |[bencooling](https://github.com/bencooling) |[BorjaMacedo](https://github.com/BorjaMacedo) |[BrandonE](https://github.com/BrandonE) |\n\n[<img alt=\"guerrerocarlos\" src=\"https://avatars2.githubusercontent.com/u/82532?v=4&s=117\" width=\"117\">](https://github.com/guerrerocarlos) |[<img alt=\"chrismcleod\" src=\"https://avatars1.githubusercontent.com/u/1134683?v=4&s=117\" width=\"117\">](https://github.com/chrismcleod) |[<img alt=\"christophgysin\" src=\"https://avatars0.githubusercontent.com/u/527924?v=4&s=117\" width=\"117\">](https://github.com/christophgysin) |[<img alt=\"Clement134\" src=\"https://avatars2.githubusercontent.com/u/6473775?v=4&s=117\" width=\"117\">](https://github.com/Clement134) |[<img alt=\"rlgod\" src=\"https://avatars2.githubusercontent.com/u/1705096?v=4&s=117\" width=\"117\">](https://github.com/rlgod) |\n:---: |:---: |:---: |:---: |:---: |\n[guerrerocarlos](https://github.com/guerrerocarlos) |[chrismcleod](https://github.com/chrismcleod) |[christophgysin](https://github.com/christophgysin) |[Clement134](https://github.com/Clement134) |[rlgod](https://github.com/rlgod) |\n\n[<img alt=\"dbunker\" src=\"https://avatars1.githubusercontent.com/u/751580?v=4&s=117\" width=\"117\">](https://github.com/dbunker) |[<img alt=\"dobrynin\" src=\"https://avatars3.githubusercontent.com/u/12061016?v=4&s=117\" width=\"117\">](https://github.com/dobrynin) |[<img alt=\"domaslasauskas\" src=\"https://avatars2.githubusercontent.com/u/2464675?v=4&s=117\" width=\"117\">](https://github.com/domaslasauskas) |[<img alt=\"enolan\" src=\"https://avatars0.githubusercontent.com/u/61517?v=4&s=117\" width=\"117\">](https://github.com/enolan) |[<img alt=\"minibikini\" src=\"https://avatars3.githubusercontent.com/u/439309?v=4&s=117\" width=\"117\">](https://github.com/minibikini) |\n:---: |:---: |:---: |:---: |:---: |\n[dbunker](https://github.com/dbunker) |[dobrynin](https://github.com/dobrynin) |[domaslasauskas](https://github.com/domaslasauskas) |[enolan](https://github.com/enolan) |[minibikini](https://github.com/minibikini) |\n\n[<img alt=\"em0ney\" src=\"https://avatars0.githubusercontent.com/u/5679658?v=4&s=117\" width=\"117\">](https://github.com/em0ney) |[<img alt=\"erauer\" src=\"https://avatars0.githubusercontent.com/u/792171?v=4&s=117\" width=\"117\">](https://github.com/erauer) |[<img alt=\"gbroques\" src=\"https://avatars0.githubusercontent.com/u/12969835?v=4&s=117\" width=\"117\">](https://github.com/gbroques) |[<img alt=\"guillaume\" src=\"https://avatars1.githubusercontent.com/u/368?v=4&s=117\" width=\"117\">](https://github.com/guillaume) |[<img alt=\"balassy\" src=\"https://avatars1.githubusercontent.com/u/1872777?v=4&s=117\" width=\"117\">](https://github.com/balassy) |\n:---: |:---: |:---: |:---: |:---: |\n[em0ney](https://github.com/em0ney) |[erauer](https://github.com/erauer) |[gbroques](https://github.com/gbroques) |[guillaume](https://github.com/guillaume) |[balassy](https://github.com/balassy) |\n\n[<img alt=\"idmontie\" src=\"https://avatars3.githubusercontent.com/u/412382?v=4&s=117\" width=\"117\">](https://github.com/idmontie) |[<img alt=\"jacintoArias\" src=\"https://avatars0.githubusercontent.com/u/7511199?v=4&s=117\" width=\"117\">](https://github.com/jacintoArias) |[<img alt=\"jgrigg\" src=\"https://avatars1.githubusercontent.com/u/12800024?v=4&s=117\" width=\"117\">](https://github.com/jgrigg) |[<img alt=\"jsnajdr\" src=\"https://avatars3.githubusercontent.com/u/664258?v=4&s=117\" width=\"117\">](https://github.com/jsnajdr) |[<img alt=\"horyd\" src=\"https://avatars3.githubusercontent.com/u/916414?v=4&s=117\" width=\"117\">](https://github.com/horyd) |\n:---: |:---: |:---: |:---: |:---: |\n[idmontie](https://github.com/idmontie) |[jacintoArias](https://github.com/jacintoArias) |[jgrigg](https://github.com/jgrigg) |[jsnajdr](https://github.com/jsnajdr) |[horyd](https://github.com/horyd) |\n\n[<img alt=\"jaydp17\" src=\"https://avatars1.githubusercontent.com/u/1743425?v=4&s=117\" width=\"117\">](https://github.com/jaydp17) |[<img alt=\"jeremygiberson\" src=\"https://avatars2.githubusercontent.com/u/487411?v=4&s=117\" width=\"117\">](https://github.com/jeremygiberson) |[<img alt=\"josephwarrick\" src=\"https://avatars2.githubusercontent.com/u/5392984?v=4&s=117\" width=\"117\">](https://github.com/josephwarrick) |[<img alt=\"jlsjonas\" src=\"https://avatars1.githubusercontent.com/u/932193?v=4&s=117\" width=\"117\">](https://github.com/jlsjonas) |[<img alt=\"joostfarla\" src=\"https://avatars0.githubusercontent.com/u/851863?v=4&s=117\" width=\"117\">](https://github.com/joostfarla) |\n:---: |:---: |:---: |:---: |:---: |\n[jaydp17](https://github.com/jaydp17) |[jeremygiberson](https://github.com/jeremygiberson) |[josephwarrick](https://github.com/josephwarrick) |[jlsjonas](https://github.com/jlsjonas) |[joostfarla](https://github.com/joostfarla) |\n\n[<img alt=\"kenleytomlin\" src=\"https://avatars3.githubusercontent.com/u/3004590?v=4&s=117\" width=\"117\">](https://github.com/kenleytomlin) |[<img alt=\"lalifraco-devspark\" src=\"https://avatars1.githubusercontent.com/u/13339324?v=4&s=117\" width=\"117\">](https://github.com/lalifraco-devspark) |[<img alt=\"DynamicSTOP\" src=\"https://avatars0.githubusercontent.com/u/9434504?v=4&s=117\" width=\"117\">](https://github.com/DynamicSTOP) |[<img alt=\"medikoo\" src=\"https://avatars3.githubusercontent.com/u/122434?v=4&s=117\" width=\"117\">](https://github.com/medikoo) |[<img alt=\"neverendingqs\" src=\"https://avatars1.githubusercontent.com/u/8854618?v=4&s=117\" width=\"117\">](https://github.com/neverendingqs) |\n:---: |:---: |:---: |:---: |:---: |\n[kenleytomlin](https://github.com/kenleytomlin) |[lalifraco-devspark](https://github.com/lalifraco-devspark) |[DynamicSTOP](https://github.com/DynamicSTOP) |[medikoo](https://github.com/medikoo) |[neverendingqs](https://github.com/neverendingqs) |\n\n[<img alt=\"msjonker\" src=\"https://avatars3.githubusercontent.com/u/781683?v=4&s=117\" width=\"117\">](https://github.com/msjonker) |[<img alt=\"Takeno\" src=\"https://avatars0.githubusercontent.com/u/1499063?v=4&s=117\" width=\"117\">](https://github.com/Takeno) |[<img alt=\"mjmac\" src=\"https://avatars1.githubusercontent.com/u/83737?v=4&s=117\" width=\"117\">](https://github.com/mjmac) |[<img alt=\"ojongerius\" src=\"https://avatars0.githubusercontent.com/u/1726055?v=4&s=117\" width=\"117\">](https://github.com/ojongerius) |[<img alt=\"thepont\" src=\"https://avatars1.githubusercontent.com/u/2901992?v=4&s=117\" width=\"117\">](https://github.com/thepont) |\n:---: |:---: |:---: |:---: |:---: |\n[msjonker](https://github.com/msjonker) |[Takeno](https://github.com/Takeno) |[mjmac](https://github.com/mjmac) |[ojongerius](https://github.com/ojongerius) |[thepont](https://github.com/thepont) |\n\n[<img alt=\"WooDzu\" src=\"https://avatars3.githubusercontent.com/u/2228236?v=4&s=117\" width=\"117\">](https://github.com/WooDzu) |[<img alt=\"PsychicCat\" src=\"https://avatars3.githubusercontent.com/u/4073856?v=4&s=117\" width=\"117\">](https://github.com/PsychicCat) |[<img alt=\"Raph22\" src=\"https://avatars0.githubusercontent.com/u/18127594?v=4&s=117\" width=\"117\">](https://github.com/Raph22) |[<img alt=\"wwsno\" src=\"https://avatars0.githubusercontent.com/u/6328924?v=4&s=117\" width=\"117\">](https://github.com/wwsno) |[<img alt=\"gribnoysup\" src=\"https://avatars2.githubusercontent.com/u/5036933?v=4&s=117\" width=\"117\">](https://github.com/gribnoysup) |\n:---: |:---: |:---: |:---: |:---: |\n[WooDzu](https://github.com/WooDzu) |[PsychicCat](https://github.com/PsychicCat) |[Raph22](https://github.com/Raph22) |[wwsno](https://github.com/wwsno) |[gribnoysup](https://github.com/gribnoysup) |\n\n[<img alt=\"starsprung\" src=\"https://avatars3.githubusercontent.com/u/48957?v=4&s=117\" width=\"117\">](https://github.com/starsprung) |[<img alt=\"shineli-not-used-anymore\" src=\"https://avatars3.githubusercontent.com/u/1043331?v=4&s=117\" width=\"117\">](https://github.com/shineli-not-used-anymore) |[<img alt=\"stesie\" src=\"https://avatars1.githubusercontent.com/u/113068?v=4&s=117\" width=\"117\">](https://github.com/stesie) |[<img alt=\"stevemao\" src=\"https://avatars0.githubusercontent.com/u/6316590?v=4&s=117\" width=\"117\">](https://github.com/stevemao) |[<img alt=\"ittus\" src=\"https://avatars3.githubusercontent.com/u/5120965?v=4&s=117\" width=\"117\">](https://github.com/ittus) |\n:---: |:---: |:---: |:---: |:---: |\n[starsprung](https://github.com/starsprung) |[shineli-not-used-anymore](https://github.com/shineli-not-used-anymore) |[stesie](https://github.com/stesie) |[stevemao](https://github.com/stevemao) |[ittus](https://github.com/ittus) |\n\n[<img alt=\"tiagogoncalves89\" src=\"https://avatars2.githubusercontent.com/u/55122?v=4&s=117\" width=\"117\">](https://github.com/tiagogoncalves89) |[<img alt=\"tuanmh\" src=\"https://avatars2.githubusercontent.com/u/3193353?v=4&s=117\" width=\"117\">](https://github.com/tuanmh) |[<img alt=\"Gregoirevda\" src=\"https://avatars3.githubusercontent.com/u/12223738?v=4&s=117\" width=\"117\">](https://github.com/Gregoirevda) |[<img alt=\"gcphost\" src=\"https://avatars3.githubusercontent.com/u/1173636?v=4&s=117\" width=\"117\">](https://github.com/gcphost) |[<img alt=\"YaroslavApatiev\" src=\"https://avatars0.githubusercontent.com/u/24372409?v=4&s=117\" width=\"117\">](https://github.com/YaroslavApatiev) |\n:---: |:---: |:---: |:---: |:---: |\n[tiagogoncalves89](https://github.com/tiagogoncalves89) |[tuanmh](https://github.com/tuanmh) |[Gregoirevda](https://github.com/Gregoirevda) |[gcphost](https://github.com/gcphost) |[YaroslavApatiev](https://github.com/YaroslavApatiev) |\n\n[<img alt=\"zacacollier\" src=\"https://avatars2.githubusercontent.com/u/18710669?v=4&s=117\" width=\"117\">](https://github.com/zacacollier) |[<img alt=\"allenhartwig\" src=\"https://avatars2.githubusercontent.com/u/1261521?v=4&s=117\" width=\"117\">](https://github.com/allenhartwig) |[<img alt=\"demetriusnunes\" src=\"https://avatars0.githubusercontent.com/u/4699?v=4&s=117\" width=\"117\">](https://github.com/demetriusnunes) |[<img alt=\"hsz\" src=\"https://avatars3.githubusercontent.com/u/108333?v=4&s=117\" width=\"117\">](https://github.com/hsz) |[<img alt=\"electrikdevelopment\" src=\"https://avatars3.githubusercontent.com/u/14976795?v=4&s=117\" width=\"117\">](https://github.com/electrikdevelopment) |\n:---: |:---: |:---: |:---: |:---: |\n[zacacollier](https://github.com/zacacollier) |[allenhartwig](https://github.com/allenhartwig) |[demetriusnunes](https://github.com/demetriusnunes) |[hsz](https://github.com/hsz) |[electrikdevelopment](https://github.com/electrikdevelopment) |\n\n[<img alt=\"jgilbert01\" src=\"https://avatars1.githubusercontent.com/u/1082126?v=4&s=117\" width=\"117\">](https://github.com/jgilbert01) |[<img alt=\"polaris340\" src=\"https://avatars2.githubusercontent.com/u/2861192?v=4&s=117\" width=\"117\">](https://github.com/polaris340) |[<img alt=\"kobanyan\" src=\"https://avatars0.githubusercontent.com/u/14950314?v=4&s=117\" width=\"117\">](https://github.com/kobanyan) |[<img alt=\"leruitga-ss\" src=\"https://avatars1.githubusercontent.com/u/39830392?v=4&s=117\" width=\"117\">](https://github.com/leruitga-ss) |[<img alt=\"livingmine\" src=\"https://avatars1.githubusercontent.com/u/7286614?v=4&s=117\" width=\"117\">](https://github.com/livingmine) |\n:---: |:---: |:---: |:---: |:---: |\n[jgilbert01](https://github.com/jgilbert01) |[polaris340](https://github.com/polaris340) |[kobanyan](https://github.com/kobanyan) |[leruitga-ss](https://github.com/leruitga-ss) |[livingmine](https://github.com/livingmine) |\n\n[<img alt=\"lteacher\" src=\"https://avatars3.githubusercontent.com/u/6103860?v=4&s=117\" width=\"117\">](https://github.com/lteacher) |[<img alt=\"martinmicunda\" src=\"https://avatars1.githubusercontent.com/u/1643606?v=4&s=117\" width=\"117\">](https://github.com/martinmicunda) |[<img alt=\"nori3tsu\" src=\"https://avatars0.githubusercontent.com/u/379587?v=4&s=117\" width=\"117\">](https://github.com/nori3tsu) |[<img alt=\"ppasmanik\" src=\"https://avatars0.githubusercontent.com/u/3534835?v=4&s=117\" width=\"117\">](https://github.com/ppasmanik) |[<img alt=\"ryanzyy\" src=\"https://avatars1.githubusercontent.com/u/2299226?v=4&s=117\" width=\"117\">](https://github.com/ryanzyy) |\n:---: |:---: |:---: |:---: |:---: |\n[lteacher](https://github.com/lteacher) |[martinmicunda](https://github.com/martinmicunda) |[nori3tsu](https://github.com/nori3tsu) |[ppasmanik](https://github.com/ppasmanik) |[ryanzyy](https://github.com/ryanzyy) |\n\n[<img alt=\"m0ppers\" src=\"https://avatars3.githubusercontent.com/u/819421?v=4&s=117\" width=\"117\">](https://github.com/m0ppers) |[<img alt=\"footballencarta\" src=\"https://avatars0.githubusercontent.com/u/1312258?v=4&s=117\" width=\"117\">](https://github.com/footballencarta) |[<img alt=\"bryanvaz\" src=\"https://avatars0.githubusercontent.com/u/9157498?v=4&s=117\" width=\"117\">](https://github.com/bryanvaz) |\n:---: |:---: |:---: |\n[m0ppers](https://github.com/m0ppers) |[footballencarta](https://github.com/footballencarta) |[bryanvaz](https://github.com/bryanvaz) |\n",
+        "license": "MIT",
+        "homepage": "https://github.com/dherault/serverless-offline",
+        "keywords": [
+            "serverless",
+            "serverless framework",
+            "serverless local",
+            "serverless offline",
+            "serverless plugin",
+            "aws",
+            "amazon web services",
+            "api gateway",
+            "http",
+            "lambda",
+            "schedule",
+            "websocket"
+        ],
+        "versions": {
+            "6.8.2": {
+                "_id": "@3fv/serverless-offline@6.8.2",
+                "bugs": {
+                    "url": "https://github.com/dherault/serverless-offline/issues"
+                },
+                "dist": {
+                    "shasum": "cf41f92e7b4e95f47135da0dcadb65e030641fe4",
+                    "tarball": "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.2.tgz",
+                    "fileCount": 144,
+                    "integrity": "sha512-mKkbGS6GehPmxdgQ7CayVMCV14jUmWaZUTH8bnxYtkZ9iVbHMaxea7Rh+GHr1u3cyeMzCOgngxZwPtDeucUOOg==",
+                    "signatures": [
+                        {
+                            "sig": "MEYCIQDDL1/tpeqG8I52xS18EevW3OO6INMhp55BamyVp7qHLQIhAJhbRz0HcdhpBuGUmeuX7MbvOlkOO5Akw52X/5dyORum",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 415109,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfuungCRA9TVsSAnZWagAAqNgP+gNY2VgBnmPX0cl/r/5p\nsI7aYYz6T9prEsddlTAsSmQiDODVjxPxJ/r/6OSwDdghJO5j69OUjBWuzpc3\nflMXAupvl8rKnYZntDghMhOxlgKgsb210XUdv+3rDcGYHRSBYBRbOLDnOdmu\nwJ+aLLrdTYPlcOmfdFQAQyT2ZKzyyk4T/Hmv6epllI/7W14tfznmPBqD1Wzd\nVRje1t/JCDq5Zk1RkN33Em62+zalAjL4f8ktXcXj85MrLLJJvQqSuMeiEgjS\nTDzGS9h52DPGMmch0bdnsmv9kostPl3vbwtkZvIC2phXWHaUpZwn1ytXj/7b\nhz4GiA8NHrsP4iXhF5gHT+4Puas639ND/6USu/kHendvEz9A2CDUvR2aKcrg\nri/gJIvPNkWidHHb0gvwgSly6ccG1wv+AJyTrCRMCGJHCY2Liuc7/89U8Lfh\nxBL6Cx6fmdEZ2KBeRA1gizWPYh+IHna54ukSLUyGt+6QsH4G56A03EmQOwg3\nghexW9q+86MuDZiFrv0YWVmfdVt5xp6ztcg1h6kT05JUQm9FbQ9iuHig8us0\nHyCaOc/eHXR7GmJMmUkEm1OGuRmqCCDGc6Btf8HUV+lo0l0egTTK3hBYv4fG\nNHYTmeXGeOYT7iL5+W/fsf+ArYbQ+LJmrTlZ7WJME2TswFKHDh+dJPPg9PNa\nYo10\r\n=M136\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "dist/main.js",
+                "name": "@3fv/serverless-offline",
+                "type": "commonjs",
+                "author": {
+                    "url": "https://github.com/dherault",
+                    "name": "David H\u00e9rault",
+                    "email": "dherault@gmail.com"
+                },
+                "engines": {
+                    "node": ">=10.13.0"
+                },
+                "license": "MIT",
+                "scripts": {
+                    "lint": "eslint .",
+                    "test": "npm run build && jest --verbose --silent --runInBand",
+                    "build": "rimraf dist && npm run compile && copyfiles -u 1 \"src/**/*.{vm,py,rb}\" dist",
+                    "format": "eslint . --fix",
+                    "compile": "babel src --ignore \"**/__tests__/**/*\" --out-dir dist",
+                    "prepare": "npm run build",
+                    "test:cov": "npm run build && jest --coverage --silent --runInBand --collectCoverageFrom=src/**/*.js",
+                    "test:log": "npm run build && jest --verbose",
+                    "test:unit": "jest --verbose --silent --runInBand --config jest.config.units.js",
+                    "test:watch": "SKIP_SETUP=true jest --verbose --watch",
+                    "test:noBuild": "jest --verbose --runInBand --bail",
+                    "compile:watch": "npm run compile -- --watch",
+                    "prepublishOnly": "npm run build",
+                    "//prepublishOnly": "npm run lint && npm run build",
+                    "list-contributors": "echo 'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md"
+                },
+                "version": "6.8.2",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com"
+                },
+                "homepage": "https://github.com/dherault/serverless-offline",
+                "keywords": [
+                    "serverless",
+                    "serverless framework",
+                    "serverless local",
+                    "serverless offline",
+                    "serverless plugin",
+                    "aws",
+                    "amazon web services",
+                    "api gateway",
+                    "http",
+                    "lambda",
+                    "schedule",
+                    "websocket"
+                ],
+                "repository": {
+                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
+                    "type": "git"
+                },
+                "dedicatedTo": "Blue, a great migrating bird.",
+                "description": "Emulate AWS \u03bb and API Gateway locally when developing your Serverless project",
+                "directories": {},
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David H\u00e9rault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+                "maintainers": [
+                    {
+                        "name": "jglanz",
+                        "email": "jonathan.glanz@gmail.com"
+                    }
+                ],
+                "resolutions": {
+                    "bl": "^4.0.3",
+                    "node-fetch": "^2.6.1"
+                },
+                "contributors": [
+                    {
+                        "url": "https://github.com/adamelliottsweeting",
+                        "name": "Adam Sweeting"
+                    },
+                    {
+                        "url": "https://github.com/AdrienGiboire",
+                        "name": "Adrien"
+                    },
+                    {
+                        "url": "https://github.com/againer",
+                        "name": "Al Pal"
+                    },
+                    {
+                        "url": "https://github.com/apalumbo",
+                        "name": "Alessandro Palumbo"
+                    },
+                    {
+                        "url": "https://github.com/ablythe",
+                        "name": "Alex Blythe"
+                    },
+                    {
+                        "url": "https://github.com/allenhartwig",
+                        "name": "allenhartwig"
+                    },
+                    {
+                        "url": "https://github.com/arabold",
+                        "name": "Andre Rabold"
+                    },
+                    {
+                        "url": "https://github.com/andreipopovici",
+                        "name": "Andrei Popovici"
+                    },
+                    {
+                        "url": "https://github.com/aliatsis",
+                        "name": "Anthony Liatsis"
+                    },
+                    {
+                        "url": "https://github.com/ac360",
+                        "name": "Austen"
+                    },
+                    {
+                        "url": "https://github.com/austin-payne",
+                        "name": "Austin Payne"
+                    },
+                    {
+                        "url": "https://github.com/AyushG3112",
+                        "name": "Ayush Gupta"
+                    },
+                    {
+                        "url": "https://github.com/bencooling",
+                        "name": "Ben Cooling"
+                    },
+                    {
+                        "url": "https://github.com/bob-thomas",
+                        "name": "Bob Thomas"
+                    },
+                    {
+                        "url": "https://github.com/BrandonE",
+                        "name": "Brandon Evans"
+                    },
+                    {
+                        "url": "https://github.com/cameroncooper",
+                        "name": "Cameron Cooper"
+                    },
+                    {
+                        "url": "https://github.com/darthtrevino",
+                        "name": "Chris Trevino"
+                    },
+                    {
+                        "url": "https://github.com/c24w",
+                        "name": "Chris Watson"
+                    },
+                    {
+                        "url": "https://github.com/christophgysin",
+                        "name": "Christoph Gysin"
+                    },
+                    {
+                        "url": "https://github.com/footballencarta",
+                        "name": "Damon Williams"
+                    },
+                    {
+                        "url": "https://github.com/daniel-cottone",
+                        "name": "Daniel Cottone",
+                        "email": "daniel.cottone@gmail.com"
+                    },
+                    {
+                        "url": "https://github.com/rlgod",
+                        "name": "Daniel Parker"
+                    },
+                    {
+                        "url": "https://github.com/dsole",
+                        "name": "Dave Sole"
+                    },
+                    {
+                        "url": "https://github.com/dbunker",
+                        "name": "David Bunker"
+                    },
+                    {
+                        "url": "https://github.com/demetriusnunes",
+                        "name": "demetriusnunes"
+                    },
+                    {
+                        "url": "https://github.com/djcrabhat",
+                        "name": "DJCrabhat"
+                    },
+                    {
+                        "url": "https://github.com/domaslasauskas",
+                        "name": "Domas Lasauskas"
+                    },
+                    {
+                        "url": "https://github.com/dwbelliston",
+                        "name": "Dustin Belliston"
+                    },
+                    {
+                        "url": "https://github.com/enolan",
+                        "name": "Echo Nolan"
+                    },
+                    {
+                        "url": "https://github.com/minibikini",
+                        "name": "Egor Kislitsyn"
+                    },
+                    {
+                        "url": "https://github.com/em0ney",
+                        "name": "Elliott Spira"
+                    },
+                    {
+                        "url": "https://github.com/emmoistner",
+                        "name": "Ethan Moistner"
+                    },
+                    {
+                        "url": "https://github.com/francisu",
+                        "name": "Francis Upton IV"
+                    },
+                    {
+                        "url": "https://github.com/franciscocpg",
+                        "name": "Francisco Guimar\u00e3es"
+                    },
+                    {
+                        "url": "https://github.com/gbroques",
+                        "name": "G Roques"
+                    },
+                    {
+                        "url": "https://github.com/ansraliant",
+                        "name": "Gabriel Verdi"
+                    },
+                    {
+                        "url": "https://github.com/garunski",
+                        "name": "Garun Vagidov"
+                    },
+                    {
+                        "url": "https://github.com/gertjvr",
+                        "name": "Gert Jansen van Rensburg"
+                    },
+                    {
+                        "url": "https://github.com/guillaume",
+                        "name": "Guillaume Carbonneau"
+                    },
+                    {
+                        "url": "https://github.com/balassy",
+                        "name": "Gy\u00f6rgy Bal\u00e1ssy"
+                    },
+                    {
+                        "url": "https://github.com/jsnajdr",
+                        "name": "Jarda Snajdr"
+                    },
+                    {
+                        "url": "https://github.com/horyd",
+                        "name": "Jaryd Carolin"
+                    },
+                    {
+                        "url": "https://github.com/electrikdevelopment",
+                        "name": "Jeff Hall"
+                    },
+                    {
+                        "url": "https://github.com/jgilbert01",
+                        "name": "jgilbert01"
+                    },
+                    {
+                        "url": "https://github.com/jormaechea",
+                        "name": "Joaquin Ormaechea"
+                    },
+                    {
+                        "url": "https://github.com/johncmckim",
+                        "name": "John McKim"
+                    },
+                    {
+                        "url": "https://github.com/jlsjonas",
+                        "name": "Jonas De Kegel"
+                    },
+                    {
+                        "url": "https://github.com/joostfarla",
+                        "name": "Joost Farla"
+                    },
+                    {
+                        "url": "https://github.com/joubertredrat",
+                        "name": "Joubert RedRat"
+                    },
+                    {
+                        "url": "https://github.com/juanjoDiaz",
+                        "name": "Juanjo Diaz"
+                    },
+                    {
+                        "url": "https://github.com/kajwiklund",
+                        "name": "Kaj Wiklund"
+                    },
+                    {
+                        "url": "https://github.com/rma4ok",
+                        "name": "Kiryl Yermakou"
+                    },
+                    {
+                        "url": "https://github.com/kobanyan",
+                        "name": "kobanyan"
+                    },
+                    {
+                        "url": "https://github.com/lalifraco-devspark",
+                        "name": "Leonardo Alifraco"
+                    },
+                    {
+                        "url": "https://github.com/vmadman",
+                        "name": "Luke Chavers"
+                    },
+                    {
+                        "url": "https://github.com/boehmers",
+                        "name": "Manuel B\u00f6hm"
+                    },
+                    {
+                        "url": "https://github.com/marccampbell",
+                        "name": "Marc Campbell"
+                    },
+                    {
+                        "url": "https://github.com/adieuadieu",
+                        "name": "Marco L\u00fcthy"
+                    },
+                    {
+                        "url": "https://github.com/neverendingqs",
+                        "name": "Mark Tse"
+                    },
+                    {
+                        "url": "https://github.com/martinmicunda",
+                        "name": "Martin Micunda"
+                    },
+                    {
+                        "url": "https://github.com/mhodgson",
+                        "name": "Matt Hodgson"
+                    },
+                    {
+                        "url": "https://github.com/msjonker",
+                        "name": "Matt Jonker"
+                    },
+                    {
+                        "url": "https://github.com/melvinvermeer",
+                        "name": "Melvin Vermeer"
+                    },
+                    {
+                        "url": "https://github.com/mjmac",
+                        "name": "Michael MacDonald"
+                    },
+                    {
+                        "url": "Mike",
+                        "name": "Miso"
+                    },
+                    {
+                        "url": "https://github.com/njriordan",
+                        "name": "Niall Riordan"
+                    },
+                    {
+                        "url": "https://github.com/nori3tsu",
+                        "name": "Norimitsu Yamashita"
+                    },
+                    {
+                        "url": "https://github.com/obearn",
+                        "name": "Oliv"
+                    },
+                    {
+                        "url": "https://github.com/thepont",
+                        "name": "Paul Esson"
+                    },
+                    {
+                        "url": "https://github.com/ppasmanik",
+                        "name": "Paul Pasmanik"
+                    },
+                    {
+                        "url": "https://github.com/WooDzu",
+                        "name": "Piotr Gasiorowski"
+                    },
+                    {
+                        "url": "https://github.com/polaris340",
+                        "name": "polaris340"
+                    },
+                    {
+                        "url": "https://github.com/qswinson",
+                        "name": "Quenby Mitchell"
+                    },
+                    {
+                        "url": "https://github.com/computerpunc",
+                        "name": "Ram Hardy"
+                    },
+                    {
+                        "url": "https://github.com/vaberay",
+                        "name": "Ramon Emilio Savinon"
+                    },
+                    {
+                        "url": "https://github.com/robbrazier",
+                        "name": "Rob Brazier"
+                    },
+                    {
+                        "url": "https://github.com/bytekast",
+                        "name": "Rowell Belen"
+                    },
+                    {
+                        "url": "https://github.com/rschick",
+                        "name": "Russell Schick"
+                    },
+                    {
+                        "url": "https://github.com/ryanzyy",
+                        "name": "Ryan Zhang"
+                    },
+                    {
+                        "url": "https://github.com/selcukcihan",
+                        "name": "Selcuk Cihan"
+                    },
+                    {
+                        "url": "https://github.com/starsprung",
+                        "name": "Shaun"
+                    },
+                    {
+                        "url": "https://github.com/shineli",
+                        "name": "Shine Li"
+                    },
+                    {
+                        "url": "https://github.com/stesie",
+                        "name": "Stefan Siegl"
+                    },
+                    {
+                        "url": "https://github.com/sgleadow",
+                        "name": "Stewart Gleadow"
+                    },
+                    {
+                        "url": "https://github.com/tminussi",
+                        "name": "Thales Minussi"
+                    },
+                    {
+                        "url": "https://github.com/ittus",
+                        "name": "Thang Minh Vu"
+                    },
+                    {
+                        "url": "https://github.com/trevor-leach",
+                        "name": "Trevor Leach"
+                    },
+                    {
+                        "url": "https://github.com/tuanmh",
+                        "name": "Tuan Minh Huynh"
+                    },
+                    {
+                        "url": "https://github.com/utkuturunc",
+                        "name": "Utku Turunc"
+                    },
+                    {
+                        "url": "https://github.com/miltador",
+                        "name": "Vasiliy Solovey"
+                    },
+                    {
+                        "url": "https://github.com/dimadk24",
+                        "name": "Dima Krutolianov"
+                    },
+                    {
+                        "url": "https://github.com/bryanvaz",
+                        "name": "Bryan Vaz"
+                    }
+                ],
+                "dependencies": {
+                    "ws": "^7.2.1",
+                    "cuid": "^2.1.8",
+                    "boxen": "^4.2.0",
+                    "chalk": "^3.0.0",
+                    "execa": "^4.0.0",
+                    "jszip": "^3.2.2",
+                    "luxon": "^1.22.0",
+                    "extend": "^3.0.2",
+                    "semver": "^7.1.3",
+                    "aws-sdk": "^2.624.0",
+                    "p-queue": "^6.3.0",
+                    "p-retry": "^4.2.0",
+                    "shelljs": "^0.8.4",
+                    "fs-extra": "^9.0.1",
+                    "p-memoize": "^4.0.0",
+                    "@hapi/boom": "^7.4.11",
+                    "@hapi/h2o2": "^8.3.2",
+                    "@hapi/hapi": "^18.4.1",
+                    "jsonschema": "^1.2.6",
+                    "node-fetch": "^2.6.1",
+                    "portfinder": "^1.0.25",
+                    "velocityjs": "^2.0.0",
+                    "jsonwebtoken": "^8.5.1",
+                    "jsonpath-plus": "^3.0.0",
+                    "node-schedule": "^1.3.2",
+                    "update-notifier": "^4.1.0",
+                    "js-string-escape": "^1.0.1",
+                    "java-invoke-local": "0.0.6",
+                    "object.fromentries": "^2.0.2",
+                    "please-upgrade-node": "^3.2.0"
+                },
+                "_hasShrinkwrap": false,
+                "devDependencies": {
+                    "jest": "^26.4.2",
+                    "husky": "^4.3.0",
+                    "p-map": "^4.0.0",
+                    "eslint": "^7.9.0",
+                    "rimraf": "^3.0.2",
+                    "archiver": "^5.0.2",
+                    "prettier": "^2.1.2",
+                    "copyfiles": "^2.3.0",
+                    "@babel/cli": "^7.11.6",
+                    "serverless": "^2.2.0",
+                    "@babel/core": "^7.11.6",
+                    "babel-eslint": "^10.1.0",
+                    "@types/shelljs": "^0.8.8",
+                    "@babel/register": "^7.11.5",
+                    "eslint-plugin-import": "^2.22.0",
+                    "eslint-config-prettier": "^6.11.0",
+                    "eslint-plugin-prettier": "^3.1.4",
+                    "eslint-config-airbnb-base": "^14.2.0",
+                    "@types/aws-serverless-express": "^3.3.3",
+                    "@babel/plugin-proposal-dynamic-import": "^7.10.4",
+                    "@babel/plugin-proposal-class-properties": "^7.10.4",
+                    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+                    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+                    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4"
+                },
+                "peerDependencies": {
+                    "serverless": ">=1.60.0"
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.2_1606085088028_0.47661111467350614",
+                    "host": "s3://npm-registry-packages"
+                }
+            },
+            "6.8.3": {
+                "_id": "@3fv/serverless-offline@6.8.3",
+                "bugs": {
+                    "url": "https://github.com/dherault/serverless-offline/issues"
+                },
+                "dist": {
+                    "shasum": "3fbffbfc1f05baff05483bac134512aec64538b8",
+                    "tarball": "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.3.tgz",
+                    "fileCount": 144,
+                    "integrity": "sha512-YMzyzB7Q6EvY9h0keQAiYfz0G1a7Jl9VVQDqtdSefUC2QpqaROxtduW0vmf1aNk3BINQHl3dk0f0/oGCBoT7xw==",
+                    "signatures": [
+                        {
+                            "sig": "MEUCIQCx2AjAcmgfgrvcTWNFUktzZnjNX/pXpnFgrnPX0vDzdwIgTd++NOtvtpyHBuF0dExFD/gZRXcIGTjdtw6crY0NGxs=",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 415158,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfuuowCRA9TVsSAnZWagAAx5QQAI2TkBTBMEMq6c9Tucwo\nE6PTZTjoUuye/vWdr+sTjriQ0+EM2syT7IkecI+lukgxf6qXTXrLqAeIk5ii\nNoB+ohOYA2sLu7XQ3CUm5DKgjOTmglbHsmH2voPy4mdHodEEL28S/Eb9tgLu\nt1NQzgUMhNL+LXjQ5v210/nih9hAiqq7eZm3WUjqYA7PQ5x7JKTNGFo3XMO6\nDtFGJzB/0e3w59N7w+9Ig7vAJmNiZzxEYPwCtpJ6rYJoqPs53zII9IRpWhF8\nCmRfQn5X+GnE03KiV3Va5nRN/qnfnOoEGUZB1boBkLB5uDOIjTUYVZgaZbqz\nHamL34VOUcObsqjoTrmy9avLfuRwNh11hx6a8uWjC16VjcE3qwfuOj3BUEB2\nZC8nZJybasFw9YvIySlwJ3n1ljshVi6yRkFuFp88uOimQ8GOT52JAXWi99gT\nCHxrDKkdVZn71ehqT9SQ6GLTmn+7c+zIYc30O2ni9vfEOLV/2kRwrUaD3W9W\nHiZSMoAEWSoqplETqOdoSv2QRM+uwYJzJa+gSUZjgCTPwLJiJirAH5a8XFDT\nBXOfTeBXbIVNT6n84AZYjQoEOW9iICK2RUi9VBVAgEx6PWITM70Ic5mQFYwv\nbYyxXrO+uM9dlT/kpdON8Bp5TiXFZQjqlrY+olZRNwcoz508VQBs9rhj7Ql+\nJpdF\r\n=L7CE\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "dist/main.js",
+                "name": "@3fv/serverless-offline",
+                "type": "commonjs",
+                "author": {
+                    "url": "https://github.com/dherault",
+                    "name": "David H\u00e9rault",
+                    "email": "dherault@gmail.com"
+                },
+                "engines": {
+                    "node": ">=10.13.0"
+                },
+                "license": "MIT",
+                "scripts": {
+                    "lint": "eslint .",
+                    "test": "npm run build && jest --verbose --silent --runInBand",
+                    "build": "rimraf dist && npm run compile && copyfiles -u 1 \"src/**/*.{vm,py,rb}\" dist",
+                    "format": "eslint . --fix",
+                    "compile": "babel src --ignore \"**/__tests__/**/*\" --out-dir dist",
+                    "prepare": "npm run build",
+                    "test:cov": "npm run build && jest --coverage --silent --runInBand --collectCoverageFrom=src/**/*.js",
+                    "test:log": "npm run build && jest --verbose",
+                    "test:unit": "jest --verbose --silent --runInBand --config jest.config.units.js",
+                    "test:watch": "SKIP_SETUP=true jest --verbose --watch",
+                    "test:noBuild": "jest --verbose --runInBand --bail",
+                    "compile:watch": "npm run compile -- --watch",
+                    "prepublishOnly": "npm run build",
+                    "//prepublishOnly": "npm run lint && npm run build",
+                    "list-contributors": "echo 'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md"
+                },
+                "version": "6.8.3",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com"
+                },
+                "homepage": "https://github.com/dherault/serverless-offline",
+                "keywords": [
+                    "serverless",
+                    "serverless framework",
+                    "serverless local",
+                    "serverless offline",
+                    "serverless plugin",
+                    "aws",
+                    "amazon web services",
+                    "api gateway",
+                    "http",
+                    "lambda",
+                    "schedule",
+                    "websocket"
+                ],
+                "repository": {
+                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
+                    "type": "git"
+                },
+                "dedicatedTo": "Blue, a great migrating bird.",
+                "description": "Emulate AWS \u03bb and API Gateway locally when developing your Serverless project",
+                "directories": {},
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David H\u00e9rault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+                "maintainers": [
+                    {
+                        "name": "jglanz",
+                        "email": "jonathan.glanz@gmail.com"
+                    }
+                ],
+                "resolutions": {
+                    "bl": "^4.0.3",
+                    "node-fetch": "^2.6.1"
+                },
+                "contributors": [
+                    {
+                        "url": "https://github.com/adamelliottsweeting",
+                        "name": "Adam Sweeting"
+                    },
+                    {
+                        "url": "https://github.com/AdrienGiboire",
+                        "name": "Adrien"
+                    },
+                    {
+                        "url": "https://github.com/againer",
+                        "name": "Al Pal"
+                    },
+                    {
+                        "url": "https://github.com/apalumbo",
+                        "name": "Alessandro Palumbo"
+                    },
+                    {
+                        "url": "https://github.com/ablythe",
+                        "name": "Alex Blythe"
+                    },
+                    {
+                        "url": "https://github.com/allenhartwig",
+                        "name": "allenhartwig"
+                    },
+                    {
+                        "url": "https://github.com/arabold",
+                        "name": "Andre Rabold"
+                    },
+                    {
+                        "url": "https://github.com/andreipopovici",
+                        "name": "Andrei Popovici"
+                    },
+                    {
+                        "url": "https://github.com/aliatsis",
+                        "name": "Anthony Liatsis"
+                    },
+                    {
+                        "url": "https://github.com/ac360",
+                        "name": "Austen"
+                    },
+                    {
+                        "url": "https://github.com/austin-payne",
+                        "name": "Austin Payne"
+                    },
+                    {
+                        "url": "https://github.com/AyushG3112",
+                        "name": "Ayush Gupta"
+                    },
+                    {
+                        "url": "https://github.com/bencooling",
+                        "name": "Ben Cooling"
+                    },
+                    {
+                        "url": "https://github.com/bob-thomas",
+                        "name": "Bob Thomas"
+                    },
+                    {
+                        "url": "https://github.com/BrandonE",
+                        "name": "Brandon Evans"
+                    },
+                    {
+                        "url": "https://github.com/cameroncooper",
+                        "name": "Cameron Cooper"
+                    },
+                    {
+                        "url": "https://github.com/darthtrevino",
+                        "name": "Chris Trevino"
+                    },
+                    {
+                        "url": "https://github.com/c24w",
+                        "name": "Chris Watson"
+                    },
+                    {
+                        "url": "https://github.com/christophgysin",
+                        "name": "Christoph Gysin"
+                    },
+                    {
+                        "url": "https://github.com/footballencarta",
+                        "name": "Damon Williams"
+                    },
+                    {
+                        "url": "https://github.com/daniel-cottone",
+                        "name": "Daniel Cottone",
+                        "email": "daniel.cottone@gmail.com"
+                    },
+                    {
+                        "url": "https://github.com/rlgod",
+                        "name": "Daniel Parker"
+                    },
+                    {
+                        "url": "https://github.com/dsole",
+                        "name": "Dave Sole"
+                    },
+                    {
+                        "url": "https://github.com/dbunker",
+                        "name": "David Bunker"
+                    },
+                    {
+                        "url": "https://github.com/demetriusnunes",
+                        "name": "demetriusnunes"
+                    },
+                    {
+                        "url": "https://github.com/djcrabhat",
+                        "name": "DJCrabhat"
+                    },
+                    {
+                        "url": "https://github.com/domaslasauskas",
+                        "name": "Domas Lasauskas"
+                    },
+                    {
+                        "url": "https://github.com/dwbelliston",
+                        "name": "Dustin Belliston"
+                    },
+                    {
+                        "url": "https://github.com/enolan",
+                        "name": "Echo Nolan"
+                    },
+                    {
+                        "url": "https://github.com/minibikini",
+                        "name": "Egor Kislitsyn"
+                    },
+                    {
+                        "url": "https://github.com/em0ney",
+                        "name": "Elliott Spira"
+                    },
+                    {
+                        "url": "https://github.com/emmoistner",
+                        "name": "Ethan Moistner"
+                    },
+                    {
+                        "url": "https://github.com/francisu",
+                        "name": "Francis Upton IV"
+                    },
+                    {
+                        "url": "https://github.com/franciscocpg",
+                        "name": "Francisco Guimar\u00e3es"
+                    },
+                    {
+                        "url": "https://github.com/gbroques",
+                        "name": "G Roques"
+                    },
+                    {
+                        "url": "https://github.com/ansraliant",
+                        "name": "Gabriel Verdi"
+                    },
+                    {
+                        "url": "https://github.com/garunski",
+                        "name": "Garun Vagidov"
+                    },
+                    {
+                        "url": "https://github.com/gertjvr",
+                        "name": "Gert Jansen van Rensburg"
+                    },
+                    {
+                        "url": "https://github.com/guillaume",
+                        "name": "Guillaume Carbonneau"
+                    },
+                    {
+                        "url": "https://github.com/balassy",
+                        "name": "Gy\u00f6rgy Bal\u00e1ssy"
+                    },
+                    {
+                        "url": "https://github.com/jsnajdr",
+                        "name": "Jarda Snajdr"
+                    },
+                    {
+                        "url": "https://github.com/horyd",
+                        "name": "Jaryd Carolin"
+                    },
+                    {
+                        "url": "https://github.com/electrikdevelopment",
+                        "name": "Jeff Hall"
+                    },
+                    {
+                        "url": "https://github.com/jgilbert01",
+                        "name": "jgilbert01"
+                    },
+                    {
+                        "url": "https://github.com/jormaechea",
+                        "name": "Joaquin Ormaechea"
+                    },
+                    {
+                        "url": "https://github.com/johncmckim",
+                        "name": "John McKim"
+                    },
+                    {
+                        "url": "https://github.com/jlsjonas",
+                        "name": "Jonas De Kegel"
+                    },
+                    {
+                        "url": "https://github.com/joostfarla",
+                        "name": "Joost Farla"
+                    },
+                    {
+                        "url": "https://github.com/joubertredrat",
+                        "name": "Joubert RedRat"
+                    },
+                    {
+                        "url": "https://github.com/juanjoDiaz",
+                        "name": "Juanjo Diaz"
+                    },
+                    {
+                        "url": "https://github.com/kajwiklund",
+                        "name": "Kaj Wiklund"
+                    },
+                    {
+                        "url": "https://github.com/rma4ok",
+                        "name": "Kiryl Yermakou"
+                    },
+                    {
+                        "url": "https://github.com/kobanyan",
+                        "name": "kobanyan"
+                    },
+                    {
+                        "url": "https://github.com/lalifraco-devspark",
+                        "name": "Leonardo Alifraco"
+                    },
+                    {
+                        "url": "https://github.com/vmadman",
+                        "name": "Luke Chavers"
+                    },
+                    {
+                        "url": "https://github.com/boehmers",
+                        "name": "Manuel B\u00f6hm"
+                    },
+                    {
+                        "url": "https://github.com/marccampbell",
+                        "name": "Marc Campbell"
+                    },
+                    {
+                        "url": "https://github.com/adieuadieu",
+                        "name": "Marco L\u00fcthy"
+                    },
+                    {
+                        "url": "https://github.com/neverendingqs",
+                        "name": "Mark Tse"
+                    },
+                    {
+                        "url": "https://github.com/martinmicunda",
+                        "name": "Martin Micunda"
+                    },
+                    {
+                        "url": "https://github.com/mhodgson",
+                        "name": "Matt Hodgson"
+                    },
+                    {
+                        "url": "https://github.com/msjonker",
+                        "name": "Matt Jonker"
+                    },
+                    {
+                        "url": "https://github.com/melvinvermeer",
+                        "name": "Melvin Vermeer"
+                    },
+                    {
+                        "url": "https://github.com/mjmac",
+                        "name": "Michael MacDonald"
+                    },
+                    {
+                        "url": "Mike",
+                        "name": "Miso"
+                    },
+                    {
+                        "url": "https://github.com/njriordan",
+                        "name": "Niall Riordan"
+                    },
+                    {
+                        "url": "https://github.com/nori3tsu",
+                        "name": "Norimitsu Yamashita"
+                    },
+                    {
+                        "url": "https://github.com/obearn",
+                        "name": "Oliv"
+                    },
+                    {
+                        "url": "https://github.com/thepont",
+                        "name": "Paul Esson"
+                    },
+                    {
+                        "url": "https://github.com/ppasmanik",
+                        "name": "Paul Pasmanik"
+                    },
+                    {
+                        "url": "https://github.com/WooDzu",
+                        "name": "Piotr Gasiorowski"
+                    },
+                    {
+                        "url": "https://github.com/polaris340",
+                        "name": "polaris340"
+                    },
+                    {
+                        "url": "https://github.com/qswinson",
+                        "name": "Quenby Mitchell"
+                    },
+                    {
+                        "url": "https://github.com/computerpunc",
+                        "name": "Ram Hardy"
+                    },
+                    {
+                        "url": "https://github.com/vaberay",
+                        "name": "Ramon Emilio Savinon"
+                    },
+                    {
+                        "url": "https://github.com/robbrazier",
+                        "name": "Rob Brazier"
+                    },
+                    {
+                        "url": "https://github.com/bytekast",
+                        "name": "Rowell Belen"
+                    },
+                    {
+                        "url": "https://github.com/rschick",
+                        "name": "Russell Schick"
+                    },
+                    {
+                        "url": "https://github.com/ryanzyy",
+                        "name": "Ryan Zhang"
+                    },
+                    {
+                        "url": "https://github.com/selcukcihan",
+                        "name": "Selcuk Cihan"
+                    },
+                    {
+                        "url": "https://github.com/starsprung",
+                        "name": "Shaun"
+                    },
+                    {
+                        "url": "https://github.com/shineli",
+                        "name": "Shine Li"
+                    },
+                    {
+                        "url": "https://github.com/stesie",
+                        "name": "Stefan Siegl"
+                    },
+                    {
+                        "url": "https://github.com/sgleadow",
+                        "name": "Stewart Gleadow"
+                    },
+                    {
+                        "url": "https://github.com/tminussi",
+                        "name": "Thales Minussi"
+                    },
+                    {
+                        "url": "https://github.com/ittus",
+                        "name": "Thang Minh Vu"
+                    },
+                    {
+                        "url": "https://github.com/trevor-leach",
+                        "name": "Trevor Leach"
+                    },
+                    {
+                        "url": "https://github.com/tuanmh",
+                        "name": "Tuan Minh Huynh"
+                    },
+                    {
+                        "url": "https://github.com/utkuturunc",
+                        "name": "Utku Turunc"
+                    },
+                    {
+                        "url": "https://github.com/miltador",
+                        "name": "Vasiliy Solovey"
+                    },
+                    {
+                        "url": "https://github.com/dimadk24",
+                        "name": "Dima Krutolianov"
+                    },
+                    {
+                        "url": "https://github.com/bryanvaz",
+                        "name": "Bryan Vaz"
+                    }
+                ],
+                "dependencies": {
+                    "ws": "^7.2.1",
+                    "cuid": "^2.1.8",
+                    "boxen": "^4.2.0",
+                    "chalk": "^3.0.0",
+                    "execa": "^4.0.0",
+                    "jszip": "^3.2.2",
+                    "luxon": "^1.22.0",
+                    "extend": "^3.0.2",
+                    "semver": "^7.1.3",
+                    "aws-sdk": "^2.624.0",
+                    "p-queue": "^6.3.0",
+                    "p-retry": "^4.2.0",
+                    "shelljs": "^0.8.4",
+                    "fs-extra": "^9.0.1",
+                    "p-memoize": "^4.0.0",
+                    "@hapi/boom": "^7.4.11",
+                    "@hapi/h2o2": "^8.3.2",
+                    "@hapi/hapi": "^18.4.1",
+                    "jsonschema": "^1.2.6",
+                    "node-fetch": "^2.6.1",
+                    "portfinder": "^1.0.25",
+                    "velocityjs": "^2.0.0",
+                    "jsonwebtoken": "^8.5.1",
+                    "jsonpath-plus": "^3.0.0",
+                    "node-schedule": "^1.3.2",
+                    "update-notifier": "^4.1.0",
+                    "js-string-escape": "^1.0.1",
+                    "java-invoke-local": "0.0.6",
+                    "object.fromentries": "^2.0.2",
+                    "please-upgrade-node": "^3.2.0"
+                },
+                "publishConfig": {
+                    "access": "public"
+                },
+                "_hasShrinkwrap": false,
+                "devDependencies": {
+                    "jest": "^26.4.2",
+                    "husky": "^4.3.0",
+                    "p-map": "^4.0.0",
+                    "eslint": "^7.9.0",
+                    "rimraf": "^3.0.2",
+                    "archiver": "^5.0.2",
+                    "prettier": "^2.1.2",
+                    "copyfiles": "^2.3.0",
+                    "@babel/cli": "^7.11.6",
+                    "serverless": "^2.2.0",
+                    "@babel/core": "^7.11.6",
+                    "babel-eslint": "^10.1.0",
+                    "@types/shelljs": "^0.8.8",
+                    "@babel/register": "^7.11.5",
+                    "eslint-plugin-import": "^2.22.0",
+                    "eslint-config-prettier": "^6.11.0",
+                    "eslint-plugin-prettier": "^3.1.4",
+                    "eslint-config-airbnb-base": "^14.2.0",
+                    "@types/aws-serverless-express": "^3.3.3",
+                    "@babel/plugin-proposal-dynamic-import": "^7.10.4",
+                    "@babel/plugin-proposal-class-properties": "^7.10.4",
+                    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+                    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+                    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4"
+                },
+                "peerDependencies": {
+                    "serverless": ">=1.60.0"
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.3_1606085168130_0.28617475655746727",
+                    "host": "s3://npm-registry-packages"
+                }
+            },
+            "6.8.4": {
+                "_id": "@3fv/serverless-offline@6.8.4",
+                "bugs": {
+                    "url": "https://github.com/dherault/serverless-offline/issues"
+                },
+                "dist": {
+                    "shasum": "66b8643272ef5698898d5d71214fc56d38762dec",
+                    "tarball": "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.4.tgz",
+                    "fileCount": 144,
+                    "integrity": "sha512-hDtgg+oVJhjlP3dud/A+9adBnIkIYM4L+O8lSlifhEBkUEWmbfidgZ7ncqlKPE+m/VZmJN3R+uTydc7/Pz9eRQ==",
+                    "signatures": [
+                        {
+                            "sig": "MEQCIGed1J8f5NgK+zshKUrxoZuRoZl8DV+brYfyMSpJYkVdAiAIqwRouvGz6EoV0mpgbsotF2z2kmrKI/4JJOnUMnZg5g==",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 416590,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfvEtVCRA9TVsSAnZWagAAjuUP/jVDRZaliIiIyojbRn58\nq0n1YZlSoLDnr3261rWD0p3b3arV/lbTw/uOvZo9QZ+Sof3XSBdMcELyfd0d\n/dDJA/9U/SZ0BuEjW2hTR7E0fBXRLrE+0W+hjLfllJzhEAMmqBbqh1R9K1Ou\ndgTSWjoIGfFmbVvLwpV3IH7z+FvS+WeIDdPLg+sFKCNvYK0VIQupGuOlWOIM\ncvhPinBXArzA381fFOoPZAuYsqom+0hP7vDIyKKIXED9Z26ZXFiGAYMWt3pb\nxwTfIWTR43Cr98NU5NmokrBsxDt39aHjKnZXeUOJIpZjTJEode1CqPRTYnh2\ndAxrby5sd5nA5uQFNnmWvJnJBg+MFtHPHu9nSK4w9Y7pl3DBO0mcE+chgwfh\nMQcIXqcHO6Gw5NHZ8Ro4U+jndY7Du532MnwxJPvcHbn9uPUPt91OBB92reQH\nMF3PdoWj36baW9sJJx8J4OHIGjOdt5LnSUmhFqp2uhBVe4ls+rJ1t6Inj+GS\nYON+S0xPfmjqcimRxWaPxNfq+bjpUlRvEZs+/KcN5AbOLuP2Z0Fgr4Vt6MFw\nI2XytxP7wPfB+UCXJZSNh5w3j2Y4dJ3F1DwmtsTudqn/kkeyx/AjmBQIMrzd\nM20FnREv/1WRTz9zb0Scz20qF8UuGhK9GYH+zkiLpWbWGaYIeHXoSV1DGwlv\nEGjD\r\n=Zif0\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "dist/main.js",
+                "name": "@3fv/serverless-offline",
+                "type": "commonjs",
+                "author": {
+                    "url": "https://github.com/dherault",
+                    "name": "David H\u00e9rault",
+                    "email": "dherault@gmail.com"
+                },
+                "engines": {
+                    "node": ">=10.13.0"
+                },
+                "license": "MIT",
+                "scripts": {
+                    "lint": "eslint .",
+                    "test": "npm run build && jest --verbose --silent --runInBand",
+                    "build": "rimraf dist && npm run compile && copyfiles -u 1 \"src/**/*.{vm,py,rb}\" dist",
+                    "format": "eslint . --fix",
+                    "compile": "babel src --ignore \"**/__tests__/**/*\" --out-dir dist",
+                    "prepare": "npm run build",
+                    "test:cov": "npm run build && jest --coverage --silent --runInBand --collectCoverageFrom=src/**/*.js",
+                    "test:log": "npm run build && jest --verbose",
+                    "test:unit": "jest --verbose --silent --runInBand --config jest.config.units.js",
+                    "test:watch": "SKIP_SETUP=true jest --verbose --watch",
+                    "test:noBuild": "jest --verbose --runInBand --bail",
+                    "compile:watch": "npm run compile -- --watch",
+                    "prepublishOnly": "npm run build",
+                    "//prepublishOnly": "npm run lint && npm run build",
+                    "list-contributors": "echo 'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md"
+                },
+                "version": "6.8.4",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com"
+                },
+                "homepage": "https://github.com/dherault/serverless-offline",
+                "keywords": [
+                    "serverless",
+                    "serverless framework",
+                    "serverless local",
+                    "serverless offline",
+                    "serverless plugin",
+                    "aws",
+                    "amazon web services",
+                    "api gateway",
+                    "http",
+                    "lambda",
+                    "schedule",
+                    "websocket"
+                ],
+                "repository": {
+                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
+                    "type": "git"
+                },
+                "dedicatedTo": "Blue, a great migrating bird.",
+                "description": "Emulate AWS \u03bb and API Gateway locally when developing your Serverless project",
+                "directories": {},
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David H\u00e9rault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+                "maintainers": [
+                    {
+                        "name": "jglanz",
+                        "email": "jonathan.glanz@gmail.com"
+                    }
+                ],
+                "resolutions": {
+                    "bl": "^4.0.3",
+                    "node-fetch": "^2.6.1"
+                },
+                "contributors": [
+                    {
+                        "url": "https://github.com/adamelliottsweeting",
+                        "name": "Adam Sweeting"
+                    },
+                    {
+                        "url": "https://github.com/AdrienGiboire",
+                        "name": "Adrien"
+                    },
+                    {
+                        "url": "https://github.com/againer",
+                        "name": "Al Pal"
+                    },
+                    {
+                        "url": "https://github.com/apalumbo",
+                        "name": "Alessandro Palumbo"
+                    },
+                    {
+                        "url": "https://github.com/ablythe",
+                        "name": "Alex Blythe"
+                    },
+                    {
+                        "url": "https://github.com/allenhartwig",
+                        "name": "allenhartwig"
+                    },
+                    {
+                        "url": "https://github.com/arabold",
+                        "name": "Andre Rabold"
+                    },
+                    {
+                        "url": "https://github.com/andreipopovici",
+                        "name": "Andrei Popovici"
+                    },
+                    {
+                        "url": "https://github.com/aliatsis",
+                        "name": "Anthony Liatsis"
+                    },
+                    {
+                        "url": "https://github.com/ac360",
+                        "name": "Austen"
+                    },
+                    {
+                        "url": "https://github.com/austin-payne",
+                        "name": "Austin Payne"
+                    },
+                    {
+                        "url": "https://github.com/AyushG3112",
+                        "name": "Ayush Gupta"
+                    },
+                    {
+                        "url": "https://github.com/bencooling",
+                        "name": "Ben Cooling"
+                    },
+                    {
+                        "url": "https://github.com/bob-thomas",
+                        "name": "Bob Thomas"
+                    },
+                    {
+                        "url": "https://github.com/BrandonE",
+                        "name": "Brandon Evans"
+                    },
+                    {
+                        "url": "https://github.com/cameroncooper",
+                        "name": "Cameron Cooper"
+                    },
+                    {
+                        "url": "https://github.com/darthtrevino",
+                        "name": "Chris Trevino"
+                    },
+                    {
+                        "url": "https://github.com/c24w",
+                        "name": "Chris Watson"
+                    },
+                    {
+                        "url": "https://github.com/christophgysin",
+                        "name": "Christoph Gysin"
+                    },
+                    {
+                        "url": "https://github.com/footballencarta",
+                        "name": "Damon Williams"
+                    },
+                    {
+                        "url": "https://github.com/daniel-cottone",
+                        "name": "Daniel Cottone",
+                        "email": "daniel.cottone@gmail.com"
+                    },
+                    {
+                        "url": "https://github.com/rlgod",
+                        "name": "Daniel Parker"
+                    },
+                    {
+                        "url": "https://github.com/dsole",
+                        "name": "Dave Sole"
+                    },
+                    {
+                        "url": "https://github.com/dbunker",
+                        "name": "David Bunker"
+                    },
+                    {
+                        "url": "https://github.com/demetriusnunes",
+                        "name": "demetriusnunes"
+                    },
+                    {
+                        "url": "https://github.com/djcrabhat",
+                        "name": "DJCrabhat"
+                    },
+                    {
+                        "url": "https://github.com/domaslasauskas",
+                        "name": "Domas Lasauskas"
+                    },
+                    {
+                        "url": "https://github.com/dwbelliston",
+                        "name": "Dustin Belliston"
+                    },
+                    {
+                        "url": "https://github.com/enolan",
+                        "name": "Echo Nolan"
+                    },
+                    {
+                        "url": "https://github.com/minibikini",
+                        "name": "Egor Kislitsyn"
+                    },
+                    {
+                        "url": "https://github.com/em0ney",
+                        "name": "Elliott Spira"
+                    },
+                    {
+                        "url": "https://github.com/emmoistner",
+                        "name": "Ethan Moistner"
+                    },
+                    {
+                        "url": "https://github.com/francisu",
+                        "name": "Francis Upton IV"
+                    },
+                    {
+                        "url": "https://github.com/franciscocpg",
+                        "name": "Francisco Guimar\u00e3es"
+                    },
+                    {
+                        "url": "https://github.com/gbroques",
+                        "name": "G Roques"
+                    },
+                    {
+                        "url": "https://github.com/ansraliant",
+                        "name": "Gabriel Verdi"
+                    },
+                    {
+                        "url": "https://github.com/garunski",
+                        "name": "Garun Vagidov"
+                    },
+                    {
+                        "url": "https://github.com/gertjvr",
+                        "name": "Gert Jansen van Rensburg"
+                    },
+                    {
+                        "url": "https://github.com/guillaume",
+                        "name": "Guillaume Carbonneau"
+                    },
+                    {
+                        "url": "https://github.com/balassy",
+                        "name": "Gy\u00f6rgy Bal\u00e1ssy"
+                    },
+                    {
+                        "url": "https://github.com/jsnajdr",
+                        "name": "Jarda Snajdr"
+                    },
+                    {
+                        "url": "https://github.com/horyd",
+                        "name": "Jaryd Carolin"
+                    },
+                    {
+                        "url": "https://github.com/electrikdevelopment",
+                        "name": "Jeff Hall"
+                    },
+                    {
+                        "url": "https://github.com/jgilbert01",
+                        "name": "jgilbert01"
+                    },
+                    {
+                        "url": "https://github.com/jormaechea",
+                        "name": "Joaquin Ormaechea"
+                    },
+                    {
+                        "url": "https://github.com/johncmckim",
+                        "name": "John McKim"
+                    },
+                    {
+                        "url": "https://github.com/jlsjonas",
+                        "name": "Jonas De Kegel"
+                    },
+                    {
+                        "url": "https://github.com/joostfarla",
+                        "name": "Joost Farla"
+                    },
+                    {
+                        "url": "https://github.com/joubertredrat",
+                        "name": "Joubert RedRat"
+                    },
+                    {
+                        "url": "https://github.com/juanjoDiaz",
+                        "name": "Juanjo Diaz"
+                    },
+                    {
+                        "url": "https://github.com/kajwiklund",
+                        "name": "Kaj Wiklund"
+                    },
+                    {
+                        "url": "https://github.com/rma4ok",
+                        "name": "Kiryl Yermakou"
+                    },
+                    {
+                        "url": "https://github.com/kobanyan",
+                        "name": "kobanyan"
+                    },
+                    {
+                        "url": "https://github.com/lalifraco-devspark",
+                        "name": "Leonardo Alifraco"
+                    },
+                    {
+                        "url": "https://github.com/vmadman",
+                        "name": "Luke Chavers"
+                    },
+                    {
+                        "url": "https://github.com/boehmers",
+                        "name": "Manuel B\u00f6hm"
+                    },
+                    {
+                        "url": "https://github.com/marccampbell",
+                        "name": "Marc Campbell"
+                    },
+                    {
+                        "url": "https://github.com/adieuadieu",
+                        "name": "Marco L\u00fcthy"
+                    },
+                    {
+                        "url": "https://github.com/neverendingqs",
+                        "name": "Mark Tse"
+                    },
+                    {
+                        "url": "https://github.com/martinmicunda",
+                        "name": "Martin Micunda"
+                    },
+                    {
+                        "url": "https://github.com/mhodgson",
+                        "name": "Matt Hodgson"
+                    },
+                    {
+                        "url": "https://github.com/msjonker",
+                        "name": "Matt Jonker"
+                    },
+                    {
+                        "url": "https://github.com/melvinvermeer",
+                        "name": "Melvin Vermeer"
+                    },
+                    {
+                        "url": "https://github.com/mjmac",
+                        "name": "Michael MacDonald"
+                    },
+                    {
+                        "url": "Mike",
+                        "name": "Miso"
+                    },
+                    {
+                        "url": "https://github.com/njriordan",
+                        "name": "Niall Riordan"
+                    },
+                    {
+                        "url": "https://github.com/nori3tsu",
+                        "name": "Norimitsu Yamashita"
+                    },
+                    {
+                        "url": "https://github.com/obearn",
+                        "name": "Oliv"
+                    },
+                    {
+                        "url": "https://github.com/thepont",
+                        "name": "Paul Esson"
+                    },
+                    {
+                        "url": "https://github.com/ppasmanik",
+                        "name": "Paul Pasmanik"
+                    },
+                    {
+                        "url": "https://github.com/WooDzu",
+                        "name": "Piotr Gasiorowski"
+                    },
+                    {
+                        "url": "https://github.com/polaris340",
+                        "name": "polaris340"
+                    },
+                    {
+                        "url": "https://github.com/qswinson",
+                        "name": "Quenby Mitchell"
+                    },
+                    {
+                        "url": "https://github.com/computerpunc",
+                        "name": "Ram Hardy"
+                    },
+                    {
+                        "url": "https://github.com/vaberay",
+                        "name": "Ramon Emilio Savinon"
+                    },
+                    {
+                        "url": "https://github.com/robbrazier",
+                        "name": "Rob Brazier"
+                    },
+                    {
+                        "url": "https://github.com/bytekast",
+                        "name": "Rowell Belen"
+                    },
+                    {
+                        "url": "https://github.com/rschick",
+                        "name": "Russell Schick"
+                    },
+                    {
+                        "url": "https://github.com/ryanzyy",
+                        "name": "Ryan Zhang"
+                    },
+                    {
+                        "url": "https://github.com/selcukcihan",
+                        "name": "Selcuk Cihan"
+                    },
+                    {
+                        "url": "https://github.com/starsprung",
+                        "name": "Shaun"
+                    },
+                    {
+                        "url": "https://github.com/shineli",
+                        "name": "Shine Li"
+                    },
+                    {
+                        "url": "https://github.com/stesie",
+                        "name": "Stefan Siegl"
+                    },
+                    {
+                        "url": "https://github.com/sgleadow",
+                        "name": "Stewart Gleadow"
+                    },
+                    {
+                        "url": "https://github.com/tminussi",
+                        "name": "Thales Minussi"
+                    },
+                    {
+                        "url": "https://github.com/ittus",
+                        "name": "Thang Minh Vu"
+                    },
+                    {
+                        "url": "https://github.com/trevor-leach",
+                        "name": "Trevor Leach"
+                    },
+                    {
+                        "url": "https://github.com/tuanmh",
+                        "name": "Tuan Minh Huynh"
+                    },
+                    {
+                        "url": "https://github.com/utkuturunc",
+                        "name": "Utku Turunc"
+                    },
+                    {
+                        "url": "https://github.com/miltador",
+                        "name": "Vasiliy Solovey"
+                    },
+                    {
+                        "url": "https://github.com/dimadk24",
+                        "name": "Dima Krutolianov"
+                    },
+                    {
+                        "url": "https://github.com/bryanvaz",
+                        "name": "Bryan Vaz"
+                    }
+                ],
+                "dependencies": {
+                    "ws": "^7.2.1",
+                    "cuid": "^2.1.8",
+                    "boxen": "^4.2.0",
+                    "chalk": "^3.0.0",
+                    "execa": "^4.0.0",
+                    "jszip": "^3.2.2",
+                    "luxon": "^1.22.0",
+                    "extend": "^3.0.2",
+                    "semver": "^7.1.3",
+                    "aws-sdk": "^2.624.0",
+                    "p-queue": "^6.3.0",
+                    "p-retry": "^4.2.0",
+                    "shelljs": "^0.8.4",
+                    "fs-extra": "^9.0.1",
+                    "p-memoize": "^4.0.0",
+                    "@hapi/boom": "^7.4.11",
+                    "@hapi/h2o2": "^8.3.2",
+                    "@hapi/hapi": "^18.4.1",
+                    "jsonschema": "^1.2.6",
+                    "node-fetch": "^2.6.1",
+                    "portfinder": "^1.0.25",
+                    "velocityjs": "^2.0.0",
+                    "jsonwebtoken": "^8.5.1",
+                    "jsonpath-plus": "^3.0.0",
+                    "node-schedule": "^1.3.2",
+                    "update-notifier": "^4.1.0",
+                    "js-string-escape": "^1.0.1",
+                    "java-invoke-local": "0.0.6",
+                    "object.fromentries": "^2.0.2",
+                    "please-upgrade-node": "^3.2.0"
+                },
+                "publishConfig": {
+                    "access": "public"
+                },
+                "_hasShrinkwrap": false,
+                "devDependencies": {
+                    "jest": "^26.4.2",
+                    "husky": "^4.3.0",
+                    "p-map": "^4.0.0",
+                    "eslint": "^7.9.0",
+                    "rimraf": "^3.0.2",
+                    "archiver": "^5.0.2",
+                    "prettier": "^2.1.2",
+                    "copyfiles": "^2.3.0",
+                    "@babel/cli": "^7.11.6",
+                    "serverless": "^2.2.0",
+                    "@babel/core": "^7.11.6",
+                    "babel-eslint": "^10.1.0",
+                    "@types/shelljs": "^0.8.8",
+                    "@babel/register": "^7.11.5",
+                    "eslint-plugin-import": "^2.22.0",
+                    "eslint-config-prettier": "^6.11.0",
+                    "eslint-plugin-prettier": "^3.1.4",
+                    "eslint-config-airbnb-base": "^14.2.0",
+                    "@types/aws-serverless-express": "^3.3.3",
+                    "@babel/plugin-proposal-dynamic-import": "^7.10.4",
+                    "@babel/plugin-proposal-class-properties": "^7.10.4",
+                    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+                    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+                    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4"
+                },
+                "peerDependencies": {
+                    "serverless": ">=1.60.0"
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.4_1606175573117_0.18680352169627357",
+                    "host": "s3://npm-registry-packages"
+                }
+            },
+            "6.8.5": {
+                "_id": "@3fv/serverless-offline@6.8.5",
+                "bugs": {
+                    "url": "https://github.com/dherault/serverless-offline/issues"
+                },
+                "dist": {
+                    "shasum": "f4d3e8ca96653121e2e64d29bb2b66cd829d5c37",
+                    "tarball": "https://registry.npmjs.org/@3fv/serverless-offline/-/serverless-offline-6.8.5.tgz",
+                    "fileCount": 144,
+                    "integrity": "sha512-9u4UJDg0qxXstWaLVojjAFoGRJKBr3pStaZjXOtR9FVYI1qF62MrHC8Pz6iTcFCDnKwPN9EOw+4rE1TstJaBeA==",
+                    "signatures": [
+                        {
+                            "sig": "MEUCICGbxd2oEqvmn4/0F/7RQlbHERcMT5DhUzxm94CXExJiAiEAzabvcwf9Yvr8KMxX2DAItAxf0OHv+IhdNb/SZYf04BE=",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 417143,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfzo/5CRA9TVsSAnZWagAAEmgP/jgF5co7nDFXKVY8uQdp\n7rA8x/YzQb8Tc8JBy3TtEQnpuZd0JYLWoqEDZyJevrPkPz8CHAc9DjBrGvJ+\n4EGr7LP8ev/Quy/F9ewhwJlTeBe60SsazFg1HMP95QTvTgQhrx11p95eqRrf\nTcfKKYmVjuXSVHwZcZEVwVqy4ltw+Zp3guZvWU4GGX+Wm18AzWkPfymhiduU\n/3dZOvTiSxSaLgvIv6c9uoISx88n6L7lm1s5Vk8mvwv4AIoSjoY4zHTevN8w\n7ws3rVLhzyTpgo0VVNptpYK5bzAWG3IiV29M1spkbn0ph+oUMBf5SQpV6BKW\njPqQ8S1SrhXYwmKZwRFm1ii3ix5EEEf48+2iUrW82msk9WXW52CrJ0QAqaDg\nLXzkxCvp6mhk9/U+Y3SwYSMXFwWCIhHzUqJm4qsaVQnwBJnNyx7+VYV6t9De\nXy4ylVUhjWfYy0YkUgb3KqEXnxap+hRRhuCkX8R5TwgBjQYqe7o53/9PvyOU\nZfjFAu+8V4z0FZnw7NaaWh3/neqDnY0axflK6rdl1UZ0hr0lZ+/WGjfuf0tr\ne1CS/JDRZZ5u/d1oQqzo7KDdBmn+GfZAG6DLyimlrYQhBHyCXrkIv5V50Xjm\npH2HpCqCvv6JdC8ZmN7IlzjpvFIKxBlzBGzBd4NrxH7dWUIxvPINJY6W75LG\nc7di\r\n=SeyU\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "dist/main.js",
+                "name": "@3fv/serverless-offline",
+                "type": "commonjs",
+                "author": {
+                    "url": "https://github.com/dherault",
+                    "name": "David H\u00e9rault",
+                    "email": "dherault@gmail.com"
+                },
+                "engines": {
+                    "node": ">=10.13.0"
+                },
+                "license": "MIT",
+                "scripts": {
+                    "lint": "eslint .",
+                    "test": "npm run build && jest --verbose --silent --runInBand",
+                    "build": "rimraf dist && npm run compile && copyfiles -u 1 \"src/**/*.{vm,py,rb}\" dist",
+                    "format": "eslint . --fix",
+                    "compile": "babel src --ignore \"**/__tests__/**/*\" --out-dir dist",
+                    "prepare": "npm run build",
+                    "test:cov": "npm run build && jest --coverage --silent --runInBand --collectCoverageFrom=src/**/*.js",
+                    "test:log": "npm run build && jest --verbose",
+                    "test:unit": "jest --verbose --silent --runInBand --config jest.config.units.js",
+                    "test:watch": "SKIP_SETUP=true jest --verbose --watch",
+                    "test:noBuild": "jest --verbose --runInBand --bail",
+                    "compile:watch": "npm run compile -- --watch",
+                    "prepublishOnly": "npm run build",
+                    "//prepublishOnly": "npm run lint && npm run build",
+                    "list-contributors": "echo 'clone https://github.com/mgechev/github-contributors-list.git first, then run npm install' && cd ../github-contributors-list && node bin/githubcontrib --owner dherault --repo serverless-offline --sortBy contributions --showlogin true --sortOrder desc > contributors.md"
+                },
+                "version": "6.8.5",
+                "_npmUser": {
+                    "name": "jglanz",
+                    "email": "jonathan.glanz@gmail.com"
+                },
+                "homepage": "https://github.com/dherault/serverless-offline",
+                "keywords": [
+                    "serverless",
+                    "serverless framework",
+                    "serverless local",
+                    "serverless offline",
+                    "serverless plugin",
+                    "aws",
+                    "amazon web services",
+                    "api gateway",
+                    "http",
+                    "lambda",
+                    "schedule",
+                    "websocket"
+                ],
+                "repository": {
+                    "url": "git+ssh://github.com/3fv/serverless-offline.git",
+                    "type": "git"
+                },
+                "dedicatedTo": "Blue, a great migrating bird.",
+                "description": "Emulate AWS \u03bb and API Gateway locally when developing your Serverless project",
+                "directories": {},
+                "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016-present David H\u00e9rault\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+                "maintainers": [
+                    {
+                        "name": "jglanz",
+                        "email": "jonathan.glanz@gmail.com"
+                    }
+                ],
+                "resolutions": {
+                    "bl": "^4.0.3",
+                    "node-fetch": "^2.6.1"
+                },
+                "contributors": [
+                    {
+                        "url": "https://github.com/adamelliottsweeting",
+                        "name": "Adam Sweeting"
+                    },
+                    {
+                        "url": "https://github.com/AdrienGiboire",
+                        "name": "Adrien"
+                    },
+                    {
+                        "url": "https://github.com/againer",
+                        "name": "Al Pal"
+                    },
+                    {
+                        "url": "https://github.com/apalumbo",
+                        "name": "Alessandro Palumbo"
+                    },
+                    {
+                        "url": "https://github.com/ablythe",
+                        "name": "Alex Blythe"
+                    },
+                    {
+                        "url": "https://github.com/allenhartwig",
+                        "name": "allenhartwig"
+                    },
+                    {
+                        "url": "https://github.com/arabold",
+                        "name": "Andre Rabold"
+                    },
+                    {
+                        "url": "https://github.com/andreipopovici",
+                        "name": "Andrei Popovici"
+                    },
+                    {
+                        "url": "https://github.com/aliatsis",
+                        "name": "Anthony Liatsis"
+                    },
+                    {
+                        "url": "https://github.com/ac360",
+                        "name": "Austen"
+                    },
+                    {
+                        "url": "https://github.com/austin-payne",
+                        "name": "Austin Payne"
+                    },
+                    {
+                        "url": "https://github.com/AyushG3112",
+                        "name": "Ayush Gupta"
+                    },
+                    {
+                        "url": "https://github.com/bencooling",
+                        "name": "Ben Cooling"
+                    },
+                    {
+                        "url": "https://github.com/bob-thomas",
+                        "name": "Bob Thomas"
+                    },
+                    {
+                        "url": "https://github.com/BrandonE",
+                        "name": "Brandon Evans"
+                    },
+                    {
+                        "url": "https://github.com/cameroncooper",
+                        "name": "Cameron Cooper"
+                    },
+                    {
+                        "url": "https://github.com/darthtrevino",
+                        "name": "Chris Trevino"
+                    },
+                    {
+                        "url": "https://github.com/c24w",
+                        "name": "Chris Watson"
+                    },
+                    {
+                        "url": "https://github.com/christophgysin",
+                        "name": "Christoph Gysin"
+                    },
+                    {
+                        "url": "https://github.com/footballencarta",
+                        "name": "Damon Williams"
+                    },
+                    {
+                        "url": "https://github.com/daniel-cottone",
+                        "name": "Daniel Cottone",
+                        "email": "daniel.cottone@gmail.com"
+                    },
+                    {
+                        "url": "https://github.com/rlgod",
+                        "name": "Daniel Parker"
+                    },
+                    {
+                        "url": "https://github.com/dsole",
+                        "name": "Dave Sole"
+                    },
+                    {
+                        "url": "https://github.com/dbunker",
+                        "name": "David Bunker"
+                    },
+                    {
+                        "url": "https://github.com/demetriusnunes",
+                        "name": "demetriusnunes"
+                    },
+                    {
+                        "url": "https://github.com/djcrabhat",
+                        "name": "DJCrabhat"
+                    },
+                    {
+                        "url": "https://github.com/domaslasauskas",
+                        "name": "Domas Lasauskas"
+                    },
+                    {
+                        "url": "https://github.com/dwbelliston",
+                        "name": "Dustin Belliston"
+                    },
+                    {
+                        "url": "https://github.com/enolan",
+                        "name": "Echo Nolan"
+                    },
+                    {
+                        "url": "https://github.com/minibikini",
+                        "name": "Egor Kislitsyn"
+                    },
+                    {
+                        "url": "https://github.com/em0ney",
+                        "name": "Elliott Spira"
+                    },
+                    {
+                        "url": "https://github.com/emmoistner",
+                        "name": "Ethan Moistner"
+                    },
+                    {
+                        "url": "https://github.com/francisu",
+                        "name": "Francis Upton IV"
+                    },
+                    {
+                        "url": "https://github.com/franciscocpg",
+                        "name": "Francisco Guimar\u00e3es"
+                    },
+                    {
+                        "url": "https://github.com/gbroques",
+                        "name": "G Roques"
+                    },
+                    {
+                        "url": "https://github.com/ansraliant",
+                        "name": "Gabriel Verdi"
+                    },
+                    {
+                        "url": "https://github.com/garunski",
+                        "name": "Garun Vagidov"
+                    },
+                    {
+                        "url": "https://github.com/gertjvr",
+                        "name": "Gert Jansen van Rensburg"
+                    },
+                    {
+                        "url": "https://github.com/guillaume",
+                        "name": "Guillaume Carbonneau"
+                    },
+                    {
+                        "url": "https://github.com/balassy",
+                        "name": "Gy\u00f6rgy Bal\u00e1ssy"
+                    },
+                    {
+                        "url": "https://github.com/jsnajdr",
+                        "name": "Jarda Snajdr"
+                    },
+                    {
+                        "url": "https://github.com/horyd",
+                        "name": "Jaryd Carolin"
+                    },
+                    {
+                        "url": "https://github.com/electrikdevelopment",
+                        "name": "Jeff Hall"
+                    },
+                    {
+                        "url": "https://github.com/jgilbert01",
+                        "name": "jgilbert01"
+                    },
+                    {
+                        "url": "https://github.com/jormaechea",
+                        "name": "Joaquin Ormaechea"
+                    },
+                    {
+                        "url": "https://github.com/johncmckim",
+                        "name": "John McKim"
+                    },
+                    {
+                        "url": "https://github.com/jlsjonas",
+                        "name": "Jonas De Kegel"
+                    },
+                    {
+                        "url": "https://github.com/joostfarla",
+                        "name": "Joost Farla"
+                    },
+                    {
+                        "url": "https://github.com/joubertredrat",
+                        "name": "Joubert RedRat"
+                    },
+                    {
+                        "url": "https://github.com/juanjoDiaz",
+                        "name": "Juanjo Diaz"
+                    },
+                    {
+                        "url": "https://github.com/kajwiklund",
+                        "name": "Kaj Wiklund"
+                    },
+                    {
+                        "url": "https://github.com/rma4ok",
+                        "name": "Kiryl Yermakou"
+                    },
+                    {
+                        "url": "https://github.com/kobanyan",
+                        "name": "kobanyan"
+                    },
+                    {
+                        "url": "https://github.com/lalifraco-devspark",
+                        "name": "Leonardo Alifraco"
+                    },
+                    {
+                        "url": "https://github.com/vmadman",
+                        "name": "Luke Chavers"
+                    },
+                    {
+                        "url": "https://github.com/boehmers",
+                        "name": "Manuel B\u00f6hm"
+                    },
+                    {
+                        "url": "https://github.com/marccampbell",
+                        "name": "Marc Campbell"
+                    },
+                    {
+                        "url": "https://github.com/adieuadieu",
+                        "name": "Marco L\u00fcthy"
+                    },
+                    {
+                        "url": "https://github.com/neverendingqs",
+                        "name": "Mark Tse"
+                    },
+                    {
+                        "url": "https://github.com/martinmicunda",
+                        "name": "Martin Micunda"
+                    },
+                    {
+                        "url": "https://github.com/mhodgson",
+                        "name": "Matt Hodgson"
+                    },
+                    {
+                        "url": "https://github.com/msjonker",
+                        "name": "Matt Jonker"
+                    },
+                    {
+                        "url": "https://github.com/melvinvermeer",
+                        "name": "Melvin Vermeer"
+                    },
+                    {
+                        "url": "https://github.com/mjmac",
+                        "name": "Michael MacDonald"
+                    },
+                    {
+                        "url": "Mike",
+                        "name": "Miso"
+                    },
+                    {
+                        "url": "https://github.com/njriordan",
+                        "name": "Niall Riordan"
+                    },
+                    {
+                        "url": "https://github.com/nori3tsu",
+                        "name": "Norimitsu Yamashita"
+                    },
+                    {
+                        "url": "https://github.com/obearn",
+                        "name": "Oliv"
+                    },
+                    {
+                        "url": "https://github.com/thepont",
+                        "name": "Paul Esson"
+                    },
+                    {
+                        "url": "https://github.com/ppasmanik",
+                        "name": "Paul Pasmanik"
+                    },
+                    {
+                        "url": "https://github.com/WooDzu",
+                        "name": "Piotr Gasiorowski"
+                    },
+                    {
+                        "url": "https://github.com/polaris340",
+                        "name": "polaris340"
+                    },
+                    {
+                        "url": "https://github.com/qswinson",
+                        "name": "Quenby Mitchell"
+                    },
+                    {
+                        "url": "https://github.com/computerpunc",
+                        "name": "Ram Hardy"
+                    },
+                    {
+                        "url": "https://github.com/vaberay",
+                        "name": "Ramon Emilio Savinon"
+                    },
+                    {
+                        "url": "https://github.com/robbrazier",
+                        "name": "Rob Brazier"
+                    },
+                    {
+                        "url": "https://github.com/bytekast",
+                        "name": "Rowell Belen"
+                    },
+                    {
+                        "url": "https://github.com/rschick",
+                        "name": "Russell Schick"
+                    },
+                    {
+                        "url": "https://github.com/ryanzyy",
+                        "name": "Ryan Zhang"
+                    },
+                    {
+                        "url": "https://github.com/selcukcihan",
+                        "name": "Selcuk Cihan"
+                    },
+                    {
+                        "url": "https://github.com/starsprung",
+                        "name": "Shaun"
+                    },
+                    {
+                        "url": "https://github.com/shineli",
+                        "name": "Shine Li"
+                    },
+                    {
+                        "url": "https://github.com/stesie",
+                        "name": "Stefan Siegl"
+                    },
+                    {
+                        "url": "https://github.com/sgleadow",
+                        "name": "Stewart Gleadow"
+                    },
+                    {
+                        "url": "https://github.com/tminussi",
+                        "name": "Thales Minussi"
+                    },
+                    {
+                        "url": "https://github.com/ittus",
+                        "name": "Thang Minh Vu"
+                    },
+                    {
+                        "url": "https://github.com/trevor-leach",
+                        "name": "Trevor Leach"
+                    },
+                    {
+                        "url": "https://github.com/tuanmh",
+                        "name": "Tuan Minh Huynh"
+                    },
+                    {
+                        "url": "https://github.com/utkuturunc",
+                        "name": "Utku Turunc"
+                    },
+                    {
+                        "url": "https://github.com/miltador",
+                        "name": "Vasiliy Solovey"
+                    },
+                    {
+                        "url": "https://github.com/dimadk24",
+                        "name": "Dima Krutolianov"
+                    },
+                    {
+                        "url": "https://github.com/bryanvaz",
+                        "name": "Bryan Vaz"
+                    }
+                ],
+                "dependencies": {
+                    "ws": "^7.2.1",
+                    "cuid": "^2.1.8",
+                    "boxen": "^4.2.0",
+                    "chalk": "^3.0.0",
+                    "execa": "^4.0.0",
+                    "jszip": "^3.2.2",
+                    "luxon": "^1.22.0",
+                    "extend": "^3.0.2",
+                    "semver": "^7.1.3",
+                    "aws-sdk": "^2.624.0",
+                    "p-queue": "^6.3.0",
+                    "p-retry": "^4.2.0",
+                    "shelljs": "^0.8.4",
+                    "fs-extra": "^9.0.1",
+                    "p-memoize": "^4.0.0",
+                    "@hapi/boom": "^7.4.11",
+                    "@hapi/h2o2": "^8.3.2",
+                    "@hapi/hapi": "^18.4.1",
+                    "jsonschema": "^1.2.6",
+                    "node-fetch": "^2.6.1",
+                    "portfinder": "^1.0.25",
+                    "velocityjs": "^2.0.0",
+                    "jsonwebtoken": "^8.5.1",
+                    "jsonpath-plus": "^3.0.0",
+                    "node-schedule": "^1.3.2",
+                    "update-notifier": "^4.1.0",
+                    "js-string-escape": "^1.0.1",
+                    "java-invoke-local": "0.0.6",
+                    "object.fromentries": "^2.0.2",
+                    "please-upgrade-node": "^3.2.0"
+                },
+                "publishConfig": {
+                    "access": "public"
+                },
+                "_hasShrinkwrap": false,
+                "devDependencies": {
+                    "jest": "^26.4.2",
+                    "husky": "^4.3.0",
+                    "p-map": "^4.0.0",
+                    "eslint": "^7.9.0",
+                    "rimraf": "^3.0.2",
+                    "archiver": "^5.0.2",
+                    "prettier": "^2.1.2",
+                    "copyfiles": "^2.3.0",
+                    "@babel/cli": "^7.11.6",
+                    "serverless": "^2.2.0",
+                    "@babel/core": "^7.11.6",
+                    "babel-eslint": "^10.1.0",
+                    "@types/shelljs": "^0.8.8",
+                    "@babel/register": "^7.11.5",
+                    "eslint-plugin-import": "^2.22.0",
+                    "eslint-config-prettier": "^6.11.0",
+                    "eslint-plugin-prettier": "^3.1.4",
+                    "eslint-config-airbnb-base": "^14.2.0",
+                    "@types/aws-serverless-express": "^3.3.3",
+                    "@babel/plugin-proposal-dynamic-import": "^7.10.4",
+                    "@babel/plugin-proposal-class-properties": "^7.10.4",
+                    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+                    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+                    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4"
+                },
+                "peerDependencies": {
+                    "serverless": ">=1.60.0"
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/serverless-offline_6.8.5_1607372792480_0.5810110681924752",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "6.8.5"
+        },
+        "repository": {
+            "url": "git+ssh://github.com/3fv/serverless-offline.git",
+            "type": "git"
+        },
+        "description": "Emulate AWS \u03bb and API Gateway locally when developing your Serverless project",
+        "maintainers": [
+            {
+                "name": "jglanz",
+                "email": "jonathan.glanz@gmail.com"
+            }
+        ],
+        "contributors": [
+            {
+                "url": "https://github.com/adamelliottsweeting",
+                "name": "Adam Sweeting"
+            },
+            {
+                "url": "https://github.com/AdrienGiboire",
+                "name": "Adrien"
+            },
+            {
+                "url": "https://github.com/againer",
+                "name": "Al Pal"
+            },
+            {
+                "url": "https://github.com/apalumbo",
+                "name": "Alessandro Palumbo"
+            },
+            {
+                "url": "https://github.com/ablythe",
+                "name": "Alex Blythe"
+            },
+            {
+                "url": "https://github.com/allenhartwig",
+                "name": "allenhartwig"
+            },
+            {
+                "url": "https://github.com/arabold",
+                "name": "Andre Rabold"
+            },
+            {
+                "url": "https://github.com/andreipopovici",
+                "name": "Andrei Popovici"
+            },
+            {
+                "url": "https://github.com/aliatsis",
+                "name": "Anthony Liatsis"
+            },
+            {
+                "url": "https://github.com/ac360",
+                "name": "Austen"
+            },
+            {
+                "url": "https://github.com/austin-payne",
+                "name": "Austin Payne"
+            },
+            {
+                "url": "https://github.com/AyushG3112",
+                "name": "Ayush Gupta"
+            },
+            {
+                "url": "https://github.com/bencooling",
+                "name": "Ben Cooling"
+            },
+            {
+                "url": "https://github.com/bob-thomas",
+                "name": "Bob Thomas"
+            },
+            {
+                "url": "https://github.com/BrandonE",
+                "name": "Brandon Evans"
+            },
+            {
+                "url": "https://github.com/cameroncooper",
+                "name": "Cameron Cooper"
+            },
+            {
+                "url": "https://github.com/darthtrevino",
+                "name": "Chris Trevino"
+            },
+            {
+                "url": "https://github.com/c24w",
+                "name": "Chris Watson"
+            },
+            {
+                "url": "https://github.com/christophgysin",
+                "name": "Christoph Gysin"
+            },
+            {
+                "url": "https://github.com/footballencarta",
+                "name": "Damon Williams"
+            },
+            {
+                "url": "https://github.com/daniel-cottone",
+                "name": "Daniel Cottone",
+                "email": "daniel.cottone@gmail.com"
+            },
+            {
+                "url": "https://github.com/rlgod",
+                "name": "Daniel Parker"
+            },
+            {
+                "url": "https://github.com/dsole",
+                "name": "Dave Sole"
+            },
+            {
+                "url": "https://github.com/dbunker",
+                "name": "David Bunker"
+            },
+            {
+                "url": "https://github.com/demetriusnunes",
+                "name": "demetriusnunes"
+            },
+            {
+                "url": "https://github.com/djcrabhat",
+                "name": "DJCrabhat"
+            },
+            {
+                "url": "https://github.com/domaslasauskas",
+                "name": "Domas Lasauskas"
+            },
+            {
+                "url": "https://github.com/dwbelliston",
+                "name": "Dustin Belliston"
+            },
+            {
+                "url": "https://github.com/enolan",
+                "name": "Echo Nolan"
+            },
+            {
+                "url": "https://github.com/minibikini",
+                "name": "Egor Kislitsyn"
+            },
+            {
+                "url": "https://github.com/em0ney",
+                "name": "Elliott Spira"
+            },
+            {
+                "url": "https://github.com/emmoistner",
+                "name": "Ethan Moistner"
+            },
+            {
+                "url": "https://github.com/francisu",
+                "name": "Francis Upton IV"
+            },
+            {
+                "url": "https://github.com/franciscocpg",
+                "name": "Francisco Guimar\u00e3es"
+            },
+            {
+                "url": "https://github.com/gbroques",
+                "name": "G Roques"
+            },
+            {
+                "url": "https://github.com/ansraliant",
+                "name": "Gabriel Verdi"
+            },
+            {
+                "url": "https://github.com/garunski",
+                "name": "Garun Vagidov"
+            },
+            {
+                "url": "https://github.com/gertjvr",
+                "name": "Gert Jansen van Rensburg"
+            },
+            {
+                "url": "https://github.com/guillaume",
+                "name": "Guillaume Carbonneau"
+            },
+            {
+                "url": "https://github.com/balassy",
+                "name": "Gy\u00f6rgy Bal\u00e1ssy"
+            },
+            {
+                "url": "https://github.com/jsnajdr",
+                "name": "Jarda Snajdr"
+            },
+            {
+                "url": "https://github.com/horyd",
+                "name": "Jaryd Carolin"
+            },
+            {
+                "url": "https://github.com/electrikdevelopment",
+                "name": "Jeff Hall"
+            },
+            {
+                "url": "https://github.com/jgilbert01",
+                "name": "jgilbert01"
+            },
+            {
+                "url": "https://github.com/jormaechea",
+                "name": "Joaquin Ormaechea"
+            },
+            {
+                "url": "https://github.com/johncmckim",
+                "name": "John McKim"
+            },
+            {
+                "url": "https://github.com/jlsjonas",
+                "name": "Jonas De Kegel"
+            },
+            {
+                "url": "https://github.com/joostfarla",
+                "name": "Joost Farla"
+            },
+            {
+                "url": "https://github.com/joubertredrat",
+                "name": "Joubert RedRat"
+            },
+            {
+                "url": "https://github.com/juanjoDiaz",
+                "name": "Juanjo Diaz"
+            },
+            {
+                "url": "https://github.com/kajwiklund",
+                "name": "Kaj Wiklund"
+            },
+            {
+                "url": "https://github.com/rma4ok",
+                "name": "Kiryl Yermakou"
+            },
+            {
+                "url": "https://github.com/kobanyan",
+                "name": "kobanyan"
+            },
+            {
+                "url": "https://github.com/lalifraco-devspark",
+                "name": "Leonardo Alifraco"
+            },
+            {
+                "url": "https://github.com/vmadman",
+                "name": "Luke Chavers"
+            },
+            {
+                "url": "https://github.com/boehmers",
+                "name": "Manuel B\u00f6hm"
+            },
+            {
+                "url": "https://github.com/marccampbell",
+                "name": "Marc Campbell"
+            },
+            {
+                "url": "https://github.com/adieuadieu",
+                "name": "Marco L\u00fcthy"
+            },
+            {
+                "url": "https://github.com/neverendingqs",
+                "name": "Mark Tse"
+            },
+            {
+                "url": "https://github.com/martinmicunda",
+                "name": "Martin Micunda"
+            },
+            {
+                "url": "https://github.com/mhodgson",
+                "name": "Matt Hodgson"
+            },
+            {
+                "url": "https://github.com/msjonker",
+                "name": "Matt Jonker"
+            },
+            {
+                "url": "https://github.com/melvinvermeer",
+                "name": "Melvin Vermeer"
+            },
+            {
+                "url": "https://github.com/mjmac",
+                "name": "Michael MacDonald"
+            },
+            {
+                "url": "Mike",
+                "name": "Miso"
+            },
+            {
+                "url": "https://github.com/njriordan",
+                "name": "Niall Riordan"
+            },
+            {
+                "url": "https://github.com/nori3tsu",
+                "name": "Norimitsu Yamashita"
+            },
+            {
+                "url": "https://github.com/obearn",
+                "name": "Oliv"
+            },
+            {
+                "url": "https://github.com/thepont",
+                "name": "Paul Esson"
+            },
+            {
+                "url": "https://github.com/ppasmanik",
+                "name": "Paul Pasmanik"
+            },
+            {
+                "url": "https://github.com/WooDzu",
+                "name": "Piotr Gasiorowski"
+            },
+            {
+                "url": "https://github.com/polaris340",
+                "name": "polaris340"
+            },
+            {
+                "url": "https://github.com/qswinson",
+                "name": "Quenby Mitchell"
+            },
+            {
+                "url": "https://github.com/computerpunc",
+                "name": "Ram Hardy"
+            },
+            {
+                "url": "https://github.com/vaberay",
+                "name": "Ramon Emilio Savinon"
+            },
+            {
+                "url": "https://github.com/robbrazier",
+                "name": "Rob Brazier"
+            },
+            {
+                "url": "https://github.com/bytekast",
+                "name": "Rowell Belen"
+            },
+            {
+                "url": "https://github.com/rschick",
+                "name": "Russell Schick"
+            },
+            {
+                "url": "https://github.com/ryanzyy",
+                "name": "Ryan Zhang"
+            },
+            {
+                "url": "https://github.com/selcukcihan",
+                "name": "Selcuk Cihan"
+            },
+            {
+                "url": "https://github.com/starsprung",
+                "name": "Shaun"
+            },
+            {
+                "url": "https://github.com/shineli",
+                "name": "Shine Li"
+            },
+            {
+                "url": "https://github.com/stesie",
+                "name": "Stefan Siegl"
+            },
+            {
+                "url": "https://github.com/sgleadow",
+                "name": "Stewart Gleadow"
+            },
+            {
+                "url": "https://github.com/tminussi",
+                "name": "Thales Minussi"
+            },
+            {
+                "url": "https://github.com/ittus",
+                "name": "Thang Minh Vu"
+            },
+            {
+                "url": "https://github.com/trevor-leach",
+                "name": "Trevor Leach"
+            },
+            {
+                "url": "https://github.com/tuanmh",
+                "name": "Tuan Minh Huynh"
+            },
+            {
+                "url": "https://github.com/utkuturunc",
+                "name": "Utku Turunc"
+            },
+            {
+                "url": "https://github.com/miltador",
+                "name": "Vasiliy Solovey"
+            },
+            {
+                "url": "https://github.com/dimadk24",
+                "name": "Dima Krutolianov"
+            },
+            {
+                "url": "https://github.com/bryanvaz",
+                "name": "Bryan Vaz"
+            }
+        ],
+        "readmeFilename": "README.md"
+    },
+    "seq": 9683616,
+    "changes": [
+        {
+            "rev": "6-e83b8939652405994e7d48ee4e9c3ff7"
+        }
+    ],
+    "deleted": false
+}

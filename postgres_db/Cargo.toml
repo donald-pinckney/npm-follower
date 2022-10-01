@@ -16,3 +16,4 @@ dotenv = "0.15.0"
 sha2 = "0.10.2"
 base16ct = { version = "0.1.1", features = ["std"] }
 url = "2.2.2"
+md5 = "0.7.0"

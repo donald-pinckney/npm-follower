@@ -37,7 +37,7 @@ impl FromSql<VersionComparatorSql, Pg> for VersionComparator {
         match op {
             VersionOperatorEnum::Any => {
                 if v != None {
-                    return Err(format!("VersionComparator::Any should not have a value").into());
+                    return Err("VersionComparator::Any should not have a value".to_string().into());
                 }
                 Ok(VersionComparator::Any)
             },

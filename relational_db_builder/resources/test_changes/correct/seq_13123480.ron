@@ -42,8 +42,6 @@ Some(("Graph", Normal(
             ),
             repository: None,
             extra_metadata: {
-                "main": "Graph",
-                "description": "A mathematical Graph theory library.",
                 "_nodeVersion": "v0.3.1-pre",
                 "licenses": [
                     {
@@ -51,6 +49,11 @@ Some(("Graph", Normal(
                         "url": "http://www.example.com/licenses/gpl.html",
                     },
                 ],
+                "_nodeSupported": true,
+                "ctime": "2010-11-09T23:25:38Z",
+                "scripts": {
+                    "test": "Test/Graph.js",
+                },
                 "keywords": [
                     "graph",
                     "graph theory",
@@ -59,29 +62,26 @@ Some(("Graph", Normal(
                     "node",
                     "connection",
                 ],
-                "_id": "Graph@0.0.1",
+                "version": "0.0.1",
+                "description": "A mathematical Graph theory library.",
+                "engines": {
+                    "node": ">= 0.1.99",
+                },
                 "contributors": [
                     {
                         "email": "yoni.bmesh@gmail.com",
                         "name": "Yoni Ben-Meshulam",
                     },
                 ],
-                "ctime": "2010-11-09T23:25:38Z",
-                "engines": {
-                    "node": ">= 0.1.99",
-                },
-                "_npmVersion": "0.2.7-2",
-                "_nodeSupported": true,
+                "main": "Graph",
                 "author": {
                     "email": "yoni.bmesh@gmail.com",
                     "name": "Yoni Ben-Meshulam",
                 },
-                "name": "Graph",
-                "version": "0.0.1",
                 "mtime": "2010-11-09T23:25:38Z",
-                "scripts": {
-                    "test": "Test/Graph.js",
-                },
+                "name": "Graph",
+                "_id": "Graph@0.0.1",
+                "_npmVersion": "0.2.7-2",
             },
         ),
     },

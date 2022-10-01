@@ -1,0 +1,88 @@
+{
+    "id": "iamsap-first-nodejs-package",
+    "doc": {
+        "_id": "iamsap-first-nodejs-package",
+        "_rev": "2-eacf77c022f7ea502dd111635e71bbda",
+        "name": "iamsap-first-nodejs-package",
+        "time": {
+            "0.0.0": "2018-09-22T14:20:12.068Z",
+            "created": "2018-09-22T14:20:11.950Z",
+            "modified": "2018-09-22T14:20:14.650Z"
+        },
+        "author": {
+            "name": "Sap",
+            "email": "robbymillsap@gmail.com"
+        },
+        "readme": "ERROR: No README data found!",
+        "license": "MIT",
+        "versions": {
+            "0.0.0": {
+                "_id": "iamsap-first-nodejs-package@0.0.0",
+                "dist": {
+                    "shasum": "fd28177bbd1da263b577b92f2fd17f8e6ffdd95b",
+                    "tarball": "https://registry.npmjs.org/iamsap-first-nodejs-package/-/iamsap-first-nodejs-package-0.0.0.tgz",
+                    "fileCount": 1,
+                    "integrity": "sha512-lSDoxdqJG486ZCvklfb4Fc3DBwQRO4zZJrkcdGT/AxBQ6GdorUVhiqCcPDVbSQtX2TTp+vaFz4pE9EYiSDFKng==",
+                    "unpackedSize": 316,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbpk+cCRA9TVsSAnZWagAAzWsP/3ljuk1fmYZm+yNSwAFy\n0GeOZFa4ecgp6HM0AY3+JK9sGN1Kz2mJZB1VVQOvhjQ13rk2JHz3+TvLTtnj\ngrI7K0i47LKTNGr5wUQF2Kv9mSYxj5flX8dnthSksrXyUN9EMwHjhzRvmVZp\nSqDNujYOXnBSE7va9au8zAJNJawvBg4zl/WIj92FscNI917e8LenTt0c3mWw\nUuR5Xnzy+N8+BM9UxHS+VAaudO436c1WrARWLuUESmwLwlBU4gSAwKKLOVqZ\ne4M526sXmnMZdZp2gie82tqLgqUAauqRmJzG1IHRRFZtnrE+UMsYqdItkPz9\nLvUxGpmAjc9xXQm4ZnwIUe3DYYXnPSBXvlr8gRYtmKjhXz6UrQGEXrey5pex\nnkSDblRYN6/1TdRkVYT4XkXjBHqFamOuB1YVISZUrmgdT/SEGOa1eq0esQWq\ndp9Tu6SuFADYOqTlbpHQV3TC65N51Peom/p+1gV79Y368xaC8RfBJGlD0ADx\nyJZpH6Wi1mzGXE3bn5sGF8WX9zXFUEZLXQUrK6tAosh4s75DaJCYiq8LzjrB\nRrgD1bPUxQtbkR+0FxVCRwBEDCQvTGevWw/vQVnLwCDj1Nsg4luhgfS0eL4i\nMzEntNi3QDWp/5ny90TGuts1uzclMRkylisC5C7h2ctuYuelxbT/jZ1Jszz1\ndGLi\r\n=I4Lz\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "index.js",
+                "name": "iamsap-first-nodejs-package",
+                "author": {
+                    "name": "Sap",
+                    "email": "robbymillsap@gmail.com"
+                },
+                "license": "MIT",
+                "scripts": {
+                    "test": "jasmine"
+                },
+                "version": "0.0.0",
+                "_npmUser": {
+                    "name": "iamsap",
+                    "email": "robbymillsap@gmail.com"
+                },
+                "repository": {
+                    "url": "http://github.com/iamsap",
+                    "type": "git"
+                },
+                "_npmVersion": "6.4.1",
+                "description": "Node.js for C# by Sap",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "iamsap",
+                        "email": "robbymillsap@gmail.com"
+                    }
+                ],
+                "_nodeVersion": "8.12.0",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/iamsap-first-nodejs-package_0.0.0_1537626011950_0.9505955068616994",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "0.0.0"
+        },
+        "repository": {
+            "url": "http://github.com/iamsap",
+            "type": "git"
+        },
+        "description": "Node.js for C# by Sap",
+        "maintainers": [
+            {
+                "name": "iamsap",
+                "email": "robbymillsap@gmail.com"
+            }
+        ],
+        "readmeFilename": ""
+    },
+    "seq": 2851405,
+    "changes": [
+        {
+            "rev": "2-eacf77c022f7ea502dd111635e71bbda"
+        }
+    ],
+    "deleted": false
+}
