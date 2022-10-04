@@ -1,21 +1,19 @@
-use diesel::pg::Pg;
-use diesel::types::{ToSql, FromSql};
-use diesel::deserialize;
-use diesel::serialize::{self, Output, WriteTuple, IsNull};
-use diesel::sql_types::{Record, Text, Nullable, Array, Int8};
-use std::io::Write;
 use super::sql_types::*;
-use super::{Semver, PrereleaseTag};
+use super::{PrereleaseTag, Semver};
+use diesel::deserialize;
+use diesel::pg::Pg;
+use diesel::serialize::{self, IsNull, Output, WriteTuple};
+use diesel::sql_types::{Array, Int8, Nullable, Record, Text};
+use diesel::types::{FromSql, ToSql};
+use std::io::Write;
 
 // ---------- SemverSql <----> Semver
-
-
-
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
 #[sql_type = "PrereleaseTagTypeEnumSql"]
 enum PrereleaseTagTypeEnum {
-    String, Int
+    String,
+    Int,
 }
 
 #[derive(SqlType)]
@@ -25,22 +23,35 @@ struct PrereleaseTagTypeEnumSql;
 impl ToSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         match self {
-            PrereleaseTag::String(s) => {
-                WriteTuple::<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>::write_tuple(&(PrereleaseTagTypeEnum::String, Some(s.as_str()), None as Option<i64>), out)
-            },
-            PrereleaseTag::Int(i) => {
-                WriteTuple::<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>::write_tuple(&(PrereleaseTagTypeEnum::Int, None as Option<String>, Some(i)), out)
-            }
+            PrereleaseTag::String(s) => WriteTuple::<(
+                PrereleaseTagTypeEnumSql,
+                Nullable<Text>,
+                Nullable<Int8>,
+            )>::write_tuple(
+                &(
+                    PrereleaseTagTypeEnum::String,
+                    Some(s.as_str()),
+                    None as Option<i64>,
+                ),
+                out,
+            ),
+            PrereleaseTag::Int(i) => WriteTuple::<(
+                PrereleaseTagTypeEnumSql,
+                Nullable<Text>,
+                Nullable<Int8>,
+            )>::write_tuple(
+                &(PrereleaseTagTypeEnum::Int, None as Option<String>, Some(i)),
+                out,
+            ),
         }
     }
 }
-
 
 impl ToSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         match self {
             PrereleaseTagTypeEnum::String => out.write_all(b"string")?,
-            PrereleaseTagTypeEnum::Int => out.write_all(b"int")?
+            PrereleaseTagTypeEnum::Int => out.write_all(b"int")?,
         }
         Ok(IsNull::No)
     }
@@ -48,14 +59,16 @@ impl ToSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 
 impl FromSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let (tag_type, str_case, int_case) = FromSql::<Record<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>, Pg>::from_sql(bytes)?;
+        let (tag_type, str_case, int_case) = FromSql::<
+            Record<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>,
+            Pg,
+        >::from_sql(bytes)?;
         match tag_type {
             PrereleaseTagTypeEnum::String => Ok(PrereleaseTag::String(not_none!(str_case))),
             PrereleaseTagTypeEnum::Int => Ok(PrereleaseTag::Int(not_none!(int_case))),
         }
     }
 }
-
 
 impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
@@ -69,33 +82,42 @@ impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 
 impl FromSql<SemverSql, Pg> for Semver {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let (major, minor, bug, prerelease, build) = FromSql::<Record<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>, Pg>::from_sql(bytes)?;
+        let (major, minor, bug, prerelease, build) = FromSql::<
+            Record<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>,
+            Pg,
+        >::from_sql(bytes)?;
         Ok(Semver {
             major,
             minor,
             bug,
             prerelease,
-            build
+            build,
         })
     }
 }
 
 impl ToSql<SemverSql, Pg> for Semver {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        WriteTuple::<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>::write_tuple(&(self.major, self.minor, self.bug, &self.prerelease, &self.build), out)
+        WriteTuple::<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>::write_tuple(
+            &(
+                self.major,
+                self.minor,
+                self.bug,
+                &self.prerelease,
+                &self.build,
+            ),
+            out,
+        )
     }
 }
-
-
-
 
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::custom_types::{PrereleaseTag, Semver};
+    use crate::testing;
     use diesel::prelude::*;
     use diesel::RunQueryDsl;
-    use crate::custom_types::{Semver, PrereleaseTag};
-    use crate::testing;
 
     table! {
         use diesel::sql_types::*;
@@ -121,53 +143,76 @@ mod tests {
         let data = vec![
             TestSemverToSql {
                 id: 1,
-                v: Semver { major: 1, minor: 2, bug: 3, prerelease: vec![], build: vec![] }
+                v: Semver {
+                    major: 1,
+                    minor: 2,
+                    bug: 3,
+                    prerelease: vec![],
+                    build: vec![],
+                },
             },
             TestSemverToSql {
                 id: 2,
-                v: Semver { 
-                    major: 3, 
-                    minor: 4, 
-                    bug: 5, 
-                    prerelease: vec![PrereleaseTag::Int(8)], 
-                    build: vec!["alpha".into(), "1".into()] 
-                }
+                v: Semver {
+                    major: 3,
+                    minor: 4,
+                    bug: 5,
+                    prerelease: vec![PrereleaseTag::Int(8)],
+                    build: vec!["alpha".into(), "1".into()],
+                },
             },
             TestSemverToSql {
                 id: 3,
-                v: Semver { 
-                    major: 111111111111111, 
-                    minor: 222222222222222, 
-                    bug:   333333333333333, 
-                    prerelease: vec![PrereleaseTag::Int(444444444444444)], 
-                    build: vec!["alpha".into(), "555555555555555".into()] 
-                }
+                v: Semver {
+                    major: 111111111111111,
+                    minor: 222222222222222,
+                    bug: 333333333333333,
+                    prerelease: vec![PrereleaseTag::Int(444444444444444)],
+                    build: vec!["alpha".into(), "555555555555555".into()],
+                },
             },
         ];
 
-        let conn = testing::test_connect();
-        let _temp_table = testing::TempTable::new(&conn, "test_semver_to_sql", "id SERIAL PRIMARY KEY, v semver");
+        testing::using_test_db(|conn| {
+            let _temp_table = testing::TempTable::new(
+                &conn,
+                "test_semver_to_sql",
+                "id SERIAL PRIMARY KEY, v semver",
+            );
 
-        let inserted = diesel::insert_into(test_semver_to_sql).values(&data).get_results(&conn.conn).unwrap();
-        assert_eq!(data, inserted);
+            let inserted = diesel::insert_into(test_semver_to_sql)
+                .values(&data)
+                .get_results(&conn.conn)
+                .unwrap();
+            assert_eq!(data, inserted);
 
-        let filter_all = test_semver_to_sql
-            .filter(id.ge(1))
-            .load(&conn.conn)
-            .unwrap();
-        assert_eq!(data, filter_all);
+            let filter_all = test_semver_to_sql
+                .filter(id.ge(1))
+                .load(&conn.conn)
+                .unwrap();
+            assert_eq!(data, filter_all);
 
-
-        let filter_eq_data = vec![
-            TestSemverToSql {
+            let filter_eq_data = vec![TestSemverToSql {
                 id: 1,
-                v: Semver { major: 1, minor: 2, bug: 3, prerelease: vec![], build: vec![] }
-            },
-        ];
-        let filter_eq = test_semver_to_sql
-            .filter(v.eq(Semver { major: 1, minor: 2, bug: 3, prerelease: vec![], build: vec![] }))
-            .load(&conn.conn)
-            .unwrap();
-        assert_eq!(filter_eq_data, filter_eq);
+                v: Semver {
+                    major: 1,
+                    minor: 2,
+                    bug: 3,
+                    prerelease: vec![],
+                    build: vec![],
+                },
+            }];
+            let filter_eq = test_semver_to_sql
+                .filter(v.eq(Semver {
+                    major: 1,
+                    minor: 2,
+                    bug: 3,
+                    prerelease: vec![],
+                    build: vec![],
+                }))
+                .load(&conn.conn)
+                .unwrap();
+            assert_eq!(filter_eq_data, filter_eq);
+        });
     }
 }

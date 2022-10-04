@@ -26,6 +26,7 @@ pub struct DbConnection {
     pub(crate) conn: PgConnection,
 }
 
+#[cfg(not(test))]
 pub fn connect() -> DbConnection {
     dotenv().ok();
 

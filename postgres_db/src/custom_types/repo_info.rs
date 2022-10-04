@@ -1,12 +1,10 @@
-use diesel::pg::Pg;
-use diesel::types::{ToSql, FromSql};
-use diesel::sql_types::{Text, Record, Nullable};
+use super::{sql_types::*, RepoHostInfo, RepoInfo, Vcs};
 use diesel::deserialize;
-use diesel::serialize::{self, Output, WriteTuple, IsNull};
+use diesel::pg::Pg;
+use diesel::serialize::{self, IsNull, Output, WriteTuple};
+use diesel::sql_types::{Nullable, Record, Text};
+use diesel::types::{FromSql, ToSql};
 use std::io::Write;
-use super::{sql_types::*, RepoInfo, RepoHostInfo, Vcs};
-
-
 
 // ---------- RepoInfo <----> RepoInfoSql
 
@@ -17,7 +15,7 @@ type RepoInfoStructRecordSql = (
     RepoHostEnumSql,
     Nullable<Text>,
     Nullable<Text>,
-    Nullable<Text>
+    Nullable<Text>,
 );
 
 type RepoInfoStructRecordRust = (
@@ -27,40 +25,78 @@ type RepoInfoStructRecordRust = (
     RepoHostEnum,
     Option<String>,
     Option<String>,
-    Option<String>
+    Option<String>,
 );
-
 
 impl ToSql<RepoInfoSql, Pg> for RepoInfo {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
         let record: RepoInfoStructRecordRust = match &self.host_info {
-            RepoHostInfo::Github { user, repo } => 
-                (self.cloneable_repo_url.clone(), self.cloneable_repo_dir.clone(), self.vcs, RepoHostEnum::Github, Some(user.clone()), Some(repo.clone()), None),
-            RepoHostInfo::Bitbucket { user, repo } => 
-                (self.cloneable_repo_url.clone(), self.cloneable_repo_dir.clone(), self.vcs, RepoHostEnum::Bitbucket, Some(user.clone()), Some(repo.clone()), None),
-            RepoHostInfo::Gitlab { user, repo } => 
-                (self.cloneable_repo_url.clone(), self.cloneable_repo_dir.clone(), self.vcs, RepoHostEnum::Gitlab, Some(user.clone()), Some(repo.clone()), None),
-            RepoHostInfo::Gist { id } => 
-                (self.cloneable_repo_url.clone(), self.cloneable_repo_dir.clone(), self.vcs, RepoHostEnum::Gist, None, None, Some(id.clone())),
-            RepoHostInfo::Thirdparty => 
-                (self.cloneable_repo_url.clone(), self.cloneable_repo_dir.clone(), self.vcs, RepoHostEnum::Thirdparty, None, None, None)
+            RepoHostInfo::Github { user, repo } => (
+                self.cloneable_repo_url.clone(),
+                self.cloneable_repo_dir.clone(),
+                self.vcs,
+                RepoHostEnum::Github,
+                Some(user.clone()),
+                Some(repo.clone()),
+                None,
+            ),
+            RepoHostInfo::Bitbucket { user, repo } => (
+                self.cloneable_repo_url.clone(),
+                self.cloneable_repo_dir.clone(),
+                self.vcs,
+                RepoHostEnum::Bitbucket,
+                Some(user.clone()),
+                Some(repo.clone()),
+                None,
+            ),
+            RepoHostInfo::Gitlab { user, repo } => (
+                self.cloneable_repo_url.clone(),
+                self.cloneable_repo_dir.clone(),
+                self.vcs,
+                RepoHostEnum::Gitlab,
+                Some(user.clone()),
+                Some(repo.clone()),
+                None,
+            ),
+            RepoHostInfo::Gist { id } => (
+                self.cloneable_repo_url.clone(),
+                self.cloneable_repo_dir.clone(),
+                self.vcs,
+                RepoHostEnum::Gist,
+                None,
+                None,
+                Some(id.clone()),
+            ),
+            RepoHostInfo::Thirdparty => (
+                self.cloneable_repo_url.clone(),
+                self.cloneable_repo_dir.clone(),
+                self.vcs,
+                RepoHostEnum::Thirdparty,
+                None,
+                None,
+                None,
+            ),
         };
 
-        WriteTuple::<RepoInfoStructRecordSql>::write_tuple(
-            &record,
-            out
-        )
+        WriteTuple::<RepoInfoStructRecordSql>::write_tuple(&record, out)
     }
 }
 
 impl FromSql<RepoInfoSql, Pg> for RepoInfo {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let tup: RepoInfoStructRecordRust = FromSql::<Record<RepoInfoStructRecordSql>, Pg>::from_sql(bytes)?;
+        let tup: RepoInfoStructRecordRust =
+            FromSql::<Record<RepoInfoStructRecordSql>, Pg>::from_sql(bytes)?;
         let (url, dir, vcs) = (tup.0, tup.1, tup.2);
         let host_info_res: deserialize::Result<RepoHostInfo> = match (tup.3, tup.4, tup.5, tup.6) {
-            (RepoHostEnum::Github, Some(user), Some(repo), None) => Ok(RepoHostInfo::Github { user, repo }),
-            (RepoHostEnum::Bitbucket, Some(user), Some(repo), None) => Ok(RepoHostInfo::Bitbucket { user, repo }),
-            (RepoHostEnum::Gitlab, Some(user), Some(repo), None) => Ok(RepoHostInfo::Gitlab { user, repo }),
+            (RepoHostEnum::Github, Some(user), Some(repo), None) => {
+                Ok(RepoHostInfo::Github { user, repo })
+            }
+            (RepoHostEnum::Bitbucket, Some(user), Some(repo), None) => {
+                Ok(RepoHostInfo::Bitbucket { user, repo })
+            }
+            (RepoHostEnum::Gitlab, Some(user), Some(repo), None) => {
+                Ok(RepoHostInfo::Gitlab { user, repo })
+            }
             (RepoHostEnum::Gist, None, None, Some(id)) => Ok(RepoHostInfo::Gist { id }),
             (RepoHostEnum::Thirdparty, None, None, None) => Ok(RepoHostInfo::Thirdparty),
             _ => Err("Unrecognized enum variant".into()),
@@ -71,11 +107,10 @@ impl FromSql<RepoInfoSql, Pg> for RepoInfo {
             cloneable_repo_url: url,
             cloneable_repo_dir: dir,
             vcs,
-            host_info
+            host_info,
         })
     }
 }
-
 
 // ---------- RepoHostEnum <----> RepoHostEnumSql
 
@@ -86,7 +121,7 @@ enum RepoHostEnum {
     Bitbucket,
     Gitlab,
     Gist,
-    Thirdparty
+    Thirdparty,
 }
 
 #[derive(SqlType)]
@@ -101,7 +136,6 @@ impl ToSql<RepoHostEnumSql, Pg> for RepoHostEnum {
             RepoHostEnum::Gitlab => out.write_all(b"gitlab")?,
             RepoHostEnum::Gist => out.write_all(b"gist")?,
             RepoHostEnum::Thirdparty => out.write_all(b"3rdparty")?,
-
         }
         Ok(IsNull::No)
     }
@@ -119,7 +153,6 @@ impl FromSql<RepoHostEnumSql, Pg> for RepoHostEnum {
         }
     }
 }
-
 
 // ---------- Vcs <----> VcsEnumSql
 
@@ -145,16 +178,15 @@ impl FromSql<VcsEnumSql, Pg> for Vcs {
     }
 }
 
-
 // Unit tests
 #[cfg(test)]
 mod tests {
-    use diesel::prelude::*;
-    use diesel::RunQueryDsl;
     use crate::custom_types::RepoHostInfo;
     use crate::custom_types::RepoInfo;
     use crate::custom_types::Vcs;
     use crate::testing;
+    use diesel::prelude::*;
+    use diesel::RunQueryDsl;
 
     table! {
         use diesel::sql_types::*;
@@ -177,69 +209,87 @@ mod tests {
     fn test_repository_type_to_sql_fn() {
         use self::test_repo_info_to_sql::dsl::*;
 
-
         let data = vec![
             TestRepoInfoToSql {
                 id: 1,
-                r: Option::None
+                r: Option::None,
             },
             TestRepoInfoToSql {
                 id: 2,
-                r: Some(RepoInfo { 
-                    cloneable_repo_url: "the url".into(), 
-                    cloneable_repo_dir: "the dir".into(), 
-                    vcs: Vcs::Git, 
-                    host_info: RepoHostInfo::Github { user: "the user".into(), repo: "the repo".into() }
-                })
+                r: Some(RepoInfo {
+                    cloneable_repo_url: "the url".into(),
+                    cloneable_repo_dir: "the dir".into(),
+                    vcs: Vcs::Git,
+                    host_info: RepoHostInfo::Github {
+                        user: "the user".into(),
+                        repo: "the repo".into(),
+                    },
+                }),
             },
             TestRepoInfoToSql {
                 id: 3,
-                r: Some(RepoInfo { 
-                    cloneable_repo_url: "the url".into(), 
-                    cloneable_repo_dir: "the dir".into(), 
-                    vcs: Vcs::Git, 
-                    host_info: RepoHostInfo::Bitbucket { user: "the user".into(), repo: "the repo".into() }
-                })
+                r: Some(RepoInfo {
+                    cloneable_repo_url: "the url".into(),
+                    cloneable_repo_dir: "the dir".into(),
+                    vcs: Vcs::Git,
+                    host_info: RepoHostInfo::Bitbucket {
+                        user: "the user".into(),
+                        repo: "the repo".into(),
+                    },
+                }),
             },
             TestRepoInfoToSql {
                 id: 4,
-                r: Some(RepoInfo { 
-                    cloneable_repo_url: "the url".into(), 
-                    cloneable_repo_dir: "the dir".into(), 
-                    vcs: Vcs::Git, 
-                    host_info: RepoHostInfo::Gitlab { user: "the user".into(), repo: "the repo".into() }
-                })
+                r: Some(RepoInfo {
+                    cloneable_repo_url: "the url".into(),
+                    cloneable_repo_dir: "the dir".into(),
+                    vcs: Vcs::Git,
+                    host_info: RepoHostInfo::Gitlab {
+                        user: "the user".into(),
+                        repo: "the repo".into(),
+                    },
+                }),
             },
             TestRepoInfoToSql {
                 id: 5,
-                r: Some(RepoInfo { 
-                    cloneable_repo_url: "the url".into(), 
-                    cloneable_repo_dir: "the dir".into(), 
-                    vcs: Vcs::Git, 
-                    host_info: RepoHostInfo::Gist { id: "the id".into() }
-                })
+                r: Some(RepoInfo {
+                    cloneable_repo_url: "the url".into(),
+                    cloneable_repo_dir: "the dir".into(),
+                    vcs: Vcs::Git,
+                    host_info: RepoHostInfo::Gist {
+                        id: "the id".into(),
+                    },
+                }),
             },
             TestRepoInfoToSql {
                 id: 6,
-                r: Some(RepoInfo { 
-                    cloneable_repo_url: "the url".into(), 
-                    cloneable_repo_dir: "the dir".into(), 
-                    vcs: Vcs::Git, 
-                    host_info: RepoHostInfo::Thirdparty
-                })
-            }
+                r: Some(RepoInfo {
+                    cloneable_repo_url: "the url".into(),
+                    cloneable_repo_dir: "the dir".into(),
+                    vcs: Vcs::Git,
+                    host_info: RepoHostInfo::Thirdparty,
+                }),
+            },
         ];
 
-        let conn = testing::test_connect();
-        let _temp_table = testing::TempTable::new(&conn, "test_repo_info_to_sql", "id SERIAL PRIMARY KEY, r repo_info");
+        testing::using_test_db(|conn| {
+            let _temp_table = testing::TempTable::new(
+                &conn,
+                "test_repo_info_to_sql",
+                "id SERIAL PRIMARY KEY, r repo_info",
+            );
 
-        let inserted = diesel::insert_into(test_repo_info_to_sql).values(&data).get_results(&conn.conn).unwrap();
-        assert_eq!(data, inserted);
+            let inserted = diesel::insert_into(test_repo_info_to_sql)
+                .values(&data)
+                .get_results(&conn.conn)
+                .unwrap();
+            assert_eq!(data, inserted);
 
-        let filter_all = test_repo_info_to_sql
-            .filter(id.ge(1))
-            .load(&conn.conn)
-            .unwrap();
-        assert_eq!(data, filter_all);
+            let filter_all = test_repo_info_to_sql
+                .filter(id.ge(1))
+                .load(&conn.conn)
+                .unwrap();
+            assert_eq!(data, filter_all);
+        });
     }
 }

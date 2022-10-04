@@ -41,7 +41,6 @@ Next, we need to initialze the database. Run:
 ```bash
 pushd postgres_db
 diesel setup
-diesel migration run
 popd
 ```
 

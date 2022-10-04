@@ -33,3 +33,7 @@ criterion = { version = "0.3", features = ["html_reports"] }
 [[bench]]
 name = "serialization"
 harness = false
+
+[[bench]]
+name = "insertion"
+harness = false
