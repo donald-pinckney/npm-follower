@@ -1,34 +1,80 @@
 use std::io;
 use std::io::BufRead;
 use std::fs::File;
-use criterion::black_box;
+use std::path::PathBuf;
+use std::process::Command;
+use std::time::{Instant, Duration};
 
+use glob::glob;
+use postgres_db::{DbConnection, testing};
 use serde_json:: Value;
+use colored::Colorize;
 
 use postgres_db::change_log::Change;
 
+use relational_db_builder::process_change;
 
-fn insertion_benchmark() {
-    
-    for l in io::BufReader::new(File::open("../change_log_benchmark.jsonl").unwrap()).lines() {
+
+fn load_change_dataset(path: &PathBuf) -> Vec<Change> {
+    io::BufReader::new(File::open(path).unwrap()).lines().map(|l| {
         let l = l.unwrap();
         let raw_json: Value = serde_json::from_str(&l).unwrap();
         let seq = raw_json["seq"].as_i64().unwrap();
-        let c = Change { seq, raw_json };
-        // println!("{:?}", c.raw_json);
+        Change { seq, raw_json }
+    }).collect()
+}
+
+
+fn insert_changes(conn: &DbConnection, changes: Vec<Change>) -> Duration {
+    let now = Instant::now();
+    for c in changes {
+        process_change(conn, c);
     }
-    println!("done");
+    now.elapsed()
+}
+
+fn run_bench(path: PathBuf) {
+    testing::using_test_db(|conn| {
+        println!("\nRunning insertion bench: {}", path.file_name().unwrap().to_string_lossy());
+
+        let now = Instant::now();
+        let changes = load_change_dataset(&path);
+        let elapsed = now.elapsed();
+        println!("    Loaded {} ({:.2} seconds)", path.display(), elapsed.as_secs_f64());
+
+        
+        let elapsed = insert_changes(conn, changes);
+        println!("    Inserted {} {}", path.display(), format!("({:.2} seconds)", elapsed.as_secs_f64()).bold());
+    });
 }
 
 fn main() {
-    use std::time::Instant;
-    let now = Instant::now();
 
-    // Code block to measure.
-    {
-        black_box(insertion_benchmark)();
+    let _status = Command::new("./grab_bench_many_changes.sh")
+        .status()
+        .expect("failed to execute process");
+
+    let args: Vec<String> = std::env::args().collect();
+    let filter_arg = match args[1].as_str() {
+        "--bench" => None,
+        x => Some(x)
+    };
+
+    let mut benches = vec![];
+    
+
+    for e in glob("resources/bench_many_changes/*.jsonl").expect("Failed to read glob pattern") {
+        let data_path = e.unwrap();
+        let should_run = filter_arg.map(|f| data_path.file_name().unwrap().to_string_lossy().contains(f)).unwrap_or(true);
+        benches.push((data_path, should_run));
     }
 
-    let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+
+    for (b, run) in benches {
+        if run {
+            run_bench(b);
+        } else {
+            println!("Skipping insertion bench: {}", b.file_name().unwrap().to_string_lossy());
+        }
+    }
 }

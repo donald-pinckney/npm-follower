@@ -14,8 +14,7 @@ pub mod versions;
 
 pub mod custom_types;
 
-#[cfg(test)]
-mod testing;
+pub mod testing;
 
 use diesel::pg::PgConnection;
 use diesel::prelude::*;

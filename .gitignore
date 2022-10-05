@@ -3,3 +3,4 @@ Cargo.lock
 .DS_Store
 scratch/
 .idea/
+/scratch_data/

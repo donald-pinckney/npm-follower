@@ -29,6 +29,8 @@ url = "2.3.0"
 test-case = "2.1.0"
 ron = "0.7.1"
 criterion = { version = "0.3", features = ["html_reports"] }
+glob = "0.3.0"
+colored = "2.0.0"
 
 [[bench]]
 name = "serialization"

@@ -13,24 +13,35 @@ lazy_static! {
     static ref TEST_CONN_LOCK: Mutex<()> = Mutex::new(());
 } 
 
-fn setup_test_db() -> DbConnection {
-    dotenv().ok();
-
-    let database_url = env::var("TESTING_DATABASE_URL").expect("TESTING_DATABASE_URL must be set");
-
-    // 1. Drop testing DB
+fn drop_testing_db() {
+    // Drop testing DB
+    // TODO: check for the error case of concurrent access
     let _status = Command::new("dropdb")
         .arg("-p")
         .arg("5431")
         .arg("testing_npm_data")
         .status()
         .expect("failed to execute process");
+}
+
+fn setup_test_db() -> DbConnection {
+    dotenv().ok();
+
+    let database_url = env::var("TESTING_DATABASE_URL").expect("TESTING_DATABASE_URL must be set");
+
+    // 1. Drop testing DB
+    drop_testing_db();
+
+    let my_wd = env::current_dir().unwrap();
+    let mut postgres_db_dir = my_wd.parent().unwrap().to_path_buf();
+    postgres_db_dir.push("postgres_db");
 
     // 2. Create DB
     let status = Command::new("diesel")
         .arg("setup")
         .arg("--database-url")
         .arg(&database_url)
+        .current_dir(postgres_db_dir)
         .status()
         .expect("failed to execute process");
     assert!(status.success(), "Failed to run diesel setup --database-url {}", database_url);
@@ -41,15 +52,22 @@ fn setup_test_db() -> DbConnection {
     DbConnection { conn }
 }
 
-pub fn using_test_db<F>(f: F)
+
+
+pub fn using_test_db<F, R>(f: F) -> R
 where
-    F: FnOnce(&DbConnection),
+    F: FnOnce(&DbConnection) -> R,
 {
     let _locked = TEST_CONN_LOCK.lock().unwrap();
 
-    let conn = setup_test_db();
+    let res = {
+        let conn = setup_test_db();
+        f(&conn)
+    };
 
-    f(&conn);
+    drop_testing_db();
+
+    res
 }
 
 // Used to create and automatically drop temporary tables, used for tests.
