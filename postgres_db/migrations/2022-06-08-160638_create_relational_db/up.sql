@@ -309,6 +309,8 @@ CREATE TABLE versions (
   UNIQUE(package_id, semver)
 );
 
+CREATE INDEX versions_package_id_idx ON versions (package_id);
+
 
 CREATE TABLE dependencies (
   id                            BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

@@ -138,7 +138,7 @@ fn apply_versions(
             version_times: _,
             versions,
         } => {
-            // println!("Normal pkg: {}", package_id);
+            println!("Normal pkg: {}", package_id);
             // these are made such that the postgres_db does the least amount of work possible
             let dep_countmap = make_dep_countmap(&versions);
             let mut deps_inserted: HashSet<(String, String)> = HashSet::new();
@@ -223,10 +223,10 @@ fn apply_versions(
             unpublished_blob: _,
             extra_version_times: _,
         } => {
-            // println!("Unpublished pkg: {}", package_id)
+            println!("Unpublished pkg: {}", package_id)
         },
         Packument::MissingData | Packument::Deleted => {
-            // println!("Deleted pkg: {}", package_id)
+            println!("Deleted pkg: {}", package_id)
         }
     }
 }
