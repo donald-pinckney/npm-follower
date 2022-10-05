@@ -32,7 +32,7 @@ jobs:
     - name: Install Diesel
       run: cargo install diesel_cli --no-default-features --features postgres --version 1.4.1
     - name: Setup Diesel
-      run: cd postgres_db && diesel setup && diesel migration run
+      run: cd postgres_db && diesel setup
     - name: Build
       run: cargo build --verbose
     - name: Run tests
