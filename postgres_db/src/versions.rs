@@ -65,6 +65,13 @@ impl Version {
 pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
     use super::schema::versions::dsl::*;
 
+    // TODO [perf]: This insert is fairly slow, but we are doing it more often than needed.
+    // We only need to do this if either:
+    // a) the package is new, or
+    // b) the version metadata changed
+
+    // TODO [perf]: We should batch these together and insert multiple
+    // versions at once 
     diesel::insert_into(versions)
         .values(&version)
         .on_conflict((package_id, semver))

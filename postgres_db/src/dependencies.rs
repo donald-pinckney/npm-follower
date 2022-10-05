@@ -135,6 +135,7 @@ pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i
 pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
     use super::schema::dependencies::dsl::*;
 
+    // TODO [perf]: batch these inserts
     let mut ids = Vec::new();
     for dep in deps {
         // find all deps with the same hash
@@ -147,13 +148,14 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
         if deps_with_same_hash.is_empty() {
             let inserted = diesel::insert_into(dependencies)
                 .values(&dep)
-                .get_result::<QueriedDependency>(&conn.conn)
+                .returning(id)
+                .get_result::<i64>(&conn.conn)
                 .unwrap_or_else(|e| {
                     eprintln!("Got error: {}", e);
                     eprintln!("on dep: {:?}", dep);
                     panic!("Error inserting dependency");
                 });
-            ids.push(inserted.id);
+            ids.push(inserted);
             continue;
         }
 
@@ -172,6 +174,9 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
                 break;
             }
         }
+
+        // TODO [bug]: Don't you need a case for dep with same hash but different values?
+        // lets not assume no collisions
     }
 
     ids
