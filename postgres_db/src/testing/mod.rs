@@ -9,30 +9,34 @@ use std::process::Command;
 use std::sync::Mutex;
 use url::Url;
 
-
 lazy_static! {
     static ref TEST_CONN_LOCK: Mutex<()> = Mutex::new(());
-} 
+}
 
 fn drop_testing_db() {
     dotenv().ok();
 
-    let database_url_str = env::var("TESTING_DATABASE_URL").expect("TESTING_DATABASE_URL must be set");
+    let database_url_str =
+        env::var("TESTING_DATABASE_URL").expect("TESTING_DATABASE_URL must be set");
     let database_url = Url::parse(&database_url_str).unwrap();
     let database_host = database_url.host_str().unwrap();
     let database_port = database_url.port().unwrap_or(5432);
+    let database_user = database_url.username();
 
     // Drop testing DB
     // TODO: check for the error case of concurrent access
-    let _status = Command::new("dropdb")
-        .arg("-h")
-        .arg(database_host)
-        .arg("-p")
-        .arg(database_port.to_string())
-        .arg("--if-exists")
-        .arg("testing_npm_data")
-        .status()
-        .expect("failed to execute process");
+    let mut command_to_run = Command::new("dropdb");
+    command_to_run.arg("-h");
+    command_to_run.arg(database_host);
+    command_to_run.arg("-p");
+    command_to_run.arg(database_port.to_string());
+    if database_user != "" {
+        command_to_run.arg("-U").arg(database_user);
+    }
+    command_to_run.arg("-w");
+    command_to_run.arg("--if-exists");
+    command_to_run.arg("testing_npm_data");
+    let _status = command_to_run.status().expect("failed to execute process");
 }
 
 fn setup_test_db() -> DbConnection {
@@ -55,15 +59,17 @@ fn setup_test_db() -> DbConnection {
         .current_dir(postgres_db_dir)
         .status()
         .expect("failed to execute process");
-    assert!(status.success(), "Failed to run diesel setup --database-url {}", database_url);
+    assert!(
+        status.success(),
+        "Failed to run diesel setup --database-url {}",
+        database_url
+    );
 
     // 3. Connect
     let conn = PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
     DbConnection { conn }
 }
-
-
 
 pub fn using_test_db<F, R>(f: F) -> R
 where
