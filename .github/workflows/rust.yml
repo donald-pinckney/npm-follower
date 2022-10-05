@@ -30,12 +30,12 @@ jobs:
     - name: Setup Node.js environment
       uses: actions/setup-node@v3.3.0
     - name: Install Diesel
-      run: cargo install diesel_cli --no-default-features --features postgres
+      run: cargo install diesel_cli --no-default-features --features postgres --version 1.4.1
     - name: Setup Diesel
       run: cd postgres_db && diesel setup && diesel migration run
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
-    - name: Run benchmarks
-      run: cargo bench --verbose
+    # - name: Run benchmarks
+    #   run: cargo bench --verbose
