@@ -7,7 +7,7 @@ use lazy_static::lazy_static;
 use std::env;
 use std::process::Command;
 use std::sync::Mutex;
-use url::{Url, Host, Position};
+use url::Url;
 
 
 lazy_static! {
@@ -20,7 +20,7 @@ fn drop_testing_db() {
     let database_url_str = env::var("TESTING_DATABASE_URL").expect("TESTING_DATABASE_URL must be set");
     let database_url = Url::parse(&database_url_str).unwrap();
     let database_host = database_url.host_str().unwrap();
-    let database_port = database_url.port().unwrap();
+    let database_port = database_url.port().unwrap_or(5432);
 
     // Drop testing DB
     // TODO: check for the error case of concurrent access

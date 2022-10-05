@@ -9,6 +9,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   DATABASE_URL: postgres://donald:password@localhost/npm_data
+  TESTING_DATABASE_URL: postgres://donald:password@localhost/testing_npm_data
   
 jobs:
   build:
