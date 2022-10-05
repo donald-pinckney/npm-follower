@@ -44,7 +44,7 @@ pub fn insert_package(conn: &DbConnection, package: Package) -> (i64, bool) {
     use super::schema::packages::dsl::*;
 
     // check if the package already exists
-    // TODO: can we do this as one query?
+    // TODO [perf]: can we do this as one query?
     let already_existed = packages
         .filter(name.eq(&package.name))
         .first::<(i64, String, PackageMetadata, bool)>(&conn.conn)
