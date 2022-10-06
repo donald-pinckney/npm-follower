@@ -44,11 +44,23 @@ async fn query_npm_metrics(
         );
 
         // TODO: do actual good error handling, instead of this garbage
-        let resp = reqwest::get(&query).await?.text().await?;
-        if resp.contains("error") {
-            println!("Error querying {}, skipping", pkg.name);
+        let resp = reqwest::get(&query).await?;
+        if resp.status() == 429 {
+            return Err(ApiError::RateLimit);
         }
-        let result: ApiResult = serde_json::from_str(&resp)?;
+        let text = resp.text().await?;
+        let result: ApiResult = match serde_json::from_str(&text) {
+            Ok(result) => result,
+            Err(e) => {
+                // get the error message from the response
+                let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
+                let error = match json_map.get("error") {
+                    Some(error) => error,
+                    None => return Err(ApiError::Other(e.to_string())),
+                };
+                return Err(ApiError::Other(error.to_string()));
+            }
+        };
 
         if api_result.is_none() {
             api_result = Some(result);
@@ -196,11 +208,16 @@ async fn insert_from_packages(conn: &DbConnection) {
         for handle in handles {
             let metric = match handle.await.unwrap() {
                 Ok(metric) => metric,
+                Err(ApiError::RateLimit) => {
+                    eprintln!("Rate limited! Exiting!");
+                    std::process::exit(1);
+                }
                 Err(e) => {
                     println!("Error: {}", e);
                     continue;
                 }
             };
+
             println!("latest: {:?}", metric.latest_date);
             println!("counts:");
             for dl in &metric.download_counts {
@@ -265,6 +282,8 @@ pub enum ApiError {
     Reqwest(reqwest::Error),
     Serde(serde_json::Error),
     Io(std::io::Error),
+    DoesNotExist(String), // where String is the package name
+    Other(String),        // where String is the error message
     RateLimit,
 }
 
@@ -293,6 +312,8 @@ impl std::fmt::Display for ApiError {
             ApiError::Serde(err) => write!(f, "serde error: {}", err),
             ApiError::Io(err) => write!(f, "io error: {}", err),
             ApiError::RateLimit => write!(f, "rate limited"),
+            ApiError::DoesNotExist(name) => write!(f, "package {} does not exist", name),
+            ApiError::Other(msg) => write!(f, "other error: {}", msg),
         }
     }
 }
