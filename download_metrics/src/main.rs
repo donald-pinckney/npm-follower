@@ -222,3 +222,9 @@ fn has_normal_metadata(pkg: &QueriedPackage) -> bool {
         }
     )
 }
+
+/// Returns true if the given date is a week ago basing ourselves on the current time and the
+/// given 0 epoch date
+fn is_a_week_ago(date: &chrono::NaiveDate, epoch: &chrono::NaiveDate) -> bool {
+    todo!("is_a_week_ago")
+}
