@@ -12,6 +12,8 @@ use utils::check_no_concurrent_processes;
 async fn main() {
     check_no_concurrent_processes("download_metrics");
     let conn = postgres_db::connect();
+    // TODO: for debugging, remove later
+    postgres_db::internal_state::set_download_metrics_pkg_seq(1, &conn);
     insert_from_packages(&conn).await;
 }
 
@@ -28,9 +30,14 @@ async fn query_npm_metrics(
     let mut rel_lbound = *lbound;
     let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
     for rel_rbound in rule {
-        if rel_rbound > *rbound {
+        if rel_lbound > *rbound {
             break;
         }
+
+        println!(
+            "Querying {} from {} to {}",
+            pkg.name, rel_lbound, rel_rbound
+        );
 
         let query = format!(
             "https://api.npmjs.org/downloads/range/{}:{}/{}",
@@ -38,9 +45,8 @@ async fn query_npm_metrics(
         );
 
         // TODO: handle errors
-        let resp = reqwest::get(&query).await?.text().await?;
-        println!("body: {}", resp);
-        let result: ApiResult = serde_json::from_str(&resp)?;
+        let resp = reqwest::get(&query).await?;
+        let result: ApiResult = resp.json().await?;
 
         if api_result.is_none() {
             api_result = Some(result);
@@ -131,13 +137,10 @@ async fn insert_from_packages(conn: &DbConnection) {
                     weekly_count += result.downloads[j].downloads;
                     j += 1;
                 }
-                i = j;
 
-                let date = chrono::NaiveDate::parse_from_str(
-                    &result.downloads.last().unwrap().day,
-                    "%Y-%m-%d",
-                )
-                .unwrap();
+                let date = chrono::NaiveDate::parse_from_str(&result.downloads[i].day, "%Y-%m-%d")
+                    .unwrap();
+                i = j;
 
                 // we don't insert zero counts
                 if weekly_count > 0 {
@@ -150,14 +153,24 @@ async fn insert_from_packages(conn: &DbConnection) {
 
             let latest = weekly_results.last().unwrap().date;
             let metric = DownloadMetric::new(pkg.id, weekly_results, Some(latest));
+            println!("did package: {}", pkg.name);
+            println!("counts:");
+            for dl in &metric.download_counts {
+                print!("{}: {}, ", dl.date, dl.count);
+            }
+            println!();
             download_metrics.push(metric);
         }
 
-        for metric in download_metrics {
-            println!("inserting metric for pkg_id: {}", metric.package_id);
-            println!("latest: {:?}", metric.latest_date);
-            println!("metrics: {:?}", metric.download_counts);
-        }
+        conn.run_psql_transaction(|| {
+            for metric in download_metrics {
+                postgres_db::download_metrics::insert_download_metric(conn, metric);
+            }
+            postgres_db::internal_state::set_download_metrics_pkg_seq(chunk_pkg_id, conn);
+            Ok(())
+        })
+        .expect("failed to insert download metrics");
+        pkg_id = chunk_pkg_id;
     }
 
     println!("Done, at pkg_id {}", pkg_id);
