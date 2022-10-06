@@ -10,6 +10,7 @@ pub struct DownloadMetric {
     pub package_id: i64,
     pub download_counts: Vec<DownloadCount>,
     pub latest_date: Option<NaiveDate>,
+    pub total_downloads: i64,
 }
 
 impl DownloadMetric {
@@ -17,11 +18,13 @@ impl DownloadMetric {
         package_id: i64,
         download_counts: Vec<DownloadCount>,
         latest_date: Option<NaiveDate>,
+        total_downloads: i64,
     ) -> DownloadMetric {
         DownloadMetric {
             package_id,
             download_counts,
             latest_date,
+            total_downloads,
         }
     }
 }
@@ -32,13 +35,14 @@ pub struct QueriedDownloadMetric {
     pub package_id: i64,
     pub download_counts: Vec<DownloadCount>,
     pub latest_date: Option<NaiveDate>,
+    pub total_downloads: i64,
 }
 
 impl<ST, SB: diesel::backend::Backend> Queryable<ST, SB> for QueriedDownloadMetric
 where
-    (i64, i64, Vec<DownloadCount>, Option<NaiveDate>): diesel::deserialize::FromSqlRow<ST, SB>,
+    (i64, i64, Vec<DownloadCount>, Option<NaiveDate>, i64): diesel::deserialize::FromSqlRow<ST, SB>,
 {
-    type Row = (i64, i64, Vec<DownloadCount>, Option<NaiveDate>);
+    type Row = (i64, i64, Vec<DownloadCount>, Option<NaiveDate>, i64);
 
     fn build(row: Self::Row) -> Self {
         QueriedDownloadMetric {
@@ -46,6 +50,7 @@ where
             package_id: row.1,
             download_counts: row.2,
             latest_date: row.3,
+            total_downloads: row.4,
         }
     }
 }

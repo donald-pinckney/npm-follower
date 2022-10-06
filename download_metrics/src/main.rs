@@ -101,6 +101,8 @@ async fn make_download_metric(
     let mut weekly_results: Vec<DownloadCount> = Vec::new();
     let mut i = 0;
     let mut latest = None;
+    let mut total_downloads = 0;
+
     loop {
         let mut weekly_count = result.downloads[i].downloads;
         let mut j = i + 1;
@@ -113,6 +115,8 @@ async fn make_download_metric(
 
         // we set i to j so that we skip the days we already counted
         i = j;
+
+        total_downloads += weekly_count;
 
         let count = DownloadCount {
             date,
@@ -132,7 +136,12 @@ async fn make_download_metric(
     }
 
     println!("did package {}", pkg.name);
-    Ok(DownloadMetric::new(pkg.id, weekly_results, latest))
+    Ok(DownloadMetric::new(
+        pkg.id,
+        weekly_results,
+        latest,
+        total_downloads,
+    ))
 }
 
 /// Inserts new download metric rows by using the `packages` table and querying npm

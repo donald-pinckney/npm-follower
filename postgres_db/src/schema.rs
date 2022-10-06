@@ -33,6 +33,7 @@ table! {
         id -> Int8,
         package_id -> Int8,
         download_counts -> Array<Download_count_struct>,
+        total_downloads -> Int8,
         latest_date -> Nullable<Date>,
     }
 }
