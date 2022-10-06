@@ -73,8 +73,7 @@ pub fn insert_versions(conn: &DbConnection, version_vec: Vec<Version>) -> Vec<(i
     // a) the package is new, or
     // b) the version metadata changed
 
-    // TODO [perf]: We should batch these together and insert multiple
-    // versions at once 
+    // TODO [bug]: batch into chunks, otherwise we will hit a crash
     let ids: Vec<i64> = diesel::insert_into(versions)
         .values(version_vec)
         .on_conflict((package_id, semver))
