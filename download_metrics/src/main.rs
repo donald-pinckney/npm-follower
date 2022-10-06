@@ -20,7 +20,7 @@ async fn query_npm_metrics(
     pkg: &QueriedPackage,
     lbound: &NaiveDate,
     rbound: &NaiveDate,
-) -> Result<ApiResult, Box<dyn std::error::Error>> {
+) -> Result<ApiResult, ApiError> {
     let delta = chronoutil::RelativeDuration::years(1);
     // we are going to merge the results of multiple queries into one
     let mut api_result = None;
@@ -73,6 +73,52 @@ async fn bulkquery_npm_metrics(
     todo!("bulkquery_npm_metrics")
 }
 
+async fn make_download_metric(
+    pkg: &QueriedPackage,
+    lower_bound_date: &NaiveDate,
+    upper_bound_date: &NaiveDate,
+) -> Result<DownloadMetric, ApiError> {
+    let result = query_npm_metrics(&pkg, &lower_bound_date, &upper_bound_date).await?;
+
+    // we need to convert the results into DownloadMetric, merging daily results
+    // into weekly results
+    let mut weekly_results: Vec<DownloadCount> = Vec::new();
+    let mut i = 0;
+    let mut latest = None;
+    loop {
+        let mut weekly_count = result.downloads[i].downloads;
+        let mut j = i + 1;
+        while j < result.downloads.len() && j < i + 7 {
+            weekly_count += result.downloads[j].downloads;
+            j += 1;
+        }
+
+        let date = chrono::NaiveDate::parse_from_str(&result.downloads[i].day, "%Y-%m-%d").unwrap();
+
+        // we set i to j so that we skip the days we already counted
+        i = j;
+
+        let count = DownloadCount {
+            date,
+            count: weekly_count,
+        };
+
+        // we don't insert zero counts
+        if weekly_count > 0 {
+            weekly_results.push(count);
+        }
+
+        if i >= result.downloads.len() {
+            // we still want to know the latest, even if it's zero and we didn't insert it
+            latest = Some(date);
+            break;
+        }
+    }
+
+    println!("did package {}", pkg.name);
+    Ok(DownloadMetric::new(pkg.id, weekly_results, latest))
+}
+
 /// Inserts new download metric rows by using the `packages` table and querying npm
 async fn insert_from_packages(conn: &DbConnection) {
     let mut pkg_id = postgres_db::internal_state::query_download_metrics_pkg_seq(conn).unwrap_or(1);
@@ -93,7 +139,6 @@ async fn insert_from_packages(conn: &DbConnection) {
         let mut normal_packages = Vec::new();
         let mut scoped_packages = Vec::new(); // TODO: do scoped packages.
 
-        // TODO: concurrent queries
         while normal_packages.len() < 128 && scoped_packages.len() < 128 {
             let pkg = postgres_db::packages::query_pkg_by_id(conn, chunk_pkg_id);
             match pkg {
@@ -130,58 +175,26 @@ async fn insert_from_packages(conn: &DbConnection) {
         }
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
+        let mut handles = Vec::new();
 
         // TODO: bulk query, remove chain
         for pkg in normal_packages
             .into_iter()
             .chain(scoped_packages.into_iter())
         {
-            let result = match query_npm_metrics(&pkg, &lower_bound_date, &upper_bound_date).await {
-                Ok(result) => result,
+            handles.push(tokio::spawn(async move {
+                make_download_metric(&pkg, &lower_bound_date, &upper_bound_date).await
+            }));
+        }
+
+        for handle in handles {
+            let metric = match handle.await.unwrap() {
+                Ok(metric) => metric,
                 Err(e) => {
-                    eprintln!("Error querying npm api: {}", e);
+                    println!("Error: {}", e);
                     continue;
                 }
             };
-
-            // we need to convert the results into DownloadMetric, merging daily results
-            // into weekly results
-            let mut weekly_results: Vec<DownloadCount> = Vec::new();
-            let mut i = 0;
-            let mut latest = None;
-            loop {
-                let mut weekly_count = result.downloads[i].downloads;
-                let mut j = i + 1;
-                while j < result.downloads.len() && j < i + 7 {
-                    weekly_count += result.downloads[j].downloads;
-                    j += 1;
-                }
-
-                let date = chrono::NaiveDate::parse_from_str(&result.downloads[i].day, "%Y-%m-%d")
-                    .unwrap();
-
-                // we set i to j so that we skip the days we already counted
-                i = j;
-
-                let count = DownloadCount {
-                    date,
-                    count: weekly_count,
-                };
-
-                // we don't insert zero counts
-                if weekly_count > 0 {
-                    weekly_results.push(count);
-                }
-
-                if i >= result.downloads.len() {
-                    // we still want to know the latest, even if it's zero and we didn't insert it
-                    latest = Some(date);
-                    break;
-                }
-            }
-
-            let metric = DownloadMetric::new(pkg.id, weekly_results, latest);
-            println!("did package: {}", pkg.name);
             println!("latest: {:?}", metric.latest_date);
             println!("counts:");
             for dl in &metric.download_counts {
@@ -240,3 +253,40 @@ fn has_normal_metadata(pkg: &QueriedPackage) -> bool {
 fn is_a_week_ago(date: &chrono::NaiveDate, epoch: &chrono::NaiveDate) -> bool {
     todo!("is_a_week_ago")
 }
+
+#[derive(Debug)]
+pub enum ApiError {
+    Reqwest(reqwest::Error),
+    Serde(serde_json::Error),
+    Io(std::io::Error),
+}
+
+impl From<reqwest::Error> for ApiError {
+    fn from(err: reqwest::Error) -> Self {
+        ApiError::Reqwest(err)
+    }
+}
+
+impl From<serde_json::Error> for ApiError {
+    fn from(err: serde_json::Error) -> Self {
+        ApiError::Serde(err)
+    }
+}
+
+impl From<std::io::Error> for ApiError {
+    fn from(err: std::io::Error) -> Self {
+        ApiError::Io(err)
+    }
+}
+
+impl std::fmt::Display for ApiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ApiError::Reqwest(err) => write!(f, "reqwest error: {}", err),
+            ApiError::Serde(err) => write!(f, "serde error: {}", err),
+            ApiError::Io(err) => write!(f, "io error: {}", err),
+        }
+    }
+}
+
+impl std::error::Error for ApiError {}
