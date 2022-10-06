@@ -90,6 +90,8 @@ pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
 pub fn delete_versions_not_in(conn: &DbConnection, pkg_id: i64, vers: Vec<&Semver>) {
     use super::schema::versions::dsl::*;
 
+    println!("The maybe slow query is running!");
+    
     // get all versions with the given package id
     let all_vers = versions
         .filter(package_id.eq(pkg_id))

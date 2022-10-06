@@ -12,8 +12,6 @@ use colored::Colorize;
 
 use postgres_db::change_log::Change;
 
-use relational_db_builder::process_change;
-
 
 fn load_change_dataset(path: &PathBuf) -> Vec<Change> {
     io::BufReader::new(File::open(path).unwrap()).lines().map(|l| {
@@ -25,26 +23,26 @@ fn load_change_dataset(path: &PathBuf) -> Vec<Change> {
 }
 
 
-fn insert_changes(conn: &DbConnection, changes: Vec<Change>) -> Duration {
-    let now = Instant::now();
-    for c in changes {
-        process_change(conn, c);
-    }
-    now.elapsed()
-}
-
 fn run_bench(path: PathBuf) {
     testing::using_test_db(|conn| {
-        println!("\nRunning insertion bench: {}", path.file_name().unwrap().to_string_lossy());
+        println!("\n====>> *** Running insertion bench: {} *** <<====\n", path.file_name().unwrap().to_string_lossy().bold());
 
         let now = Instant::now();
         let changes = load_change_dataset(&path);
-        let elapsed = now.elapsed();
-        println!("    Loaded {} ({:.2} seconds)", path.display(), elapsed.as_secs_f64());
+        let load_dt = now.elapsed();
+        println!("Loaded {} ({:.2} seconds)", path.display(), load_dt.as_secs_f64());
 
-        
-        let elapsed = insert_changes(conn, changes);
-        println!("    Inserted {} {}", path.display(), format!("({:.2} seconds)", elapsed.as_secs_f64()).bold());
+        let now = Instant::now();
+        let changes: Vec<_> = changes.into_iter().filter_map(relational_db_builder::deserialize_change).collect();
+        let parse_dt = now.elapsed();
+        println!("Parsed {} ({:.2} seconds)", path.display(), parse_dt.as_secs_f64());
+
+        let now = Instant::now();
+        for (name, pack) in changes {
+            relational_db_builder::apply_packument_change(conn, name, pack)
+        }
+        let insert_dt = now.elapsed();
+        println!("Inserted {} {}", path.display(), format!("({:.2} seconds)", insert_dt.as_secs_f64()).bold());
     });
 }
 
@@ -74,7 +72,7 @@ fn main() {
         if run {
             run_bench(b);
         } else {
-            println!("Skipping insertion bench: {}", b.file_name().unwrap().to_string_lossy());
+            // println!("Skipping insertion bench: {}", b.file_name().unwrap().to_string_lossy());
         }
     }
 }
