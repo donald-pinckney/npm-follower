@@ -62,8 +62,11 @@ impl Version {
     }
 }
 
-pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
+
+pub fn insert_versions(conn: &DbConnection, version_vec: Vec<Version>) -> Vec<(i64, Semver)> {
     use super::schema::versions::dsl::*;
+
+    let semvers: Vec<_> = version_vec.iter().map(|v| v.semver.clone()).collect();
 
     // TODO [perf]: This insert is fairly slow, but we are doing it more often than needed.
     // We only need to do this if either:
@@ -72,8 +75,8 @@ pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
 
     // TODO [perf]: We should batch these together and insert multiple
     // versions at once 
-    diesel::insert_into(versions)
-        .values(&version)
+    let ids: Vec<i64> = diesel::insert_into(versions)
+        .values(version_vec)
         .on_conflict((package_id, semver))
         .do_update()
         .set((
@@ -90,8 +93,11 @@ pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
             secret.eq(excluded(secret)),
         ))
         .returning(id)
-        .get_result::<i64>(&conn.conn)
-        .expect("Error saving new version")
+        .get_results::<i64>(&conn.conn)
+        .expect("Error saving new version");
+    
+    assert!(ids.len() == semvers.len());
+    ids.into_iter().zip(semvers.into_iter()).collect()
 }
 
 pub fn delete_versions_not_in(conn: &DbConnection, pkg_id: i64, vers: Vec<&Semver>) {

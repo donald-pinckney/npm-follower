@@ -178,6 +178,9 @@ fn apply_versions(
                 inserted_deps
             };
 
+
+            let mut versions_to_insert = vec![];
+
             for (sv, vpack) in &versions {
                 let prod_dep_ids = insert_deps(&vpack.prod_dependencies);
                 let dev_dep_ids = insert_deps(&vpack.dev_dependencies);
@@ -200,9 +203,15 @@ fn apply_versions(
                     secret,
                 );
 
-                let ver_id = postgres_db::versions::insert_version(conn, ver);
+                versions_to_insert.push(ver);                
+            }
 
-                if latest.is_some() && latest.as_ref().unwrap() == sv {
+
+            let ver_ids_semvers = postgres_db::versions::insert_versions(conn, versions_to_insert);
+
+            for (ver_id, sv) in ver_ids_semvers {
+                let needs_patch = matches!(latest, Some(ref x) if x == &sv);
+                if needs_patch {
                     postgres_db::packages::patch_latest_version_id(conn, package_id, ver_id);
                 }
             }
