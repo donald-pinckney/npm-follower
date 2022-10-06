@@ -44,9 +44,12 @@ async fn query_npm_metrics(
             rel_lbound, rel_rbound, pkg.name
         );
 
-        // TODO: handle errors
-        let resp = reqwest::get(&query).await?;
-        let result: ApiResult = resp.json().await?;
+        // TODO: do actual good error handling, instead of this garbage
+        let resp = reqwest::get(&query).await?.text().await?;
+        if resp.contains("error") {
+            println!("Error querying {}, skipping", pkg.name);
+        }
+        let result: ApiResult = serde_json::from_str(&resp)?;
 
         if api_result.is_none() {
             api_result = Some(result);
@@ -92,22 +95,26 @@ async fn insert_from_packages(conn: &DbConnection) {
         let mut normal_packages = Vec::new();
         let mut scoped_packages = Vec::new(); // TODO: do scoped packages.
 
+        // TODO: concurrent queries
         while normal_packages.len() < 128 && scoped_packages.len() < 128 {
             let pkg = postgres_db::packages::query_pkg_by_id(conn, chunk_pkg_id);
-            if pkg.is_none() {
-                finished = true;
-                break;
-            }
-            let pkg = pkg.unwrap();
-            if !pkg.secret && has_normal_metadata(&pkg) {
-                // TODO: i think? ping donald about it
-                if pkg.name.starts_with('@') {
-                    scoped_packages.push(pkg);
-                } else {
-                    normal_packages.push(pkg);
+            match pkg {
+                None => {
+                    finished = true;
+                    break;
+                }
+                Some(pkg) => {
+                    // TODO: i think? ping donald about it
+                    if !pkg.secret && has_normal_metadata(&pkg) {
+                        if pkg.name.starts_with('@') {
+                            scoped_packages.push(pkg);
+                        } else {
+                            normal_packages.push(pkg);
+                        }
+                    }
+                    chunk_pkg_id += 1;
                 }
             }
-            chunk_pkg_id += 1;
         }
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
@@ -124,13 +131,13 @@ async fn insert_from_packages(conn: &DbConnection) {
                     continue;
                 }
             };
+
             // we need to convert the results into DownloadMetric, merging daily results
             // into weekly results
-
             let mut weekly_results: Vec<DownloadCount> = Vec::new();
-
             let mut i = 0;
-            while i < result.downloads.len() {
+            let mut latest = None;
+            loop {
                 let mut weekly_count = result.downloads[i].downloads;
                 let mut j = i + 1;
                 while j < result.downloads.len() && j < i + 7 {
@@ -140,20 +147,30 @@ async fn insert_from_packages(conn: &DbConnection) {
 
                 let date = chrono::NaiveDate::parse_from_str(&result.downloads[i].day, "%Y-%m-%d")
                     .unwrap();
+
+                // we set i to j so that we skip the days we already counted
                 i = j;
+
+                let count = DownloadCount {
+                    date,
+                    count: weekly_count,
+                };
 
                 // we don't insert zero counts
                 if weekly_count > 0 {
-                    weekly_results.push(DownloadCount {
-                        date,
-                        count: weekly_count,
-                    });
+                    weekly_results.push(count);
+                }
+
+                if i >= result.downloads.len() {
+                    // we still want to know the latest, even if it's zero and we didn't insert it
+                    latest = Some(date);
+                    break;
                 }
             }
 
-            let latest = weekly_results.last().unwrap().date;
-            let metric = DownloadMetric::new(pkg.id, weekly_results, Some(latest));
+            let metric = DownloadMetric::new(pkg.id, weekly_results, latest);
             println!("did package: {}", pkg.name);
+            println!("latest: {:?}", metric.latest_date);
             println!("counts:");
             for dl in &metric.download_counts {
                 print!("{}: {}, ", dl.date, dl.count);
