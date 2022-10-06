@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use chrono::NaiveDate;
 use postgres_db::{
@@ -6,6 +6,7 @@ use postgres_db::{
     DbConnection,
 };
 use serde::Deserialize;
+use tokio::sync::Semaphore;
 use utils::check_no_concurrent_processes;
 
 #[tokio::main]
@@ -75,10 +76,13 @@ async fn bulkquery_npm_metrics(
 
 async fn make_download_metric(
     pkg: &QueriedPackage,
+    sem: Arc<Semaphore>,
     lower_bound_date: &NaiveDate,
     upper_bound_date: &NaiveDate,
 ) -> Result<DownloadMetric, ApiError> {
+    let permit = sem.acquire().await.unwrap();
     let result = query_npm_metrics(&pkg, &lower_bound_date, &upper_bound_date).await?;
+    drop(permit);
 
     // we need to convert the results into DownloadMetric, merging daily results
     // into weekly results
@@ -176,14 +180,16 @@ async fn insert_from_packages(conn: &DbConnection) {
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
         let mut handles = Vec::new();
+        let sem = Arc::new(Semaphore::new(3)); // limiting to 3 requests at a time
 
         // TODO: bulk query, remove chain
         for pkg in normal_packages
             .into_iter()
             .chain(scoped_packages.into_iter())
         {
+            let sem = sem.clone();
             handles.push(tokio::spawn(async move {
-                make_download_metric(&pkg, &lower_bound_date, &upper_bound_date).await
+                make_download_metric(&pkg, sem, &lower_bound_date, &upper_bound_date).await
             }));
         }
 
@@ -259,6 +265,7 @@ pub enum ApiError {
     Reqwest(reqwest::Error),
     Serde(serde_json::Error),
     Io(std::io::Error),
+    RateLimit,
 }
 
 impl From<reqwest::Error> for ApiError {
@@ -285,6 +292,7 @@ impl std::fmt::Display for ApiError {
             ApiError::Reqwest(err) => write!(f, "reqwest error: {}", err),
             ApiError::Serde(err) => write!(f, "serde error: {}", err),
             ApiError::Io(err) => write!(f, "io error: {}", err),
+            ApiError::RateLimit => write!(f, "rate limited"),
         }
     }
 }
