@@ -71,6 +71,21 @@ pub fn query_pkg_by_id(conn: &DbConnection, pkg_id: i64) -> Option<QueriedPackag
         .expect("Error loading package")
 }
 
+/// Gets the next id, that's greater than the given id. Returns None if there are no more packages.
+/// This is needed because ids are not necessarily sequential.
+pub fn query_next_pkg_id(conn: &DbConnection, pkg_id: i64) -> Option<i64> {
+    use super::schema::packages::dsl::*;
+
+    let result = packages
+        .filter(id.gt(pkg_id))
+        .order(id.asc())
+        .first::<QueriedPackage>(&conn.conn)
+        .optional()
+        .expect("Error loading package");
+
+    result.map(|x| x.id)
+}
+
 // Inserts package into the database and returns the id of the row that was just inserted.
 // Also returns a bool that is true if the package already existed.
 pub fn insert_package(conn: &DbConnection, package: Package) -> (i64, bool) {

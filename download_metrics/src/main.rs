@@ -12,8 +12,6 @@ use utils::check_no_concurrent_processes;
 async fn main() {
     check_no_concurrent_processes("download_metrics");
     let conn = postgres_db::connect();
-    // TODO: for debugging, remove later
-    postgres_db::internal_state::set_download_metrics_pkg_seq(1, &conn);
     insert_from_packages(&conn).await;
 }
 
@@ -100,8 +98,22 @@ async fn insert_from_packages(conn: &DbConnection) {
             let pkg = postgres_db::packages::query_pkg_by_id(conn, chunk_pkg_id);
             match pkg {
                 None => {
-                    finished = true;
-                    break;
+                    // could be that ids are not contiguous, so we need to get the next id
+                    let next_pkg_id = postgres_db::packages::query_next_pkg_id(conn, chunk_pkg_id);
+                    match next_pkg_id {
+                        None => {
+                            // no more packages to query
+                            finished = true;
+                            break;
+                        }
+                        Some(next_pkg_id) => {
+                            println!(
+                                "No package with id {}, skipping to next id {}",
+                                chunk_pkg_id, next_pkg_id
+                            );
+                            chunk_pkg_id = next_pkg_id;
+                        }
+                    }
                 }
                 Some(pkg) => {
                     // TODO: i think? ping donald about it
