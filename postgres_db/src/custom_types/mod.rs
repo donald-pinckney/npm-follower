@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use chrono::NaiveDate;
 use chrono::{DateTime, Utc};
 use diesel::sql_types::Array;
 use diesel::sql_types::Text;
@@ -184,6 +185,12 @@ pub enum RepoHostInfo {
     Thirdparty,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DownloadCount {
+    pub count: i64,
+    pub date: NaiveDate,
+}
+
 pub mod sql_types {
     #[derive(SqlType, QueryId)]
     #[postgres(type_name = "semver_struct")] // or should it be semver (domain)?
@@ -212,6 +219,10 @@ pub mod sql_types {
     #[derive(SqlType, QueryId)]
     #[postgres(type_name = "repo_info_struct")]
     pub struct RepoInfoSql;
+
+    #[derive(SqlType, QueryId)]
+    #[postgres(type_name = "download_count_struct")]
+    pub struct DownloadCountSql;
 }
 
 #[allow(non_camel_case_types)]
@@ -222,8 +233,10 @@ pub mod sql_type_names {
     pub type Parsed_spec_struct = super::sql_types::ParsedSpecStructSql;
     pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
     pub type Repo_info_struct = super::sql_types::RepoInfoSql;
+    pub type Download_count_struct = super::sql_types::DownloadCountSql;
 }
 
+mod download_count;
 mod download_failed;
 mod package_metadata;
 mod parsed_spec;

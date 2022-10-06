@@ -1,0 +1,17 @@
+[package]
+name = "download_metrics"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+postgres_db = { path = "../postgres_db" }
+utils = { path = "../utils" }
+reqwest = "0.11.11"
+futures = "0.3"
+tokio = { version = "1.19.2", features = ["full"] }
+chrono = "0.4.22"
+serde = "1.0.145"
+serde_json = "1.0.85"
+chronoutil = "0.2.3"

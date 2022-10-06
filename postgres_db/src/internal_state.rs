@@ -20,6 +20,15 @@ pub fn set_queued_downloads_seq(seq: i64, conn: &DbConnection) {
     set_key_value_state("queued_downloads_seq", seq, conn);
 }
 
+pub fn query_download_metrics_pkg_seq(conn: &DbConnection) -> Option<i64> {
+    query_key_value_state("download_metrics_pkg_seq", conn)
+}
+
+pub fn set_download_metrics_pkg_seq(seq: i64, conn: &DbConnection) {
+    set_key_value_state("download_metrics_pkg_seq", seq, conn);
+}
+
+
 fn query_key_value_state(the_key: &str, conn: &DbConnection) -> Option<i64> {
     use schema::internal_state::dsl::*;
     

@@ -15,6 +15,30 @@ pub struct Package {
     pub secret: bool,
 }
 
+#[derive(Debug)]
+pub struct QueriedPackage {
+    pub id: i64,
+    pub name: String,
+    pub metadata: PackageMetadata,
+    pub secret: bool,
+}
+
+impl<ST, SB: diesel::backend::Backend> Queryable<ST, SB> for QueriedPackage
+where
+    (i64, String, PackageMetadata, bool): diesel::deserialize::FromSqlRow<ST, SB>,
+{
+    type Row = (i64, String, PackageMetadata, bool);
+
+    fn build(row: Self::Row) -> Self {
+        QueriedPackage {
+            id: row.0,
+            name: row.1,
+            metadata: row.2,
+            secret: row.3,
+        }
+    }
+}
+
 impl Package {
     pub fn create(name: String, metadata: PackageMetadata, secret: bool) -> Package {
         Package {
@@ -30,11 +54,21 @@ pub fn query_pkg_id(conn: &DbConnection, pkg_name: &str) -> Option<i64> {
 
     let result = packages
         .filter(name.eq(pkg_name))
-        .first::<(i64, String, PackageMetadata, bool)>(&conn.conn)
+        .first::<QueriedPackage>(&conn.conn)
         .optional()
         .expect("Error loading package");
 
-    result.map(|x| x.0)
+    result.map(|x| x.id)
+}
+
+pub fn query_pkg_by_id(conn: &DbConnection, pkg_id: i64) -> Option<QueriedPackage> {
+    use super::schema::packages::dsl::*;
+
+    packages
+        .filter(id.eq(pkg_id))
+        .first::<QueriedPackage>(&conn.conn)
+        .optional()
+        .expect("Error loading package")
 }
 
 // Inserts package into the database and returns the id of the row that was just inserted.
@@ -45,7 +79,7 @@ pub fn insert_package(conn: &DbConnection, package: Package) -> (i64, bool) {
     // check if the package already exists
     let already_existed = packages
         .filter(name.eq(&package.name))
-        .first::<(i64, String, PackageMetadata, bool)>(&conn.conn)
+        .first::<QueriedPackage>(&conn.conn)
         .optional()
         .expect("Error loading package")
         .is_some();
@@ -58,7 +92,7 @@ pub fn insert_package(conn: &DbConnection, package: Package) -> (i64, bool) {
         .returning(id)
         .get_result::<i64>(&conn.conn)
         .expect("Error saving new package");
-    
+
     (pkg_id, already_existed)
 }
 
@@ -69,7 +103,7 @@ pub fn patch_latest_version_id(conn: &DbConnection, package_id: i64, version_id:
     // get the package
     let pkg = packages
         .find(package_id)
-        .get_result::<(i64, String, PackageMetadata, bool)>(&conn.conn)
+        .get_result::<QueriedPackage>(&conn.conn)
         .expect("Error finding package");
 
     if let PackageMetadata::Normal {
@@ -77,7 +111,7 @@ pub fn patch_latest_version_id(conn: &DbConnection, package_id: i64, version_id:
         created,
         modified,
         other_dist_tags,
-    } = pkg.2
+    } = pkg.metadata
     {
         let new_package_metadata = PackageMetadata::Normal {
             dist_tag_latest_version: Some(version_id),

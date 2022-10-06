@@ -13,6 +13,7 @@ mod schema;
 pub mod versions;
 
 pub mod custom_types;
+pub mod download_metrics;
 
 pub mod testing;
 
@@ -36,10 +37,8 @@ pub fn connect() -> DbConnection {
 }
 
 impl DbConnection {
-    pub fn run_psql_transaction<F>(
-        &self,
-        transaction: F 
-    ) -> Result<(), diesel::result::Error> where
+    pub fn run_psql_transaction<F>(&self, transaction: F) -> Result<(), diesel::result::Error>
+    where
         F: FnOnce() -> Result<(), diesel::result::Error>,
     {
         self.conn

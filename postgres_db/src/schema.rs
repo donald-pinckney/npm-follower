@@ -29,6 +29,18 @@ table! {
     use diesel::sql_types::*;
     use crate::custom_types::sql_type_names::*;
 
+    download_metrics (id) {
+        id -> Int8,
+        package_id -> Int8,
+        download_counts -> Array<Download_count_struct>,
+        latest_date -> Nullable<Date>,
+    }
+}
+
+table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     download_tasks (url) {
         url -> Varchar,
         shasum -> Nullable<Text>,
@@ -113,6 +125,7 @@ joinable!(versions -> packages (package_id));
 allow_tables_to_appear_in_same_query!(
     change_log,
     dependencies,
+    download_metrics,
     download_tasks,
     downloaded_tarballs,
     internal_state,
