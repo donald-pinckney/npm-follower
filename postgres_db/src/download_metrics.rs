@@ -9,22 +9,22 @@ use diesel::prelude::*;
 pub struct DownloadMetric {
     pub package_id: i64,
     pub download_counts: Vec<DownloadCount>,
-    pub latest_date: Option<NaiveDate>,
     pub total_downloads: i64,
+    pub latest_date: Option<NaiveDate>,
 }
 
 impl DownloadMetric {
     pub fn new(
         package_id: i64,
         download_counts: Vec<DownloadCount>,
-        latest_date: Option<NaiveDate>,
         total_downloads: i64,
+        latest_date: Option<NaiveDate>,
     ) -> DownloadMetric {
         DownloadMetric {
             package_id,
             download_counts,
-            latest_date,
             total_downloads,
+            latest_date,
         }
     }
 }
@@ -34,23 +34,23 @@ pub struct QueriedDownloadMetric {
     pub id: i64,
     pub package_id: i64,
     pub download_counts: Vec<DownloadCount>,
-    pub latest_date: Option<NaiveDate>,
     pub total_downloads: i64,
+    pub latest_date: Option<NaiveDate>,
 }
 
 impl<ST, SB: diesel::backend::Backend> Queryable<ST, SB> for QueriedDownloadMetric
 where
-    (i64, i64, Vec<DownloadCount>, Option<NaiveDate>, i64): diesel::deserialize::FromSqlRow<ST, SB>,
+    (i64, i64, Vec<DownloadCount>, i64, Option<NaiveDate>): diesel::deserialize::FromSqlRow<ST, SB>,
 {
-    type Row = (i64, i64, Vec<DownloadCount>, Option<NaiveDate>, i64);
+    type Row = (i64, i64, Vec<DownloadCount>, i64, Option<NaiveDate>);
 
     fn build(row: Self::Row) -> Self {
         QueriedDownloadMetric {
             id: row.0,
             package_id: row.1,
             download_counts: row.2,
-            latest_date: row.3,
-            total_downloads: row.4,
+            total_downloads: row.3,
+            latest_date: row.4,
         }
     }
 }

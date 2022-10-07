@@ -28,9 +28,14 @@ async fn query_npm_metrics(
     // we can only query 365 days at a time, so we must split the query into multiple requests
     let mut rel_lbound = *lbound;
     let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
-    for rel_rbound in rule {
+    for mut rel_rbound in rule {
         if rel_lbound > *rbound {
             break;
+        }
+
+        if rel_rbound > *rbound {
+            // we must not query past the rbound
+            rel_rbound = *rbound;
         }
 
         println!(
@@ -93,14 +98,13 @@ async fn make_download_metric(
     upper_bound_date: &NaiveDate,
 ) -> Result<DownloadMetric, ApiError> {
     let permit = sem.acquire().await.unwrap();
-    let result = query_npm_metrics(&pkg, &lower_bound_date, &upper_bound_date).await?;
+    let result = query_npm_metrics(pkg, lower_bound_date, upper_bound_date).await?;
     drop(permit);
 
     // we need to convert the results into DownloadMetric, merging daily results
     // into weekly results
     let mut weekly_results: Vec<DownloadCount> = Vec::new();
     let mut i = 0;
-    let mut latest = None;
     let mut total_downloads = 0;
 
     loop {
@@ -130,18 +134,16 @@ async fn make_download_metric(
 
         if i >= result.downloads.len() {
             // we still want to know the latest, even if it's zero and we didn't insert it
-            latest = Some(date);
-            break;
+            let latest = Some(date);
+            println!("did package {}", pkg.name);
+            return Ok(DownloadMetric::new(
+                pkg.id,
+                weekly_results,
+                total_downloads,
+                latest,
+            ));
         }
     }
-
-    println!("did package {}", pkg.name);
-    Ok(DownloadMetric::new(
-        pkg.id,
-        weekly_results,
-        latest,
-        total_downloads,
-    ))
 }
 
 /// Inserts new download metric rows by using the `packages` table and querying npm
@@ -149,7 +151,11 @@ async fn insert_from_packages(conn: &DbConnection) {
     let mut pkg_id = postgres_db::internal_state::query_download_metrics_pkg_seq(conn).unwrap_or(1);
 
     let lower_bound_date = chrono::NaiveDate::from_ymd(2015, 1, 10);
-    let upper_bound_date = chrono::Utc::now().date().naive_utc();
+    // NOTE: we remove three days because:
+    //  1. we remove 1 day beacuse of time zones
+    //  2. we remove 1 day because the data of "today" is not yet complete
+    //  3. we remove 1 other day because NPM's api only publishes data for "today" the day after
+    let upper_bound_date = chrono::Utc::now().date().naive_utc() - chrono::Duration::days(3);
 
     println!("starting inserting metrics from pkg_id: {}", pkg_id);
 
