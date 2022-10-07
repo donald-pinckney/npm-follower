@@ -142,6 +142,8 @@ fn apply_versions(
             // these are made such that the postgres_db does the least amount of work possible
             let dep_countmap = make_dep_countmap(&versions);
             let mut deps_inserted: HashSet<(String, String)> = HashSet::new();
+            // TODO [bug]: this isn't used?
+            // we probably need to patch self-referential deps
             let mut dep_ids_to_patch: Vec<i64> = vec![];
 
             let mut insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
