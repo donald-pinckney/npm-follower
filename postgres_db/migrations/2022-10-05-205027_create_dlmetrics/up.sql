@@ -17,3 +17,5 @@ CREATE TABLE download_metrics (
 -- we want to index dates where older dates are more likely to be queried
 CREATE INDEX download_metrics_latest_date ON download_metrics (latest_date DESC) WHERE
 latest_date > '2022-01-01';
+
+
