@@ -3,6 +3,8 @@ use std::sync::Arc;
 use chrono::NaiveDate;
 use download_metrics::api::query_npm_metrics;
 use download_metrics::api::ApiError;
+use download_metrics::LOWER_BOUND_DATE;
+use download_metrics::UPPER_BOUND_DATE;
 use postgres_db::{
     custom_types::DownloadCount, download_metrics::DownloadMetric, packages::QueriedPackage,
     DbConnection,
@@ -22,7 +24,7 @@ async fn main() {
 
     match args[1].as_str() {
         "insert" => insert_from_packages(&conn).await,
-        "update" => todo!("update"),
+        "update" => update_from_packages(&conn).await,
         _ => {
             eprintln!("Usage: {} <insert|update>", args[0]);
             std::process::exit(1);
@@ -85,16 +87,14 @@ async fn make_download_metric(
     }
 }
 
+async fn update_from_packages(conn: &DbConnection) {
+    let week_ago = get_a_week_ago(&LOWER_BOUND_DATE, &UPPER_BOUND_DATE);
+    println!("A week ago: {}", week_ago);
+}
+
 /// Inserts new download metric rows by using the `packages` table and querying npm
 async fn insert_from_packages(conn: &DbConnection) {
     let mut pkg_id = postgres_db::internal_state::query_download_metrics_pkg_seq(conn).unwrap_or(1);
-
-    let lower_bound_date = chrono::NaiveDate::from_ymd(2015, 1, 10);
-    // NOTE: we remove three days because:
-    //  1. we remove 1 day beacuse of time zones
-    //  2. we remove 1 day because the data of "today" is not yet complete
-    //  3. we remove 1 other day because NPM's api only publishes data for "today" the day after
-    let upper_bound_date = chrono::Utc::now().date().naive_utc() - chrono::Duration::days(3);
 
     println!("starting inserting metrics from pkg_id: {}", pkg_id);
 
@@ -155,7 +155,7 @@ async fn insert_from_packages(conn: &DbConnection) {
         {
             let sem = sem.clone();
             handles.push(tokio::spawn(async move {
-                make_download_metric(&pkg, sem, &lower_bound_date, &upper_bound_date).await
+                make_download_metric(&pkg, sem, &LOWER_BOUND_DATE, &UPPER_BOUND_DATE).await
             }));
         }
 
@@ -209,8 +209,34 @@ fn has_normal_metadata(pkg: &QueriedPackage) -> bool {
     )
 }
 
-/// Returns true if the given date is a week ago basing ourselves on the current time and the
-/// given 0 epoch date
-fn is_a_week_ago(date: &chrono::NaiveDate, epoch: &chrono::NaiveDate) -> bool {
-    todo!("is_a_week_ago")
+/// Returns the earliest date that matches a week given the epoch, using the same logic as npm
+/// queries.
+fn get_a_week_ago(lbound: &chrono::NaiveDate, rbound: &chrono::NaiveDate) -> NaiveDate {
+    let delta = chronoutil::RelativeDuration::years(1);
+    let mut rel_lbound = *lbound;
+    let mut res = *lbound;
+    let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
+    for mut rel_rbound in rule {
+        if rel_lbound > *rbound {
+            break;
+        }
+
+        if rel_rbound > *rbound {
+            rel_rbound = *rbound;
+        }
+
+        res = rel_rbound;
+        rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
+    }
+
+    // now traverse weeks, until we get a week less than `res`
+    let delta = chrono::Duration::weeks(1);
+    let mut rel_lbound = *lbound;
+    let rbound = res;
+
+    while rel_lbound < rbound {
+        rel_lbound += delta;
+    }
+
+    rel_lbound - delta
 }
