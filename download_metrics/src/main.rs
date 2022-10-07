@@ -106,13 +106,14 @@ async fn update_from_packages(conn: &DbConnection) {
 
             let lower_bound_date = metric.latest_date;
 
-            lookup_table.insert(metric.id, metric.into());
+            let metric_id = metric.id;
+            lookup_table.insert(metric_id, metric.into());
 
             let sem = sem.clone();
             handles.push(tokio::spawn(async move {
                 make_download_metric(&pkg, sem, &lower_bound_date, &UPPER_BOUND_DATE)
                     .await
-                    .map(|m| (pkg.id, m))
+                    .map(|m| (metric_id, m))
             }));
         }
 
