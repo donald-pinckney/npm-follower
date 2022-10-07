@@ -135,11 +135,13 @@ pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i
 pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
     use super::schema::dependencies::dsl::*;
 
-    // TODO [perf]: batch these inserts
+    // TODO [perf]: batch these inserts. Tried that, seemed to make it worse :(
     let mut ids = Vec::new();
     for dep in deps {
         // find all deps with the same hash
-        let deps_with_same_hash: Vec<QueriedDependency> = dependencies
+        // TODO [perf]: consider memoizing this?
+        let deps_with_same_hash: Vec<(i64, String, Value)> = dependencies
+            .select((id, dst_package_name, raw_spec))
             .filter(md5digest_with_version.eq(&dep.md5digest_with_version))
             .load(&conn.conn)
             .expect("Error loading dependencies");
@@ -160,23 +162,35 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
         }
 
         // now, find the dep with the same name and spec
+        let mut did_find_match = false;
         for dep_with_same_hash in deps_with_same_hash {
-            if dep_with_same_hash.dst_package_name == dep.dst_package_name
-                && dep_with_same_hash.raw_spec == dep.raw_spec
+            if dep_with_same_hash.1 == dep.dst_package_name
+                && dep_with_same_hash.2 == dep.raw_spec
             {
                 // if the dep with the same name and spec is found, just update the freq_count
                 diesel::update(dependencies)
-                    .filter(id.eq(dep_with_same_hash.id))
+                    .filter(id.eq(dep_with_same_hash.0))
                     .set(freq_count.eq(freq_count + dep.freq_count))
                     .execute(&conn.conn)
                     .expect("Error updating dependencies");
-                ids.push(dep_with_same_hash.id);
+                ids.push(dep_with_same_hash.0);
+                did_find_match = true;
                 break;
             }
         }
 
-        // TODO [bug]: Don't you need a case for dep with same hash but different values?
-        // lets not assume no collisions
+        if !did_find_match {
+            let inserted = diesel::insert_into(dependencies)
+                .values(&dep)
+                .returning(id)
+                .get_result::<i64>(&conn.conn)
+                .unwrap_or_else(|e| {
+                    eprintln!("Got error: {}", e);
+                    eprintln!("on dep: {:?}", dep);
+                    panic!("Error inserting dependency");
+                });
+            ids.push(inserted);
+        }
     }
 
     ids
