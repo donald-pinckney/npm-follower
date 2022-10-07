@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use chrono::NaiveDate;
@@ -5,11 +6,13 @@ use download_metrics::api::query_npm_metrics;
 use download_metrics::api::ApiError;
 use download_metrics::LOWER_BOUND_DATE;
 use download_metrics::UPPER_BOUND_DATE;
+use postgres_db::download_metrics::QueriedDownloadMetric;
 use postgres_db::{
     custom_types::DownloadCount, download_metrics::DownloadMetric, packages::QueriedPackage,
     DbConnection,
 };
 use tokio::sync::Semaphore;
+use tokio::task::JoinHandle;
 use utils::check_no_concurrent_processes;
 
 #[tokio::main]
@@ -75,7 +78,7 @@ async fn make_download_metric(
 
         if i >= result.downloads.len() {
             // we still want to know the latest, even if it's zero and we didn't insert it
-            let latest = Some(date);
+            let latest = date;
             println!("did package {}", pkg.name);
             return Ok(DownloadMetric::new(
                 pkg.id,
@@ -88,8 +91,85 @@ async fn make_download_metric(
 }
 
 async fn update_from_packages(conn: &DbConnection) {
-    let week_ago = get_a_week_ago(&LOWER_BOUND_DATE, &UPPER_BOUND_DATE);
-    println!("A week ago: {}", week_ago);
+    let mut metrics = query_metrics_older_than_a_week(conn);
+
+    while !metrics.is_empty() {
+        let mut handles: Vec<JoinHandle<Result<(i64, DownloadMetric), ApiError>>> = Vec::new();
+        let sem = Arc::new(Semaphore::new(3));
+
+        // map of [metric id] -> [metric]
+        let mut lookup_table: HashMap<i64, DownloadMetric> = HashMap::new();
+
+        for metric in metrics {
+            let pkg = postgres_db::packages::query_pkg_by_id(conn, metric.package_id)
+                .expect("coulnd't find package from metric's package_id");
+
+            let lower_bound_date = metric.latest_date;
+
+            lookup_table.insert(metric.id, metric.into());
+
+            let sem = sem.clone();
+            handles.push(tokio::spawn(async move {
+                make_download_metric(&pkg, sem, &lower_bound_date, &UPPER_BOUND_DATE)
+                    .await
+                    .map(|m| (pkg.id, m))
+            }));
+        }
+
+        // where i64 is the id of the metric
+        let mut metrics_to_upd: Vec<(i64, DownloadMetric)> = Vec::new();
+
+        for handle in handles {
+            let (id, mut metric) = match handle.await.unwrap() {
+                Ok(metric) => metric,
+                Err(ApiError::RateLimit) => {
+                    eprintln!("Rate limited! Exiting!");
+                    std::process::exit(1);
+                }
+                Err(e) => {
+                    println!("Error: {}", e);
+                    continue;
+                }
+            };
+
+            println!("got update metric for {}", metric.package_id);
+            println!("new latest date: {}", metric.latest_date);
+            println!("new counts:");
+            for count in &metric.download_counts {
+                print!("{}: {}, ", count.date, count.count);
+            }
+            println!();
+
+            let older_metric = lookup_table.get(&id).unwrap();
+            metric.download_counts = older_metric
+                .download_counts
+                .iter()
+                .chain(metric.download_counts.iter())
+                .cloned()
+                .collect();
+            metric.total_downloads += older_metric.total_downloads;
+            metrics_to_upd.push((id, metric));
+        }
+
+        conn.run_psql_transaction(|| {
+            for (id, metric) in metrics_to_upd {
+                postgres_db::download_metrics::update_metric_by_id(conn, id, metric);
+            }
+            Ok(())
+        })
+        .expect("couldn't run transaction");
+
+        metrics = query_metrics_older_than_a_week(conn);
+    }
+
+    println!("Done updating metrics");
+}
+
+/// Queries all metrics older than a week. The query is limited to 1000 results.
+fn query_metrics_older_than_a_week(conn: &DbConnection) -> Vec<QueriedDownloadMetric> {
+    let week_ago = get_a_week_ago(&LOWER_BOUND_DATE, &UPPER_BOUND_DATE) - chrono::Duration::days(7);
+    println!("querying metrics older than {}", week_ago);
+    postgres_db::download_metrics::query_metric_latest_less_than(conn, week_ago)
 }
 
 /// Inserts new download metric rows by using the `packages` table and querying npm
@@ -145,7 +225,7 @@ async fn insert_from_packages(conn: &DbConnection) {
         }
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
-        let mut handles = Vec::new();
+        let mut handles: Vec<JoinHandle<Result<DownloadMetric, ApiError>>> = Vec::new();
         let sem = Arc::new(Semaphore::new(3)); // limiting to 3 requests at a time
 
         // TODO: bulk query, remove chain

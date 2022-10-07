@@ -11,7 +11,7 @@ CREATE TABLE download_metrics (
   -- here we have an array of (timestamp, count) tuples
   download_counts             download_count_struct[] NOT NULL,
   total_downloads             BIGINT NOT NULL,
-  latest_date                 DATE
+  latest_date                 DATE NOT NULL
 );
 
 -- we want to index dates where older dates are more likely to be queried
