@@ -104,7 +104,7 @@ async fn update_from_packages(conn: &DbConnection) {
             let pkg = postgres_db::packages::query_pkg_by_id(conn, metric.package_id)
                 .expect("coulnd't find package from metric's package_id");
 
-            let lower_bound_date = metric.latest_date;
+            let lower_bound_date = metric.latest_date + chrono::Duration::days(1);
 
             let metric_id = metric.id;
             lookup_table.insert(metric_id, metric.into());
