@@ -146,11 +146,11 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
             .load(&conn.conn)
             .expect("Error loading dependencies");
 
+        let insert_query = diesel::insert_into(dependencies).values(&dep).returning(id);
+
         // if there are no deps with the same hash, just insert the dep
         if deps_with_same_hash.is_empty() {
-            let inserted = diesel::insert_into(dependencies)
-                .values(&dep)
-                .returning(id)
+            let inserted = insert_query
                 .get_result::<i64>(&conn.conn)
                 .unwrap_or_else(|e| {
                     eprintln!("Got error: {}", e);
@@ -164,8 +164,7 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
         // now, find the dep with the same name and spec
         let mut did_find_match = false;
         for dep_with_same_hash in deps_with_same_hash {
-            if dep_with_same_hash.1 == dep.dst_package_name
-                && dep_with_same_hash.2 == dep.raw_spec
+            if dep_with_same_hash.1 == dep.dst_package_name && dep_with_same_hash.2 == dep.raw_spec
             {
                 // if the dep with the same name and spec is found, just update the freq_count
                 diesel::update(dependencies)
@@ -180,9 +179,7 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
         }
 
         if !did_find_match {
-            let inserted = diesel::insert_into(dependencies)
-                .values(&dep)
-                .returning(id)
+            let inserted = insert_query
                 .get_result::<i64>(&conn.conn)
                 .unwrap_or_else(|e| {
                     eprintln!("Got error: {}", e);
