@@ -4,12 +4,12 @@ use std::io::BufRead;
 use std::fs::File;
 use std::path::PathBuf;
 use std::process::Command;
-use std::time::{Instant, Duration};
+use std::time::Instant;
 
 use chrono::Utc;
 use glob::glob;
 use postgres_db::custom_types::{Semver, ParsedSpec, VersionConstraint, VersionComparator};
-use postgres_db::{DbConnection, testing};
+use postgres_db::testing;
 use relational_db_builder::packument::{Packument, VersionPackument, Spec, Dist};
 use serde_json::{ Value, Map};
 use colored::Colorize;
@@ -89,6 +89,45 @@ fn build_synthetic_bench_insert_same_package(n: i32) -> Vec<(String, Packument)>
 }
 
 
+
+
+fn build_synthetic_bench_insert_different_packages(n: i32) -> Vec<(String, Packument)> {
+    use chrono::TimeZone;
+
+    let package_name_base = "react";
+    let mut packs = vec![];
+
+
+    let start_time = Utc.ymd(1990, 1, 1).and_hms(1, 0, 0);
+    for x in 0..n {
+        let package_name = format!("{}{}", package_name_base, x);
+        let v = Semver { major: 1 as i64, minor: 0, bug: 0, prerelease: vec![], build: vec![] };
+        let vt = start_time + chrono::Duration::seconds(x as i64);
+
+        let vp_this_tick = VersionPackument {
+            prod_dependencies: vec![("lodash".to_owned(), Spec { raw: Value::String("1.2.3".to_owned()), parsed: ParsedSpec::Range(VersionConstraint(vec![vec![VersionComparator::Eq(Semver { major: 1, minor: 2, bug: 3, prerelease: vec![], build: vec![] })]])) })],
+            dev_dependencies: vec![],
+            peer_dependencies: vec![],
+            optional_dependencies: vec![],
+            dist: Dist { tarball_url: format!("https://registry.npmjs.org/{}/-/{}-{}.tgz", package_name, package_name, v), shasum: None, unpacked_size: None, file_count: None, integrity: None, signature0_sig: None, signature0_keyid: None, npm_signature: None },
+            repository: None,
+            extra_metadata: HashMap::new(),
+        };
+
+        let mut vers_times: HashMap<_, _> = HashMap::new();
+        vers_times.insert(v.clone(), vt);
+
+        let mut vers_packs: HashMap<_, _> = HashMap::new();
+        vers_packs.insert(v.clone(), vp_this_tick);
+
+        let p = Packument::Normal { latest: Some(v.clone()), created: vt, modified: vt, other_dist_tags: Map::new(), version_times: vers_times, versions: vers_packs };
+        packs.push((package_name.to_owned(), p));
+    }
+    packs
+}
+
+
+
 fn run_synthetic_bench<F>(n: i32, name: &str, build_fn: F) where F: FnOnce(i32) -> Vec<(String, Packument)> {
     testing::using_test_db(|conn| {
         println!("\n====>> *** Running synthetic insertion bench: {} ({}) *** <<====\n", name.bold(), n);
@@ -119,7 +158,10 @@ fn main() {
         x => Some(x)
     };
 
-    let synthetic_benches = vec![("synth_insert_same_package", build_synthetic_bench_insert_same_package)];
+    let synthetic_benches: Vec<(&str, fn(i32) -> Vec<(String, Packument)>)> = vec![
+        ("synth_insert_same_package", build_synthetic_bench_insert_same_package),
+        ("synth_insert_different_packages", build_synthetic_bench_insert_different_packages)
+    ];
     
     let synth_match_maybe = synthetic_benches.iter().filter_map(|(name, f)| {
         if filter_arg == Some(name) {

@@ -124,25 +124,13 @@ pub fn delete_versions_not_in(conn: &DbConnection, pkg_id: i64, vers: Vec<&Semve
     // get all versions with the given package id
     let all_vers = versions
         .filter(package_id.eq(pkg_id))
-        .load::<(
-            i64,
-            i64,
-            Semver,
-            String,
-            Option<Value>,
-            Option<RepoInfo>,
-            DateTime<Utc>,
-            bool,
-            Value,
-            Vec<i64>,
-            Vec<i64>,
-            Vec<i64>,
-            Vec<i64>,
-            bool,
-        )>(&conn.conn)
+        .select((id, semver))
+        .load::<(i64, Semver)>(&conn.conn)
         .expect("Error loading versions");
 
-    for (ver_id, _, server_semver, _, _, _, _, _, _, _, _, _, _, _) in &all_vers {
+    // TODO [perf]: Replace with hashset op
+    // Delete = all_vers - vers
+    for (ver_id, server_semver) in &all_vers {
         if !vers.contains(&server_semver) {
             diesel::update(versions.find(ver_id))
                 .set(deleted.eq(true))
