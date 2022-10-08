@@ -88,12 +88,13 @@ fn build_synthetic_bench_insert_same_package(n: i32) -> Vec<(String, Packument)>
     packs
 }
 
-fn run_synthetic_bench_insert_same_package(n: i32, name: &str) {
+
+fn run_synthetic_bench<F>(n: i32, name: &str, build_fn: F) where F: FnOnce(i32) -> Vec<(String, Packument)> {
     testing::using_test_db(|conn| {
-        println!("\n====>> *** Running synthetic insertion bench: {} *** <<====\n", name.bold());
+        println!("\n====>> *** Running synthetic insertion bench: {} ({}) *** <<====\n", name.bold(), n);
 
         let now = Instant::now();
-        let changes: Vec<_> = build_synthetic_bench_insert_same_package(n);
+        let changes: Vec<_> = build_fn(n);
         let parse_dt = now.elapsed();
         println!("Loaded {} ({:.2} seconds)", name, parse_dt.as_secs_f64());
 
@@ -118,6 +119,24 @@ fn main() {
         x => Some(x)
     };
 
+    let synthetic_benches = vec![("synth_insert_same_package", build_synthetic_bench_insert_same_package)];
+    
+    let synth_match_maybe = synthetic_benches.iter().filter_map(|(name, f)| {
+        if filter_arg == Some(name) {
+            Some((name, f))
+        } else {
+            None
+        }
+    }).last();
+
+    if let Some((syn_name, syn_build)) = synth_match_maybe {
+        dbg!(&args);
+        let n = args[2].parse().unwrap();
+        run_synthetic_bench(n, syn_name, syn_build);
+        return
+    }
+
+    
     let mut benches = vec![];
     
 
@@ -133,14 +152,6 @@ fn main() {
             run_bench(b);
         } else {
             // println!("Skipping insertion bench: {}", b.file_name().unwrap().to_string_lossy());
-        }
-    }
-
-
-    let synthetic_benches = vec![("synth_insert_new_versions_200", || run_synthetic_bench_insert_same_package(200, "synth_insert_new_versions_100"))];
-    for (sb, f) in synthetic_benches {
-        if filter_arg.map(|f| sb.contains(f)).unwrap_or(true) {
-            f()
         }
     }
 }
