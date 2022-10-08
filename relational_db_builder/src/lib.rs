@@ -209,7 +209,7 @@ fn apply_versions(
             }
 
 
-            let ver_ids_semvers = postgres_db::versions::insert_versions(conn, versions_to_insert, pkg_already_existed);
+            let ver_ids_semvers = postgres_db::versions::insert_versions(conn, versions_to_insert);
 
             for (ver_id, sv) in ver_ids_semvers {
                 let needs_patch = matches!(latest, Some(ref x) if x == &sv);

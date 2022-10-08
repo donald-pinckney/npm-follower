@@ -82,7 +82,7 @@ where
         f(&conn)
     };
 
-    drop_testing_db();
+    // drop_testing_db();
 
     res
 }
