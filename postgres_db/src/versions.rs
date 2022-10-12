@@ -62,29 +62,58 @@ impl Version {
     }
 }
 
-pub fn insert_version(conn: &DbConnection, version: Version) -> i64 {
+
+pub fn insert_versions(conn: &DbConnection, version_vec: Vec<Version>, pkg_already_existed: bool) -> Vec<(i64, Semver)> {
     use super::schema::versions::dsl::*;
 
-    diesel::insert_into(versions)
-        .values(&version)
-        .on_conflict((package_id, semver))
-        .do_update()
-        .set((
-            tarball_url.eq(excluded(tarball_url)),
-            repository_raw.eq(excluded(repository_raw)),
-            repository_parsed.eq(excluded(repository_parsed)),
-            created.eq(excluded(created)),
-            deleted.eq(excluded(deleted)),
-            extra_metadata.eq(excluded(extra_metadata)),
-            prod_dependencies.eq(excluded(prod_dependencies)),
-            dev_dependencies.eq(excluded(dev_dependencies)),
-            peer_dependencies.eq(excluded(peer_dependencies)),
-            optional_dependencies.eq(excluded(optional_dependencies)),
-            secret.eq(excluded(secret)),
-        ))
-        .returning(id)
-        .get_result::<i64>(&conn.conn)
-        .expect("Error saving new version")
+    let semvers: Vec<_> = version_vec.iter().map(|v| v.semver.clone()).collect();
+
+    // TODO [perf]: This insert is fairly slow, but we are doing it more often than needed.
+    // We only need to do this if either:
+    // a) the version is new, or
+    // b) the version metadata changed. Let's assume that the version metadata is immutable, and rule this out.
+
+    // Thus, we only have to insert versions which are new. There are 2 cases for versions being new:
+    // a) the package is new, in which case all versions are new, so we have to insert all, and there are no conflicts
+    // b) or the package already exists, but there are new versions.
+
+    if pkg_already_existed {
+        // println!("UPDATE");
+        // TODO [bug]: batch into chunks, otherwise we will hit a crash
+        let ids: Vec<i64> = diesel::insert_into(versions)
+            .values(version_vec)
+            .on_conflict((package_id, semver))
+            .do_update()
+            .set((
+                tarball_url.eq(excluded(tarball_url)),
+                repository_raw.eq(excluded(repository_raw)),
+                repository_parsed.eq(excluded(repository_parsed)),
+                created.eq(excluded(created)),
+                deleted.eq(excluded(deleted)),
+                extra_metadata.eq(excluded(extra_metadata)),
+                prod_dependencies.eq(excluded(prod_dependencies)),
+                dev_dependencies.eq(excluded(dev_dependencies)),
+                peer_dependencies.eq(excluded(peer_dependencies)),
+                optional_dependencies.eq(excluded(optional_dependencies)),
+                secret.eq(excluded(secret)),
+            ))
+            .returning(id)
+            .get_results::<i64>(&conn.conn)
+            .expect("Error saving new version");
+
+        assert!(ids.len() == semvers.len());
+        ids.into_iter().zip(semvers.into_iter()).collect()
+    } else {
+        // TODO [bug]: batch into chunks, otherwise we will hit a crash
+        let ids: Vec<i64> = diesel::insert_into(versions)
+            .values(version_vec)
+            .returning(id)
+            .get_results::<i64>(&conn.conn)
+            .expect("Error saving new version");
+
+        assert!(ids.len() == semvers.len());
+        ids.into_iter().zip(semvers.into_iter()).collect()
+    }
 }
 
 pub fn delete_versions_not_in(conn: &DbConnection, pkg_id: i64, vers: Vec<&Semver>) {

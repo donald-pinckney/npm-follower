@@ -138,10 +138,12 @@ fn apply_versions(
             version_times: _,
             versions,
         } => {
-            // println!("Normal pkg: {}", package_id);
+            println!("Normal pkg: {}", package_id);
             // these are made such that the postgres_db does the least amount of work possible
             let dep_countmap = make_dep_countmap(&versions);
             let mut deps_inserted: HashSet<(String, String)> = HashSet::new();
+            // TODO [bug]: this isn't used?
+            // we probably need to patch self-referential deps
             let mut dep_ids_to_patch: Vec<i64> = vec![];
 
             let mut insert_deps = |deps: &Vec<(String, Spec)>| -> Vec<i64> {
@@ -178,6 +180,9 @@ fn apply_versions(
                 inserted_deps
             };
 
+
+            let mut versions_to_insert = vec![];
+
             for (sv, vpack) in &versions {
                 let prod_dep_ids = insert_deps(&vpack.prod_dependencies);
                 let dev_dep_ids = insert_deps(&vpack.dev_dependencies);
@@ -200,9 +205,15 @@ fn apply_versions(
                     secret,
                 );
 
-                let ver_id = postgres_db::versions::insert_version(conn, ver);
+                versions_to_insert.push(ver);                
+            }
 
-                if latest.is_some() && latest.as_ref().unwrap() == sv {
+
+            let ver_ids_semvers = postgres_db::versions::insert_versions(conn, versions_to_insert, pkg_already_existed);
+
+            for (ver_id, sv) in ver_ids_semvers {
+                let needs_patch = matches!(latest, Some(ref x) if x == &sv);
+                if needs_patch {
                     postgres_db::packages::patch_latest_version_id(conn, package_id, ver_id);
                 }
             }
@@ -223,10 +234,10 @@ fn apply_versions(
             unpublished_blob: _,
             extra_version_times: _,
         } => {
-            // println!("Unpublished pkg: {}", package_id)
+            println!("Unpublished pkg: {}", package_id)
         },
         Packument::MissingData | Packument::Deleted => {
-            // println!("Deleted pkg: {}", package_id)
+            println!("Deleted pkg: {}", package_id)
         }
     }
 }

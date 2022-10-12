@@ -49,6 +49,7 @@ impl Package {
     }
 }
 
+// TODO [perf]: could consider memoizing this
 pub fn query_pkg_id(conn: &DbConnection, pkg_name: &str) -> Option<i64> {
     use super::schema::packages::dsl::*;
 
@@ -92,6 +93,7 @@ pub fn insert_package(conn: &DbConnection, package: Package) -> (i64, bool) {
     use super::schema::packages::dsl::*;
 
     // check if the package already exists
+    // TODO [perf]: can we do this as one query?
     let already_existed = packages
         .filter(name.eq(&package.name))
         .first::<QueriedPackage>(&conn.conn)

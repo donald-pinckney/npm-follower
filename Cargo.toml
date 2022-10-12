@@ -1,2 +1,5 @@
 [workspace]
 members = ["changes_fetcher", "postgres_db", "download_queuer", "downloader", "relational_db_builder", "semver_spec_serialization", "utils", "download_metrics"]
+
+[profile.bench]
+debug = true

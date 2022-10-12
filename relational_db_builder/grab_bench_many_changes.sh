@@ -77,6 +77,16 @@ else
     time psql -p 5431 -h 127.0.0.1 npm_data -c "SELECT raw_json FROM change_log ORDER BY seq LIMIT(200000);" -t -A -o $file
 fi
 
+file=$SCRIPT_DIR/resources/bench_many_changes/last_100.jsonl
+if [ -s "$file" ]
+then
+    # echo "Skipping generating $file"
+    :
+else
+    echo "Generating $file by selecting the last 100 changes (ETA: ~2 seconds)"
+    time psql -p 5431 -h 127.0.0.1 npm_data -c "SELECT raw_json FROM (SELECT * FROM change_log ORDER BY seq DESC LIMIT 100) as stuff ORDER BY seq ASC;" -t -A -o $file
+fi
+
 file=$SCRIPT_DIR/resources/bench_many_changes/last_1000.jsonl
 if [ -s "$file" ]
 then
