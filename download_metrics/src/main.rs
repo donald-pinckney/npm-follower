@@ -1,19 +1,12 @@
 use std::collections::HashMap;
-use std::sync::Arc;
 
 use chrono::NaiveDate;
-use download_metrics::api::bulkquery_npm_metrics;
-use download_metrics::api::query_npm_metrics;
 use download_metrics::api::ApiError;
-use download_metrics::api::ApiResult;
+use download_metrics::api::API;
 use download_metrics::LOWER_BOUND_DATE;
 use download_metrics::UPPER_BOUND_DATE;
 use postgres_db::download_metrics::QueriedDownloadMetric;
-use postgres_db::{
-    custom_types::DownloadCount, download_metrics::DownloadMetric, packages::QueriedPackage,
-    DbConnection,
-};
-use tokio::sync::Semaphore;
+use postgres_db::{download_metrics::DownloadMetric, packages::QueriedPackage, DbConnection};
 use tokio::task::JoinHandle;
 use utils::check_no_concurrent_processes;
 
@@ -37,97 +30,12 @@ async fn main() {
     }
 }
 
-async fn make_download_metric(
-    pkg: &QueriedPackage,
-    api_result: &ApiResult,
-) -> Result<DownloadMetric, ApiError> {
-    // we need to convert the results into DownloadMetric, merging daily results
-    // into weekly results
-    let mut weekly_results: Vec<DownloadCount> = Vec::new();
-    let mut i = 0;
-    let mut total_downloads = 0;
-
-    loop {
-        let mut weekly_count = api_result.downloads[i].downloads;
-        let mut j = i + 1;
-        while j < api_result.downloads.len() && j < i + 7 {
-            weekly_count += api_result.downloads[j].downloads;
-            j += 1;
-        }
-
-        let date =
-            chrono::NaiveDate::parse_from_str(&api_result.downloads[i].day, "%Y-%m-%d").unwrap();
-
-        // we set i to j so that we skip the days we already counted
-        i = j;
-
-        total_downloads += weekly_count;
-
-        let count = DownloadCount {
-            date,
-            count: weekly_count,
-        };
-
-        // we don't insert zero counts
-        if weekly_count > 0 {
-            weekly_results.push(count);
-        }
-
-        if i >= api_result.downloads.len() {
-            // we still want to know the latest, even if it's zero and we didn't insert it
-            let latest = date;
-            println!("did package {}", pkg.name);
-            return Ok(DownloadMetric::new(
-                pkg.id,
-                weekly_results,
-                total_downloads,
-                latest,
-            ));
-        }
-    }
-}
-
-fn spawn_bulk_query_task(
-    sem: Arc<Semaphore>,
-    pkgs: Vec<QueriedPackage>,
-    lbound: chrono::NaiveDate,
-    rbound: chrono::NaiveDate,
-) -> JoinHandle<Result<Vec<DownloadMetric>, ApiError>> {
-    tokio::spawn(async move {
-        let permit = sem.acquire().await.unwrap();
-        let api_result = bulkquery_npm_metrics(&pkgs, &lbound, &rbound).await?;
-        drop(permit);
-        let mut metrics = Vec::new();
-        for (pkg_name, result) in api_result {
-            if let Some(result) = result {
-                let pkg = pkgs.iter().find(|p| p.name == pkg_name).unwrap(); // yeah, this is bad
-                metrics.push(make_download_metric(pkg, &result).await?);
-            }
-        }
-        Ok(metrics)
-    })
-}
-
-fn spawn_query_task(
-    sem: Arc<Semaphore>,
-    pkg: QueriedPackage,
-    lbound: chrono::NaiveDate,
-    rbound: chrono::NaiveDate,
-) -> JoinHandle<Result<DownloadMetric, ApiError>> {
-    tokio::spawn(async move {
-        let permit = sem.acquire().await.unwrap();
-        let api_result = query_npm_metrics(&pkg, &lbound, &rbound).await?;
-        drop(permit);
-        make_download_metric(&pkg, &api_result).await
-    })
-}
-
 async fn update_from_packages(conn: &DbConnection) {
     let mut metrics = query_metrics_older_than_a_week(conn);
 
     while !metrics.is_empty() {
         let mut handles: Vec<(i64, JoinHandle<Result<DownloadMetric, ApiError>>)> = Vec::new();
-        let sem = Arc::new(Semaphore::new(3));
+        let api = API::new();
 
         // map of [metric id] -> [metric]
         let mut lookup_table: HashMap<i64, DownloadMetric> = HashMap::new();
@@ -141,10 +49,10 @@ async fn update_from_packages(conn: &DbConnection) {
             let metric_id = metric.id;
             lookup_table.insert(metric_id, metric.into());
 
-            let sem = sem.clone();
+            let api = api.clone();
             handles.push((
                 metric_id,
-                spawn_query_task(sem, pkg, lower_bound_date, *UPPER_BOUND_DATE),
+                api.spawn_query_task(pkg, lower_bound_date, *UPPER_BOUND_DATE),
             ));
         }
 
@@ -264,22 +172,27 @@ async fn insert_from_packages(conn: &DbConnection) {
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
         let mut scoped_handles: Vec<JoinHandle<Result<DownloadMetric, ApiError>>> = Vec::new();
-        let sem = Arc::new(Semaphore::new(3)); // limiting to 3 requests at a time
+        let api = API::new();
 
         // scoped packages need to be handled separately one-by-one
         for pkg in scoped_packages {
-            let sem = sem.clone();
-            scoped_handles.push(spawn_query_task(
-                sem,
-                pkg,
-                *LOWER_BOUND_DATE,
-                *UPPER_BOUND_DATE,
-            ));
+            let api = api.clone();
+            scoped_handles.push(api.spawn_query_task(pkg, *LOWER_BOUND_DATE, *UPPER_BOUND_DATE));
         }
 
         // normal packages can be queried in bulk
-        let bulk_handle =
-            spawn_bulk_query_task(sem, normal_packages, *LOWER_BOUND_DATE, *UPPER_BOUND_DATE);
+        let maybe_bulk_handle = {
+            if !normal_packages.is_empty() {
+                let api = api.clone();
+                Some(api.spawn_bulk_query_task(
+                    normal_packages,
+                    *LOWER_BOUND_DATE,
+                    *UPPER_BOUND_DATE,
+                ))
+            } else {
+                None
+            }
+        };
 
         for handle in scoped_handles {
             let metric = match handle.await.unwrap() {
@@ -298,22 +211,24 @@ async fn insert_from_packages(conn: &DbConnection) {
             download_metrics.push(metric);
         }
 
-        match bulk_handle.await.unwrap() {
-            Ok(metrics) => {
-                for metric in metrics {
-                    pretty_print_metric(&metric);
-                    download_metrics.push(metric);
+        if let Some(bulk_handle) = maybe_bulk_handle {
+            match bulk_handle.await.unwrap() {
+                Ok(metrics) => {
+                    for metric in metrics {
+                        pretty_print_metric(&metric);
+                        download_metrics.push(metric);
+                    }
                 }
-            }
-            Err(ApiError::RateLimit) => {
-                eprintln!("Rate limited! Exiting!");
-                std::process::exit(1);
-            }
-            Err(e) => {
-                println!("Error: {}", e);
-                continue;
-            }
-        };
+                Err(ApiError::RateLimit) => {
+                    eprintln!("Rate limited! Exiting!");
+                    std::process::exit(1);
+                }
+                Err(e) => {
+                    println!("Error: {}", e);
+                    continue;
+                }
+            };
+        }
 
         conn.run_psql_transaction(|| {
             for metric in download_metrics {

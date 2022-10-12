@@ -1,174 +1,229 @@
 use chrono::NaiveDate;
-use postgres_db::packages::QueriedPackage;
+use postgres_db::{download_metrics::DownloadMetric, packages::QueriedPackage};
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
+use tokio::{sync::Semaphore, task::JoinHandle};
 
-/// Performs a regular query in npm download metrics api for each package given
-pub async fn query_npm_metrics(
-    pkg: &QueriedPackage,
-    lbound: &NaiveDate,
-    rbound: &NaiveDate,
-) -> Result<ApiResult, ApiError> {
-    let delta = chronoutil::RelativeDuration::years(1);
-    // we are going to merge the results of multiple queries into one
-    let mut api_result = None;
-    // we can only query 365 days at a time, so we must split the query into multiple requests
-    let mut rel_lbound = *lbound;
-    let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
-    for mut rel_rbound in rule {
-        if rel_lbound > *rbound {
-            break;
-        }
+use crate::make_download_metric;
 
-        if rel_rbound > *rbound {
-            // we must not query past the rbound
-            rel_rbound = *rbound;
-        }
-
-        println!(
-            "Querying {} from {} to {}",
-            pkg.name, rel_lbound, rel_rbound
-        );
-
-        let query = format!(
-            "https://api.npmjs.org/downloads/range/{}:{}/{}",
-            rel_lbound, rel_rbound, pkg.name
-        );
-
-        // TODO: do actual good error handling, instead of this garbage
-        let resp = reqwest::get(&query).await?;
-        if resp.status() == 429 {
-            return Err(ApiError::RateLimit);
-        }
-        let text = resp.text().await?;
-        let result: ApiResult = match serde_json::from_str(&text) {
-            Ok(result) => result,
-            Err(e) => {
-                // get the error message from the response
-                let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
-                let error = match json_map.get("error") {
-                    Some(error) => error,
-                    None => return Err(ApiError::Other(e.to_string())),
-                };
-                return Err(ApiError::Other(error.to_string()));
-            }
-        };
-
-        if api_result.is_none() {
-            api_result = Some(result);
-        } else {
-            // merge the results
-            let mut new_api_result = api_result.unwrap();
-            for dl in result.downloads {
-                new_api_result.downloads.push(dl);
-            }
-            new_api_result.end = result.end;
-            api_result = Some(new_api_result);
-        }
-
-        rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
-    }
-    api_result.ok_or_else(|| panic!("api_result is None"))
+#[derive(Debug, Clone)]
+pub struct API {
+    pub sem: Arc<Semaphore>,
 }
 
-/// Performs a bulk query in npm download metrics api for each package given
-/// Can only handle 128 packages at a time, and can't query scoped packages
-pub async fn bulkquery_npm_metrics(
-    pkgs: &Vec<QueriedPackage>,
-    lbound: &NaiveDate,
-    rbound: &NaiveDate,
-) -> Result<BulkApiResult, ApiError> {
-    assert!(pkgs.len() <= 128);
-    let delta = chronoutil::RelativeDuration::years(1);
-    // we are going to merge the results of multiple queries into one
-    let mut api_result = None;
-    // we can only query 365 days at a time, so we must split the query into multiple requests
-    let mut rel_lbound = *lbound;
-    let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
-    for mut rel_rbound in rule {
-        if rel_lbound > *rbound {
-            break;
+impl API {
+    pub fn new() -> API {
+        API {
+            sem: Arc::new(Semaphore::new(3)),
         }
-
-        if rel_rbound > *rbound {
-            // we must not query past the rbound
-            rel_rbound = *rbound;
-        }
-
-        let pkg_str = pkgs
-            .iter()
-            .map(|pkg| pkg.name.to_string())
-            .collect::<Vec<String>>()
-            .join(",");
-
-        println!(
-            "Bulk Querying {} from {} to {}",
-            pkg_str, rel_lbound, rel_rbound
-        );
-
-        let query = format!(
-            "https://api.npmjs.org/downloads/range/{}:{}/{}",
-            rel_lbound, rel_rbound, pkg_str
-        );
-
-        // TODO: do actual good error handling, instead of this garbage
-        let resp = reqwest::get(&query).await?;
-        if resp.status() == 429 {
-            return Err(ApiError::RateLimit);
-        }
-        let text = resp.text().await?;
-        let result: BulkApiResult = match serde_json::from_str(&text) {
-            Ok(result) => result,
-            Err(e) => {
-                // get the error message from the response
-                let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
-                let error = match json_map.get("error") {
-                    Some(error) => error,
-                    None => return Err(ApiError::Other(e.to_string())),
-                };
-                return Err(ApiError::Other(error.to_string()));
-            }
-        };
-
-        if api_result.is_none() {
-            api_result = Some(result);
-        } else {
-            // merge the results
-            let mut new_api_result = api_result.unwrap();
-            // not_founds is just for printing
-            let mut not_founds = String::new();
-            for pkg in pkgs {
-                let pkg_name = pkg.name.to_string();
-                let pkg_res = match result.get(&pkg_name) {
-                    Some(Some(p)) => p,
-                    _ => {
-                        not_founds.push_str(&pkg_name);
-                        not_founds.push_str(", ");
-                        continue;
-                    }
-                };
-
-                // here we handle the merging, which is a bit more complicated
-                // than the regular merging due to the Optional type
-                let new_pkg_res_opt = new_api_result.get_mut(&pkg_name).unwrap();
-                let mut new_pkg_res = new_pkg_res_opt.take().unwrap();
-
-                for dl in &pkg_res.downloads {
-                    new_pkg_res.downloads.push(dl.clone());
-                }
-
-                new_pkg_res.end = pkg_res.end.clone();
-                *new_pkg_res_opt = Some(new_pkg_res);
-            }
-            if !not_founds.is_empty() {
-                println!("Not found: {}", not_founds);
-            }
-            api_result = Some(new_api_result);
-        }
-
-        rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
     }
-    api_result.ok_or_else(|| panic!("api_result is None"))
+
+    pub fn spawn_bulk_query_task(
+        self,
+        pkgs: Vec<QueriedPackage>,
+        lbound: chrono::NaiveDate,
+        rbound: chrono::NaiveDate,
+    ) -> JoinHandle<Result<Vec<DownloadMetric>, ApiError>> {
+        let sem = self.sem.clone();
+        tokio::spawn(async move {
+            let permit = sem.acquire().await.unwrap();
+            let api_result = self.bulkquery_npm_metrics(&pkgs, &lbound, &rbound).await?;
+            drop(permit);
+            let mut metrics = Vec::new();
+            for (pkg_name, result) in api_result {
+                if let Some(result) = result {
+                    let pkg = pkgs.iter().find(|p| p.name == pkg_name).unwrap(); // yeah, this is bad
+                    metrics.push(make_download_metric(pkg, &result).await?);
+                }
+            }
+            Ok(metrics)
+        })
+    }
+
+    pub fn spawn_query_task(
+        self,
+        pkg: QueriedPackage,
+        lbound: chrono::NaiveDate,
+        rbound: chrono::NaiveDate,
+    ) -> JoinHandle<Result<DownloadMetric, ApiError>> {
+        let sem = self.sem.clone();
+        tokio::spawn(async move {
+            let permit = sem.acquire().await.unwrap();
+            let api_result = self.query_npm_metrics(&pkg, &lbound, &rbound).await?;
+            drop(permit);
+            make_download_metric(&pkg, &api_result).await
+        })
+    }
+
+    /// Performs a regular query in npm download metrics api for each package given
+    pub async fn query_npm_metrics(
+        self,
+        pkg: &QueriedPackage,
+        lbound: &NaiveDate,
+        rbound: &NaiveDate,
+    ) -> Result<ApiResult, ApiError> {
+        let delta = chronoutil::RelativeDuration::years(1);
+        // we are going to merge the results of multiple queries into one
+        let mut api_result = None;
+        // we can only query 365 days at a time, so we must split the query into multiple requests
+        let mut rel_lbound = *lbound;
+        let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
+        for mut rel_rbound in rule {
+            if rel_lbound > *rbound {
+                break;
+            }
+
+            if rel_rbound > *rbound {
+                // we must not query past the rbound
+                rel_rbound = *rbound;
+            }
+
+            println!(
+                "Querying {} from {} to {}",
+                pkg.name, rel_lbound, rel_rbound
+            );
+
+            let query = format!(
+                "https://api.npmjs.org/downloads/range/{}:{}/{}",
+                rel_lbound, rel_rbound, pkg.name
+            );
+
+            // TODO: do actual good error handling, instead of this garbage
+            let resp = reqwest::get(&query).await?;
+            if resp.status() == 429 {
+                return Err(ApiError::RateLimit);
+            }
+            let text = resp.text().await?;
+            let result: ApiResult = match serde_json::from_str(&text) {
+                Ok(result) => result,
+                Err(e) => {
+                    // get the error message from the response
+                    let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
+                    let error = match json_map.get("error") {
+                        Some(error) => error,
+                        None => return Err(ApiError::Other(e.to_string())),
+                    };
+                    return Err(ApiError::Other(error.to_string()));
+                }
+            };
+
+            if api_result.is_none() {
+                api_result = Some(result);
+            } else {
+                // merge the results
+                let mut new_api_result = api_result.unwrap();
+                for dl in result.downloads {
+                    new_api_result.downloads.push(dl);
+                }
+                new_api_result.end = result.end;
+                api_result = Some(new_api_result);
+            }
+
+            rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
+        }
+        api_result.ok_or_else(|| panic!("api_result is None"))
+    }
+
+    /// Performs a bulk query in npm download metrics api for each package given
+    /// Can only handle 128 packages at a time, and can't query scoped packages
+    pub async fn bulkquery_npm_metrics(
+        self,
+        pkgs: &Vec<QueriedPackage>,
+        lbound: &NaiveDate,
+        rbound: &NaiveDate,
+    ) -> Result<BulkApiResult, ApiError> {
+        assert!(pkgs.len() <= 128);
+        let delta = chronoutil::RelativeDuration::years(1);
+        // we are going to merge the results of multiple queries into one
+        let mut api_result = None;
+        // we can only query 365 days at a time, so we must split the query into multiple requests
+        let mut rel_lbound = *lbound;
+        let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
+        for mut rel_rbound in rule {
+            if rel_lbound > *rbound {
+                break;
+            }
+
+            if rel_rbound > *rbound {
+                // we must not query past the rbound
+                rel_rbound = *rbound;
+            }
+
+            let pkg_str = pkgs
+                .iter()
+                .map(|pkg| pkg.name.to_string())
+                .collect::<Vec<String>>()
+                .join(",");
+
+            println!(
+                "Bulk Querying {} from {} to {}",
+                pkg_str, rel_lbound, rel_rbound
+            );
+
+            let query = format!(
+                "https://api.npmjs.org/downloads/range/{}:{}/{}",
+                rel_lbound, rel_rbound, pkg_str
+            );
+
+            // TODO: do actual good error handling, instead of this garbage
+            let resp = reqwest::get(&query).await?;
+            if resp.status() == 429 {
+                return Err(ApiError::RateLimit);
+            }
+            let text = resp.text().await?;
+            let result: BulkApiResult = match serde_json::from_str(&text) {
+                Ok(result) => result,
+                Err(e) => {
+                    // get the error message from the response
+                    let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
+                    let error = match json_map.get("error") {
+                        Some(error) => error,
+                        None => return Err(ApiError::Other(e.to_string())),
+                    };
+                    return Err(ApiError::Other(error.to_string()));
+                }
+            };
+
+            if api_result.is_none() {
+                api_result = Some(result);
+            } else {
+                // merge the results
+                let mut new_api_result = api_result.unwrap();
+                // not_founds is just for printing
+                let mut not_founds = String::new();
+                for pkg in pkgs {
+                    let pkg_name = pkg.name.to_string();
+                    let pkg_res = match result.get(&pkg_name) {
+                        Some(Some(p)) => p,
+                        _ => {
+                            not_founds.push_str(&pkg_name);
+                            not_founds.push_str(", ");
+                            continue;
+                        }
+                    };
+
+                    // here we handle the merging, which is a bit more complicated
+                    // than the regular merging due to the Optional type
+                    let new_pkg_res_opt = new_api_result.get_mut(&pkg_name).unwrap();
+                    let mut new_pkg_res = new_pkg_res_opt.take().unwrap();
+
+                    for dl in &pkg_res.downloads {
+                        new_pkg_res.downloads.push(dl.clone());
+                    }
+
+                    new_pkg_res.end = pkg_res.end.clone();
+                    *new_pkg_res_opt = Some(new_pkg_res);
+                }
+                if !not_founds.is_empty() {
+                    println!("Not found: {}", not_founds);
+                }
+                api_result = Some(new_api_result);
+            }
+
+            rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
+        }
+        api_result.ok_or_else(|| panic!("api_result is None"))
+    }
 }
 
 pub type BulkApiResult = HashMap<String, Option<ApiResult>>;
