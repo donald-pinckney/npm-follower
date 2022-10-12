@@ -141,12 +141,24 @@ async fn update_from_packages(conn: &DbConnection) {
             }
             println!();
 
-            let older_metric = lookup_table.get(&id).unwrap();
+            let older_metric = lookup_table.get(&id).unwrap().clone();
+
+            // we check if we got a newer latest_date for the older metric
+            if let Some(older_last) = older_metric.download_counts.last() {
+                if !metric.download_counts.is_empty()
+                    && older_last.date == metric.download_counts[0].date
+                {
+                    // we remove the last element of the older metric, since it's the same as the
+                    // first element of the newer metric, except that the newer metric may have
+                    // different counts for that download
+                    older_metric.download_counts.pop();
+                }
+            }
+
             metric.download_counts = older_metric
                 .download_counts
-                .iter()
-                .chain(metric.download_counts.iter())
-                .cloned()
+                .into_iter()
+                .chain(metric.download_counts.into_iter())
                 .collect();
             metric.total_downloads += older_metric.total_downloads;
             metrics_to_upd.push((id, metric));
