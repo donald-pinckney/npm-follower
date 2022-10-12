@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use chrono::NaiveDate;
+use download_metrics::api::bulkquery_npm_metrics;
 use download_metrics::api::query_npm_metrics;
 use download_metrics::api::ApiError;
 use download_metrics::api::ApiResult;
@@ -84,6 +85,25 @@ async fn make_download_metric(
             ));
         }
     }
+}
+
+fn spawn_bulk_metric_worker(
+    sem: Arc<Semaphore>,
+    pkgs: Vec<QueriedPackage>,
+    lbound: chrono::NaiveDate,
+    rbound: chrono::NaiveDate,
+) -> JoinHandle<Result<Vec<DownloadMetric>, ApiError>> {
+    tokio::spawn(async move {
+        let permit = sem.acquire().await.unwrap();
+        let api_result = bulkquery_npm_metrics(&pkgs, &lbound, &rbound).await?;
+        drop(permit);
+        let mut metrics = Vec::new();
+        for (pkg_name, result) in api_result {
+            let pkg = pkgs.iter().find(|p| p.name == pkg_name).unwrap(); // yeah, this is bad
+            metrics.push(make_download_metric(pkg, &result).await?);
+        }
+        Ok(metrics)
+    })
 }
 
 fn spawn_metric_worker(

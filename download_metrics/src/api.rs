@@ -72,10 +72,92 @@ pub async fn query_npm_metrics(
 }
 
 /// Performs a bulk query in npm download metrics api for each package given
+/// Can only handle 128 packages at a time, and can't query scoped packages
 pub async fn bulkquery_npm_metrics(
     pkgs: &Vec<QueriedPackage>,
-) -> Result<BulkApiResult, Box<dyn std::error::Error>> {
-    todo!("bulkquery_npm_metrics")
+    lbound: &NaiveDate,
+    rbound: &NaiveDate,
+) -> Result<BulkApiResult, ApiError> {
+    assert!(pkgs.len() <= 128);
+    let delta = chronoutil::RelativeDuration::years(1);
+    // we are going to merge the results of multiple queries into one
+    let mut api_result = None;
+    // we can only query 365 days at a time, so we must split the query into multiple requests
+    let mut rel_lbound = *lbound;
+    let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
+    for mut rel_rbound in rule {
+        if rel_lbound > *rbound {
+            break;
+        }
+
+        if rel_rbound > *rbound {
+            // we must not query past the rbound
+            rel_rbound = *rbound;
+        }
+
+        let pkg_str = pkgs
+            .iter()
+            .map(|pkg| pkg.name.to_string())
+            .collect::<Vec<String>>()
+            .join(",");
+
+        println!(
+            "Bulk Querying {} from {} to {}",
+            pkg_str, rel_lbound, rel_rbound
+        );
+
+        let query = format!(
+            "https://api.npmjs.org/downloads/range/{}:{}/{}",
+            rel_lbound, rel_rbound, pkg_str
+        );
+
+        // TODO: do actual good error handling, instead of this garbage
+        let resp = reqwest::get(&query).await?;
+        if resp.status() == 429 {
+            return Err(ApiError::RateLimit);
+        }
+        let text = resp.text().await?;
+        let result: BulkApiResult = match serde_json::from_str(&text) {
+            Ok(result) => result,
+            Err(e) => {
+                // get the error message from the response
+                let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
+                let error = match json_map.get("error") {
+                    Some(error) => error,
+                    None => return Err(ApiError::Other(e.to_string())),
+                };
+                return Err(ApiError::Other(error.to_string()));
+            }
+        };
+
+        if api_result.is_none() {
+            api_result = Some(result);
+        } else {
+            // merge the results
+            let mut new_api_result = api_result.unwrap();
+            for pkg in pkgs {
+                let pkg_name = pkg.name.to_string();
+                let pkg_res = result.get(&pkg_name).unwrap_or_else(|| {
+                    // should never happen
+                    panic!("Package {} was not found in bulk query result", pkg_name)
+                });
+
+                for dl in &pkg_res.downloads {
+                    new_api_result
+                        .get_mut(&pkg_name)
+                        .unwrap()
+                        .downloads
+                        .push(dl.clone());
+                }
+
+                new_api_result.get_mut(&pkg_name).unwrap().end = pkg_res.end.clone();
+            }
+            api_result = Some(new_api_result);
+        }
+
+        rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
+    }
+    Ok(api_result.unwrap())
 }
 
 pub type BulkApiResult = HashMap<String, ApiResult>;
