@@ -4,6 +4,7 @@ use std::sync::Arc;
 use chrono::NaiveDate;
 use download_metrics::api::query_npm_metrics;
 use download_metrics::api::ApiError;
+use download_metrics::api::ApiResult;
 use download_metrics::LOWER_BOUND_DATE;
 use download_metrics::UPPER_BOUND_DATE;
 use postgres_db::download_metrics::QueriedDownloadMetric;
@@ -37,14 +38,8 @@ async fn main() {
 
 async fn make_download_metric(
     pkg: &QueriedPackage,
-    sem: Arc<Semaphore>,
-    lower_bound_date: &NaiveDate,
-    upper_bound_date: &NaiveDate,
+    api_result: &ApiResult,
 ) -> Result<DownloadMetric, ApiError> {
-    let permit = sem.acquire().await.unwrap();
-    let result = query_npm_metrics(pkg, lower_bound_date, upper_bound_date).await?;
-    drop(permit);
-
     // we need to convert the results into DownloadMetric, merging daily results
     // into weekly results
     let mut weekly_results: Vec<DownloadCount> = Vec::new();
@@ -52,14 +47,15 @@ async fn make_download_metric(
     let mut total_downloads = 0;
 
     loop {
-        let mut weekly_count = result.downloads[i].downloads;
+        let mut weekly_count = api_result.downloads[i].downloads;
         let mut j = i + 1;
-        while j < result.downloads.len() && j < i + 7 {
-            weekly_count += result.downloads[j].downloads;
+        while j < api_result.downloads.len() && j < i + 7 {
+            weekly_count += api_result.downloads[j].downloads;
             j += 1;
         }
 
-        let date = chrono::NaiveDate::parse_from_str(&result.downloads[i].day, "%Y-%m-%d").unwrap();
+        let date =
+            chrono::NaiveDate::parse_from_str(&api_result.downloads[i].day, "%Y-%m-%d").unwrap();
 
         // we set i to j so that we skip the days we already counted
         i = j;
@@ -76,7 +72,7 @@ async fn make_download_metric(
             weekly_results.push(count);
         }
 
-        if i >= result.downloads.len() {
+        if i >= api_result.downloads.len() {
             // we still want to know the latest, even if it's zero and we didn't insert it
             let latest = date;
             println!("did package {}", pkg.name);
@@ -90,11 +86,25 @@ async fn make_download_metric(
     }
 }
 
+fn spawn_metric_worker(
+    sem: Arc<Semaphore>,
+    pkg: QueriedPackage,
+    lbound: chrono::NaiveDate,
+    rbound: chrono::NaiveDate,
+) -> JoinHandle<Result<DownloadMetric, ApiError>> {
+    tokio::spawn(async move {
+        let permit = sem.acquire().await.unwrap();
+        let api_result = query_npm_metrics(&pkg, &lbound, &rbound).await?;
+        drop(permit);
+        make_download_metric(&pkg, &api_result).await
+    })
+}
+
 async fn update_from_packages(conn: &DbConnection) {
     let mut metrics = query_metrics_older_than_a_week(conn);
 
     while !metrics.is_empty() {
-        let mut handles: Vec<JoinHandle<Result<(i64, DownloadMetric), ApiError>>> = Vec::new();
+        let mut handles: Vec<(i64, JoinHandle<Result<DownloadMetric, ApiError>>)> = Vec::new();
         let sem = Arc::new(Semaphore::new(3));
 
         // map of [metric id] -> [metric]
@@ -110,18 +120,17 @@ async fn update_from_packages(conn: &DbConnection) {
             lookup_table.insert(metric_id, metric.into());
 
             let sem = sem.clone();
-            handles.push(tokio::spawn(async move {
-                make_download_metric(&pkg, sem, &lower_bound_date, &UPPER_BOUND_DATE)
-                    .await
-                    .map(|m| (metric_id, m))
-            }));
+            handles.push((
+                metric_id,
+                spawn_metric_worker(sem, pkg, lower_bound_date, *UPPER_BOUND_DATE),
+            ));
         }
 
         // where i64 is the id of the metric
         let mut metrics_to_upd: Vec<(i64, DownloadMetric)> = Vec::new();
 
-        for handle in handles {
-            let (id, mut metric) = match handle.await.unwrap() {
+        for (id, handle) in handles {
+            let mut metric = match handle.await.unwrap() {
                 Ok(metric) => metric,
                 Err(ApiError::RateLimit) => {
                     eprintln!("Rate limited! Exiting!");
@@ -133,15 +142,9 @@ async fn update_from_packages(conn: &DbConnection) {
                 }
             };
 
-            println!("got update metric for {}", metric.package_id);
-            println!("new latest date: {}", metric.latest_date);
-            println!("new counts:");
-            for count in &metric.download_counts {
-                print!("{}: {}, ", count.date, count.count);
-            }
-            println!();
+            pretty_print_metric(&metric);
 
-            let older_metric = lookup_table.get(&id).unwrap().clone();
+            let mut older_metric = lookup_table.get(&id).unwrap().clone();
 
             // we check if we got a newer latest_date for the older metric
             if let Some(older_last) = older_metric.download_counts.last() {
@@ -247,9 +250,12 @@ async fn insert_from_packages(conn: &DbConnection) {
             .chain(scoped_packages.into_iter())
         {
             let sem = sem.clone();
-            handles.push(tokio::spawn(async move {
-                make_download_metric(&pkg, sem, &LOWER_BOUND_DATE, &UPPER_BOUND_DATE).await
-            }));
+            handles.push(spawn_metric_worker(
+                sem,
+                pkg,
+                *LOWER_BOUND_DATE,
+                *UPPER_BOUND_DATE,
+            ));
         }
 
         for handle in handles {
@@ -265,12 +271,7 @@ async fn insert_from_packages(conn: &DbConnection) {
                 }
             };
 
-            println!("latest: {:?}", metric.latest_date);
-            println!("counts:");
-            for dl in &metric.download_counts {
-                print!("{}: {}, ", dl.date, dl.count);
-            }
-            println!();
+            pretty_print_metric(&metric);
             download_metrics.push(metric);
         }
 
@@ -332,4 +333,14 @@ fn get_a_week_ago(lbound: &chrono::NaiveDate, rbound: &chrono::NaiveDate) -> Nai
     }
 
     rel_lbound - delta
+}
+
+fn pretty_print_metric(metric: &DownloadMetric) {
+    println!("id: {}", metric.package_id);
+    println!("latest: {:?}", metric.latest_date);
+    println!("counts:");
+    for dl in &metric.download_counts {
+        print!("{}: {}, ", dl.date, dl.count);
+    }
+    println!();
 }
