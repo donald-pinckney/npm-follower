@@ -92,16 +92,17 @@ pub fn update_metric_by_id(conn: &DbConnection, metric_id: i64, metric: Download
 }
 
 /// Queries all download metrics with latest date being less than or equal the given date.
-/// The query is limited to 1000 results
+/// The query is limited to the given limit.
 pub fn query_metric_latest_less_than(
     conn: &DbConnection,
     date: NaiveDate,
+    limit: i64,
 ) -> Vec<QueriedDownloadMetric> {
     use super::schema::download_metrics::dsl::*;
 
     download_metrics
         .filter(latest_date.le(date))
-        .limit(1000)
+        .limit(limit)
         .load::<QueriedDownloadMetric>(&conn.conn)
         .unwrap_or_else(|e| panic!("Error querying download metrics, {:?}", e))
 }

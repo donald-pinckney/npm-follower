@@ -68,7 +68,7 @@ pub async fn query_npm_metrics(
 
         rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
     }
-    Ok(api_result.unwrap())
+    api_result.ok_or_else(|| panic!("api_result is None"))
 }
 
 /// Performs a bulk query in npm download metrics api for each package given
@@ -135,32 +135,43 @@ pub async fn bulkquery_npm_metrics(
         } else {
             // merge the results
             let mut new_api_result = api_result.unwrap();
+            // not_founds is just for printing
+            let mut not_founds = String::new();
             for pkg in pkgs {
                 let pkg_name = pkg.name.to_string();
-                let pkg_res = result.get(&pkg_name).unwrap_or_else(|| {
-                    // should never happen
-                    panic!("Package {} was not found in bulk query result", pkg_name)
-                });
+                let pkg_res = match result.get(&pkg_name) {
+                    Some(Some(p)) => p,
+                    _ => {
+                        not_founds.push_str(&pkg_name);
+                        not_founds.push_str(", ");
+                        continue;
+                    }
+                };
+
+                // here we handle the merging, which is a bit more complicated
+                // than the regular merging due to the Optional type
+                let new_pkg_res_opt = new_api_result.get_mut(&pkg_name).unwrap();
+                let mut new_pkg_res = new_pkg_res_opt.take().unwrap();
 
                 for dl in &pkg_res.downloads {
-                    new_api_result
-                        .get_mut(&pkg_name)
-                        .unwrap()
-                        .downloads
-                        .push(dl.clone());
+                    new_pkg_res.downloads.push(dl.clone());
                 }
 
-                new_api_result.get_mut(&pkg_name).unwrap().end = pkg_res.end.clone();
+                new_pkg_res.end = pkg_res.end.clone();
+                *new_pkg_res_opt = Some(new_pkg_res);
+            }
+            if !not_founds.is_empty() {
+                println!("Not found: {}", not_founds);
             }
             api_result = Some(new_api_result);
         }
 
         rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
     }
-    Ok(api_result.unwrap())
+    api_result.ok_or_else(|| panic!("api_result is None"))
 }
 
-pub type BulkApiResult = HashMap<String, ApiResult>;
+pub type BulkApiResult = HashMap<String, Option<ApiResult>>;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ApiResult {

@@ -87,7 +87,7 @@ async fn make_download_metric(
     }
 }
 
-fn spawn_bulk_metric_worker(
+fn spawn_bulk_query_task(
     sem: Arc<Semaphore>,
     pkgs: Vec<QueriedPackage>,
     lbound: chrono::NaiveDate,
@@ -99,14 +99,16 @@ fn spawn_bulk_metric_worker(
         drop(permit);
         let mut metrics = Vec::new();
         for (pkg_name, result) in api_result {
-            let pkg = pkgs.iter().find(|p| p.name == pkg_name).unwrap(); // yeah, this is bad
-            metrics.push(make_download_metric(pkg, &result).await?);
+            if let Some(result) = result {
+                let pkg = pkgs.iter().find(|p| p.name == pkg_name).unwrap(); // yeah, this is bad
+                metrics.push(make_download_metric(pkg, &result).await?);
+            }
         }
         Ok(metrics)
     })
 }
 
-fn spawn_metric_worker(
+fn spawn_query_task(
     sem: Arc<Semaphore>,
     pkg: QueriedPackage,
     lbound: chrono::NaiveDate,
@@ -142,7 +144,7 @@ async fn update_from_packages(conn: &DbConnection) {
             let sem = sem.clone();
             handles.push((
                 metric_id,
-                spawn_metric_worker(sem, pkg, lower_bound_date, *UPPER_BOUND_DATE),
+                spawn_query_task(sem, pkg, lower_bound_date, *UPPER_BOUND_DATE),
             ));
         }
 
@@ -201,11 +203,11 @@ async fn update_from_packages(conn: &DbConnection) {
     println!("Done updating metrics");
 }
 
-/// Queries all metrics older than a week. The query is limited to 1000 results.
+/// Queries all metrics older than a week. The query is limited to 128 results.
 fn query_metrics_older_than_a_week(conn: &DbConnection) -> Vec<QueriedDownloadMetric> {
     let week_ago = get_a_week_ago(&LOWER_BOUND_DATE, &UPPER_BOUND_DATE) - chrono::Duration::days(7);
     println!("querying metrics older than {}", week_ago);
-    postgres_db::download_metrics::query_metric_latest_less_than(conn, week_ago)
+    postgres_db::download_metrics::query_metric_latest_less_than(conn, week_ago, 128)
 }
 
 /// Inserts new download metric rows by using the `packages` table and querying npm
@@ -261,16 +263,13 @@ async fn insert_from_packages(conn: &DbConnection) {
         }
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
-        let mut handles: Vec<JoinHandle<Result<DownloadMetric, ApiError>>> = Vec::new();
+        let mut scoped_handles: Vec<JoinHandle<Result<DownloadMetric, ApiError>>> = Vec::new();
         let sem = Arc::new(Semaphore::new(3)); // limiting to 3 requests at a time
 
-        // TODO: bulk query, remove chain
-        for pkg in normal_packages
-            .into_iter()
-            .chain(scoped_packages.into_iter())
-        {
+        // scoped packages need to be handled separately one-by-one
+        for pkg in scoped_packages {
             let sem = sem.clone();
-            handles.push(spawn_metric_worker(
+            scoped_handles.push(spawn_query_task(
                 sem,
                 pkg,
                 *LOWER_BOUND_DATE,
@@ -278,7 +277,11 @@ async fn insert_from_packages(conn: &DbConnection) {
             ));
         }
 
-        for handle in handles {
+        // normal packages can be queried in bulk
+        let bulk_handle =
+            spawn_bulk_query_task(sem, normal_packages, *LOWER_BOUND_DATE, *UPPER_BOUND_DATE);
+
+        for handle in scoped_handles {
             let metric = match handle.await.unwrap() {
                 Ok(metric) => metric,
                 Err(ApiError::RateLimit) => {
@@ -294,6 +297,23 @@ async fn insert_from_packages(conn: &DbConnection) {
             pretty_print_metric(&metric);
             download_metrics.push(metric);
         }
+
+        match bulk_handle.await.unwrap() {
+            Ok(metrics) => {
+                for metric in metrics {
+                    pretty_print_metric(&metric);
+                    download_metrics.push(metric);
+                }
+            }
+            Err(ApiError::RateLimit) => {
+                eprintln!("Rate limited! Exiting!");
+                std::process::exit(1);
+            }
+            Err(e) => {
+                println!("Error: {}", e);
+                continue;
+            }
+        };
 
         conn.run_psql_transaction(|| {
             for metric in download_metrics {
