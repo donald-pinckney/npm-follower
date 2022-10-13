@@ -35,7 +35,7 @@ async fn update_from_packages(conn: &DbConnection) {
 
     while !metrics.is_empty() {
         let mut handles: Vec<(i64, JoinHandle<Result<DownloadMetric, ApiError>>)> = Vec::new();
-        let api = API::new(3);
+        let api = API::default();
 
         // map of [metric id] -> [metric]
         let mut lookup_table: HashMap<i64, DownloadMetric> = HashMap::new();
@@ -203,6 +203,14 @@ async fn insert_from_packages(conn: &DbConnection) {
                 Err(ApiError::RateLimit(pkgs)) => {
                     println!("Rate-limited!");
                     redo.extend(pkgs);
+                    println!(
+                        "Retrying {} packages",
+                        redo.iter()
+                            .map(|p| &p.name)
+                            .cloned()
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    );
                     continue;
                 }
                 Err(e) => {

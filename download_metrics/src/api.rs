@@ -73,18 +73,17 @@ impl API {
     /// When we are getting rate limited, this function is called, and it handles the sleep.
     /// The idea is to get only one thread to sleep and all the others to return.
     async fn handle_rate_limit(&self) {
-        match self.rl_lock.try_lock() {
+        let lock = match self.rl_lock.try_lock() {
             Ok(l) => l,
             Err(_) => return,
         };
-        let permit = self.pool.acquire_many(self.pool_size).await.unwrap();
-        let time = std::time::Duration::from_secs(60);
+        let time = std::time::Duration::from_secs(1000);
         println!(
             "Rate-limit hit, sleeping for {} minutes",
             (time.as_secs() as f64) / 60.0
         );
         tokio::time::sleep(time).await;
-        drop(permit);
+        drop(lock);
     }
 
     /// Performs a regular query in npm download metrics api for each package given
