@@ -3,6 +3,7 @@ use crate::custom_types::PackageMetadata;
 use super::schema::packages;
 use diesel::pg::upsert::excluded;
 use diesel::Queryable;
+use serde::{Deserialize, Serialize};
 
 use super::DbConnection;
 use diesel::prelude::*;
@@ -15,7 +16,7 @@ pub struct Package {
     pub secret: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct QueriedPackage {
     pub id: i64,
     pub name: String,

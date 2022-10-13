@@ -68,7 +68,7 @@ fn setup_test_db() -> DbConnection {
     // 3. Connect
     let conn = PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
-    DbConnection { conn }
+    DbConnection { conn, redis: None }
 }
 
 pub fn using_test_db<F, R>(f: F) -> R

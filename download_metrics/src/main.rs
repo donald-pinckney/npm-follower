@@ -32,10 +32,10 @@ async fn main() {
 
 async fn update_from_packages(conn: &DbConnection) {
     let mut metrics = query_metrics_older_than_a_week(conn);
+    let api = API::default();
 
     while !metrics.is_empty() {
         let mut handles: Vec<(i64, JoinHandle<Result<DownloadMetric, ApiError>>)> = Vec::new();
-        let api = API::default();
 
         // map of [metric id] -> [metric]
         let mut lookup_table: HashMap<i64, DownloadMetric> = HashMap::new();
@@ -129,14 +129,15 @@ async fn insert_from_packages(conn: &DbConnection) {
 
     // therefore we run in chunks of 128 packages (+ scoped packages, max 128 too for consistency)
 
+    let api = API::new(5);
     let mut finished = false; // we break the loop if we have no more packages to query
-    let mut redo = Vec::new();
+    let mut redo_rl = postgres_db::download_metrics::query_rate_limited_packages(conn);
     while !finished {
         let mut chunk_pkg_id = pkg_id;
         let mut normal_packages = Vec::new();
         // NOTE: for simplicity, we pool rate-limited packages into the scoped packages
-        let mut scoped_packages = redo;
-        redo = Vec::new();
+        let mut scoped_packages = redo_rl;
+        redo_rl = Vec::new();
 
         while normal_packages.len() < 128 && scoped_packages.len() < 128 {
             let pkg = postgres_db::packages::query_pkg_by_id(conn, chunk_pkg_id);
@@ -175,7 +176,6 @@ async fn insert_from_packages(conn: &DbConnection) {
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
         let mut scoped_handles: Vec<JoinHandle<Result<DownloadMetric, ApiError>>> = Vec::new();
-        let api = API::new(4);
 
         // normal packages can be queried in bulk
         let maybe_bulk_handle = {
@@ -202,10 +202,12 @@ async fn insert_from_packages(conn: &DbConnection) {
                 Ok(metric) => metric,
                 Err(ApiError::RateLimit(pkgs)) => {
                     println!("Rate-limited!");
-                    redo.extend(pkgs);
+                    postgres_db::download_metrics::add_rate_limited_packages(conn, &pkgs);
+                    redo_rl.extend(pkgs);
                     println!(
                         "Retrying {} packages",
-                        redo.iter()
+                        redo_rl
+                            .iter()
                             .map(|p| &p.name)
                             .cloned()
                             .collect::<Vec<_>>()
@@ -233,7 +235,8 @@ async fn insert_from_packages(conn: &DbConnection) {
                 }
                 Err(ApiError::RateLimit(pkgs)) => {
                     eprintln!("Rate-limited!");
-                    redo.extend(pkgs);
+                    postgres_db::download_metrics::add_rate_limited_packages(conn, &pkgs);
+                    redo_rl.extend(pkgs);
                 }
                 Err(e) => {
                     println!("Error: {}", e);
@@ -244,12 +247,20 @@ async fn insert_from_packages(conn: &DbConnection) {
 
         conn.run_psql_transaction(|| {
             for metric in download_metrics {
+                if !redo_rl.is_empty() {
+                    let pkg =
+                        postgres_db::packages::query_pkg_by_id(conn, metric.package_id).unwrap();
+                    if redo_rl.contains(&pkg) {
+                        postgres_db::download_metrics::remove_rate_limited_package(conn, &pkg);
+                    }
+                }
                 postgres_db::download_metrics::insert_download_metric(conn, metric);
             }
             postgres_db::internal_state::set_download_metrics_pkg_seq(chunk_pkg_id, conn);
             Ok(())
         })
         .expect("failed to insert download metrics");
+
         pkg_id = chunk_pkg_id;
     }
 

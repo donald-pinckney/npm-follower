@@ -24,6 +24,7 @@ use std::env;
 
 pub struct DbConnection {
     pub(crate) conn: PgConnection,
+    pub(crate) redis: Option<redis::Client>,
 }
 
 #[cfg(not(test))]
@@ -33,10 +34,20 @@ pub fn connect() -> DbConnection {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let conn = PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
-    DbConnection { conn }
+    let redis_url = env::var("REDIS_URL").expect("REDIS_URL must be set");
+    let redis = redis::Client::open(redis_url).ok();
+    DbConnection { conn, redis }
 }
 
 impl DbConnection {
+    pub(crate) fn get_redis(&self) -> redis::Connection {
+        self.redis
+            .as_ref()
+            .expect("Redis not configured")
+            .get_connection()
+            .expect("Failed to connect to redis")
+    }
+
     pub fn run_psql_transaction<F>(&self, transaction: F) -> Result<(), diesel::result::Error>
     where
         F: FnOnce() -> Result<(), diesel::result::Error>,

@@ -1,7 +1,10 @@
+use std::collections::HashSet;
+
 use chrono::NaiveDate;
+use redis::Commands;
 
 use super::schema::download_metrics;
-use crate::{custom_types::DownloadCount, DbConnection};
+use crate::{custom_types::DownloadCount, packages::QueriedPackage, DbConnection};
 use diesel::prelude::*;
 
 #[derive(Insertable, Clone, Queryable, Debug)]
@@ -105,4 +108,47 @@ pub fn query_metric_latest_less_than(
         .limit(limit)
         .load::<QueriedDownloadMetric>(&conn.conn)
         .unwrap_or_else(|e| panic!("Error querying download metrics, {:?}", e))
+}
+
+/// Queries redis for the list of packages that have been rate-limited
+pub fn query_rate_limited_packages(conn: &DbConnection) -> Vec<QueriedPackage> {
+    let mut con = conn.get_redis();
+
+    let data: HashSet<String> = con.smembers("rate-limited").unwrap();
+
+    data.into_iter()
+        .map(|s| serde_json::from_str::<QueriedPackage>(&s).unwrap())
+        .collect()
+}
+
+/// Removes a package from the rate-limited packages set in redis
+pub fn remove_rate_limited_package(conn: &DbConnection, package: &QueriedPackage) {
+    let mut con = conn.get_redis();
+
+    let _: () = con
+        .srem("rate-limited", serde_json::to_string(package).unwrap())
+        .unwrap();
+}
+
+/// Adds a package to the set of rate-limited packages
+pub fn add_rate_limited_package(conn: &DbConnection, package: &QueriedPackage) {
+    let mut con = conn.get_redis();
+
+    let data = serde_json::to_string(&package).unwrap();
+
+    let _: () = con.sadd("rate-limited", data).unwrap();
+}
+
+/// Adds a list of packages to the set of rate-limited packages
+pub fn add_rate_limited_packages(conn: &DbConnection, packages: &[QueriedPackage]) {
+    let mut con = conn.get_redis();
+
+    let data: Vec<String> = packages
+        .iter()
+        .map(|p| serde_json::to_string(&p).unwrap())
+        .collect();
+
+    for d in data {
+        let _: () = con.sadd("rate-limited", d).unwrap();
+    }
 }
