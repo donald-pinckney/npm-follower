@@ -129,7 +129,7 @@ async fn insert_from_packages(conn: &DbConnection) {
 
     // therefore we run in chunks of 128 packages (+ scoped packages, max 128 too for consistency)
 
-    let api = API::new(5);
+    let api = API::new(6);
     let mut finished = false; // we break the loop if we have no more packages to query
     let mut redo_rl = postgres_db::download_metrics::query_rate_limited_packages(conn);
     while !finished {
@@ -246,11 +246,12 @@ async fn insert_from_packages(conn: &DbConnection) {
         }
 
         conn.run_psql_transaction(|| {
+            let rate_limited = postgres_db::download_metrics::query_rate_limited_packages(conn);
             for metric in download_metrics {
-                if !redo_rl.is_empty() {
+                if !rate_limited.is_empty() {
                     let pkg =
                         postgres_db::packages::query_pkg_by_id(conn, metric.package_id).unwrap();
-                    if redo_rl.contains(&pkg) {
+                    if rate_limited.contains(&pkg) {
                         postgres_db::download_metrics::remove_rate_limited_package(conn, &pkg);
                     }
                 }

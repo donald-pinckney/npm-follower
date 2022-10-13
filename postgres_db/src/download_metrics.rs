@@ -5,7 +5,7 @@ use redis::Commands;
 
 use super::schema::download_metrics;
 use crate::{custom_types::DownloadCount, packages::QueriedPackage, DbConnection};
-use diesel::prelude::*;
+use diesel::{pg::upsert::excluded, prelude::*};
 
 #[derive(Insertable, Clone, Queryable, Debug)]
 #[diesel(table_name = download_metrics)]
