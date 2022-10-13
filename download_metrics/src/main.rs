@@ -35,7 +35,7 @@ async fn update_from_packages(conn: &DbConnection) {
 
     while !metrics.is_empty() {
         let mut handles: Vec<(i64, JoinHandle<Result<DownloadMetric, ApiError>>)> = Vec::new();
-        let api = API::new();
+        let api = API::new(3);
 
         // map of [metric id] -> [metric]
         let mut lookup_table: HashMap<i64, DownloadMetric> = HashMap::new();
@@ -172,13 +172,7 @@ async fn insert_from_packages(conn: &DbConnection) {
 
         let mut download_metrics: Vec<DownloadMetric> = Vec::new();
         let mut scoped_handles: Vec<JoinHandle<Result<DownloadMetric, ApiError>>> = Vec::new();
-        let api = API::new();
-
-        // scoped packages need to be handled separately one-by-one
-        for pkg in scoped_packages {
-            let api = api.clone();
-            scoped_handles.push(api.spawn_query_task(pkg, *LOWER_BOUND_DATE, *UPPER_BOUND_DATE));
-        }
+        let api = API::new(4);
 
         // normal packages can be queried in bulk
         let maybe_bulk_handle = {
@@ -194,12 +188,19 @@ async fn insert_from_packages(conn: &DbConnection) {
             }
         };
 
+        // scoped packages need to be handled separately one-by-one
+        for pkg in scoped_packages {
+            let api = api.clone();
+            scoped_handles.push(api.spawn_query_task(pkg, *LOWER_BOUND_DATE, *UPPER_BOUND_DATE));
+        }
+
         for handle in scoped_handles {
             let metric = match handle.await.unwrap() {
                 Ok(metric) => metric,
                 Err(ApiError::RateLimit) => {
                     eprintln!("Rate limited! Exiting!");
-                    std::process::exit(1);
+                    continue;
+                    // std::process::exit(1);
                 }
                 Err(e) => {
                     println!("Error: {}", e);

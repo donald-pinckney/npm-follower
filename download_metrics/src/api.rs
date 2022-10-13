@@ -2,19 +2,29 @@ use chrono::NaiveDate;
 use postgres_db::{download_metrics::DownloadMetric, packages::QueriedPackage};
 use serde::Deserialize;
 use std::{collections::HashMap, sync::Arc};
-use tokio::{sync::Semaphore, task::JoinHandle};
+use tokio::{
+    sync::{Mutex, Semaphore},
+    task::JoinHandle,
+};
 
 use crate::make_download_metric;
 
+/// API wrapper that handles the rate limiting
 #[derive(Debug, Clone)]
 pub struct API {
-    pub sem: Arc<Semaphore>,
+    pub pool: Arc<Semaphore>,
+    pub pool_size: u32,
+    pub rl_lock: Arc<Mutex<()>>,
+    pub client: reqwest::Client,
 }
 
 impl API {
-    pub fn new() -> API {
+    pub fn new(pool_size: u32) -> API {
         API {
-            sem: Arc::new(Semaphore::new(3)),
+            pool: Arc::new(Semaphore::new(pool_size as usize)),
+            pool_size,
+            rl_lock: Arc::new(Mutex::new(())),
+            client: reqwest::Client::new(),
         }
     }
 
@@ -24,11 +34,8 @@ impl API {
         lbound: chrono::NaiveDate,
         rbound: chrono::NaiveDate,
     ) -> JoinHandle<Result<Vec<DownloadMetric>, ApiError>> {
-        let sem = self.sem.clone();
         tokio::spawn(async move {
-            let permit = sem.acquire().await.unwrap();
             let api_result = self.bulkquery_npm_metrics(&pkgs, &lbound, &rbound).await?;
-            drop(permit);
             let mut metrics = Vec::new();
             for (pkg_name, result) in api_result {
                 if let Some(result) = result {
@@ -46,17 +53,42 @@ impl API {
         lbound: chrono::NaiveDate,
         rbound: chrono::NaiveDate,
     ) -> JoinHandle<Result<DownloadMetric, ApiError>> {
-        let sem = self.sem.clone();
         tokio::spawn(async move {
-            let permit = sem.acquire().await.unwrap();
             let api_result = self.query_npm_metrics(&pkg, &lbound, &rbound).await?;
-            drop(permit);
             make_download_metric(&pkg, &api_result).await
         })
     }
 
+    /// Sends a query with reqwest, taking account of the rate limit pool.
+    async fn send_query(&self, query: &str) -> Result<reqwest::Response, ApiError> {
+        {
+            self.rl_lock.lock().await;
+        }
+        let permit = self.pool.acquire().await.unwrap();
+        let resp = self.client.get(query).send().await?;
+        drop(permit);
+        Ok(resp)
+    }
+
+    /// When we are getting rate limited, this function is called, and it handles the sleep.
+    /// The idea is to get only one thread to sleep and all the others to return.
+    async fn handle_rate_limit(&self) {
+        match self.rl_lock.try_lock() {
+            Ok(l) => l,
+            Err(_) => return,
+        };
+        let permit = self.pool.acquire_many(self.pool_size).await.unwrap();
+        let time = std::time::Duration::from_secs(60);
+        println!(
+            "Rate limit hit, sleeping for {} minutes",
+            (time.as_secs() as f64) / 60.0
+        );
+        tokio::time::sleep(time).await;
+        drop(permit);
+    }
+
     /// Performs a regular query in npm download metrics api for each package given
-    pub async fn query_npm_metrics(
+    async fn query_npm_metrics(
         self,
         pkg: &QueriedPackage,
         lbound: &NaiveDate,
@@ -88,12 +120,15 @@ impl API {
                 rel_lbound, rel_rbound, pkg.name
             );
 
-            // TODO: do actual good error handling, instead of this garbage
-            let resp = reqwest::get(&query).await?;
+            let resp = self.send_query(&query).await?;
+
             if resp.status() == 429 {
+                self.handle_rate_limit().await;
                 return Err(ApiError::RateLimit);
             }
             let text = resp.text().await?;
+
+            // TODO: do actual good error handling, instead of this garbage
             let result: ApiResult = match serde_json::from_str(&text) {
                 Ok(result) => result,
                 Err(e) => {
@@ -126,7 +161,7 @@ impl API {
 
     /// Performs a bulk query in npm download metrics api for each package given
     /// Can only handle 128 packages at a time, and can't query scoped packages
-    pub async fn bulkquery_npm_metrics(
+    async fn bulkquery_npm_metrics(
         self,
         pkgs: &Vec<QueriedPackage>,
         lbound: &NaiveDate,
@@ -165,12 +200,15 @@ impl API {
                 rel_lbound, rel_rbound, pkg_str
             );
 
-            // TODO: do actual good error handling, instead of this garbage
-            let resp = reqwest::get(&query).await?;
+            let resp = self.send_query(&query).await?;
+
             if resp.status() == 429 {
+                self.handle_rate_limit().await;
                 return Err(ApiError::RateLimit);
             }
             let text = resp.text().await?;
+
+            // TODO: do actual good error handling, instead of this garbage
             let result: BulkApiResult = match serde_json::from_str(&text) {
                 Ok(result) => result,
                 Err(e) => {
@@ -223,6 +261,12 @@ impl API {
             rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
         }
         api_result.ok_or_else(|| panic!("api_result is None"))
+    }
+}
+
+impl Default for API {
+    fn default() -> Self {
+        Self::new(3)
     }
 }
 
