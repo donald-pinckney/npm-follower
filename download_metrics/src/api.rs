@@ -77,7 +77,7 @@ impl API {
             Ok(l) => l,
             Err(_) => return,
         };
-        let time = std::time::Duration::from_secs(1000);
+        let time = std::time::Duration::from_secs(1200);
         println!(
             "Rate-limit hit, sleeping for {} minutes",
             (time.as_secs() as f64) / 60.0
