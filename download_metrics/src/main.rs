@@ -62,7 +62,7 @@ async fn update_from_packages(conn: &DbConnection) {
         for (id, handle) in handles {
             let mut metric = match handle.await.unwrap() {
                 Ok(metric) => metric,
-                Err(ApiError::RateLimit) => {
+                Err(ApiError::RateLimit(_)) => {
                     eprintln!("Rate limited! Exiting!");
                     std::process::exit(1);
                 }
@@ -130,10 +130,13 @@ async fn insert_from_packages(conn: &DbConnection) {
     // therefore we run in chunks of 128 packages (+ scoped packages, max 128 too for consistency)
 
     let mut finished = false; // we break the loop if we have no more packages to query
+    let mut redo = Vec::new();
     while !finished {
         let mut chunk_pkg_id = pkg_id;
         let mut normal_packages = Vec::new();
-        let mut scoped_packages = Vec::new(); // TODO: do scoped packages.
+        // NOTE: for simplicity, we pool rate-limited packages into the scoped packages
+        let mut scoped_packages = redo;
+        redo = Vec::new();
 
         while normal_packages.len() < 128 && scoped_packages.len() < 128 {
             let pkg = postgres_db::packages::query_pkg_by_id(conn, chunk_pkg_id);
@@ -197,10 +200,10 @@ async fn insert_from_packages(conn: &DbConnection) {
         for handle in scoped_handles {
             let metric = match handle.await.unwrap() {
                 Ok(metric) => metric,
-                Err(ApiError::RateLimit) => {
-                    eprintln!("Rate limited! Exiting!");
+                Err(ApiError::RateLimit(pkgs)) => {
+                    println!("Rate-limited!");
+                    redo.extend(pkgs);
                     continue;
-                    // std::process::exit(1);
                 }
                 Err(e) => {
                     println!("Error: {}", e);
@@ -220,9 +223,9 @@ async fn insert_from_packages(conn: &DbConnection) {
                         download_metrics.push(metric);
                     }
                 }
-                Err(ApiError::RateLimit) => {
-                    eprintln!("Rate limited! Exiting!");
-                    std::process::exit(1);
+                Err(ApiError::RateLimit(pkgs)) => {
+                    eprintln!("Rate-limited!");
+                    redo.extend(pkgs);
                 }
                 Err(e) => {
                     println!("Error: {}", e);

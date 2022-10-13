@@ -15,7 +15,7 @@ pub struct Package {
     pub secret: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct QueriedPackage {
     pub id: i64,
     pub name: String,

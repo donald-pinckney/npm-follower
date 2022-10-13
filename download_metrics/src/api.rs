@@ -80,7 +80,7 @@ impl API {
         let permit = self.pool.acquire_many(self.pool_size).await.unwrap();
         let time = std::time::Duration::from_secs(60);
         println!(
-            "Rate limit hit, sleeping for {} minutes",
+            "Rate-limit hit, sleeping for {} minutes",
             (time.as_secs() as f64) / 60.0
         );
         tokio::time::sleep(time).await;
@@ -124,7 +124,7 @@ impl API {
 
             if resp.status() == 429 {
                 self.handle_rate_limit().await;
-                return Err(ApiError::RateLimit);
+                return Err(ApiError::RateLimit(vec![pkg.clone()]));
             }
             let text = resp.text().await?;
 
@@ -204,7 +204,7 @@ impl API {
 
             if resp.status() == 429 {
                 self.handle_rate_limit().await;
-                return Err(ApiError::RateLimit);
+                return Err(ApiError::RateLimit(pkgs.clone()));
             }
             let text = resp.text().await?;
 
@@ -291,9 +291,9 @@ pub enum ApiError {
     Reqwest(reqwest::Error),
     Serde(serde_json::Error),
     Io(std::io::Error),
-    DoesNotExist(String), // where String is the package name
-    Other(String),        // where String is the error message
-    RateLimit,
+    DoesNotExist(String),           // where String is the package name
+    Other(String),                  // where String is the error message
+    RateLimit(Vec<QueriedPackage>), // the packages that were involved in the rate limit
 }
 
 impl From<reqwest::Error> for ApiError {
@@ -320,7 +320,7 @@ impl std::fmt::Display for ApiError {
             ApiError::Reqwest(err) => write!(f, "reqwest error: {}", err),
             ApiError::Serde(err) => write!(f, "serde error: {}", err),
             ApiError::Io(err) => write!(f, "io error: {}", err),
-            ApiError::RateLimit => write!(f, "rate limited"),
+            ApiError::RateLimit(p) => write!(f, "rate-limited, {} packages", p.len()),
             ApiError::DoesNotExist(name) => write!(f, "package {} does not exist", name),
             ApiError::Other(msg) => write!(f, "other error: {}", msg),
         }
