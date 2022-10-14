@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 use download_metrics::api::ApiError;
-use download_metrics::api::BulkQueryTaskHandle;
 use download_metrics::api::QueryTaskHandle;
 use download_metrics::api::API;
 use download_metrics::LOWER_BOUND_DATE;
@@ -162,8 +161,7 @@ async fn insert_from_packages(conn: &DbConnection) {
                     }
                 }
                 Some(pkg) => {
-                    // TODO: i think? ping donald about it
-                    if !pkg.secret && has_normal_metadata(&pkg) {
+                    if has_normal_metadata(&pkg) {
                         if pkg.name.starts_with('@') {
                             scoped_packages.push(pkg);
                         } else {
