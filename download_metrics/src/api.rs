@@ -18,6 +18,10 @@ pub struct API {
     pub client: reqwest::Client,
 }
 
+pub type QueryTaskHandle = JoinHandle<(Result<DownloadMetric, ApiError>, QueriedPackage)>;
+pub type BulkQueryTaskHandle =
+    JoinHandle<(Result<Vec<DownloadMetric>, ApiError>, Vec<QueriedPackage>)>;
+
 impl API {
     pub fn new(pool_size: u32) -> API {
         API {
@@ -33,17 +37,20 @@ impl API {
         pkgs: Vec<QueriedPackage>,
         lbound: chrono::NaiveDate,
         rbound: chrono::NaiveDate,
-    ) -> JoinHandle<Result<Vec<DownloadMetric>, ApiError>> {
+    ) -> BulkQueryTaskHandle {
         tokio::spawn(async move {
-            let api_result = self.bulkquery_npm_metrics(&pkgs, &lbound, &rbound).await?;
-            let mut metrics = Vec::new();
-            for (pkg_name, result) in api_result {
-                if let Some(result) = result {
-                    let pkg = pkgs.iter().find(|p| p.name == pkg_name).unwrap(); // yeah, this is bad
-                    metrics.push(make_download_metric(pkg, &result).await?);
+            let thunk = async {
+                let api_result = self.bulkquery_npm_metrics(&pkgs, &lbound, &rbound).await?;
+                let mut metrics = Vec::new();
+                for (pkg_name, result) in api_result {
+                    if let Some(result) = result {
+                        let pkg = pkgs.iter().find(|p| p.name == pkg_name).unwrap(); // yeah, this is bad
+                        metrics.push(make_download_metric(pkg, &result).await?);
+                    }
                 }
-            }
-            Ok(metrics)
+                Ok(metrics)
+            };
+            (thunk.await, pkgs)
         })
     }
 
@@ -52,10 +59,13 @@ impl API {
         pkg: QueriedPackage,
         lbound: chrono::NaiveDate,
         rbound: chrono::NaiveDate,
-    ) -> JoinHandle<Result<DownloadMetric, ApiError>> {
+    ) -> QueryTaskHandle {
         tokio::spawn(async move {
-            let api_result = self.query_npm_metrics(&pkg, &lbound, &rbound).await?;
-            make_download_metric(&pkg, &api_result).await
+            let thunk = async {
+                let api_result = self.query_npm_metrics(&pkg, &lbound, &rbound).await?;
+                make_download_metric(&pkg, &api_result).await
+            };
+            (thunk.await, pkg)
         })
     }
 
@@ -123,7 +133,7 @@ impl API {
 
             if resp.status() == 429 {
                 self.handle_rate_limit().await;
-                return Err(ApiError::RateLimit(vec![pkg.clone()]));
+                return Err(ApiError::RateLimit);
             }
             let text = resp.text().await?;
 
@@ -137,6 +147,9 @@ impl API {
                         Some(error) => error,
                         None => return Err(ApiError::Other(e.to_string())),
                     };
+                    if error.contains("not found") {
+                        return Err(ApiError::DoesNotExist);
+                    }
                     return Err(ApiError::Other(error.to_string()));
                 }
             };
@@ -203,7 +216,7 @@ impl API {
 
             if resp.status() == 429 {
                 self.handle_rate_limit().await;
-                return Err(ApiError::RateLimit(pkgs.clone()));
+                return Err(ApiError::RateLimit);
             }
             let text = resp.text().await?;
 
@@ -290,9 +303,9 @@ pub enum ApiError {
     Reqwest(reqwest::Error),
     Serde(serde_json::Error),
     Io(std::io::Error),
-    DoesNotExist(String),           // where String is the package name
-    Other(String),                  // where String is the error message
-    RateLimit(Vec<QueriedPackage>), // the packages that were involved in the rate limit
+    DoesNotExist,
+    Other(String), // where String is the error message
+    RateLimit,
 }
 
 impl From<reqwest::Error> for ApiError {
@@ -319,8 +332,8 @@ impl std::fmt::Display for ApiError {
             ApiError::Reqwest(err) => write!(f, "reqwest error: {}", err),
             ApiError::Serde(err) => write!(f, "serde error: {}", err),
             ApiError::Io(err) => write!(f, "io error: {}", err),
-            ApiError::RateLimit(p) => write!(f, "rate-limited, {} packages", p.len()),
-            ApiError::DoesNotExist(name) => write!(f, "package {} does not exist", name),
+            ApiError::RateLimit => write!(f, "rate-limited"),
+            ApiError::DoesNotExist => write!(f, "package does not exist"),
             ApiError::Other(msg) => write!(f, "other error: {}", msg),
         }
     }

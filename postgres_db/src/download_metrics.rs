@@ -130,6 +130,17 @@ pub fn remove_rate_limited_package(conn: &DbConnection, package: &QueriedPackage
         .unwrap();
 }
 
+/// Removes a list of packages from the rate-limited packages set in redis
+pub fn remove_rate_limited_packages(conn: &DbConnection, package: &Vec<QueriedPackage>) {
+    let mut con = conn.get_redis();
+
+    for p in package {
+        let _: () = con
+            .srem("rate-limited", serde_json::to_string(p).unwrap())
+            .unwrap();
+    }
+}
+
 /// Adds a package to the set of rate-limited packages
 pub fn add_rate_limited_package(conn: &DbConnection, package: &QueriedPackage) {
     let mut con = conn.get_redis();

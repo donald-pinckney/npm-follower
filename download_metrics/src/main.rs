@@ -2,12 +2,12 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 use download_metrics::api::ApiError;
+use download_metrics::api::QueryTaskHandle;
 use download_metrics::api::API;
 use download_metrics::LOWER_BOUND_DATE;
 use download_metrics::UPPER_BOUND_DATE;
 use postgres_db::download_metrics::QueriedDownloadMetric;
 use postgres_db::{download_metrics::DownloadMetric, packages::QueriedPackage, DbConnection};
-use tokio::task::JoinHandle;
 use utils::check_no_concurrent_processes;
 
 #[tokio::main]
@@ -35,7 +35,7 @@ async fn update_from_packages(conn: &DbConnection) {
     let api = API::default();
 
     while !metrics.is_empty() {
-        let mut handles: Vec<(i64, JoinHandle<Result<DownloadMetric, ApiError>>)> = Vec::new();
+        let mut handles: Vec<(i64, QueryTaskHandle)> = Vec::new();
 
         // map of [metric id] -> [metric]
         let mut lookup_table: HashMap<i64, DownloadMetric> = HashMap::new();
@@ -61,12 +61,12 @@ async fn update_from_packages(conn: &DbConnection) {
 
         for (id, handle) in handles {
             let mut metric = match handle.await.unwrap() {
-                Ok(metric) => metric,
-                Err(ApiError::RateLimit(_)) => {
+                (Ok(metric), _) => metric,
+                (Err(ApiError::RateLimit), _) => {
                     eprintln!("Rate limited! Exiting!");
                     std::process::exit(1);
                 }
-                Err(e) => {
+                (Err(e), _) => {
                     println!("Error: {}", e);
                     continue;
                 }
@@ -174,8 +174,8 @@ async fn insert_from_packages(conn: &DbConnection) {
             }
         }
 
-        let mut download_metrics: Vec<DownloadMetric> = Vec::new();
-        let mut scoped_handles: Vec<JoinHandle<Result<DownloadMetric, ApiError>>> = Vec::new();
+        let mut download_metrics: Vec<(DownloadMetric, QueriedPackage)> = Vec::new();
+        let mut scoped_handles: Vec<QueryTaskHandle> = Vec::new();
 
         // normal packages can be queried in bulk
         let maybe_bulk_handle = {
@@ -198,9 +198,49 @@ async fn insert_from_packages(conn: &DbConnection) {
         }
 
         for handle in scoped_handles {
-            let metric = match handle.await.unwrap() {
-                Ok(metric) => metric,
-                Err(ApiError::RateLimit(pkgs)) => {
+            match handle.await.unwrap() {
+                (Ok(metric), pkg) => {
+                    pretty_print_metric(&metric);
+                    download_metrics.push((metric, pkg));
+                }
+                (Err(ApiError::RateLimit), pkg) => {
+                    println!("Rate-limited!");
+                    postgres_db::download_metrics::add_rate_limited_package(conn, &pkg);
+                    redo_rl.push(pkg);
+                    println!(
+                        "Retrying {} packages",
+                        redo_rl
+                            .iter()
+                            .map(|p| &p.name)
+                            .cloned()
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    );
+                    continue;
+                }
+                (Err(ApiError::DoesNotExist), pkg) => {
+                    println!("Error: {} does not exist", pkg.name);
+                    postgres_db::download_metrics::remove_rate_limited_package(conn, &pkg);
+                    continue;
+                }
+                (Err(e), pkg) => panic!("Error: {} with pkg: {}", e, pkg.name),
+            };
+        }
+
+        if let Some(bulk_handle) = maybe_bulk_handle {
+            match bulk_handle.await.unwrap() {
+                (Ok(metrics), pkgs) => {
+                    for pkg in pkgs {
+                        for metric in &metrics {
+                            if metric.package_id == pkg.id {
+                                pretty_print_metric(metric);
+                                download_metrics.push((metric.clone(), pkg));
+                                break;
+                            }
+                        }
+                    }
+                }
+                (Err(ApiError::RateLimit), pkgs) => {
                     println!("Rate-limited!");
                     postgres_db::download_metrics::add_rate_limited_packages(conn, &pkgs);
                     redo_rl.extend(pkgs);
@@ -215,45 +255,15 @@ async fn insert_from_packages(conn: &DbConnection) {
                     );
                     continue;
                 }
-                Err(e) => {
-                    println!("Error: {}", e);
-                    continue;
-                }
-            };
-
-            pretty_print_metric(&metric);
-            download_metrics.push(metric);
-        }
-
-        if let Some(bulk_handle) = maybe_bulk_handle {
-            match bulk_handle.await.unwrap() {
-                Ok(metrics) => {
-                    for metric in metrics {
-                        pretty_print_metric(&metric);
-                        download_metrics.push(metric);
-                    }
-                }
-                Err(ApiError::RateLimit(pkgs)) => {
-                    eprintln!("Rate-limited!");
-                    postgres_db::download_metrics::add_rate_limited_packages(conn, &pkgs);
-                    redo_rl.extend(pkgs);
-                }
-                Err(e) => {
-                    println!("Error: {}", e);
-                    continue;
-                }
+                (Err(e), pkgs) => panic!("Error: {} with pkgs: {:?}", e, pkgs),
             };
         }
 
         conn.run_psql_transaction(|| {
             let rate_limited = postgres_db::download_metrics::query_rate_limited_packages(conn);
-            for metric in download_metrics {
-                if !rate_limited.is_empty() {
-                    let pkg =
-                        postgres_db::packages::query_pkg_by_id(conn, metric.package_id).unwrap();
-                    if rate_limited.contains(&pkg) {
-                        postgres_db::download_metrics::remove_rate_limited_package(conn, &pkg);
-                    }
+            for (metric, pkg) in download_metrics {
+                if !rate_limited.is_empty() && rate_limited.contains(&pkg) {
+                    postgres_db::download_metrics::remove_rate_limited_package(conn, &pkg);
                 }
                 postgres_db::download_metrics::insert_download_metric(conn, metric);
             }
