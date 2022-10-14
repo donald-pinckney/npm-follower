@@ -96,13 +96,18 @@ impl API {
         drop(lock);
     }
 
-    /// Performs a regular query in npm download metrics api for each package given
-    async fn query_npm_metrics(
+    /// Abstraction to remove duplicate code between the bulk and single query functions.
+    async fn query_abstraction<T, R: for<'a> Deserialize<'a>, M>(
         self,
-        pkg: &QueriedPackage,
+        thing_to_query: &T,
+        formatter: fn(&T) -> String,
+        merger: M,
         lbound: &NaiveDate,
         rbound: &NaiveDate,
-    ) -> Result<ApiResult, ApiError> {
+    ) -> Result<R, ApiError>
+    where
+        M: Fn(&mut R, R),
+    {
         let delta = chronoutil::RelativeDuration::years(1);
         // we are going to merge the results of multiple queries into one
         let mut api_result = None;
@@ -119,14 +124,16 @@ impl API {
                 rel_rbound = *rbound;
             }
 
+            let query_thing = formatter(thing_to_query);
+
             println!(
                 "Querying {} from {} to {}",
-                pkg.name, rel_lbound, rel_rbound
+                query_thing, rel_lbound, rel_rbound
             );
 
             let query = format!(
                 "https://api.npmjs.org/downloads/range/{}:{}/{}",
-                rel_lbound, rel_rbound, pkg.name
+                rel_lbound, rel_rbound, query_thing
             );
 
             let resp = self.send_query(&query).await?;
@@ -137,38 +144,39 @@ impl API {
             }
             let text = resp.text().await?;
 
-            // TODO: do actual good error handling, instead of this garbage
-            let result: ApiResult = match serde_json::from_str(&text) {
-                Ok(result) => result,
-                Err(e) => {
-                    // get the error message from the response
-                    let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
-                    let error = match json_map.get("error") {
-                        Some(error) => error,
-                        None => return Err(ApiError::Other(e.to_string())),
-                    };
-                    if error.contains("not found") {
-                        return Err(ApiError::DoesNotExist);
-                    }
-                    return Err(ApiError::Other(error.to_string()));
-                }
-            };
+            let result: R = parse_resp(text)?;
 
             if api_result.is_none() {
                 api_result = Some(result);
             } else {
-                // merge the results
                 let mut new_api_result = api_result.unwrap();
-                for dl in result.downloads {
-                    new_api_result.downloads.push(dl);
-                }
-                new_api_result.end = result.end;
+                merger(&mut new_api_result, result);
                 api_result = Some(new_api_result);
             }
 
             rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
         }
         api_result.ok_or_else(|| panic!("api_result is None"))
+    }
+
+    /// Performs a regular query in npm download metrics api for each package given
+    async fn query_npm_metrics(
+        self,
+        pkg: &QueriedPackage,
+        lbound: &NaiveDate,
+        rbound: &NaiveDate,
+    ) -> Result<ApiResult, ApiError> {
+        fn formatter(pkg: &QueriedPackage) -> String {
+            pkg.name.clone()
+        }
+        fn merger(api_result: &mut ApiResult, result: ApiResult) {
+            for dl in result.downloads {
+                api_result.downloads.push(dl);
+            }
+            api_result.end = result.end;
+        }
+        self.query_abstraction(pkg, formatter, merger, lbound, rbound)
+            .await
     }
 
     /// Performs a bulk query in npm download metrics api for each package given
@@ -180,99 +188,47 @@ impl API {
         rbound: &NaiveDate,
     ) -> Result<BulkApiResult, ApiError> {
         assert!(pkgs.len() <= 128);
-        let delta = chronoutil::RelativeDuration::years(1);
-        // we are going to merge the results of multiple queries into one
-        let mut api_result = None;
-        // we can only query 365 days at a time, so we must split the query into multiple requests
-        let mut rel_lbound = *lbound;
-        let rule = chronoutil::DateRule::new(rel_lbound + delta, delta);
-        for mut rel_rbound in rule {
-            if rel_lbound > *rbound {
-                break;
-            }
 
-            if rel_rbound > *rbound {
-                // we must not query past the rbound
-                rel_rbound = *rbound;
-            }
-
-            let pkg_str = pkgs
-                .iter()
+        #[allow(clippy::ptr_arg)]
+        fn formatter(pkgs: &Vec<QueriedPackage>) -> String {
+            pkgs.iter()
                 .map(|pkg| pkg.name.to_string())
                 .collect::<Vec<String>>()
-                .join(",");
-
-            println!(
-                "Bulk Querying {} from {} to {}",
-                pkg_str, rel_lbound, rel_rbound
-            );
-
-            let query = format!(
-                "https://api.npmjs.org/downloads/range/{}:{}/{}",
-                rel_lbound, rel_rbound, pkg_str
-            );
-
-            let resp = self.send_query(&query).await?;
-
-            if resp.status() == 429 {
-                self.handle_rate_limit().await;
-                return Err(ApiError::RateLimit);
-            }
-            let text = resp.text().await?;
-
-            // TODO: do actual good error handling, instead of this garbage
-            let result: BulkApiResult = match serde_json::from_str(&text) {
-                Ok(result) => result,
-                Err(e) => {
-                    // get the error message from the response
-                    let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
-                    let error = match json_map.get("error") {
-                        Some(error) => error,
-                        None => return Err(ApiError::Other(e.to_string())),
-                    };
-                    return Err(ApiError::Other(error.to_string()));
-                }
-            };
-
-            if api_result.is_none() {
-                api_result = Some(result);
-            } else {
-                // merge the results
-                let mut new_api_result = api_result.unwrap();
-                // not_founds is just for printing
-                let mut not_founds = String::new();
-                for pkg in pkgs {
-                    let pkg_name = pkg.name.to_string();
-                    let pkg_res = match result.get(&pkg_name) {
-                        Some(Some(p)) => p,
-                        _ => {
-                            not_founds.push_str(&pkg_name);
-                            not_founds.push_str(", ");
-                            continue;
-                        }
-                    };
-
-                    // here we handle the merging, which is a bit more complicated
-                    // than the regular merging due to the Optional type
-                    let new_pkg_res_opt = new_api_result.get_mut(&pkg_name).unwrap();
-                    let mut new_pkg_res = new_pkg_res_opt.take().unwrap();
-
-                    for dl in &pkg_res.downloads {
-                        new_pkg_res.downloads.push(dl.clone());
-                    }
-
-                    new_pkg_res.end = pkg_res.end.clone();
-                    *new_pkg_res_opt = Some(new_pkg_res);
-                }
-                if !not_founds.is_empty() {
-                    println!("Not found: {}", not_founds);
-                }
-                api_result = Some(new_api_result);
-            }
-
-            rel_lbound = rel_rbound + chronoutil::RelativeDuration::days(1);
+                .join(",")
         }
-        api_result.ok_or_else(|| panic!("api_result is None"))
+
+        let merger = |api_result: &mut BulkApiResult, result: BulkApiResult| {
+            // not_founds is just for printing
+            let mut not_founds = String::new();
+            for pkg in pkgs {
+                let pkg_name = pkg.name.to_string();
+                let pkg_res = match result.get(&pkg_name) {
+                    Some(Some(p)) => p,
+                    _ => {
+                        not_founds.push_str(&pkg_name);
+                        not_founds.push_str(", ");
+                        continue;
+                    }
+                };
+
+                // here we handle the merging, which is a bit more complicated
+                // than the regular merging due to the Optional type
+                let new_pkg_res_opt = api_result.get_mut(&pkg_name).unwrap();
+                let mut new_pkg_res = new_pkg_res_opt.take().unwrap();
+
+                for dl in &pkg_res.downloads {
+                    new_pkg_res.downloads.push(dl.clone());
+                }
+
+                new_pkg_res.end = pkg_res.end.clone();
+                *new_pkg_res_opt = Some(new_pkg_res);
+            }
+            if !not_founds.is_empty() {
+                println!("Not found: {}", not_founds);
+            }
+        };
+        self.query_abstraction(pkgs, formatter, merger, lbound, rbound)
+            .await
     }
 }
 
@@ -280,6 +236,24 @@ impl Default for API {
     fn default() -> Self {
         Self::new(3)
     }
+}
+
+fn parse_resp<T: for<'a> Deserialize<'a>>(text: String) -> Result<T, ApiError> {
+    Ok(match serde_json::from_str(&text) {
+        Ok(result) => result,
+        Err(e) => {
+            // get the error message from the response
+            let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
+            let error = match json_map.get("error") {
+                Some(error) => error,
+                None => return Err(ApiError::Other(e.to_string())),
+            };
+            if error.contains("not found") {
+                return Err(ApiError::DoesNotExist);
+            }
+            return Err(ApiError::Other(error.to_string()));
+        }
+    })
 }
 
 pub type BulkApiResult = HashMap<String, Option<ApiResult>>;
