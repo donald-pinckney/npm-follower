@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 use download_metrics::api::ApiError;
+use download_metrics::api::BulkQueryTaskHandle;
 use download_metrics::api::QueryTaskHandle;
 use download_metrics::api::API;
 use download_metrics::LOWER_BOUND_DATE;
@@ -216,12 +217,10 @@ async fn insert_from_packages(conn: &DbConnection) {
                             .collect::<Vec<_>>()
                             .join(", ")
                     );
-                    continue;
                 }
                 (Err(ApiError::DoesNotExist), pkg) => {
                     println!("Error: {} does not exist", pkg.name);
                     postgres_db::download_metrics::remove_rate_limited_package(conn, &pkg);
-                    continue;
                 }
                 (Err(e), pkg) => panic!("Error: {} with pkg: {}", e, pkg.name),
             };
@@ -230,6 +229,8 @@ async fn insert_from_packages(conn: &DbConnection) {
         if let Some(bulk_handle) = maybe_bulk_handle {
             match bulk_handle.await.unwrap() {
                 (Ok(metrics), pkgs) => {
+                    // NOTE: we have to do this whole thing because the result may not have
+                    //       the same packages as the query (some packages don't exist)
                     for pkg in pkgs {
                         for metric in &metrics {
                             if metric.package_id == pkg.id {
@@ -253,7 +254,6 @@ async fn insert_from_packages(conn: &DbConnection) {
                             .collect::<Vec<_>>()
                             .join(", ")
                     );
-                    continue;
                 }
                 (Err(e), pkgs) => panic!("Error: {} with pkgs: {:?}", e, pkgs),
             };
