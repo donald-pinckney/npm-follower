@@ -3,6 +3,15 @@ use super::DbConnection;
 use super::schema;
 
 
+pub fn query_diff_log_processed_seq(conn: &DbConnection) -> Option<i64> {
+    query_key_value_state("diff_log_processed_seq", conn)
+}
+
+pub fn set_diff_log_processed_seq(seq: i64, conn: &DbConnection) {
+    set_key_value_state("diff_log_processed_seq", seq, conn);
+}
+
+
 pub fn query_relational_processed_seq(conn: &DbConnection) -> Option<i64> {
     query_key_value_state("relational_processed_seq", conn)
 }

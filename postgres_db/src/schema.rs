@@ -29,6 +29,21 @@ table! {
     use diesel::sql_types::*;
     use crate::custom_types::sql_type_names::*;
 
+    diff_log (id) {
+        id -> Int8,
+        seq -> Int8,
+        package_name -> Text,
+        dt -> Diff_type,
+        package_only_packument -> Nullable<Jsonb>,
+        v -> Nullable<Semver_struct>,
+        version_packument -> Nullable<Jsonb>,
+    }
+}
+
+table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
     download_tasks (url) {
         url -> Varchar,
         shasum -> Nullable<Text>,
@@ -60,6 +75,18 @@ table! {
         signature0_keyid -> Nullable<Text>,
         npm_signature -> Nullable<Text>,
         tgz_local_path -> Text,
+    }
+}
+
+table! {
+    use diesel::sql_types::*;
+    use crate::custom_types::sql_type_names::*;
+
+    internal_diff_log_state (package_name) {
+        package_name -> Text,
+        package_only_packument_hash -> Text,
+        deleted -> Bool,
+        versions -> Array<Internal_diff_log_version_state>,
     }
 }
 
@@ -108,13 +135,16 @@ table! {
 }
 
 joinable!(dependencies -> packages (dst_package_id_if_exists));
+joinable!(diff_log -> change_log (seq));
 joinable!(versions -> packages (package_id));
 
 allow_tables_to_appear_in_same_query!(
     change_log,
     dependencies,
+    diff_log,
     download_tasks,
     downloaded_tarballs,
+    internal_diff_log_state,
     internal_state,
     packages,
     versions,

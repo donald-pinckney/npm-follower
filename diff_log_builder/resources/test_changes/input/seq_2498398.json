@@ -1,0 +1,29 @@
+{
+    "changes": [
+        {
+            "rev": "2-ebe0e6d173f5a0d61cc4fb3075ec2709"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "node-gr",
+        "_rev": "2-ebe0e6d173f5a0d61cc4fb3075ec2709",
+        "description": "Gist Runner for Nodejs!",
+        "dist-tags": {},
+        "maintainers": [
+            {
+                "email": "mrtz.milani@gmail.com",
+                "name": "milani"
+            }
+        ],
+        "name": "node-gr",
+        "readme": "# Gist Runner\n\nRun gists quickly!\n\n    $ gr https://gist.github.com/4347260\n    $ gr 4348239\n\nThat's it!",
+        "time": {
+            "created": "2012-12-20T22:19:46.889Z",
+            "modified": "2012-12-20T22:19:46.889Z"
+        },
+        "versions": {}
+    },
+    "id": "node-gr",
+    "seq": 2498398
+}

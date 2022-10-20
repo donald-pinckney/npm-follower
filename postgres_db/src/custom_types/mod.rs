@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
@@ -15,7 +16,19 @@ pub enum DownloadFailed {
     Other,
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    PartialEq,
+    FromSqlRow,
+    AsExpression,
+    Clone,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    PartialOrd,
+    Ord,
+)]
 #[sql_type = "SemverSql"]
 pub struct Semver {
     pub major: i64,
@@ -50,7 +63,19 @@ impl std::fmt::Display for Semver {
     }
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    PartialEq,
+    FromSqlRow,
+    AsExpression,
+    Clone,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    PartialOrd,
+    Ord,
+)]
 #[sql_type = "PrereleaseTagStructSql"]
 pub enum PrereleaseTag {
     String(String),
@@ -107,12 +132,12 @@ pub enum PackageMetadata {
         dist_tag_latest_version: Option<i64>,
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
-        other_dist_tags: HashMap<String, String>,
+        other_dist_tags: BTreeMap<String, String>,
     },
     Unpublished {
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
-        other_time_data: HashMap<Semver, DateTime<Utc>>,
+        other_time_data: BTreeMap<Semver, DateTime<Utc>>,
         unpublished_data: serde_json::Value,
     },
     Deleted,
@@ -184,6 +209,19 @@ pub enum RepoHostInfo {
     Thirdparty,
 }
 
+// TODO: make not pub
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
+#[sql_type = "DiffTypeEnumSql"]
+pub enum DiffTypeEnum {
+    CreatePackage,
+    UpdatePackage,
+    // SetPackageLatestTag,
+    DeletePackage,
+    CreateVersion,
+    UpdateVersion,
+    DeleteVersion,
+}
+
 pub mod sql_types {
     #[derive(SqlType, QueryId)]
     #[postgres(type_name = "semver_struct")] // or should it be semver (domain)?
@@ -212,6 +250,14 @@ pub mod sql_types {
     #[derive(SqlType, QueryId)]
     #[postgres(type_name = "repo_info_struct")]
     pub struct RepoInfoSql;
+
+    #[derive(SqlType)]
+    #[postgres(type_name = "diff_type")]
+    pub struct DiffTypeEnumSql;
+
+    #[derive(SqlType)]
+    #[postgres(type_name = "internal_diff_log_version_state")]
+    pub struct InternalDiffLogVersionStateSql;
 }
 
 #[allow(non_camel_case_types)]
@@ -222,8 +268,11 @@ pub mod sql_type_names {
     pub type Parsed_spec_struct = super::sql_types::ParsedSpecStructSql;
     pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
     pub type Repo_info_struct = super::sql_types::RepoInfoSql;
+    pub type Diff_type = super::sql_types::DiffTypeEnumSql;
+    pub type Internal_diff_log_version_state = super::sql_types::InternalDiffLogVersionStateSql;
 }
 
+mod diff_log;
 mod download_failed;
 mod package_metadata;
 mod parsed_spec;

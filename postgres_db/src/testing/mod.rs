@@ -1,3 +1,4 @@
+use crate::custom_types::{PrereleaseTag, Semver};
 use crate::diesel::connection::SimpleConnection;
 use crate::DbConnection;
 use diesel::pg::PgConnection;
@@ -75,7 +76,10 @@ pub fn using_test_db<F, R>(f: F) -> R
 where
     F: FnOnce(&DbConnection) -> R,
 {
-    let _locked = TEST_CONN_LOCK.lock().unwrap();
+    let _locked = match TEST_CONN_LOCK.lock() {
+        Ok(g) => g,
+        Err(p) => p.into_inner(),
+    };
 
     let res = {
         let conn = setup_test_db();
@@ -119,5 +123,28 @@ impl<'a> Drop for TempTable<'a> {
             .conn
             .execute(&format!("DROP TABLE {}", self.table_name))
             .unwrap();
+    }
+}
+
+#[cfg(test)]
+impl Semver {
+    pub fn new_testing_semver(n: i64) -> Semver {
+        if n % 2 == 0 {
+            Semver {
+                major: n,
+                minor: n + 1,
+                bug: n,
+                prerelease: vec![PrereleaseTag::String("alpha".into()), PrereleaseTag::Int(n)],
+                build: vec!["stuff".into()],
+            }
+        } else {
+            Semver {
+                major: n + 2,
+                minor: n + 1,
+                bug: n,
+                prerelease: vec![],
+                build: vec![],
+            }
+        }
     }
 }

@@ -1,0 +1,88 @@
+{
+    "changes": [
+        {
+            "rev": "12-3f3cd4b55630edaf5ce4bc97b79a4629"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "Graph",
+        "_rev": "12-3f3cd4b55630edaf5ce4bc97b79a4629",
+        "author": {
+            "email": "yoni.bmesh@gmail.com",
+            "name": "Yoni Ben-Meshulam"
+        },
+        "ctime": "2010-11-09T23:25:38Z",
+        "description": "A mathematical Graph theory library.",
+        "dist-tags": {
+            "latest": "0.0.1"
+        },
+        "maintainers": [
+            {
+                "email": "yoni.bmesh@gmail.com",
+                "name": "yoni"
+            }
+        ],
+        "mtime": "2010-11-09T23:25:38Z",
+        "name": "Graph",
+        "readme": "",
+        "readmeFilename": "",
+        "time": {
+            "0.0.1": "2015-01-01T00:00:00.000Z",
+            "created": "2015-01-01T00:00:00.000Z",
+            "modified": "2022-06-12T13:45:31.702Z"
+        },
+        "versions": {
+            "0.0.1": {
+                "_id": "Graph@0.0.1",
+                "_nodeSupported": true,
+                "_nodeVersion": "v0.3.1-pre",
+                "_npmVersion": "0.2.7-2",
+                "author": {
+                    "email": "yoni.bmesh@gmail.com",
+                    "name": "Yoni Ben-Meshulam"
+                },
+                "contributors": [
+                    {
+                        "email": "yoni.bmesh@gmail.com",
+                        "name": "Yoni Ben-Meshulam"
+                    }
+                ],
+                "ctime": "2010-11-09T23:25:38Z",
+                "dependencies": {},
+                "description": "A mathematical Graph theory library.",
+                "dist": {
+                    "integrity": "sha512-iiWON3bkd0uF0WOUWud+GLyafNKWsSmVQyxUnkFVEA8W1Fb96RRHzy/+zIg3isv7mJ1b1FgtuCG6DNDmpjvSGQ==",
+                    "shasum": "154c8a5a3896935c8d18a3462e70ef454f3e25b8",
+                    "tarball": "https://registry.npmjs.org/Graph/-/Graph-0.0.1.tgz"
+                },
+                "engines": {
+                    "node": ">= 0.1.99"
+                },
+                "keywords": [
+                    "graph",
+                    "graph theory",
+                    "vertex",
+                    "edge",
+                    "node",
+                    "connection"
+                ],
+                "licenses": [
+                    {
+                        "type": "GPLv2",
+                        "url": "http://www.example.com/licenses/gpl.html"
+                    }
+                ],
+                "main": "Graph",
+                "mtime": "2010-11-09T23:25:38Z",
+                "name": "Graph",
+                "scripts": {
+                    "test": "Test/Graph.js"
+                },
+                "version": "0.0.1"
+            }
+        }
+    },
+    "id": "Graph",
+    "seq": 13123480
+}

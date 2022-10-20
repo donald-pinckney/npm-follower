@@ -13,7 +13,7 @@ regex = "1"
 lazy_static = "1.4.0"
 diesel = { version = "1.4.4", features = ["postgres", "serde_json", "chrono"] }
 dotenv = "0.15.0"
-sha2 = "0.10.2"
+sha2 = "0.10.6"
 base16ct = { version = "0.1.1", features = ["std"] }
 url = "2.2.2"
 md5 = "0.7.0"

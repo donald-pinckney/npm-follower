@@ -1,0 +1,103 @@
+{
+    "id": "myfirst-react-publish",
+    "doc": {
+        "_id": "myfirst-react-publish",
+        "_rev": "2-1fc9728ef42ea14194fb228bf7b42e0a",
+        "name": "myfirst-react-publish",
+        "time": {
+            "1.0.0": "2019-03-21T12:06:41.173Z",
+            "created": "2019-03-21T12:06:41.038Z",
+            "modified": "2019-03-21T12:06:46.476Z"
+        },
+        "author": {
+            "name": "xxx"
+        },
+        "readme": "# react-component-publish\n\nA barebones boilerplate to quickly publish react components.\n\nFeatures Webpack 4 and Babel 7.\n\nIt will compile down to commonjs, and will require a peer dependancy of react, meaning it will use whatever version of react the host project is using. Hopefully this will minimize compatibility issues.\n\n[Based on this tutorial](https://medium.com/quick-code/publish-your-own-react-component-as-npm-package-under-5-minutes-8a47f0cb92b9) by [codewithbernard](https://github.com/codewithbernard)\n\n## To start\n\n```\nnpm i\nnpm start\n```\n\nEdit `src/index.js` (your component)\n\n## To view your component in isolation with a basic webpack dev server:\ntype:\n\n```\nnpm run dev\n```\n\nEdit `/srctest/app.js` to change the parent environment, pass in props, etc.\n\n## To test your component in another project (locally), before publishing to npm:\n\nBuild this project:\n\n```\nnpm run build\n```\n\nIn this project's root directory, type:\n\n```\nnpm link\n```\n\nAnd then, in the project (root dir) you would like to use your component:\n\n```\nnpm link my-awesome-component\n```\n\nFor this example I've used the package name `my-awesome-component`.\nThis creates a symlink of your package in your project's node_modules/ dir.\nNow, you may import the component in your test project, as if it was a normally installed dependancy:\n\n```\nimport MyAwesomeComponent from 'my-awesome-component'\n```\n\nIf you're using a hot-reload system, you should be able to observe any changes you make to your component (as long as you build them)\n\n## To publish your component to npm\nUpdate the package.json with correct information.\nImportant things to set:\n\n```json\n{\n  \"name\": \"cool-beans\",\n  \"version\": \"4.2.0\",\n  \"description\": \"My wizzbang gizmo\",\n  \"author\": \"stevejobs\",\n  \"license\": \"ISC\"\n}\n```\n\nIf you have a git repo for the project, include the details:\n\n```json\n\"repository\": {\n    \"type\" : \"git\",\n    \"url\" : \"https://github.com/zxol/react-component-publish\"\n  },\n```\n\nThen, in the root directory, type:\n\n```\nnpm publish\n```\n\n[npm docs on publishing packages](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry)\n\n## A note on webpack configs and the dev server:\nThere are two webpack configs.\n\n- One for building the published component `webpack.publish.js`\n- One for viewing the component in the dev server. `webpack.testServer.js`\n\nNote that they are separate, so any additions you make will have to be mirrored in both files, if you want to use the dev server. If anyone knows a better way to do this, please let me know.\n",
+        "license": "ISC",
+        "versions": {
+            "1.0.0": {
+                "_id": "myfirst-react-publish@1.0.0",
+                "dist": {
+                    "shasum": "14e1bfa5d97cf71a3597701d2d49d81d3f3b32ff",
+                    "tarball": "https://registry.npmjs.org/myfirst-react-publish/-/myfirst-react-publish-1.0.0.tgz",
+                    "fileCount": 11,
+                    "integrity": "sha512-7wSPj5xNjPpLJUSFgF5d2tTR52AJye8QtW2C2idhsKsOlHgsfCw/BKoKjrdoKy9WUhue5XUvwWkN6PYGg0NTjw==",
+                    "unpackedSize": 6615,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJck35RCRA9TVsSAnZWagAALs4P+gKz+NL9dV2MjvamdnnJ\nhFMkhWGAP9kY9gtX6y/UJ5JDIUlF3pJaX3+eOHnMrndu+UItD/cbFRTaEXG2\nNMV6FLpi7onj3+JYENiI5Wy5zOKm+axGVAIintuuS3OjzRs8yMkkELWeTjoG\n2ZUflo1Mhqw1MAsEcipo9U3S8dIH7RyFt9QWw612ad1jIeuccp7ETqcVBe5d\nUf4hmGx1rAzLgYuRNglNPPkfCgR9HF2EPJ9DSjOTLBmf7AajPcAAqQb44TVS\nrJCTlfFbWpODWTqK88niFZg4RoRVYfTav9gzcIW7WwnJv54d7LCZIrn2BPAF\nkWiSXLlb6/scZI1jo9f2hN5CJMruC+R1Rl0Qb86yd42w8Ayk0Iux+8WImaiw\nZWgpAPB2s8JGS//ouRcH9J2wuhn9hBPzH+SYVEHfVvpofvyHpqwCxgglkBpc\n6dRAdyWK673Mc8jrj+1re2Z4v3uWBCgCeq4WjH9J0Hsg7ZGPJH6P9nNWKckA\nD9GJeE6FP5UTFk7mOtkHooKulMZKkwWjaOWV+UxuKJr9dNRHOsxQrMnML+8u\nARIHZf2U4fZ9M28x6LeiTC1gl8PKBoLvyNXoAP4SM+ed+c6MhY2iJyjR9vj9\nE6t954WyW3wUYJiz/dMrAXfWh6UDt/cUhb3C/Ks0daenGxsftlFdMzevIOk3\nhTsm\r\n=JnKe\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "build/index.js",
+                "name": "myfirst-react-publish",
+                "author": {
+                    "name": "xxx"
+                },
+                "license": "ISC",
+                "scripts": {
+                    "dev": "webpack-dev-server --env testServer --mode development --open",
+                    "build": "webpack --env publish --mode production",
+                    "start": "webpack --env publish --mode production --watch"
+                },
+                "version": "1.0.0",
+                "_npmUser": {
+                    "name": "suchism",
+                    "email": "suchi.hyd@gmail.com"
+                },
+                "repository": {
+                    "url": "",
+                    "type": ""
+                },
+                "_npmVersion": "6.5.0",
+                "description": "test",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "suchism",
+                        "email": "suchi.hyd@gmail.com"
+                    }
+                ],
+                "_nodeVersion": "11.9.0",
+                "dependencies": {},
+                "_hasShrinkwrap": false,
+                "devDependencies": {
+                    "react": "^16.7.0",
+                    "webpack": "^4.29.0",
+                    "react-dom": "^16.7.0",
+                    "@babel/core": "^7.2.2",
+                    "webpack-cli": "^3.2.1",
+                    "babel-loader": "^8.0.5",
+                    "@babel/preset-env": "^7.3.1",
+                    "webpack-dev-server": "^3.1.14",
+                    "@babel/preset-react": "^7.0.0"
+                },
+                "peerDependencies": {
+                    "react": "^16.7.0"
+                },
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/myfirst-react-publish_1.0.0_1553170001039_0.09057132251014055",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "1.0.0"
+        },
+        "repository": {
+            "url": "",
+            "type": ""
+        },
+        "description": "test",
+        "maintainers": [
+            {
+                "name": "suchism",
+                "email": "suchi.hyd@gmail.com"
+            }
+        ],
+        "readmeFilename": "README.md"
+    },
+    "seq": 3403699,
+    "changes": [
+        {
+            "rev": "2-1fc9728ef42ea14194fb228bf7b42e0a"
+        }
+    ],
+    "deleted": false
+}

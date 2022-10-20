@@ -8,6 +8,7 @@ use diesel::serialize::{self, IsNull, Output, WriteTuple};
 use diesel::sql_types::{Int8, Jsonb, Nullable, Record, Timestamptz};
 use diesel::types::{FromSql, ToSql};
 use serde_json::{Map, Value};
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::io::Write;
 
@@ -33,24 +34,26 @@ type PackageMetadataStructRecordRust = (
     Option<Value>,
 );
 
-fn dist_tag_dict_from_sql(v: Value) -> Result<HashMap<String, String>, serde_json::Error> {
+fn dist_tag_dict_from_sql(v: Value) -> Result<BTreeMap<String, String>, serde_json::Error> {
     let mv = serde_json::from_value::<Map<String, Value>>(v)?;
-    let mut result = HashMap::new();
+    let mut result = BTreeMap::new();
     for (k, kv) in mv.into_iter() {
         result.insert(k, serde_json::from_value::<String>(kv)?);
     }
     Ok(result)
 }
 
-fn dist_tag_dict_to_sql(m: HashMap<String, String>) -> Value {
+// TODO[perf]: optimize this out?
+fn dist_tag_dict_to_sql(m: BTreeMap<String, String>) -> Value {
     Value::Object(m.into_iter().map(|(k, v)| (k, Value::String(v))).collect())
 }
 
+// TODO[perf]: optimize this out?
 fn other_times_dict_from_sql(
     v: Value,
-) -> Result<HashMap<Semver, DateTime<Utc>>, serde_json::Error> {
+) -> Result<BTreeMap<Semver, DateTime<Utc>>, serde_json::Error> {
     let mv = serde_json::from_value::<Map<String, Value>>(v)?;
-    let mut result = HashMap::new();
+    let mut result = BTreeMap::new();
     for (k, kv) in mv.into_iter() {
         result.insert(
             serde_json::from_str::<Semver>(&k)?,
@@ -60,7 +63,8 @@ fn other_times_dict_from_sql(
     Ok(result)
 }
 
-fn other_times_dict_to_sql(m: HashMap<Semver, DateTime<Utc>>) -> Value {
+// TODO[perf]: optimize this out?
+fn other_times_dict_to_sql(m: BTreeMap<Semver, DateTime<Utc>>) -> Value {
     Value::Object(
         m.into_iter()
             .map(|(k, v)| {
@@ -178,6 +182,7 @@ impl FromSql<PackageStateSql, Pg> for PackageState {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use std::collections::BTreeMap;
     use std::collections::HashMap;
 
     use crate::custom_types::PackageMetadata;
@@ -217,14 +222,14 @@ mod tests {
             vec![("dogs".to_string(), serde_json::Value::String("mice".into()))].into_iter(),
         ));
 
-        let empty_odts = HashMap::new();
-        let some_odts = HashMap::from([
+        let empty_odts = BTreeMap::new();
+        let some_odts = BTreeMap::from([
             ("cats".into(), "1.3.5".into()),
             ("old".into(), "0.3.1".into()),
         ]);
 
-        let empty_otd = HashMap::new();
-        let some_otd = HashMap::from([(
+        let empty_otd = BTreeMap::new();
+        let some_otd = BTreeMap::from([(
             Semver {
                 major: 1,
                 minor: 2,

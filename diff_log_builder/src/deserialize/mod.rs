@@ -4,7 +4,6 @@ use serde_json::{Map, Value};
 use std::collections::HashMap;
 
 use postgres_db::custom_types::Semver;
-use super::{Packument, VersionPackument, Dist, Spec};
 
 use utils::{RemoveInto, FilterJsonCases};
 

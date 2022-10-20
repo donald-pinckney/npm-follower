@@ -79,7 +79,7 @@ fn write_header(test_file: &mut File) {
         test_file,
         r#"
 use postgres_db::change_log::Change;
-use relational_db_builder::deserialize_change;
+use diff_log_builder::deserialize_change;
 "#
     )
     .unwrap();

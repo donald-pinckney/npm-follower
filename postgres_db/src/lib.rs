@@ -2,11 +2,13 @@
 extern crate diesel;
 
 pub mod change_log;
+pub mod diff_log;
 #[allow(clippy::let_unit_value)] // for redis
 pub mod dependencies;
 pub mod download_queue;
 pub mod download_tarball;
 pub mod internal_state;
+pub mod packument;
 pub mod packages;
 #[allow(unused_imports)]
 mod schema;

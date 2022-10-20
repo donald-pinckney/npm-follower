@@ -1,0 +1,556 @@
+{
+    "changes": [
+        {
+            "rev": "18-a63190696ba1c834a6c63563c32666e2"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "sealious-www-server",
+        "_rev": "18-a63190696ba1c834a6c63563c32666e2",
+        "dist-tags": {
+            "beta": "0.6.5",
+            "latest": "0.6.2",
+            "next": "0.6"
+        },
+        "keywords": [
+            "sealious-plugin"
+        ],
+        "license": "BSD-2-Clause",
+        "maintainers": [
+            {
+                "email": "groovy354@gmail.com",
+                "name": "groovy354"
+            },
+            {
+                "email": "nikipedia66@gmail.com",
+                "name": "modliszka"
+            }
+        ],
+        "name": "sealious-www-server",
+        "readme": "ERROR: No README data found!",
+        "readmeFilename": "",
+        "time": {
+            "0.4.3": "2015-07-21T14:52:26.329Z",
+            "0.5.0": "2015-08-19T07:59:38.319Z",
+            "0.5.1": "2015-08-28T07:26:23.768Z",
+            "0.5.2": "2015-09-11T16:03:09.345Z",
+            "0.5.3": "2015-09-11T16:37:36.798Z",
+            "0.6.0": "2015-09-26T11:15:29.027Z",
+            "0.6.1": "2015-09-26T11:22:34.448Z",
+            "0.6.2": "2015-10-23T18:53:13.044Z",
+            "0.6.3": "2015-10-27T09:49:29.961Z",
+            "0.6.5": "2016-01-31T10:10:22.494Z",
+            "0.7.0": "2015-12-12T15:07:08.924Z",
+            "created": "2015-07-21T14:52:26.329Z",
+            "modified": "2016-01-31T10:10:22.494Z"
+        },
+        "versions": {
+            "0.4.3": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.4.3",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.7.4",
+                "_shasum": "fa47876d6699b28c0302766ef4f7323ff00a6014",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "fa47876d6699b28c0302766ef4f7323ff00a6014",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.4.3.tgz"
+                },
+                "gitHead": "43493796d650416052ca3703aa3efceaf78ee014",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "peerDependencies": {
+                    "sealious": ">=0.4.0"
+                },
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.4.3"
+            },
+            "0.5.0": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.5.0",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "d37dbfeca89f94ba41825b33e79dd0cee71b4eb2",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "d37dbfeca89f94ba41825b33e79dd0cee71b4eb2",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.0.tgz"
+                },
+                "gitHead": "09b138de7cf5857b5636f5c27a0fee61e347b6c5",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "peerDependencies": {
+                    "sealious": ">=0.4.0"
+                },
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.5.0"
+            },
+            "0.5.1": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.5.1",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "7d993728c00a959e643c0866bed9fa0397af6b5c",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "7d993728c00a959e643c0866bed9fa0397af6b5c",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.1.tgz"
+                },
+                "gitHead": "5e98bb1bd93d93e3213427052b57638013b125d3",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "peerDependencies": {
+                    "sealious": ">=0.4.0"
+                },
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.5.1"
+            },
+            "0.5.2": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.5.2",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "92ef567065944bbfe59b9551a4b48596d8080482",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "92ef567065944bbfe59b9551a4b48596d8080482",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.2.tgz"
+                },
+                "gitHead": "da48152e9dd1b1b7c7b5e599de9e06929f812a10",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.5.2"
+            },
+            "0.5.3": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.5.3",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "2adbca396e8b11ad5e225e81d8db7cd9fcca0895",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "2adbca396e8b11ad5e225e81d8db7cd9fcca0895",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.3.tgz"
+                },
+                "gitHead": "447ee1490694c42e5ee255d0917d5258490814ce",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.5.3"
+            },
+            "0.6.0": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.6.0",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "551237b192801067616d8592cc58ff4eb061087f",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "551237b192801067616d8592cc58ff4eb061087f",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.0.tgz"
+                },
+                "gitHead": "8a4a702904726e04f5f57aadb5ae028d1d04761b",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.6.0"
+            },
+            "0.6.1": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.6.1",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "b197d43ecbe0e600b94ae313846630ca3420453f",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "b197d43ecbe0e600b94ae313846630ca3420453f",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.1.tgz"
+                },
+                "gitHead": "cf59f3e95bdcb36aaf0d413cb4f9201fe7e8416b",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.6.1"
+            },
+            "0.6.2": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.6.2",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "b046ceb5ce7351ec9d2f0e3dc7e3935b60006a93",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "b046ceb5ce7351ec9d2f0e3dc7e3935b60006a93",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.2.tgz"
+                },
+                "gitHead": "8d1aa865a34fb51db122c6a49678fd2baec749fb",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.6.2"
+            },
+            "0.6.3": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.6.3",
+                "_nodeVersion": "0.12.2",
+                "_npmUser": {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "2.13.1",
+                "_shasum": "cb9a23ab43b784a66784e709a02baaf93ec36214",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "cb9a23ab43b784a66784e709a02baaf93ec36214",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.3.tgz"
+                },
+                "gitHead": "762820cdafe2c32ab4aa65d6c4090221043c6665",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.6.3"
+            },
+            "0.6.5": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.6.5",
+                "_nodeVersion": "5.5.0",
+                "_npmUser": {
+                    "email": "kontakt@jakub-orlik.pl",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "3.3.12",
+                "_shasum": "bf2e560dd15c06e0582becf923abaeac06abb64c",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "bf2e560dd15c06e0582becf923abaeac06abb64c",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.5.tgz"
+                },
+                "gitHead": "1ee72467d21cf7f2659da53f574e0714def727e4",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.6.5"
+            },
+            "0.7.0": {
+                "_from": ".",
+                "_id": "sealious-www-server@0.7.0",
+                "_nodeVersion": "5.2.0",
+                "_npmUser": {
+                    "email": "kontakt@jakub-orlik.pl",
+                    "name": "groovy354"
+                },
+                "_npmVersion": "3.3.12",
+                "_shasum": "82d519ed18c4f3353edbe86e617c53263fb5156c",
+                "author": "",
+                "dependencies": {
+                    "bluebird": "^2.9.9",
+                    "clone": "^1.0.2",
+                    "color": "^0.8.0",
+                    "hapi": "^8.4.0",
+                    "sha1": "^1.1.0"
+                },
+                "description": "",
+                "dist": {
+                    "shasum": "82d519ed18c4f3353edbe86e617c53263fb5156c",
+                    "tarball": "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.7.0.tgz"
+                },
+                "gitHead": "cf3ad2b866095d6fb839556bbf43302c0a3ba486",
+                "keywords": [
+                    "sealious-plugin"
+                ],
+                "license": "BSD-2-Clause",
+                "main": "sealious-www-server.js",
+                "maintainers": [
+                    {
+                        "email": "groovy354@gmail.com",
+                        "name": "groovy354"
+                    },
+                    {
+                        "email": "nikipedia66@gmail.com",
+                        "name": "modliszka"
+                    }
+                ],
+                "name": "sealious-www-server",
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "tag": "beta",
+                "version": "0.7.0"
+            }
+        }
+    },
+    "id": "sealious-www-server",
+    "seq": 3264922
+}

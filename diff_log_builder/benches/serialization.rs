@@ -2,7 +2,7 @@ use std::time::Duration;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use postgres_db::change_log::Change;
 use serde_json::Value;
-use relational_db_builder::deserialize_change;
+use diff_log_builder::deserialize_change;
 
 
 const BIG_CHANGE_JSON_STR: &str = include_str!("../resources/test_changes/input/seq_832853_cleaned.json");

@@ -268,6 +268,50 @@ CREATE DOMAIN repo_info AS repo_info_struct
 -----                              -------
 ------------------------------------------
 
+CREATE TYPE diff_type AS ENUM (
+  'create_package',
+  'update_package',
+  'set_package_latest_tag',
+  'delete_package',
+  'create_version',
+  'update_version',
+  'delete_version'
+);
+
+CREATE TABLE diff_log (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  seq BIGINT NOT NULL,
+  package_name TEXT NOT NULL,
+  dt diff_type NOT NULL,
+  package_only_packument JSONB,
+  v semver,
+  version_packument JSONB,
+
+
+  FOREIGN KEY(seq) REFERENCES change_log(seq),
+  CONSTRAINT version_diff_valid CHECK (
+    (dt = 'create_package'          AND package_only_packument IS NOT NULL AND v IS NULL     AND version_packument IS NULL) OR
+    (dt = 'update_package'          AND package_only_packument IS NOT NULL AND v IS NULL     AND version_packument IS NULL) OR
+    -- (dt = 'set_package_latest_tag'  AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NULL) OR
+    (dt = 'delete_package'          AND package_only_packument IS NULL     AND v IS NULL     AND version_packument IS NULL) OR
+    (dt = 'create_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NOT NULL) OR
+    (dt = 'update_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NOT NULL) OR
+    (dt = 'delete_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NULL)
+  )
+);
+
+CREATE TYPE internal_diff_log_version_state AS (
+  v semver,
+  version_packument_hash TEXT,
+  deleted BOOLEAN
+);
+
+CREATE TABLE internal_diff_log_state (
+  package_name TEXT PRIMARY KEY NOT NULL,
+  package_only_packument_hash TEXT NOT NULL,
+  deleted BOOLEAN NOT NULL,
+  versions internal_diff_log_version_state[] NOT NULL
+);
 
 
 CREATE TABLE packages (
@@ -335,3 +379,5 @@ CREATE TABLE dependencies (
 CREATE INDEX dependencies_alias_package_name_idx ON dependencies (((spec).alias_package_name)) WHERE (spec).dep_type = 'alias' AND (spec).alias_package_id_if_exists IS NULL;
 CREATE INDEX dependencies_md5digest_idx ON dependencies (md5digest) WHERE dst_package_id_if_exists IS NULL;
 CREATE INDEX dependencies_md5digest_with_version_idx ON dependencies (md5digest_with_version);
+
+

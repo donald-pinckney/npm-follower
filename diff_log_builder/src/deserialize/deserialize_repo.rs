@@ -75,7 +75,7 @@ fn parse_url_or_ssh_case(url_or_ssh: &str) -> Option<RepoInfo> {
                 strip_dot_git(repo).to_owned(),
             ));
         } else if host == "gitlab.com" {
-            println!("path: {}", path);
+            // println!("path: {}", path);
             let (user, repo) = try_parse_user_repo_shorthand(path)?;
             return Some(RepoInfo::new_gitlab(
                 "".to_string(),
@@ -238,7 +238,7 @@ fn strip_dot_git(repo: &str) -> &str {
 fn deserialize_repo_infer_type_str(full_repo_string: String) -> Option<RepoInfo> {
     let mut repo_str: &str = &full_repo_string;
     if match_strip_start(&mut repo_str, "github:") {
-        println!("{}", repo_str);
+        // println!("{}", repo_str);
         let (user, repo) = try_parse_user_repo_shorthand(repo_str)?;
         return Some(RepoInfo::new_github(
             "".to_string(),
@@ -310,7 +310,7 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
                     return None; 
                 }
                 _ => {
-                    eprintln!("Unknown repo type: {:?}", t);
+                    // eprintln!("Unknown repo type: {:?}", t);
                     return None;
                 }
             },
@@ -335,7 +335,7 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
         }
         Value::Object(repo_obj) => deserialize_help(repo_obj)?,
         _ => {
-            eprintln!("Can't parse repo: {:?}", repo_blob);
+            // eprintln!("Can't parse repo: {:?}", repo_blob);
             return None;
         }
     };
