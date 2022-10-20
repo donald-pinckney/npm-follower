@@ -1,17 +1,26 @@
-use std::str::FromStr;
+mod deserialize_repo;
+
+use std::{str::FromStr, collections::BTreeMap};
 use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
 use std::collections::HashMap;
 
-use postgres_db::custom_types::Semver;
+use postgres_db::{custom_types::Semver, packument::{Spec, AllVersionPackuments, Dist, PackageOnlyPackument, VersionOnlyPackument}, packages::Package};
 
 use utils::{RemoveInto, FilterJsonCases};
+
 
 fn deserialize_spec(c: Value) -> Spec {
     match c {
         // the spec must parse ok. This should hold, since invalid specs are parsed successfully as invalid, not errors.
         // error should only occur due to I/O problems.
-        Value::String(spec_str) => spec_str.parse().unwrap(),
+        Value::String(spec_str) => {
+            let parsed = semver_spec_serialization::parse_spec_via_node_cached(&spec_str).unwrap();
+            Spec {
+                raw: spec_str.into(),
+            parsed
+            }
+        },
         _ => {
             let err = format!("spec must be a string, received: {}", c);
             Spec { raw: c, parsed: postgres_db::custom_types::ParsedSpec::Invalid(err) }
@@ -54,7 +63,7 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
     }
 }
 
-fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPackument {
+fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionOnlyPackument {
     let prod_dependencies = deserialize_dependencies(&mut version_blob, "dependencies");
     let dev_dependencies = deserialize_dependencies(&mut version_blob, "devDependencies");
     let peer_dependencies = deserialize_dependencies(&mut version_blob, "peerDependencies");
@@ -93,7 +102,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
     let repository_blob = version_blob.remove("repository")
                                                       .and_then(|x| x.null_to_none());
 
-    let repo = match repository_blob.as_ref().map(|r| super::deserialize_repo::deserialize_repo_blob(r.clone())) {
+    let repo = match repository_blob.as_ref().map(|r| deserialize_repo::deserialize_repo_blob(r.clone())) {
         Some(Some(repo)) => Some(repo),
         Some(None) => {
             version_blob.insert("repo".to_string(), repository_blob.unwrap());
@@ -102,14 +111,15 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>) -> VersionPack
         _ => None,
     };
     
-    VersionPackument {
+    VersionOnlyPackument {
         prod_dependencies,
         dev_dependencies,
         peer_dependencies,
         optional_dependencies,
         dist,
         repository: repo,
-        extra_metadata: version_blob.into_iter().collect()
+        extra_metadata: version_blob.into_iter().collect(),
+        time: todo!(),
     }
 }
 
@@ -224,7 +234,7 @@ fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc
     }
 }
 
-fn only_keep_ok_version_times(version_times: HashMap<Result<Semver, String>, DateTime<Utc>>) -> HashMap<Semver, DateTime<Utc>> {
+fn only_keep_ok_version_times(version_times: HashMap<Result<Semver, String>, DateTime<Utc>>) -> BTreeMap<Semver, DateTime<Utc>> {
     version_times
         .into_iter()
         .filter_map(|(vr, t)| vr.ok().map(|v| (v, t))).collect()
@@ -245,7 +255,7 @@ fn deserialize_latest_tag(dist_tags: &mut Map<String, Value>) -> Option<Semver> 
             })
 }
 
-pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument {
+pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> (PackageOnlyPackument, AllVersionPackuments) {
     // We have to have dist-tags, and it must be a dictionary
     let mut dist_tags = j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap();
     let latest_semver = deserialize_latest_tag(&mut dist_tags);
@@ -254,7 +264,7 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
 
     // We have to have versions, and it must be a dictionary
     let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
-    let version_packuments: HashMap<Semver, VersionPackument> = version_packuments_map.into_iter().map(|(v_str, blob)|
+    let version_packuments: HashMap<Semver, VersionOnlyPackument> = version_packuments_map.into_iter().map(|(v_str, blob)|
         (
             semver_spec_serialization::parse_semver(&v_str).unwrap(), // each version string must parse ok
             deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap()) // and each version data must be a dictionary
@@ -276,18 +286,18 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> Packument
     };
     
 
-    Packument::Normal {
+    (PackageOnlyPackument::Normal {
         latest: latest_semver,
         created,
         modified,
         other_dist_tags: dist_tags,
-        version_times: only_keep_ok_version_times(version_times),
-        versions: version_packuments
-    }
+        // version_times: only_keep_ok_version_times(version_times),
+        // versions: version_packuments
+    }, todo!())
 }
 
 
-pub fn deserialize_packument_blob_unpublished(mut j: Map<String, Value>) -> Packument {
+pub fn deserialize_packument_blob_unpublished(mut j: Map<String, Value>) -> (PackageOnlyPackument, AllVersionPackuments) {
 
     if j.contains_key("dist-tags") {
         // We expect unpublished packages to never contain dist-tags
@@ -304,12 +314,12 @@ pub fn deserialize_packument_blob_unpublished(mut j: Map<String, Value>) -> Pack
     let unpublished_blob = j.get_mut("time").unwrap().as_object_mut().unwrap().remove_key_unwrap_type::<Value>("unpublished").unwrap();
     let (created, modified, extra_version_times) = deserialize_times(&mut j);
 
-    Packument::Unpublished {
+    (PackageOnlyPackument::Unpublished {
         created,
         modified,
         unpublished_blob,
         extra_version_times: only_keep_ok_version_times(extra_version_times)
-    }
+    }, AllVersionPackuments::new())
 }
 
 
@@ -322,13 +332,4 @@ fn parse_datetime(x: String) -> DateTime<Utc> {
 }
 
 
-impl FromStr for Spec {
-    type Err = semver_spec_serialization::ParseSpecError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Spec {
-            raw: s.into(),
-            parsed: semver_spec_serialization::parse_spec_via_node_cached(s)?
-        })
-    }
-}

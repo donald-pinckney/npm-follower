@@ -1,5 +1,7 @@
-use super::RepositoryInfo;
-use postgres_db::custom_types::{RepoInfo, Vcs};
+use postgres_db::{
+    custom_types::{RepoInfo, Vcs},
+    packument::RepositoryInfo,
+};
 use serde_json::Value;
 use url::Url;
 use utils::RemoveInto;
@@ -307,7 +309,7 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
                     deserialize_repo_check_git_type_str(url)?
                 }
                 "hg" | "https" | "http" => {
-                    return None; 
+                    return None;
                 }
                 _ => {
                     // eprintln!("Unknown repo type: {:?}", t);
@@ -349,8 +351,10 @@ pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
 #[cfg(test)]
 mod tests {
     use super::{deserialize_repo_blob, deserialize_repo_infer_type_str};
-    use crate::packument::RepositoryInfo;
-    use postgres_db::custom_types::{RepoHostInfo, RepoInfo, Vcs};
+    use postgres_db::{
+        custom_types::{RepoHostInfo, RepoInfo, Vcs},
+        packument::RepositoryInfo,
+    };
     use serde_json::{json, Value};
     use test_case::test_case;
 

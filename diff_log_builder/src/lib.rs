@@ -1,4 +1,4 @@
-// pub mod deserialize;
+pub mod deserialize;
 
 use postgres_db::change_log::Change;
 use postgres_db::custom_types::Semver;
@@ -79,60 +79,71 @@ fn process_change(
 pub fn deserialize_change(
     c: Change,
 ) -> Option<(String, PackageOnlyPackument, AllVersionPackuments)> {
-    todo!()
+    let mut change_json = serde_json::from_value::<Map<String, Value>>(c.raw_json).unwrap();
+    let del = change_json
+        .remove_key_unwrap_type::<bool>("deleted")
+        .unwrap();
 
-    // let mut change_json = serde_json::from_value::<Map<String, Value>>(c.raw_json).unwrap();
-    // let del = change_json.remove_key_unwrap_type::<bool>("deleted").unwrap();
+    let package_name = change_json.remove_key_unwrap_type::<String>("id").unwrap();
 
-    // let package_name = change_json.remove_key_unwrap_type::<String>("id").unwrap();
+    if package_name == "_design/app" || package_name == "_design/scratch" {
+        return None;
+    }
 
-    // if package_name == "_design/app" || package_name == "_design/scratch" {
-    //     return None
-    // }
+    let mut doc = change_json
+        .remove_key_unwrap_type::<Map<String, Value>>("doc")
+        .unwrap();
+    let doc_id = doc.remove_key_unwrap_type::<String>("_id").unwrap();
+    let doc_deleted = doc
+        .remove_key_unwrap_type::<bool>("_deleted")
+        .unwrap_or(false);
+    doc.remove_key_unwrap_type::<String>("_rev").unwrap();
 
-    // let mut doc = change_json.remove_key_unwrap_type::<Map<String, Value>>("doc").unwrap();
-    // let doc_id = doc.remove_key_unwrap_type::<String>("_id").unwrap();
-    // let doc_deleted = doc.remove_key_unwrap_type::<bool>("_deleted").unwrap_or(false);
-    // doc.remove_key_unwrap_type::<String>("_rev").unwrap();
+    if del != doc_deleted {
+        panic!("ERROR: mismatched del and del_deleted");
+    }
 
-    // if del != doc_deleted {
-    //     panic!("ERROR: mismatched del and del_deleted");
-    // }
+    if package_name != doc_id {
+        panic!("ERROR: mismatched package_name and doc_id");
+    }
 
-    // if package_name != doc_id {
-    //     panic!("ERROR: mismatched package_name and doc_id");
-    // }
+    if del {
+        if !doc.is_empty() {
+            panic!("ERROR: extra keys in deleted doc");
+        }
+        Some((
+            package_name,
+            PackageOnlyPackument::Deleted,
+            AllVersionPackuments::new(),
+        ))
+    } else {
+        let unpublished = doc
+            .get("time")
+            .map(|time_value| time_value.as_object().unwrap().contains_key("unpublished"))
+            .unwrap_or(false);
 
-    // if del {
-    //     if !doc.is_empty() {
-    //         panic!("ERROR: extra keys in deleted doc");
-    //     }
-    //     Some((package_name, Packument::Deleted))
-    // } else {
-    //     let unpublished = doc
-    //         .get("time")
-    //         .map(|time_value|
-    //             time_value
-    //                 .as_object()
-    //                 .unwrap()
-    //                 .contains_key("unpublished")
-    //         )
-    //         .unwrap_or(false);
-
-    //     if unpublished {
-    //         Some((package_name, packument::deserialize::deserialize_packument_blob_unpublished(doc)))
-    //     } else {
-    //         let has_dist_tags = doc.contains_key("dist-tags");
-    //         if has_dist_tags {
-    //             Some((package_name, packument::deserialize::deserialize_packument_blob_normal(doc)))
-    //         } else {
-    //             // If the packument says *not* deleted,
-    //             // but has no fields, then we mark it as missing data.
-    //             // See seq = 4413127.
-    //             assert!(!doc.contains_key("time"));
-    //             assert!(!doc.contains_key("versions"));
-    //             Some((package_name, Packument::MissingData))
-    //         }
-    //     }
-    // }
+        if unpublished {
+            let (package_data, versions_data) =
+                deserialize::deserialize_packument_blob_unpublished(doc);
+            Some((package_name, package_data, versions_data))
+        } else {
+            let has_dist_tags = doc.contains_key("dist-tags");
+            if has_dist_tags {
+                let (package_data, versions_data) =
+                    deserialize::deserialize_packument_blob_normal(doc);
+                Some((package_name, package_data, versions_data))
+            } else {
+                // If the packument says *not* deleted,
+                // but has no fields, then we mark it as missing data.
+                // See seq = 4413127.
+                assert!(!doc.contains_key("time"));
+                assert!(!doc.contains_key("versions"));
+                Some((
+                    package_name,
+                    PackageOnlyPackument::MissingData,
+                    AllVersionPackuments::new(),
+                ))
+            }
+        }
+    }
 }

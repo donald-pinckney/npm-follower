@@ -1,13 +1,14 @@
-use chrono::DateTime;
-use chrono::Utc;
 use crate::custom_types::PackageMetadata;
 use crate::custom_types::{ParsedSpec, RepoInfo, Semver};
+use chrono::DateTime;
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
+use std::str::FromStr;
 
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum PackageOnlyPackument {
@@ -67,7 +68,6 @@ impl VersionOnlyPackument {
     }
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Dist {
     pub tarball_url: String,
@@ -123,7 +123,9 @@ impl From<PackageOnlyPackument> for PackageMetadata {
                 other_time_data: extra_version_times,
                 unpublished_data: unpublished_blob,
             }, // TODO: i think MissingData should go into Deleted right?
-            PackageOnlyPackument::MissingData | PackageOnlyPackument::Deleted => PackageMetadata::Deleted,
+            PackageOnlyPackument::MissingData | PackageOnlyPackument::Deleted => {
+                PackageMetadata::Deleted
+            }
         }
     }
 }
