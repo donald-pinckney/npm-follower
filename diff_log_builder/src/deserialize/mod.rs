@@ -18,7 +18,7 @@ fn deserialize_spec(c: Value) -> Spec {
             let parsed = semver_spec_serialization::parse_spec_via_node_cached(&spec_str).unwrap();
             Spec {
                 raw: spec_str.into(),
-            parsed
+                parsed
             }
         },
         _ => {
@@ -55,7 +55,7 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
                 // These are some really weird dependency cases, so we assume they don't happen.
                 // If they do, this case can be handled same as the Array or String cases.
                 panic!("Invalid dependencies");
-            },
+            },  
             Value::Null | Value::Array(_) => unreachable!()
         }
     } else {
@@ -119,12 +119,17 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>, version: &Semv
         dist,
         repository: repo,
         extra_metadata: version_blob.into_iter().collect(),
-        time: *version_times.get(version).expect(&format!("UNEXPECTED: version {} does not have a time", version)),
+        time: *version_times.get(version).unwrap_or_else(|| panic!("UNEXPECTED: version {} does not have a time", version)),
     }
 }
 
+struct ParsedTimesData {
+   created: DateTime<Utc>,
+   modified: DateTime<Utc>,
+   version_times: BTreeMap<Result<Semver, String>, DateTime<Utc>>
+}
 
-fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, BTreeMap<Result<Semver, String>, DateTime<Utc>>) {
+fn deserialize_times_normal(j: &mut Map<String, Value>) -> ParsedTimesData {
     // If time exists (checked in deserialize_times), then time must be a dictionary
     let time_raw = j.remove_key_unwrap_type::<Map<String, Value>>("time").unwrap();
     let mut times: BTreeMap<_, _> = time_raw.into_iter().flat_map(|(k, t_str)| 
@@ -141,10 +146,10 @@ fn deserialize_times_normal(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateT
         }), t)
     ).collect();
 
-    (created, modified, version_times)
+    ParsedTimesData { created, modified, version_times }
 }
 
-fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, BTreeMap<Result<Semver, String>, DateTime<Utc>>) {
+fn deserialize_times_ctime(j: &mut Map<String, Value>) -> ParsedTimesData {
     // If ctime and mtime exist (checked in deserialize_times), they must be strings.
     let created_raw = j.remove_key_unwrap_type::<String>("ctime").unwrap();
     let modified_raw = j.remove_key_unwrap_type::<String>("mtime").unwrap();
@@ -186,11 +191,11 @@ fn deserialize_times_ctime(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTi
         version_times.insert(Ok(semver), v_time);
     }
 
-    (created, modified, version_times)
+    ParsedTimesData { created, modified, version_times }
 }
 
 
-fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, BTreeMap<Result<Semver, String>, DateTime<Utc>>) {
+fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> ParsedTimesData {
     let fake_time = parse_datetime("2015-01-01T00:00:00.000Z".to_string());
 
     let mut version_times = BTreeMap::new();
@@ -212,11 +217,11 @@ fn deserialize_times_missing_fake_it(j: &Map<String, Value>) -> (DateTime<Utc>, 
         version_times.insert(Ok(semver), fake_time);
     }
 
-    (fake_time, fake_time, version_times)
+    ParsedTimesData { created: fake_time, modified: fake_time, version_times }
 }
 
 
-fn deserialize_times(j: &mut Map<String, Value>) -> (DateTime<Utc>, DateTime<Utc>, BTreeMap<Result<Semver, String>, DateTime<Utc>>) {
+fn deserialize_times(j: &mut Map<String, Value>) -> ParsedTimesData {
     if j.contains_key("time") {
         // Note: if we have time, then possibly we have ctime and mtime, but we ignore those.
         // assert!(!j.contains_key("ctime"));
@@ -260,7 +265,7 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> (PackageO
     let mut dist_tags = j.remove_key_unwrap_type::<Map<String, Value>>("dist-tags").unwrap();
     let latest_semver = deserialize_latest_tag(&mut dist_tags);
     
-    let (created, modified, version_times) = deserialize_times(&mut j);
+    let ParsedTimesData { created, modified, version_times } = deserialize_times(&mut j);
     let version_times = only_keep_ok_version_times(version_times);
 
     // We have to have versions, and it must be a dictionary
@@ -315,7 +320,7 @@ pub fn deserialize_packument_blob_unpublished(mut j: Map<String, Value>) -> (Pac
     // For an unpublished package, we must have a time dictionary, and it must have an unpublished key.
     // Note that we have to remove the unpublished key from the times data, otherwise deserialize_times would fail to parse it.
     let unpublished_blob = j.get_mut("time").unwrap().as_object_mut().unwrap().remove_key_unwrap_type::<Value>("unpublished").unwrap();
-    let (created, modified, extra_version_times) = deserialize_times(&mut j);
+    let ParsedTimesData { created, modified, version_times: extra_version_times }  = deserialize_times(&mut j);
 
     (PackageOnlyPackument::Unpublished {
         created,
