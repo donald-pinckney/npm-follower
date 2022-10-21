@@ -1,11 +1,11 @@
 mod deserialize_repo;
 
-use std::{str::FromStr, collections::BTreeMap};
+use std::collections::BTreeMap;
 use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
 use std::collections::HashMap;
 
-use postgres_db::{custom_types::Semver, packument::{Spec, AllVersionPackuments, Dist, PackageOnlyPackument, VersionOnlyPackument}, packages::Package};
+use postgres_db::{custom_types::Semver, packument::{Spec, AllVersionPackuments, Dist, PackageOnlyPackument, VersionOnlyPackument}};
 
 use utils::{RemoveInto, FilterJsonCases};
 
@@ -63,7 +63,7 @@ fn deserialize_dependencies(version_blob: &mut Map<String, Value>, key: &'static
     }
 }
 
-fn deserialize_version_blob(mut version_blob: Map<String, Value>, version_times: &BTreeMap<Semver, DateTime<Utc>>) -> VersionOnlyPackument {
+fn deserialize_version_blob(mut version_blob: Map<String, Value>, version: &Semver, version_times: &BTreeMap<Semver, DateTime<Utc>>) -> VersionOnlyPackument {
     let prod_dependencies = deserialize_dependencies(&mut version_blob, "dependencies");
     let dev_dependencies = deserialize_dependencies(&mut version_blob, "devDependencies");
     let peer_dependencies = deserialize_dependencies(&mut version_blob, "peerDependencies");
@@ -119,7 +119,7 @@ fn deserialize_version_blob(mut version_blob: Map<String, Value>, version_times:
         dist,
         repository: repo,
         extra_metadata: version_blob.into_iter().collect(),
-        time: todo!(),
+        time: *version_times.get(version).expect(&format!("UNEXPECTED: version {} does not have a time", version)),
     }
 }
 
@@ -265,12 +265,16 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> (PackageO
 
     // We have to have versions, and it must be a dictionary
     let version_packuments_map = j.remove_key_unwrap_type::<Map<String, Value>>("versions").unwrap();
-    let version_packuments: HashMap<Semver, VersionOnlyPackument> = version_packuments_map.into_iter().map(|(v_str, blob)|
+    let version_packuments: HashMap<Semver, VersionOnlyPackument> = version_packuments_map.into_iter().map(|(v_str, blob)| {
+        // each version string must parse ok
+        let version = semver_spec_serialization::parse_semver(&v_str).unwrap();
+        // and each version data must be a dictionary
+        let version_data = deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap(), &version, &version_times);
         (
-            semver_spec_serialization::parse_semver(&v_str).unwrap(), // each version string must parse ok
-            deserialize_version_blob(serde_json::from_value::<Map<String, Value>>(blob).unwrap(), &version_times) // and each version data must be a dictionary
+            version, 
+            version_data 
         )
-    ).collect();
+    }).collect();
 
     let latest_semver = {
         match latest_semver {
@@ -292,7 +296,6 @@ pub fn deserialize_packument_blob_normal(mut j: Map<String, Value>) -> (PackageO
         created,
         modified,
         other_dist_tags: dist_tags,
-        // version_times: only_keep_ok_version_times(version_times),
     }, version_packuments)
 }
 
