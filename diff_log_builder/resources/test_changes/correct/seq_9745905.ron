@@ -1,0 +1,806 @@
+Some(("@berry/parsers", Normal(
+    latest: Some((
+        major: 0,
+        minor: 1,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2019-05-22T13:11:37.379Z",
+    modified: "2022-04-04T18:32:11.845Z",
+    other_dist_tags: {},
+), {
+    (
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [
+            ("@berry/pnpify", (
+                raw: "0.0.3",
+                parsed: Range(([
+                    [
+                        Eq((
+                            major: 0,
+                            minor: 0,
+                            bug: 3,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("pegjs", (
+                raw: "^0.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("typescript", (
+                raw: "^3.3.3333",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 3,
+                            bug: 3333,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/@berry/parsers/-/parsers-0.0.1.tgz",
+            shasum: Some("b62840bae5b371bbd16f57f9fed033173d66b3b8"),
+            unpacked_size: Some(6643),
+            file_count: Some(9),
+            integrity: Some("sha512-+DCMwNZcGLHX9iX0mI2xkDAjoDNYtUUVz5Fb6LLOCGTV63YO7b8o6qjAftZc868mnO3YK93DWtvROrLJ1251yw=="),
+            signature0_sig: Some("MEYCIQCnrnydHJAPaDOfqDtTxj5WiCsPLO4Y/GapJvGmeqS4XgIhALO8eSleyLXFgnhsBUD31VLe1zrhkUgVN9ICO/p5Zy9/"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJc5Wn1CRA9TVsSAnZWagAALisQAIszs6gJ43IhXHkOUdQP\nQNKR426tsIx2Lhi/7KoaeOL0i6B6Qf+tRQ49MXwr5DDo2WsYOonWc3zpHy2m\nfyK8jRKXa8YSBT+l2AVOo8sFvVq8cWV9/bNXLtIWKPZp70q6ALQ3Aj6Rr6sB\nuLuy9I3wmXvhrgXA1DbRIFuaMTPpm1gSrlfSWNt4JZl5v/iY6B12FMGiRKeg\nUOYL/LGUPg7v9KC76UYk9X7FiLrHv2sBS2KV/TtsK9GS6cJPlx8R8p3JPfHM\nwNSCek5PpjUZFD7DLU5ACGYEJJoVdfQeKv1yJi7zTNZX2Z40B1CljsuW+TIA\n0L2SPISGieSU1VN8RI2CZGhAtTNv2Owbt2cSUMYsRA/h8pfMg7ezzD8Y+Nkg\nOUFNPwTS1+CvnHpuIyefxZ/4UoGbCdq+s3x2ot5ZF4qWEoKun6WL0BsULa1q\nS66yWHRsqALb56a2ze6ChxVwwwBxUzPBe7kn3skZmlBafWRAz7eRFJq/ky8t\nku6W/oBWiMs6lvBvfjl01P552ienzj6M4sjJd+RJaCKuO6TUjRhJE5FhK1uq\nJOMvdThq8jq3AkmfwMOucDRJ4SalF0b2ThV2bZFcJXA22i3ep8EkmQgkWVVP\nDalaAdrtZupavX3USbutRVRSLUJNVK3yYCQgwrvtMU47OCSvxQ3ftPuP0J7r\nTWkD\r\n=OwS2\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-05-22T15:25:40.652Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "@berry/parsers@0.0.1",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/parsers_0.0.1_1558538740468_0.1556271540998695",
+            },
+            "_npmUser": {
+                "email": "nison.mael+berrypkg@gmail.com",
+                "name": "berry",
+            },
+            "directories": {},
+            "main": "./lib/index.js",
+            "maintainers": [
+                {
+                    "email": "nison.mael+berrypkg@gmail.com",
+                    "name": "berry",
+                },
+            ],
+            "name": "@berry/parsers",
+            "publishConfig": {
+                "main": "./lib/index.js",
+                "typings": "./lib/index.d.ts",
+            },
+            "scripts": {
+                "grammar:resolution": "run pegjs -o sources/grammars/resolution.js sources/grammars/resolution.pegjs",
+                "grammar:shell": "run pegjs -o sources/grammars/shell.js sources/grammars/shell.pegjs",
+                "grammar:syml": "run pegjs -o sources/grammars/syml.js sources/grammars/syml.pegjs",
+                "postpack": "rm -rf lib",
+                "prepack": "mkdir -p lib && rsync -a --exclude \'*.ts\' sources/ lib/ && pnpify tsc",
+                "release": "yarn npm publish",
+                "test:parsers": "run test:unit packages/berry-parsers",
+            },
+            "typings": "./lib/index.d.ts",
+            "version": "0.0.1",
+        },
+    ),
+    (
+        major: 0,
+        minor: 0,
+        bug: 2,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [
+            ("@berry/pnpify", (
+                raw: "0.0.3",
+                parsed: Range(([
+                    [
+                        Eq((
+                            major: 0,
+                            minor: 0,
+                            bug: 3,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("pegjs", (
+                raw: "^0.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("typescript", (
+                raw: "^3.3.3333",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 3,
+                            bug: 3333,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/@berry/parsers/-/parsers-0.0.2.tgz",
+            shasum: Some("a44c790d07169910ee20ef880ff389c724a6b037"),
+            unpacked_size: Some(115307),
+            file_count: Some(15),
+            integrity: Some("sha512-9C8lBWmD0LcvzR1n0nK8HYmfLoNfwcAsSo1V1qu2c3d3YBAW8Ew4JacXM+sKNorp0tmIsUB7ph4Eg3YvpaFI3Q=="),
+            signature0_sig: Some("MEYCIQDag3BE7WGhyP9DTVUrXvWeorjMjI90myeaWXuqk9r6SQIhANu1T3ocuZJexLFRQi0MidzXVHix08q8DNyRxY2bgml3"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJc5WuVCRA9TVsSAnZWagAA4hgP/1XURBblXeVIhlUrtMl8\nbF71vAKUc5CQ8szn6b+lg46MjpFQroHLrxaJ9uCWwfjToH9qby11dj0YdO2Z\nKz0sWOfSmZcdTvOL1p/FfdHHfEd6KvasV8peY7xLnYbX0jHULiGp0qdPdiw4\nBwVSoMGSlaAFtTFcXO9n1I7+GUZhp6iCwBS3zM0zDh25WzgG7BAucqGlLRNK\n4mL+j7t8qZ+mgouruF/gal3NiWqOWwSQvpCP4ox60HlF1+fbTNy6ybcivEfT\ncx7/0BeMNQtB+0O8b0xkKXQ3LelUJWpzJd5Xw00UC/rpw/2njeMVHeshWeyA\nWoD7oorxckSsiZLaomejt1zXBsMrBA8IrK8iX3Qcshje93+W1FBoN/6kqzwD\nzflUIXKpjNXuTZ7QWyta477Sutm7XwVPce9dwPMfAfG5P7u533lXwi8Kqpnv\nLlPliQY3n8WE+w/oK2IN5GzZ5OQJ1r+XAY1CU+BorQi2fiMkmb/DiyeRenjE\nsJlExrfYOZBmIrnmPT+BugWxRoOGGNOZ8/Ht/JnZVM7BVTO3AcJLYwoHjm7s\n4HbQFkI2KbC+AznQrZMGmDO+flxneyhEFX+XpmY4XpiqBl3d582cHMhb2L08\nQSocAE/4atdXyPI/zUwfitciJpywBklds1c2KyrnlCnNA8ONNIv5U0CS04Qn\n56Js\r\n=++yC\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-05-22T15:32:36.932Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "@berry/parsers@0.0.2",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/parsers_0.0.2_1558539156802_0.35978921532649877",
+            },
+            "_npmUser": {
+                "email": "nison.mael+berrypkg@gmail.com",
+                "name": "berry",
+            },
+            "directories": {},
+            "main": "./lib/index.js",
+            "maintainers": [
+                {
+                    "email": "nison.mael+berrypkg@gmail.com",
+                    "name": "berry",
+                },
+            ],
+            "name": "@berry/parsers",
+            "publishConfig": {
+                "main": "./lib/index.js",
+                "typings": "./lib/index.d.ts",
+            },
+            "scripts": {
+                "grammar:resolution": "run pegjs -o sources/grammars/resolution.js sources/grammars/resolution.pegjs",
+                "grammar:shell": "run pegjs -o sources/grammars/shell.js sources/grammars/shell.pegjs",
+                "grammar:syml": "run pegjs -o sources/grammars/syml.js sources/grammars/syml.pegjs",
+                "postpack": "rm -rf lib",
+                "prepack": "mkdir -p lib && rsync -a --exclude \'*.ts\' sources/ lib/ && pnpify tsc",
+                "release": "yarn npm publish",
+                "test:parsers": "run test:unit packages/berry-parsers",
+            },
+            "typings": "./lib/index.d.ts",
+            "version": "0.0.2",
+        },
+    ),
+    (
+        major: 0,
+        minor: 0,
+        bug: 4,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("js-yaml", (
+                raw: "^3.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [
+            ("@berry/pnpify", (
+                raw: "0.0.6",
+                parsed: Range(([
+                    [
+                        Eq((
+                            major: 0,
+                            minor: 0,
+                            bug: 6,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("pegjs", (
+                raw: "^0.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("typescript", (
+                raw: "^3.3.3333",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 3,
+                            bug: 3333,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/@berry/parsers/-/parsers-0.0.4.tgz",
+            shasum: Some("126d2d35a2e4134476fe6c023724683d37e565a6"),
+            unpacked_size: Some(129510),
+            file_count: Some(15),
+            integrity: Some("sha512-K/Kkw4pgoD4OvLq3Xe7z1BTLFwwxdbJMU1Z/UHBTeF04+2I+VFBdp0pl8cXYmTlIaS1zzyGDdPpmztKTFot4pQ=="),
+            signature0_sig: Some("MEUCIQD8ek8Iw62I7lNefemmbI7CZgMhla2aEzA8R/N12auyIwIgOJfmuEci0i2+1AaexcAJV8oUVPni4cXNCsZ1rnlfjgQ="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJdFeYzCRA9TVsSAnZWagAAmQoQAKPzqQ4dhqeugDed+7JB\nJfyL/rejtbGNam+KuuS78mrAtOAPyGjShqnzN4uSYP3UlSTH//XqSXoQCt4K\nStq+LuSYlqAdAHjpcFBFMkKMQRCxZEsdBwAc85lTk7HTQanH+uBym/Z/CKNZ\n+uiuJKtZ6268nhfdYs+qcLzDnCR0RrSYeUsJNk9XYq2KYbPQA6ta2F+dIsfO\nQeWarKHuWozkSH9AzWjfbSTVo0jeLA3WW3Ebj+Qdi9NQLzW0D9mrXeBbONmo\nB6iszzRe5hxxDI1kFR6ePGkXMCbReOSv0OC5Vhgbl/uTR5udYhhdkrIDdIgz\n5t4Md+KAAjK+NB1BjmvMDbprC/3Z6t/6pt+8A/tKHg9lFRffYibu+eAkaS9/\n+3IcaSRUBsXVH/VJ6h3PGdxz3dyUjQFHlX0Bwx9KUXuE7MrRMNqrzyq+vXHc\no83X1FR7IMOZY9C6FodsRkLbunDc0F0qSII/hN1N5T05NXpH/NkrZJRPlVFN\njePBe5N+Sv+usCfog6mqyNuXstcLK3iMURyfhg0TPjn2bTnZo5P/d+2tkfHg\nD5vDh/BGjiswm4d/9Rk27znVBKrNBFWbEy+X0nUAUyPgDpRZNRYYKhuB8zCI\nbFBA/n6TnE4Lntqf88v5N0NCPeX72OVu1EcGsU6K/NE/ZWsAALQWZLEIhAgM\nRWb8\r\n=W+he\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-06-28T10:04:35.292Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "@berry/parsers@0.0.4",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/parsers_0.0.4_1561716275096_0.6698749733257312",
+            },
+            "_npmUser": {
+                "email": "nison.mael+berrypkg@gmail.com",
+                "name": "berry",
+            },
+            "directories": {},
+            "main": "./lib/index.js",
+            "maintainers": [
+                {
+                    "email": "nison.mael+berrypkg@gmail.com",
+                    "name": "berry",
+                },
+            ],
+            "name": "@berry/parsers",
+            "publishConfig": {
+                "main": "./lib/index.js",
+                "typings": "./lib/index.d.ts",
+            },
+            "scripts": {
+                "grammar:resolution": "run pegjs -o sources/grammars/resolution.js sources/grammars/resolution.pegjs",
+                "grammar:shell": "run pegjs -o sources/grammars/shell.js sources/grammars/shell.pegjs",
+                "grammar:syml": "run pegjs -o sources/grammars/syml.js sources/grammars/syml.pegjs",
+                "postpack": "rm -rf lib",
+                "prepack": "mkdir -p lib && rsync -a --exclude \'*.ts\' sources/ lib/ && pnpify tsc",
+                "release": "yarn npm publish",
+                "test:parsers": "run test:unit packages/berry-parsers",
+            },
+            "typings": "./lib/index.d.ts",
+            "version": "0.0.4",
+        },
+    ),
+    (
+        major: 0,
+        minor: 1,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("js-yaml", (
+                raw: "^3.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [
+            ("@berry/pnpify", (
+                raw: "0.1.0",
+                parsed: Range(([
+                    [
+                        Eq((
+                            major: 0,
+                            minor: 1,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("pegjs", (
+                raw: "^0.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("typescript", (
+                raw: "^3.3.3333",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 3,
+                            bug: 3333,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/@berry/parsers/-/parsers-0.1.0.tgz",
+            shasum: Some("d1f8b350480914ecbba770ab085e8aeea6211cfb"),
+            unpacked_size: Some(129510),
+            file_count: Some(15),
+            integrity: Some("sha512-oyFW7tONvxgw9+WK+gz+68FTBOjABGVVfD5XY4b0YtR31zYNk7Jto2tfwOzV5yC1C4Ja4kWRXhTUaloWlyxv/A=="),
+            signature0_sig: Some("MEUCIQDysmaOo5uHKhViTYVSwJ+BtJfGTRS8skofRH5wK2lazAIgDEpbkTVq7XXv1c0vbPblZdQzEBeNDo2bYoK0P1aph4Y="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJdQpfvCRA9TVsSAnZWagAAe9YP/jtkqumvSuZTrnvsqBKj\nnJZe+pphEhDGEgV6tSGEnZnmCjQLUpz5NE7Te6w2I5OSicvZlXRyfaSypUyQ\nxFpKcx04Dog2IC8xFAEAlExTLynQIO4UYqAz8UYACypzxY2EiQCQhmD+V+6O\nRCJJ8ZciMjoVXm1SdWBSbH+/7sqt6ZTtUIeZsbm3N9A0CN19R/iu7HXuhcSY\ntEBPfPgLf82vyDK92O7upwFZ3fLIpvtCYvhLtRcdiI9uiWmSqI7GE79d2XfN\ncPydEPni1+1ncFfsVv+akGMJZE0XPq9Wv71dyfw/vd0j/w/Qt1tFJFOdcCH+\nLoBn+OG4MxpDEkcfnnC8oi8yfGpvI0v/6KGZLS37cdvqk1mVadCbOBcvSoOw\nhtyoMRVSzy+a6pc9rGroQ3CVFv4iQ2T/leWUtOmd+TiSZRA6bTMxOmxkx1P5\ntQNA21VJxfXH3SILl72ZPZYwCXnv8to+IFJBZk5/dawoRyJdx9sesLxyfJZB\nfQB31yKj5z0HfPQJawMzPLja21eJNHp9hyT/hnr5aYXUE6SdwCAUKllNEAKS\nm64Ij4RQvGDfkLWQzTw24SjlYQARdF7N8wO/fR07uWekCmv36kbZcUCeLNLA\nM0AapR/IpbzdqnZyQFsaGxqcmEnhBgpRlM4kCmaRciFamNYdXRBnkmp20VJI\nmuya\r\n=pMFd\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-08-01T07:42:39.186Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "@berry/parsers@0.1.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/parsers_0.1.0_1564645358967_0.831531609382963",
+            },
+            "_npmUser": {
+                "email": "nison.mael+berrypkg@gmail.com",
+                "name": "berry",
+            },
+            "directories": {},
+            "main": "./lib/index.js",
+            "maintainers": [
+                {
+                    "email": "nison.mael+berrypkg@gmail.com",
+                    "name": "berry",
+                },
+            ],
+            "name": "@berry/parsers",
+            "publishConfig": {
+                "main": "./lib/index.js",
+                "typings": "./lib/index.d.ts",
+            },
+            "scripts": {
+                "grammar:resolution": "run pegjs -o sources/grammars/resolution.js sources/grammars/resolution.pegjs",
+                "grammar:shell": "run pegjs -o sources/grammars/shell.js sources/grammars/shell.pegjs",
+                "grammar:syml": "run pegjs -o sources/grammars/syml.js sources/grammars/syml.pegjs",
+                "postpack": "rm -rf lib",
+                "prepack": "mkdir -p lib && rsync -a --exclude \'*.ts\' sources/ lib/ && pnpify tsc",
+                "release": "yarn npm publish",
+                "test:parsers": "run test:unit packages/berry-parsers",
+            },
+            "typings": "./lib/index.d.ts",
+            "version": "0.1.0",
+        },
+    ),
+    (
+        major: 0,
+        minor: 0,
+        bug: 3,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("js-yaml", (
+                raw: "npm:^3.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [
+            ("@berry/pnpify", (
+                raw: "0.0.6",
+                parsed: Range(([
+                    [
+                        Eq((
+                            major: 0,
+                            minor: 0,
+                            bug: 6,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("pegjs", (
+                raw: "^0.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("typescript", (
+                raw: "^3.3.3333",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 3,
+                            bug: 3333,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/@berry/parsers/-/parsers-0.0.3.tgz",
+            shasum: Some("506db3cdfd28572eda1296636275c6133a86ef00"),
+            unpacked_size: Some(129514),
+            file_count: Some(15),
+            integrity: Some("sha512-NuxohHoUCKsUp0RCtplWXdL239bcOcIZhW1TsayVjv4ATRyaTC5NVu7eiFp9BIRzFeUeqT3wEktV5n1ZdPYjlg=="),
+            signature0_sig: Some("MEQCIA/6UEjUV947NgDAxyKISMNFUhSJffJ+M313rg3cFhgTAiByXGB9W94kMH9HnF82Yy3mab6TzVqVewZKtJ2yrclGqQ=="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJdFd/QCRA9TVsSAnZWagAAbDIP/237hXqIxFKKmNuGv7Bf\nvundWX2ctvkXlPh3GrpK6CM3blhdcPdvJx54QgNpfuMPX0GLkY47MAOr/Lb8\n+MG7aNAyC3S4GfsdhnqZ2Dw27DY2pg3eEU693fRRLWNM6FcvNwvLFPyTEtak\nT8+qv0Z+O9pGER7X52cJSvW/LT9S2PXMOnbXZYFQBrCRd1jlr9b1C8CgT51X\nq78GDVl+kcCbIfiwIZHYhpib5D/H7ZDxZVMZnK/+xxfZwrq+XbEYdFE36ji3\nRSoBSTYrrL1O6ncTxOLH+N7AMUMoycZdXuVN3isXc35CfANfL22R/8UQBsxt\nZnFrtgFK3nh3pOPRb8EDG7Tuux1zub5sQGBeuGrB2Tm/IuRiHiil/Od9XR3q\nw6nQXbKjsIadV9Um1Hu683IfpdwJcgCmTXADsMc1XdylvLanp8bj2ubtzbt2\nO+1YJSqxWjidiOwT7Lp/HsrdNYsuu4936ezetmPHTIzCoZj4BmpOZW/y+iES\nitaY2APvFJIiVknB6IFKknH2J08q/bqdj9lI4apJXIyDvLfVBW/WZ7AmVAw+\nFOFpHGhWCRFXzjC7bom3ig7sojiR5thb61jjgyI9gcZYCexaUFqFJlF3scHa\n5W5LGU3lKU8mhvzwzdLTXh795yIWbyVoKXBPzHi0Df9ICJ9ni7cDVINIZN5+\nEI3V\r\n=YZnV\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-06-28T09:37:19.676Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "@berry/parsers@0.0.3",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/parsers_0.0.3_1561714639536_0.8825741782479923",
+            },
+            "_npmUser": {
+                "email": "nison.mael+berrypkg@gmail.com",
+                "name": "berry",
+            },
+            "directories": {},
+            "main": "./lib/index.js",
+            "maintainers": [
+                {
+                    "email": "nison.mael+berrypkg@gmail.com",
+                    "name": "berry",
+                },
+            ],
+            "name": "@berry/parsers",
+            "publishConfig": {
+                "main": "./lib/index.js",
+                "typings": "./lib/index.d.ts",
+            },
+            "scripts": {
+                "grammar:resolution": "run pegjs -o sources/grammars/resolution.js sources/grammars/resolution.pegjs",
+                "grammar:shell": "run pegjs -o sources/grammars/shell.js sources/grammars/shell.pegjs",
+                "grammar:syml": "run pegjs -o sources/grammars/syml.js sources/grammars/syml.pegjs",
+                "postpack": "rm -rf lib",
+                "prepack": "mkdir -p lib && rsync -a --exclude \'*.ts\' sources/ lib/ && pnpify tsc",
+                "release": "yarn npm publish",
+                "test:parsers": "run test:unit packages/berry-parsers",
+            },
+            "typings": "./lib/index.d.ts",
+            "version": "0.0.3",
+        },
+    ),
+    (
+        major: 0,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [
+            ("@berry/pnpify", (
+                raw: "0.0.2",
+                parsed: Range(([
+                    [
+                        Eq((
+                            major: 0,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("pegjs", (
+                raw: "^0.10.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 10,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("typescript", (
+                raw: "^3.3.3333",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 3,
+                            bug: 3333,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/@berry/parsers/-/parsers-0.0.0.tgz",
+            shasum: Some("ef432263d54d2e7c9644bb6b2cee095f345d5565"),
+            unpacked_size: Some(229396),
+            file_count: Some(30),
+            integrity: Some("sha512-YLu2IsFfKGjMi8fVkWqAgGfurOMjXtoLBAufJq9CD/a+PIJVOw+MzP+5qczNMb7Du4kwrJxxRAlPJkY1mHaQxQ=="),
+            signature0_sig: Some("MEYCIQCjU05ISrjHBDDDx/qVB7IGjCRLaqVl+XcGg0PFiDowSgIhAOkHvXpFzJ2MvfZ0pnZ09c1TCYK0Jd0P9tM989DOtBKa"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJc5UqKCRA9TVsSAnZWagAACIAQAKK8mi+y1oq5Hw3Z/00B\niyCmdnsEFjVyqdjUPcQh4VNCVMOL08GQzWeskRzln+XOUndLYxmQ5exE2NVi\nUHiAWUv+gCMp5S+y0mystxRv8F2jqA6IS9Ey2NfIY8Tcc53wFdvHPUogDAAk\nuk3daIiyVio/sk4AjlI7QgdeIVTPhGb76e0zztf8HaP+MOSC8d6lCYK0Db2u\nKmc0dcZ1G0qNwiICdcF82iRlzPXly1r6d3Zhi/XK9yAg/EYo+G1BuEYud6Jf\nM+JrUgJiwwHQ9Igz/gjEm0R0NKJH0O+8/yLKa0HIbZEznYKp3uSXl7zSZqtf\nb1RkECI+oYWkpcYgo41+UfqdIGfgMqEJorpygnRdJQFgqZxL4zWxjSB5tvti\nyvN43iFAS2ZXQn+cBzXU7TPnGcoK36HQkOYXgH7TBuagR82W31EKNyxFQrJ7\nG8aiBg1LM8bE75htkwLlJsR49/dw3wKIUDgxc4GEugb9rEljl+7tRDKhDMyk\noxYMG2c6ozI8AXvFjfkYDOlw44jES4ZtiV/pRCj8g7lpaXYgdMGOjyBb2WpY\nJaPSAVuHhxL5xCWyOw8v98pJXW2RpHEi6T6CV57V9NCN4VEJpZGZ0P6bfPqd\n1Odzvh62chv3ax+68cg9b+AiuehaNI518sUPT2Vmw4hXAeNaCRJq0JUhV1E2\nljUS\r\n=Iz68\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-05-22T13:11:37.657Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "@berry/parsers@0.0.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/parsers_0.0.0_1558530697416_0.3310130333856822",
+            },
+            "_npmUser": {
+                "email": "nison.mael+berrypkg@gmail.com",
+                "name": "berry",
+            },
+            "directories": {},
+            "main": "./sources/index.ts",
+            "maintainers": [
+                {
+                    "email": "nison.mael+berrypkg@gmail.com",
+                    "name": "berry",
+                },
+            ],
+            "name": "@berry/parsers",
+            "scripts": {
+                "grammar:resolution": "run pegjs -o sources/grammars/resolution.js sources/grammars/resolution.pegjs",
+                "grammar:shell": "run pegjs -o sources/grammars/shell.js sources/grammars/shell.pegjs",
+                "grammar:syml": "run pegjs -o sources/grammars/syml.js sources/grammars/syml.pegjs",
+                "postpack": "rm -rf lib",
+                "prepack": "mkdir -p lib && rsync -a --exclude \'*.ts\' sources/ lib/ && pnpify tsc",
+                "release": "yarn npm publish",
+                "test:parsers": "run test:unit packages/berry-parsers",
+            },
+            "version": "0.0.0",
+        },
+    ),
+}))

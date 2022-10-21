@@ -1,0 +1,410 @@
+Some(("vue-loading-ihui", Normal(
+    latest: Some((
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2018-08-20T06:43:18.117Z",
+    modified: "2018-08-20T06:43:21.245Z",
+    other_dist_tags: {},
+), {
+    (
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("vue", (
+                raw: "^2.5.11",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 5,
+                            bug: 11,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("stylus", (
+                raw: "^0.54.5",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 54,
+                            bug: 5,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 55,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("stylus-loader", (
+                raw: "^3.0.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [
+            ("webpack", (
+                raw: "^3.6.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 6,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("cross-env", (
+                raw: "^5.0.5",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 5,
+                            minor: 0,
+                            bug: 5,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 6,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("babel-core", (
+                raw: "^6.26.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 6,
+                            minor: 26,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 7,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("css-loader", (
+                raw: "^0.28.7",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 28,
+                            bug: 7,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 29,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("vue-loader", (
+                raw: "^13.0.5",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 13,
+                            minor: 0,
+                            bug: 5,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 14,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("file-loader", (
+                raw: "^1.1.4",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 1,
+                            bug: 4,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("babel-loader", (
+                raw: "^7.1.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 7,
+                            minor: 1,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 8,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("babel-preset-env", (
+                raw: "^1.6.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 6,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("webpack-dev-server", (
+                raw: "^2.9.1",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 9,
+                            bug: 1,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("babel-preset-stage-3", (
+                raw: "^6.24.1",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 6,
+                            minor: 24,
+                            bug: 1,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 7,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("vue-template-compiler", (
+                raw: "^2.4.4",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 4,
+                            bug: 4,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/vue-loading-ihui/-/vue-loading-ihui-1.0.0.tgz",
+            shasum: Some("ed86130496bf6101d30fdf30169fe5a0429bbe08"),
+            unpacked_size: Some(146446),
+            file_count: Some(14),
+            integrity: Some("sha512-p+c+xpzIhBY/5iiN5GjZIhqd0LZy8vXSLcUUGazOavDPUAXHoMocoO+upTAQRz7W2HSwu+aBJLdELXLJCGbwqw=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbemMGCRA9TVsSAnZWagAAackQAIFvMqBiFML4wf9wCtS7\nvWc/LSeljwLHvIgOPHPQIl2euFC5YpeO+ByIcSMylXzr0Wb6iqOmsSPAZJTC\nJb3p0woJPwE/AgHJLxRRJ7heXt7ECtPh5DowA2w+cRV4th2RWhyKXNyC6IMa\ne8vAdsTV2ykguDYYKmWZcf3kwULOcgnUJpyh4ayROTp+QyihCGMJy2yifObI\npgMScYm91P4IXl2R5LSBlLJV+kdpDJySj5qkvryHrXxeqqoVhPmD8zHI2IH6\n2nuMYrbi7acNhzgfHVbrj6fFzBttCTS8BRmu0RXKEZJZP73PW9NjA6NJNazb\nWui3fOjIfl/C307JbxZSZISwxXoEY+VQN6eh1Xfa3UyxpeAOSA6WkSIfMqZk\n3L49jQr/7Mhd/4uqbRKEkpfBDZbs2PD1dWuayRrm+pWyQV9Xrlk+Nl3ylvs4\nmbuu9ie3ToOD5zjEv3NvotXuM8NNSMSoxtN64Z/+0iWpABulTJTjjVBT8476\nMKydq+x3GLknTCs95U2lrUzsSaDZV3YofexwEzSIxPeflM8z0zV2EZiaZQER\nn3SB4BE/n7RttwrZ/Ygvr7OCTr9P2m+ghP4XziQpIi0V/dFK8cKouNACLBYA\nOYA7B6C8LLwyc7iK9SMS9Pum08ASICMK2mnmntBW3tAgYxZ5GdVDi4Vbourt\nN+qd\r\n=JUoL\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2018-08-20T06:43:18.233Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "vue-loading-ihui@1.0.0",
+            "_nodeVersion": "8.9.3",
+            "_npmOperationalInternal": {
+                "tmp": "tmp/vue-loading-ihui_1.0.0_1534747398117_0.007077976746529657",
+                "host": "s3://npm-registry-packages",
+            },
+            "_npmUser": {
+                "name": "ihui",
+                "email": "2873991890@qq.com",
+            },
+            "_npmVersion": "5.5.1",
+            "author": {
+                "name": "\'ihui\'",
+                "email": "\'2873991890@qq.com\'",
+            },
+            "browserslist": [
+                "> 1%",
+                "last 2 versions",
+                "not ie <= 8",
+            ],
+            "description": "A Vue.js project",
+            "directories": {},
+            "homepage": "",
+            "keywords": [
+                "vue",
+                "ihui",
+            ],
+            "license": "MIT",
+            "main": "dist/loading.js",
+            "maintainers": [
+                {
+                    "name": "ihui",
+                    "email": "2873991890@qq.com",
+                },
+            ],
+            "name": "vue-loading-ihui",
+            "private": false,
+            "repo": {
+                "url": "",
+                "type": "git",
+            },
+            "scripts": {
+                "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+                "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+            },
+            "version": "1.0.0",
+        },
+    ),
+}))

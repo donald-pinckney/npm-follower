@@ -1,0 +1,29 @@
+Some(("@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-firns", Unpublished(
+    created: "2021-04-16T00:33:08.979Z",
+    modified: "2021-04-16T00:33:20.455Z",
+    unpublished_blob: {
+        "maintainers": [
+            {
+                "email": "devnull+dsr-user-dormy-noops-grout-firns@npmjs.com",
+                "name": "dsr-user-dormy-noops-grout-firns",
+            },
+        ],
+        "name": "npm-support",
+        "tags": {
+            "latest": "1.0.0",
+        },
+        "time": "2021-04-16T00:33:20.454Z",
+        "versions": [
+            "1.0.0",
+        ],
+    },
+    extra_version_times: {
+        (
+            major: 1,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ): "2021-04-16T00:33:09.197Z",
+    },
+), {}))

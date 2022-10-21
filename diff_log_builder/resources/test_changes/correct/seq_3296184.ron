@@ -1,0 +1,47 @@
+Some(("testing234", Normal(
+    latest: Some((
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2015-03-23T00:09:57.797Z",
+    modified: "2019-01-05T15:00:51.076Z",
+    other_dist_tags: {},
+), {
+    (
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/",
+            shasum: Some("7777777"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: None,
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: None,
+        time: "2015-03-23T00:09:57.797Z",
+        extra_metadata: {
+            "_npmUser": {
+                "name": "teste4",
+            },
+            "author": {
+                "name": "teste4",
+            },
+            "name": "testing234",
+            "version": "0.0.1",
+        },
+    ),
+}))

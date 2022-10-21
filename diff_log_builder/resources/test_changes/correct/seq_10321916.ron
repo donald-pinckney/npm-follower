@@ -1,0 +1,69 @@
+Some(("actest", Normal(
+    latest: Some((
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2019-02-05T15:26:38.535Z",
+    modified: "2022-04-11T12:33:42.094Z",
+    other_dist_tags: {},
+), {
+    (
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/actest/-/actest-1.0.0.tgz",
+            shasum: Some("9c61fe6f096959db6aa3e0c2f967e8bef55aec85"),
+            unpacked_size: Some(284),
+            file_count: Some(2),
+            integrity: Some("sha512-1h39G/tfSd2j9w0GLAKd8iQDNnx5uhNbDI1a4BtmVZwrsa/5VwZMUkoBDEdG1qvdjcNGOgqc/18qYmwzFLldYw=="),
+            signature0_sig: Some("MEUCIFS26VS9ppIJwRvsFdWDqUP3tE2RGLz/kdl+2cC6mbQmAiEA8fkoZORwhAzlyz1TearWnS+S/Nfg0HNV6UqJuf7SZa0="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcWasvCRA9TVsSAnZWagAAv7EP/01UQ4bb3gKuFMceogth\n2tccIFIoBRHMYaUMEL5ONud+woKIhC/OZL4b6A1SPcqphpYEinGAu5V51aRP\nUfqeXVnl1jFLokUiP3as9KLmurNC5sBluER8xKXZmRdqADWMPu8BWsTPalhO\ng22YgfcuQqQSTXluMlA/XYtzD06Rz0WM9PYI7pBxSOwt/Ym6r8C6tbjX7Kgz\napMLVkFFzlTOSE4gPWq/bZIK3QPRhPak131JMFsd4vEc497hxSasK1OSFUOf\nB5K8QrAHn9paKCC2Z+fwDbp/UiC28cxBMoY13RmOx43T/xN3GPnvaJ2zjABA\n3amd7+9b+Nv1RGefnwZpdvrYxe2E8P/h2GJOx2OKn4GkwAE1fyabbWVlgn1m\n3BOodPTr3wpVroU8+ZnYlzGGmaCYgvybbviCN9pphtNB/dYqAWQR7iKgphMC\nVlt1BtNPJAaUN4W6P4frGHhXiqfpYEYFvYLCFYuw/uHeRqOJB/uLDs6mm0/Y\nUKf9mjiXjiiameX/BmW3zQ3OFPvYGqLJLf2gOefsCsVku3ugKOaAVoPeArlG\n2XpW2tXFJcLPSwwmivmHrPVz2oVmZVHv322MeTAhbSA5WCbW4+OmUq4GQQhQ\nWGlMKcFLrU5q9IJ6OZC2Fgk4dZ9DBu2cjXRbaUB8Tz51UEwCdW1Z0A5ZchTS\njVIY\r\n=G50n\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-02-05T15:26:38.644Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "actest@1.0.0",
+            "_nodeVersion": "8.11.3",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/actest_1.0.0_1549380398535_0.03779759076339828",
+            },
+            "_npmUser": {
+                "email": "nickolas.yermak@alignedcode.com",
+                "name": "nickyermak",
+            },
+            "_npmVersion": "5.6.0",
+            "author": {
+                "name": "nick yermak",
+            },
+            "description": "ac test npm pacakge",
+            "directories": {},
+            "license": "ISC",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "nickolas.yermak@alignedcode.com",
+                    "name": "nickyermak",
+                },
+            ],
+            "name": "actest",
+            "scripts": {
+                "test": "test",
+            },
+            "version": "1.0.0",
+        },
+    ),
+}))
