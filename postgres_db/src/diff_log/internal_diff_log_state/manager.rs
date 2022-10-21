@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 
 use crate::diff_log::DiffLogInstruction;
@@ -77,7 +78,7 @@ impl DiffStateManager {
                 state.0 = Some(InternalDiffLogPackageState {
                     package_pack_hash: None, // This will be changed later with a SetPackageLatestTag instruction
                     deleted: false,
-                    versions: HashMap::new(),
+                    versions: BTreeMap::new(),
                 });
                 state.1 = FlushOp::Create;
             }
@@ -493,7 +494,7 @@ mod tests {
                 Some(&InternalDiffLogPackageState {
                     package_pack_hash: Some(hash1.clone()),
                     deleted: false,
-                    versions: HashMap::new()
+                    versions: BTreeMap::new()
                 })
             );
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);
@@ -504,7 +505,7 @@ mod tests {
                 Some(&InternalDiffLogPackageState {
                     package_pack_hash: Some(hash1),
                     deleted: false,
-                    versions: HashMap::new()
+                    versions: BTreeMap::new()
                 })
             );
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);

@@ -5,8 +5,6 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
-use std::collections::HashMap;
-use std::str::FromStr;
 
 use sha2::{Digest, Sha256};
 
@@ -42,7 +40,7 @@ impl PackageOnlyPackument {
     }
 }
 
-pub type AllVersionPackuments = HashMap<Semver, VersionOnlyPackument>;
+pub type AllVersionPackuments = BTreeMap<Semver, VersionOnlyPackument>;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct VersionOnlyPackument {

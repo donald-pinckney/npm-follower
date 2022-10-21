@@ -9,7 +9,6 @@ use diesel::sql_types::{Int8, Jsonb, Nullable, Record, Timestamptz};
 use diesel::types::{FromSql, ToSql};
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 use std::io::Write;
 
 // ---------- PackageMetadataStructSql <----> PackageMetadata
@@ -183,7 +182,6 @@ impl FromSql<PackageStateSql, Pg> for PackageState {
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeMap;
-    use std::collections::HashMap;
 
     use crate::custom_types::PackageMetadata;
     use crate::custom_types::Semver;
@@ -289,13 +287,13 @@ mod tests {
                 "test_package_metadata_to_sql",
                 "id SERIAL PRIMARY KEY, m package_metadata NOT NULL",
             );
-    
+
             let inserted = diesel::insert_into(test_package_metadata_to_sql)
                 .values(&data)
                 .get_results(&conn.conn)
                 .unwrap();
             assert_eq!(data, inserted);
-    
+
             let filter_all = test_package_metadata_to_sql
                 .filter(id.ge(1))
                 .load(&conn.conn)

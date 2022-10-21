@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 use diesel::sql_types::Array;

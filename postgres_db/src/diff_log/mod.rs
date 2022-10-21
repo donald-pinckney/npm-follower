@@ -152,7 +152,6 @@ pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &DbConnectio
 mod tests {
 
     use std::collections::BTreeMap;
-    use std::collections::HashMap;
 
     use crate::change_log;
     use crate::custom_types::PrereleaseTag;

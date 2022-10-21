@@ -3,7 +3,6 @@ mod deserialize_repo;
 use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 
 use postgres_db::{
     custom_types::Semver,
@@ -318,7 +317,7 @@ pub fn deserialize_packument_blob_normal(
     let version_packuments_map = j
         .remove_key_unwrap_type::<Map<String, Value>>("versions")
         .unwrap();
-    let version_packuments: HashMap<Semver, VersionOnlyPackument> = version_packuments_map
+    let version_packuments: BTreeMap<Semver, VersionOnlyPackument> = version_packuments_map
         .into_iter()
         .map(|(v_str, blob)| {
             // each version string must parse ok

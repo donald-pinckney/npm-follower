@@ -4,8 +4,8 @@ fn {name}() {{
     
     let change = Change {{ seq: 1, raw_json: serde_json::from_str(seq_json_str).unwrap() }};
 
-    let maybe_name_packument = deserialize_change(change);
+    let deser_change = deserialize_change(change);
 
-    let ron_str = ron::ser::to_string_pretty(&maybe_name_packument, ron::ser::PrettyConfig::new()).unwrap();
+    let ron_str = ron::ser::to_string_pretty(&deser_change, ron::ser::PrettyConfig::new()).unwrap();
     std::fs::write("{path_correct}", ron_str).unwrap();
 }}

@@ -4,10 +4,10 @@ fn {name}() {{
     
     let change = Change {{ seq: 1, raw_json: serde_json::from_str(seq_json_str).unwrap() }};
 
-    let maybe_name_packument = deserialize_change(change);
+    let deser_change = deserialize_change(change);
 
     let correct_ron_str = include_str!("{path_correct}");
-    let correct_maybe_name_packument = ron::from_str(correct_ron_str).unwrap();
+    let correct_deser_change = ron::from_str(correct_ron_str).unwrap();
 
-    assert_eq!(maybe_name_packument, correct_maybe_name_packument);
+    assert_eq!(deser_change, correct_deser_change);
 }}
