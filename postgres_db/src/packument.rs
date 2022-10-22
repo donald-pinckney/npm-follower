@@ -20,7 +20,8 @@ pub enum PackageOnlyPackument {
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
         unpublished_blob: Value,
-        extra_version_times: BTreeMap<Semver, DateTime<Utc>>, // TODO make ordered
+        #[serde(with = "crate::serde_non_string_key_serialization")]
+        extra_version_times: BTreeMap<Semver, DateTime<Utc>>,
     },
     // Marked as *not* deleted, but does not have any data in the change.
     // Possibly has data if you hit registry.npmjs.org.

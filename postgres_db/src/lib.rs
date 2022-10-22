@@ -2,19 +2,21 @@
 extern crate diesel;
 
 pub mod change_log;
-pub mod diff_log;
 #[allow(clippy::let_unit_value)] // for redis
 pub mod dependencies;
+pub mod diff_log;
 pub mod download_queue;
 pub mod download_tarball;
 pub mod internal_state;
-pub mod packument;
 pub mod packages;
+pub mod packument;
 #[allow(unused_imports)]
 mod schema;
 pub mod versions;
 
 pub mod custom_types;
+
+mod serde_non_string_key_serialization;
 
 pub mod testing;
 
@@ -38,10 +40,8 @@ pub fn connect() -> DbConnection {
 }
 
 impl DbConnection {
-    pub fn run_psql_transaction<F>(
-        &self,
-        transaction: F 
-    ) -> Result<(), diesel::result::Error> where
+    pub fn run_psql_transaction<F>(&self, transaction: F) -> Result<(), diesel::result::Error>
+    where
         F: FnOnce() -> Result<(), diesel::result::Error>,
     {
         self.conn
