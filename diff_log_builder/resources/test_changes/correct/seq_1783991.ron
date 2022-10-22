@@ -17,13 +17,13 @@ Some(("@dsr-user-dormy-noops-grout-firns/dsr-package-public-dormy-noops-grout-fi
             "1.0.0",
         ],
     },
-    extra_version_times: {
-        (
+    extra_version_times: [
+        ((
             major: 1,
             minor: 0,
             bug: 0,
             prerelease: [],
             build: [],
-        ): "2021-04-16T00:33:09.197Z",
-    },
+        ), "2021-04-16T00:33:09.197Z"),
+    ],
 ), {}))

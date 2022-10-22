@@ -71,6 +71,8 @@ fn deserialize_version_blob(
     mut version_blob: Map<String, Value>,
     version: &Semver,
     version_times: &BTreeMap<Semver, DateTime<Utc>>,
+    num_versions: usize,
+    modified_time: DateTime<Utc>,
 ) -> VersionOnlyPackument {
     let prod_dependencies = deserialize_dependencies(&mut version_blob, "dependencies");
     let dev_dependencies = deserialize_dependencies(&mut version_blob, "devDependencies");
@@ -129,6 +131,14 @@ fn deserialize_version_blob(
         _ => None,
     };
 
+    let v_time = version_times.get(version).unwrap_or_else(|| {
+        if num_versions == 1 {
+            &modified_time
+        } else {
+            panic!("UNEXPECTED: version {} does not have a time", version)
+        }
+    });
+
     VersionOnlyPackument {
         prod_dependencies,
         dev_dependencies,
@@ -137,9 +147,7 @@ fn deserialize_version_blob(
         dist,
         repository: repo,
         extra_metadata: version_blob.into_iter().collect(),
-        time: *version_times
-            .get(version)
-            .unwrap_or_else(|| panic!("UNEXPECTED: version {} does not have a time", version)),
+        time: *v_time,
     }
 }
 
@@ -317,6 +325,7 @@ pub fn deserialize_packument_blob_normal(
     let version_packuments_map = j
         .remove_key_unwrap_type::<Map<String, Value>>("versions")
         .unwrap();
+    let num_versions = version_packuments_map.len();
     let version_packuments: BTreeMap<Semver, VersionOnlyPackument> = version_packuments_map
         .into_iter()
         .map(|(v_str, blob)| {
@@ -327,6 +336,8 @@ pub fn deserialize_packument_blob_normal(
                 serde_json::from_value::<Map<String, Value>>(blob).unwrap(),
                 &version,
                 &version_times,
+                num_versions,
+                modified,
             );
             (version, version_data)
         })

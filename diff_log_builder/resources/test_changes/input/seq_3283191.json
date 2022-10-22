@@ -1,0 +1,78 @@
+{
+    "changes": [
+        {
+            "rev": "10-71d59a48d22788812a1333be42a0caf2"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "stack-component",
+        "_rev": "10-71d59a48d22788812a1333be42a0caf2",
+        "description": "Stack your dom nodes into a document fragment",
+        "dist-tags": {
+            "latest": "0.0.1"
+        },
+        "maintainers": [
+            {
+                "email": "olivier.wietrich@gmail.com",
+                "name": "bredele"
+            }
+        ],
+        "name": "stack-component",
+        "readme": "\n# stack\n\n  Stack your dom nodes\n\n## Installation\n\n  Install with [component](http://component.io):\n\n    $ component install bredele/stack\n\n## API\n\n### Stack(parent)\n\n  Stack constructor. Create a stack from a `parent` dom element.\n\n```js\nvar stack = new Stack(document.body);\n```\n\n### add(name, dom [, bool])\n\n  Identify a dom element by name and push it into the stack.\n  The optional boolean allows to set the current child in the stack (visible one).\n\n```js\nstack.add('olivier', document.querySelector('.olivier'));\n```\n\n### show(name)\n\n  Display a stacked element into the `parent` dom element.\n\n```js\nstack.show('olivier');\n```\n\n\n## License\n\n  MIT\n",
+        "readmeFilename": "",
+        "time": {
+            "created": "2014-02-28T00:27:38.610Z",
+            "modified": "2014-02-28T00:36:08.002Z"
+        },
+        "versions": {
+            "0.0.1": {
+                "_npmUser": {
+                    "email": "olivier.wietrich@gmail.com",
+                    "name": "bredele"
+                },
+                "_npmVersion": "1.3.11",
+                "author": "Olivier Wietrich <olivier.wietrich@gmail.com> (http://github.com/bredele)",
+                "bugs": {
+                    "url": "https://github.com/bredele/stack/issues"
+                },
+                "dependencies": {
+                    "indexof": "0.0.1"
+                },
+                "description": "Stack your dom nodes into a fragment",
+                "directories": {
+                    "example": "examples"
+                },
+                "dist": {
+                    "shasum": "d769b0706a79a1d135da988dd5ecb1c250c71308",
+                    "tarball": "https://registry.npmjs.org/stack-component/-/stack-component-0.0.1.tgz"
+                },
+                "keywords": [
+                    "stack",
+                    "pile",
+                    "fragment",
+                    "document"
+                ],
+                "license": "MIT",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "olivier.wietrich@gmail.com",
+                        "name": "bredele"
+                    }
+                ],
+                "name": "stack-component",
+                "repository": {
+                    "type": "git",
+                    "url": "git://github.com/bredele/stack.git"
+                },
+                "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "version": "0.0.1"
+            }
+        }
+    },
+    "id": "stack-component",
+    "seq": 3283191
+}
