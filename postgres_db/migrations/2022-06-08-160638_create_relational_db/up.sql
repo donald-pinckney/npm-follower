@@ -271,7 +271,8 @@ CREATE DOMAIN repo_info AS repo_info_struct
 CREATE TYPE diff_type AS ENUM (
   'create_package',
   'update_package',
-  'set_package_latest_tag',
+  -- 'set_package_latest_tag',
+  'patch_package_references',
   'delete_package',
   'create_version',
   'update_version',
@@ -292,7 +293,8 @@ CREATE TABLE diff_log (
   CONSTRAINT version_diff_valid CHECK (
     (dt = 'create_package'          AND package_only_packument IS NOT NULL AND v IS NULL     AND version_packument IS NULL) OR
     (dt = 'update_package'          AND package_only_packument IS NOT NULL AND v IS NULL     AND version_packument IS NULL) OR
-    -- (dt = 'set_package_latest_tag'  AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NULL) OR
+    -- (dt = 'set_package_latest_tag'  AND package_only_packument IS NULL     AND v IS NULL AND version_packument IS NULL) OR
+    (dt = 'patch_package_references'  AND package_only_packument IS NULL     AND v IS NULL AND version_packument IS NULL) OR
     (dt = 'delete_package'          AND package_only_packument IS NULL     AND v IS NULL     AND version_packument IS NULL) OR
     (dt = 'create_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NOT NULL) OR
     (dt = 'update_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NOT NULL) OR

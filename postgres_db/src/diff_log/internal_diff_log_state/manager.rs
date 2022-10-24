@@ -156,6 +156,7 @@ impl DiffStateManager {
                 let ver_state = package_state.versions.get_mut(v).unwrap();
                 ver_state.deleted = true;
             }
+            DiffLogInstruction::PatchPackageReferences => {}
         }
     }
 

@@ -39,6 +39,14 @@ impl PackageOnlyPackument {
 
         (v, format!("{:x}", result))
     }
+
+    /// Returns `true` if the package only packument is [`Normal`].
+    ///
+    /// [`Normal`]: PackageOnlyPackument::Normal
+    #[must_use]
+    pub fn is_normal(&self) -> bool {
+        matches!(self, Self::Normal { .. })
+    }
 }
 
 pub type AllVersionPackuments = BTreeMap<Semver, VersionOnlyPackument>;

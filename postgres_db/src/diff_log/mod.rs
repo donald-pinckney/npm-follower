@@ -64,7 +64,7 @@ pub struct NewDiffLogEntryWithHash {
 pub enum DiffLogInstruction {
     CreatePackage(PackageOnlyPackument),
     UpdatePackage(PackageOnlyPackument),
-    // SetPackageLatestTag(Option<Semver>),
+    PatchPackageReferences,
     DeletePackage,
     CreateVersion(Semver, VersionOnlyPackument),
     UpdateVersion(Semver, VersionOnlyPackument),
@@ -91,13 +91,14 @@ impl From<DiffLogRow> for DiffLogEntry {
                 serde_json::from_value(r.version_packument.unwrap()).unwrap(),
             ),
             DiffTypeEnum::DeleteVersion => DiffLogInstruction::DeleteVersion(r.v.unwrap()),
+            DiffTypeEnum::PatchPackageReferences => DiffLogInstruction::PatchPackageReferences,
         };
 
         DiffLogEntry {
             id: r.id,
             seq: r.seq,
             package_name: r.package_name,
-            instr: instr,
+            instr,
         }
     }
 }
@@ -123,6 +124,9 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
             }
             DiffLogInstruction::DeleteVersion(v) => {
                 (DiffTypeEnum::DeleteVersion, None, Some(v), None)
+            }
+            DiffLogInstruction::PatchPackageReferences => {
+                (DiffTypeEnum::PatchPackageReferences, None, None, None)
             }
         };
         NewDiffLogRow {
