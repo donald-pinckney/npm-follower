@@ -30,14 +30,15 @@ pub enum PackageOnlyPackument {
 }
 
 impl PackageOnlyPackument {
-    pub fn serialize_and_hash(&self) -> (Value, String) {
+    pub fn serialize_and_hash(&self) -> (Value, String, usize) {
         let v = serde_json::to_value(self).unwrap();
         let s = serde_json::to_vec(&v).unwrap();
+        let n_bytes = s.len();
         let mut hasher = Sha256::new();
         hasher.update(s);
         let result = hasher.finalize();
 
-        (v, format!("{:x}", result))
+        (v, format!("{:x}", result), n_bytes)
     }
 
     /// Returns `true` if the package only packument is [`Normal`].
@@ -64,14 +65,15 @@ pub struct VersionOnlyPackument {
 }
 
 impl VersionOnlyPackument {
-    pub fn serialize_and_hash(&self) -> (Value, String) {
+    pub fn serialize_and_hash(&self) -> (Value, String, usize) {
         let v = serde_json::to_value(self).unwrap();
         let s = serde_json::to_vec(&v).unwrap();
+        let n_bytes = s.len();
         let mut hasher = Sha256::new();
         hasher.update(s);
         let result = hasher.finalize();
 
-        (v, format!("{:x}", result))
+        (v, format!("{:x}", result), n_bytes)
     }
 }
 

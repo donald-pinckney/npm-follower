@@ -224,7 +224,7 @@ mod tests {
             modified: Utc::now(),
             other_dist_tags: Map::new(),
         };
-        let (_, hash1) = pack1_pack.serialize_and_hash();
+        let (_, hash1, _) = pack1_pack.serialize_and_hash();
         let diff1 = DiffLogInstruction::CreatePackage(pack1_pack.clone());
         let diff1_set_latest = DiffLogInstruction::UpdatePackage(pack1_pack);
 
@@ -315,7 +315,7 @@ mod tests {
             modified: modified_time,
             other_dist_tags: Map::new(),
         };
-        let (_, hash1_with_latest) = pack1_pack_with_latest.serialize_and_hash();
+        let (_, hash1_with_latest, _) = pack1_pack_with_latest.serialize_and_hash();
         let diff1 = DiffLogInstruction::CreatePackage(pack1_pack);
         let diff1_set_latest = DiffLogInstruction::UpdatePackage(pack1_pack_with_latest);
 
@@ -338,7 +338,7 @@ mod tests {
             time: Utc::now(),
             extra_metadata: BTreeMap::new(),
         };
-        let (_, vhash) = vpack.serialize_and_hash();
+        let (_, vhash, _) = vpack.serialize_and_hash();
         let diff1_create_version = DiffLogInstruction::CreateVersion(v0.clone(), vpack);
 
         testing::using_test_db(|conn| {
@@ -468,7 +468,7 @@ mod tests {
             modified: Utc::now(),
             other_dist_tags: Map::new(),
         };
-        let (_, hash1) = pack1_pack.serialize_and_hash();
+        let (_, hash1, _) = pack1_pack.serialize_and_hash();
         let diff1 = DiffLogInstruction::CreatePackage(pack1_pack.clone());
         let diff1_set_latest = DiffLogInstruction::UpdatePackage(pack1_pack);
 

@@ -40,17 +40,23 @@ fn main() {
 
         let last_seq_in_page = changes.last().unwrap().seq;
 
-        conn.run_psql_transaction(|| {
-            process_changes(&conn, changes);
-            internal_state::set_diff_log_processed_seq(last_seq_in_page, &conn);
-            Ok(())
-        })
-        .unwrap();
+        let (read_bytes, write_bytes) = conn
+            .run_psql_transaction(|| {
+                let (read_bytes, write_bytes) = process_changes(&conn, changes);
+                internal_state::set_diff_log_processed_seq(last_seq_in_page, &conn);
+                Ok((read_bytes, write_bytes))
+            })
+            .unwrap();
 
         processed_up_to = last_seq_in_page;
 
         let duration = start.elapsed();
-        println!("  [{} ms]", duration.as_millis());
+        println!(
+            "  [{} ms]  [{} read]  [{} wrote]",
+            duration.as_millis(),
+            read_bytes,
+            write_bytes
+        );
 
         if num_changes < PAGE_SIZE {
             break;

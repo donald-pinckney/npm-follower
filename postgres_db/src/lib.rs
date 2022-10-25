@@ -40,9 +40,9 @@ pub fn connect() -> DbConnection {
 }
 
 impl DbConnection {
-    pub fn run_psql_transaction<F>(&self, transaction: F) -> Result<(), diesel::result::Error>
+    pub fn run_psql_transaction<F, R>(&self, transaction: F) -> Result<R, diesel::result::Error>
     where
-        F: FnOnce() -> Result<(), diesel::result::Error>,
+        F: FnOnce() -> Result<R, diesel::result::Error>,
     {
         self.conn
             .transaction::<_, diesel::result::Error, _>(transaction)
