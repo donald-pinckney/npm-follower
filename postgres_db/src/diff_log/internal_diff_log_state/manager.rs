@@ -73,10 +73,9 @@ impl DiffStateManager {
                 // Check that the package doesn't already exist
                 assert!(state.0.is_none());
                 assert_eq!(state.1, FlushOp::Nothing);
-                assert!(hash.is_none());
 
                 state.0 = Some(InternalDiffLogPackageState {
-                    package_pack_hash: None, // This will be changed later with a SetPackageLatestTag instruction
+                    package_pack_hash: hash.cloned(), // This might be changed later with a SetPackageLatestTag instruction
                     deleted: false,
                     versions: BTreeMap::new(),
                 });
@@ -161,6 +160,9 @@ impl DiffStateManager {
     }
 
     pub fn flush_to_db(self, conn: &DbConnection) {
+        // println!("Entire local state:");
+        // dbg!(&self.local_state);
+        // panic!("done");
         let (create_rows, update_rows): (Vec<_>, Vec<_>) = self
             .local_state
             .into_iter()

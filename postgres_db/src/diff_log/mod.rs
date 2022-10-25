@@ -47,12 +47,14 @@ pub struct DiffLogEntry {
     instr: DiffLogInstruction,
 }
 
+#[derive(Debug)]
 pub struct NewDiffLogEntry {
     pub seq: i64,
     pub package_name: String,
     pub instr: DiffLogInstruction,
 }
 
+#[derive(Debug)]
 pub struct NewDiffLogEntryWithHash {
     pub entry: NewDiffLogEntry,
     // Contains the hash the set for either the package only packument or the version only packument.

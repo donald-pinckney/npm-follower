@@ -31,7 +31,7 @@ fn drop_testing_db() {
     command_to_run.arg(database_host);
     command_to_run.arg("-p");
     command_to_run.arg(database_port.to_string());
-    if database_user != "" {
+    if !database_user.is_empty() {
         command_to_run.arg("-U").arg(database_user);
     }
     command_to_run.arg("-w");

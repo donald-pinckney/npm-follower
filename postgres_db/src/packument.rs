@@ -60,7 +60,7 @@ pub struct VersionOnlyPackument {
     pub dist: Dist,
     pub repository: Option<RepositoryInfo>,
     pub time: DateTime<Utc>,
-    pub extra_metadata: BTreeMap<String, Value>, // TODO: Make ordered
+    pub extra_metadata: BTreeMap<String, Value>,
 }
 
 impl VersionOnlyPackument {

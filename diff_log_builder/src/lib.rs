@@ -31,11 +31,11 @@ pub fn process_changes(conn: &DbConnection, changes: Vec<Change>) {
     for c in changes {
         process_change(conn, c, &mut state_manager, &mut new_diff_entries);
     }
-    // state_manager.flush_to_db(conn);
-    // diff_log::insert_diff_log_entries(
-    //     new_diff_entries.into_iter().map(|x| x.entry).collect(),
-    //     conn,
-    // );
+    state_manager.flush_to_db(conn);
+    diff_log::insert_diff_log_entries(
+        new_diff_entries.into_iter().map(|x| x.entry).collect(),
+        conn,
+    );
 }
 
 fn process_change(
@@ -229,7 +229,7 @@ fn process_change(
                             package_name: package_name.clone(),
                             instr: DiffLogInstruction::CreatePackage(package_data),
                         },
-                        hash: None,
+                        hash: Some(package_data_hash),
                     })
                     .chain(version_creation_instrs)
                     .chain(iter::once(NewDiffLogEntryWithHash {
