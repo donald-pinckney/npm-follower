@@ -1,3 +1,4 @@
+use std::io::{self, Write};
 use std::time::Instant;
 
 use diff_log_builder::process_changes;
@@ -27,6 +28,7 @@ fn main() {
             PAGE_SIZE,
             100.0 * (num_changes_so_far as f64) / (num_changes_total as f64)
         );
+        io::stdout().flush().unwrap();
         let start = Instant::now();
 
         let changes = change_log::query_changes_after_seq(processed_up_to, PAGE_SIZE, &conn);
@@ -40,7 +42,7 @@ fn main() {
 
         conn.run_psql_transaction(|| {
             process_changes(&conn, changes);
-            // internal_state::set_diff_log_processed_seq(last_seq_in_page, &conn);
+            internal_state::set_diff_log_processed_seq(last_seq_in_page, &conn);
             Ok(())
         })
         .unwrap();

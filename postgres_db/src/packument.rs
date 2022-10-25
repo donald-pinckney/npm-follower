@@ -99,40 +99,40 @@ pub struct RepositoryInfo {
     pub info: RepoInfo,
 }
 
-impl From<PackageOnlyPackument> for PackageMetadata {
-    /// Convert a packument into a package metadata.
-    /// NOTE: this sets the dist_tag_latest_version to None.
-    fn from(pack: PackageOnlyPackument) -> Self {
-        match pack {
-            PackageOnlyPackument::Normal {
-                latest: _,
-                created,
-                modified,
-                other_dist_tags,
-            } => PackageMetadata::Normal {
-                dist_tag_latest_version: None,
-                created,
-                modified,
-                // TODO[bug]: why are we doing .to_string here???
-                other_dist_tags: other_dist_tags
-                    .into_iter()
-                    .map(|(k, v)| (k, v.to_string()))
-                    .collect(),
-            },
-            PackageOnlyPackument::Unpublished {
-                created,
-                modified,
-                unpublished_blob,
-                extra_version_times,
-            } => PackageMetadata::Unpublished {
-                created,
-                modified,
-                other_time_data: extra_version_times,
-                unpublished_data: unpublished_blob,
-            }, // TODO: i think MissingData should go into Deleted right?
-            PackageOnlyPackument::MissingData | PackageOnlyPackument::Deleted => {
-                PackageMetadata::Deleted
-            }
-        }
-    }
-}
+// impl From<PackageOnlyPackument> for PackageMetadata {
+//     /// Convert a packument into a package metadata.
+//     /// NOTE: this sets the dist_tag_latest_version to None.
+//     fn from(pack: PackageOnlyPackument) -> Self {
+//         match pack {
+//             PackageOnlyPackument::Normal {
+//                 latest: _,
+//                 created,
+//                 modified,
+//                 other_dist_tags,
+//             } => PackageMetadata::Normal {
+//                 dist_tag_latest_version: None,
+//                 created,
+//                 modified,
+//                 // TODO[bug]: why are we doing .to_string here???
+//                 other_dist_tags: other_dist_tags
+//                     .into_iter()
+//                     .map(|(k, v)| (k, v.to_string()))
+//                     .collect(),
+//             },
+//             PackageOnlyPackument::Unpublished {
+//                 created,
+//                 modified,
+//                 unpublished_blob,
+//                 extra_version_times,
+//             } => PackageMetadata::Unpublished {
+//                 created,
+//                 modified,
+//                 other_time_data: extra_version_times,
+//                 unpublished_data: unpublished_blob,
+//             }, // TODO: i think MissingData should go into Deleted right?
+//             PackageOnlyPackument::MissingData | PackageOnlyPackument::Deleted => {
+//                 PackageMetadata::Deleted
+//             }
+//         }
+//     }
+// }

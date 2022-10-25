@@ -142,16 +142,33 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
     }
 }
 
-pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &DbConnection) -> usize {
-    use schema::diff_log::dsl::*;
+const INSERT_CHUNK_SIZE: usize = 2048;
 
+pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &DbConnection) -> usize {
     let rows: Vec<NewDiffLogRow> = entries.into_iter().map(|e| e.into()).collect();
 
-    // TODO[bug]: batch this
+    let mut chunk_iter = rows.chunks_exact(INSERT_CHUNK_SIZE);
+    let mut modify_count = 0;
+    for chunk in &mut chunk_iter {
+        modify_count += insert_diff_log_rows_chunk(chunk, conn);
+    }
+
+    modify_count += insert_diff_log_rows_chunk(chunk_iter.remainder(), conn);
+
+    modify_count
+}
+
+fn insert_diff_log_rows_chunk(rows: &[NewDiffLogRow], conn: &DbConnection) -> usize {
+    use schema::diff_log::dsl::*;
+
+    if rows.len() > INSERT_CHUNK_SIZE {
+        panic!("Programming error: insert_diff_log_rows_chunk must be called with a chunk of size <= INSERT_CHUNK_SIZE ({})", INSERT_CHUNK_SIZE);
+    }
+
     diesel::insert_into(diff_log)
         .values(rows)
         .execute(&conn.conn)
-        .expect("Failed to insert diff log entries into DB")
+        .expect("Failed to insert diff log rows into DB")
 }
 
 #[cfg(test)]
