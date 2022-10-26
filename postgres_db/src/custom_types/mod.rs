@@ -28,7 +28,7 @@ pub enum DownloadFailed {
     PartialOrd,
     Ord,
 )]
-#[sql_type = "SemverSql"]
+#[sql_type = "crate::schema::sql_types::SemverStruct"]
 pub struct Semver {
     pub major: i64,
     pub minor: i64,
@@ -91,7 +91,7 @@ impl std::fmt::Display for PrereleaseTag {
 }
 
 #[derive(Debug, Hash, FromSqlRow, AsExpression, Serialize, Deserialize, Clone, PartialEq, Eq)]
-#[sql_type = "ParsedSpecStructSql"]
+#[sql_type = "crate::schema::sql_types::ParsedSpecStruct"]
 pub enum ParsedSpec {
     Range(VersionConstraint),
     Tag(String),
@@ -125,7 +125,7 @@ pub enum VersionComparator {
 pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 
 #[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone)]
-#[sql_type = "PackageMetadataStructSql"]
+#[sql_type = "crate::schema::sql_types::PackageMetadataStruct"]
 pub enum PackageMetadata {
     Normal {
         dist_tag_latest_version: Option<i64>,
@@ -143,7 +143,7 @@ pub enum PackageMetadata {
 }
 
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
-#[sql_type = "RepoInfoSql"]
+#[sql_type = "crate::schema::sql_types::RepoInfoStruct"]
 pub struct RepoInfo {
     pub cloneable_repo_url: String,
     pub cloneable_repo_dir: String,
@@ -210,7 +210,7 @@ pub enum RepoHostInfo {
 
 // TODO: make not pub
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
-#[sql_type = "DiffTypeEnumSql"]
+#[sql_type = "crate::schema::sql_types::DiffType"]
 pub enum DiffTypeEnum {
     CreatePackage,
     UpdatePackage,
@@ -223,9 +223,9 @@ pub enum DiffTypeEnum {
 }
 
 pub mod sql_types {
-    #[derive(SqlType, QueryId)]
-    #[postgres(type_name = "semver_struct")] // or should it be semver (domain)?
-    pub struct SemverSql;
+    // #[derive(SqlType, QueryId)]
+    // #[postgres(type_name = "semver_struct")] // or should it be semver (domain)?
+    // pub struct SemverSql;
 
     #[derive(SqlType)]
     #[postgres(type_name = "prerelease_tag_struct")] // or should it be prerelease_tag (domain)?
@@ -239,38 +239,38 @@ pub mod sql_types {
     #[postgres(type_name = "constraint_conjuncts_struct")] // or should it be constraint_conjuncts (domain)?
     pub struct ConstraintConjunctsSql;
 
-    #[derive(SqlType)]
-    #[postgres(type_name = "parsed_spec_struct")] // or should it be parsed_spec (domain)?
-    pub struct ParsedSpecStructSql;
+    // #[derive(SqlType)]
+    // #[postgres(type_name = "parsed_spec_struct")] // or should it be parsed_spec (domain)?
+    // pub struct ParsedSpecStructSql;
 
-    #[derive(SqlType)]
-    #[postgres(type_name = "package_metadata_struct")] // or should it be package_metadata (domain)?
-    pub struct PackageMetadataStructSql;
+    // #[derive(SqlType)]
+    // #[postgres(type_name = "package_metadata_struct")] // or should it be package_metadata (domain)?
+    // pub struct PackageMetadataStructSql;
 
-    #[derive(SqlType, QueryId)]
-    #[postgres(type_name = "repo_info_struct")]
-    pub struct RepoInfoSql;
+    // #[derive(SqlType, QueryId)]
+    // #[postgres(type_name = "repo_info_struct")]
+    // pub struct RepoInfoSql;
 
-    #[derive(SqlType)]
-    #[postgres(type_name = "diff_type")]
-    pub struct DiffTypeEnumSql;
+    // #[derive(SqlType)]
+    // #[postgres(type_name = "diff_type")]
+    // pub struct DiffTypeEnumSql;
 
-    #[derive(SqlType)]
-    #[postgres(type_name = "internal_diff_log_version_state")]
-    pub struct InternalDiffLogVersionStateSql;
+    // #[derive(SqlType)]
+    // #[postgres(type_name = "internal_diff_log_version_state")]
+    // pub struct InternalDiffLogVersionStateSql;
 }
 
-#[allow(non_camel_case_types)]
-pub mod sql_type_names {
-    pub type Semver_struct = super::sql_types::SemverSql;
-    pub type Version_comparator = super::sql_types::VersionComparatorSql;
-    pub type Constraint_conjuncts_struct = super::sql_types::ConstraintConjunctsSql;
-    pub type Parsed_spec_struct = super::sql_types::ParsedSpecStructSql;
-    pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
-    pub type Repo_info_struct = super::sql_types::RepoInfoSql;
-    pub type Diff_type = super::sql_types::DiffTypeEnumSql;
-    pub type Internal_diff_log_version_state = super::sql_types::InternalDiffLogVersionStateSql;
-}
+// #[allow(non_camel_case_types)]
+// pub mod sql_type_names {
+//     pub type Semver_struct = super::sql_types::SemverSql;
+//     pub type Version_comparator = super::sql_types::VersionComparatorSql;
+//     pub type Constraint_conjuncts_struct = super::sql_types::ConstraintConjunctsSql;
+//     pub type Parsed_spec_struct = super::sql_types::ParsedSpecStructSql;
+//     pub type Package_metadata_struct = super::sql_types::PackageMetadataStructSql;
+//     pub type Repo_info_struct = super::sql_types::RepoInfoSql;
+//     pub type Diff_type = super::sql_types::DiffTypeEnumSql;
+//     pub type Internal_diff_log_version_state = super::sql_types::InternalDiffLogVersionStateSql;
+// }
 
 mod diff_log;
 mod download_failed;
