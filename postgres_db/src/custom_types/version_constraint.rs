@@ -1,10 +1,9 @@
 use super::sql_types::*;
 use super::{VersionComparator, VersionConstraint};
 use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
+use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Record};
-use std::io::Write;
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
 #[sql_type = "ConstraintConjunctsSql"]
@@ -19,7 +18,7 @@ impl<'a> ToSql<ConstraintConjunctsSql, Pg> for ConstraintConjuncts {
 }
 
 impl<'a> FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjuncts {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let (stuff,): (Vec<VersionComparator>,) =
             FromSql::<Record<(Array<VersionComparatorSql>,)>, Pg>::from_sql(bytes)?;
         Ok(ConstraintConjuncts(stuff))
@@ -41,7 +40,7 @@ impl ToSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
 }
 
 impl FromSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let vals: Vec<ConstraintConjuncts> =
             FromSql::<Array<ConstraintConjunctsSql>, Pg>::from_sql(bytes)?;
         Ok(VersionConstraint(vals.into_iter().map(|d| d.0).collect()))

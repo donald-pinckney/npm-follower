@@ -3,7 +3,7 @@ use crate::schema::sql_types::DiffType;
 use super::DiffTypeEnum;
 use diesel::deserialize;
 use diesel::deserialize::FromSql;
-use diesel::pg::Pg;
+use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, IsNull, Output, ToSql};
 use std::io::Write;
 
@@ -24,8 +24,8 @@ impl ToSql<DiffType, Pg> for DiffTypeEnum {
 }
 
 impl FromSql<DiffType, Pg> for DiffTypeEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"create_package" => Ok(DiffTypeEnum::CreatePackage),

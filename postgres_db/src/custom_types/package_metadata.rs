@@ -7,6 +7,7 @@ use chrono::{DateTime, Utc};
 use diesel::deserialize;
 use diesel::deserialize::FromSql;
 use diesel::pg::Pg;
+use diesel::pg::PgValue;
 use diesel::serialize::ToSql;
 use diesel::serialize::{self, IsNull, Output, WriteTuple};
 use diesel::sql_types::{Int8, Jsonb, Nullable, Record, Timestamptz};
@@ -119,7 +120,7 @@ impl<'a> ToSql<PackageMetadataStruct, Pg> for PackageMetadata {
 }
 
 impl<'a> FromSql<PackageMetadataStruct, Pg> for PackageMetadata {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: PackageMetadataStructRecordRust =
             FromSql::<Record<PackageMetadataStructRecordSql>, Pg>::from_sql(bytes)?;
         match tup {
@@ -171,8 +172,8 @@ impl ToSql<PackageStateSql, Pg> for PackageState {
 }
 
 impl FromSql<PackageStateSql, Pg> for PackageState {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"normal" => Ok(PackageState::Normal),

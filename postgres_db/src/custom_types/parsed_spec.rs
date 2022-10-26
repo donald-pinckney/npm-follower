@@ -1,12 +1,13 @@
+use std::io::Write;
+
 use crate::schema::sql_types::ParsedSpecStruct;
 
 use super::sql_types::*;
 use super::{AliasSubspec, ParsedSpec, VersionConstraint};
 use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
+use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Int8, Nullable, Record, Text};
-use std::io::Write;
 
 // ---------- ParsedSpecStructSql <----> ParsedSpec
 
@@ -187,7 +188,7 @@ impl<'a> ToSql<ParsedSpecStruct, Pg> for ParsedSpec {
 }
 
 impl<'a> FromSql<ParsedSpecStruct, Pg> for ParsedSpec {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: ParsedSpecStructRecordRust =
             FromSql::<Record<ParsedSpecStructRecordSql>, Pg>::from_sql(bytes)?;
         match tup {
@@ -367,8 +368,8 @@ impl ToSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
 }
 
 impl FromSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"range" => Ok(SpecTypeEnum::Range),
@@ -408,8 +409,8 @@ impl ToSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
 }
 
 impl FromSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"range" => Ok(AliasSubspecTypeEnum::Range),

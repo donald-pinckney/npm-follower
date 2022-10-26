@@ -1,12 +1,13 @@
+use std::io::Write;
+
 use crate::schema::sql_types::SemverStruct;
 
 use super::sql_types::*;
 use super::{PrereleaseTag, Semver};
 use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
+use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Int8, Nullable, Record, Text};
-use std::io::Write;
 
 // ---------- SemverSql <----> Semver
 
@@ -59,25 +60,25 @@ impl ToSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 }
 
 impl FromSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let (tag_type, str_case, int_case) = FromSql::<
             Record<(PrereleaseTagTypeEnumSql, Nullable<Text>, Nullable<Int8>)>,
             Pg,
         >::from_sql(bytes)?;
         match tag_type {
-            PrereleaseTagTypeEnum::String => Ok(PrereleaseTag::String(
-                super::helpers::deserialize_not_none(str_case)?,
-            )),
-            PrereleaseTagTypeEnum::Int => Ok(PrereleaseTag::Int(
-                super::helpers::deserialize_not_none(int_case)?,
-            )),
+            PrereleaseTagTypeEnum::String => {
+                Ok(PrereleaseTag::String(super::helpers::not_none(str_case)?))
+            }
+            PrereleaseTagTypeEnum::Int => {
+                Ok(PrereleaseTag::Int(super::helpers::not_none(int_case)?))
+            }
         }
     }
 }
 
 impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"string" => Ok(PrereleaseTagTypeEnum::String),
@@ -88,7 +89,7 @@ impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 }
 
 impl FromSql<SemverStruct, Pg> for Semver {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let (major, minor, bug, prerelease, build): (
             i64,
             i64,
@@ -243,7 +244,7 @@ mod tests {
                     prerelease: vec![],
                     build: vec![],
                 }))
-                .load(&conn.conn)
+                .load(&mut conn.conn)
                 .unwrap();
             assert_eq!(filter_eq_data, filter_eq);
         });

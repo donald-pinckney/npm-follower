@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use crate::custom_types::Semver;
 use crate::DbConnection;
 
@@ -8,6 +6,7 @@ use crate::schema::sql_types::SemverStruct;
 use diesel::deserialize;
 use diesel::deserialize::FromSql;
 use diesel::pg::Pg;
+use diesel::pg::PgValue;
 use diesel::prelude::*;
 use diesel::serialize;
 use diesel::serialize::ToSql;
@@ -58,7 +57,7 @@ impl<'a> ToSql<schema::sql_types::InternalDiffLogVersionState, Pg>
 impl<'a> FromSql<schema::sql_types::InternalDiffLogVersionState, Pg>
     for InternalDiffLogVersionStateElem
 {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: (Semver, String, bool) = FromSql::<
             Record<(
                 SemverStruct,
@@ -81,7 +80,7 @@ pub(crate) fn create_packages(rows: Vec<InternalDiffLogStateRow>, conn: &DbConne
     // TODO[bug]: batch this
     diesel::insert_into(internal_diff_log_state)
         .values(rows)
-        .execute(&conn.conn)
+        .execute(&mut conn.conn)
         .unwrap_or_else(|e| panic!("Error saving new rows: {}", e));
 }
 
@@ -93,7 +92,7 @@ pub(crate) fn lookup_package(
 
     internal_diff_log_state
         .filter(package_name.eq(package_name_str))
-        .get_result(&conn.conn)
+        .get_result(&mut conn.conn)
         .optional()
         .unwrap_or_else(|e| panic!("Error fetching row: {}", e))
 }
@@ -102,7 +101,7 @@ pub(crate) fn update_packages(rows: Vec<InternalDiffLogStateRow>, conn: &DbConne
     for r in rows {
         diesel::update(&r)
             .set(&r)
-            .execute(&conn.conn)
+            .execute(&mut conn.conn)
             .unwrap_or_else(|e| panic!("Error updating rows: {}", e));
     }
 }

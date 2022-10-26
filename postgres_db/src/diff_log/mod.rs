@@ -165,7 +165,7 @@ fn insert_diff_log_rows_chunk(rows: &[NewDiffLogRow], conn: &DbConnection) -> us
 
     diesel::insert_into(diff_log)
         .values(rows)
-        .execute(&conn.conn)
+        .execute(&mut conn.conn)
         .unwrap_or_else(|_| panic!("Failed to insert diff log rows into DB"))
 }
 
@@ -197,7 +197,7 @@ mod tests {
         use super::schema::diff_log::dsl::*;
 
         // TODO[bug]: batch this
-        let rows: Vec<DiffLogRow> = diff_log.load(&conn.conn).unwrap();
+        let rows: Vec<DiffLogRow> = diff_log.load(&mut conn.conn).unwrap();
 
         rows.into_iter().map(|r| r.into()).collect()
     }

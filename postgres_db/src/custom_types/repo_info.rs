@@ -1,11 +1,12 @@
+use std::io::Write;
+
 use crate::schema::sql_types::RepoInfoStruct;
 
 use super::{sql_types::*, RepoHostInfo, RepoInfo, Vcs};
 use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
+use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Nullable, Record, Text};
-use std::io::Write;
 
 // ---------- RepoInfo <----> RepoInfoStruct
 
@@ -84,7 +85,7 @@ impl ToSql<RepoInfoStruct, Pg> for RepoInfo {
 }
 
 impl FromSql<RepoInfoStruct, Pg> for RepoInfo {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: RepoInfoStructRecordRust =
             FromSql::<Record<RepoInfoStructRecordSql>, Pg>::from_sql(bytes)?;
         let (url, dir, vcs) = (tup.0, tup.1, tup.2);
@@ -143,8 +144,8 @@ impl ToSql<RepoHostEnumSql, Pg> for RepoHostEnum {
 }
 
 impl FromSql<RepoHostEnumSql, Pg> for RepoHostEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"github" => Ok(RepoHostEnum::Github),
@@ -173,8 +174,8 @@ impl ToSql<VcsEnumSql, Pg> for Vcs {
 }
 
 impl FromSql<VcsEnumSql, Pg> for Vcs {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"git" => Ok(Vcs::Git),

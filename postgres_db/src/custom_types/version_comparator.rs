@@ -1,12 +1,13 @@
+use std::io::Write;
+
 use crate::schema::sql_types::SemverStruct;
 
 use super::sql_types::*;
 use super::{Semver, VersionComparator};
 use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
+use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Nullable, Record};
-use std::io::Write;
 
 // ---------- VersionComparatorSql <----> VersionComparator
 
@@ -54,7 +55,7 @@ impl ToSql<VersionComparatorSql, Pg> for VersionComparator {
 }
 
 impl FromSql<VersionComparatorSql, Pg> for VersionComparator {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let (op, v): (VersionOperatorEnum, Option<Semver>) = FromSql::<
             Record<(VersionOperatorEnumSql, Nullable<SemverStruct>)>,
             Pg,
@@ -69,21 +70,11 @@ impl FromSql<VersionComparatorSql, Pg> for VersionComparator {
                 }
                 Ok(VersionComparator::Any)
             }
-            VersionOperatorEnum::Eq => Ok(VersionComparator::Eq(
-                super::helpers::deserialize_not_none(v)?,
-            )),
-            VersionOperatorEnum::Gt => Ok(VersionComparator::Gt(
-                super::helpers::deserialize_not_none(v)?,
-            )),
-            VersionOperatorEnum::Gte => Ok(VersionComparator::Gte(
-                super::helpers::deserialize_not_none(v)?,
-            )),
-            VersionOperatorEnum::Lt => Ok(VersionComparator::Lt(
-                super::helpers::deserialize_not_none(v)?,
-            )),
-            VersionOperatorEnum::Lte => Ok(VersionComparator::Lte(
-                super::helpers::deserialize_not_none(v)?,
-            )),
+            VersionOperatorEnum::Eq => Ok(VersionComparator::Eq(super::helpers::not_none(v)?)),
+            VersionOperatorEnum::Gt => Ok(VersionComparator::Gt(super::helpers::not_none(v)?)),
+            VersionOperatorEnum::Gte => Ok(VersionComparator::Gte(super::helpers::not_none(v)?)),
+            VersionOperatorEnum::Lt => Ok(VersionComparator::Lt(super::helpers::not_none(v)?)),
+            VersionOperatorEnum::Lte => Ok(VersionComparator::Lte(super::helpers::not_none(v)?)),
         }
     }
 }
@@ -118,8 +109,8 @@ impl ToSql<VersionOperatorEnumSql, Pg> for VersionOperatorEnum {
 }
 
 impl FromSql<VersionOperatorEnumSql, Pg> for VersionOperatorEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         match bytes {
             b"*" => Ok(VersionOperatorEnum::Any),

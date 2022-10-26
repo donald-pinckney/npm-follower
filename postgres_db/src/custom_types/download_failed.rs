@@ -1,6 +1,6 @@
 use super::DownloadFailed;
 use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
+use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, IsNull, Output, ToSql};
 use diesel::sql_types::Text;
 use std::io::Write;
@@ -18,8 +18,8 @@ impl ToSql<Text, Pg> for DownloadFailed {
 }
 
 impl FromSql<Text, Pg> for DownloadFailed {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let bytes = super::helpers::deserialize_not_none(bytes)?;
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
 
         if bytes.starts_with(b"res") {
             let code = std::str::from_utf8(&bytes[3..]).unwrap().parse::<u16>()?;

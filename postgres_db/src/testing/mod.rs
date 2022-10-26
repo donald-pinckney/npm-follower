@@ -54,6 +54,7 @@ fn setup_test_db() -> DbConnection {
     // 2. Create DB
     let status = Command::new("diesel")
         .arg("setup")
+        .arg("--locked-schema")
         .arg("--database-url")
         .arg(&database_url)
         .current_dir(postgres_db_dir)

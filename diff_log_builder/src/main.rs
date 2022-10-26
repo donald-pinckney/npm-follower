@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+use std::io::{self};
 use std::time::Instant;
 
 use diff_log_builder::process_changes;
