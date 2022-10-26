@@ -67,6 +67,7 @@ impl<'a> FromSql<InternalDiffLogVersionStateSql, Pg> for InternalDiffLogVersionS
 pub(crate) fn create_packages(rows: Vec<InternalDiffLogStateRow>, conn: &DbConnection) {
     use schema::internal_diff_log_state::dsl::*;
 
+    // TODO[bug]: batch this
     diesel::insert_into(internal_diff_log_state)
         .values(rows)
         .execute(&conn.conn)

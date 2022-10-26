@@ -82,29 +82,55 @@ impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
 
 impl FromSql<SemverSql, Pg> for Semver {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        let (major, minor, bug, prerelease, build) = FromSql::<
-            Record<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>,
+        let (major, minor, bug, prerelease, build): (
+            i64,
+            i64,
+            i64,
+            Option<Vec<PrereleaseTag>>,
+            Option<Vec<String>>,
+        ) = FromSql::<
+            Record<(
+                Int8,
+                Int8,
+                Int8,
+                Nullable<Array<PrereleaseTagStructSql>>,
+                Nullable<Array<Text>>,
+            )>,
             Pg,
         >::from_sql(bytes)?;
         Ok(Semver {
             major,
             minor,
             bug,
-            prerelease,
-            build,
+            prerelease: prerelease.unwrap_or_default(),
+            build: build.unwrap_or_default(),
         })
     }
 }
 
 impl ToSql<SemverSql, Pg> for Semver {
     fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-        WriteTuple::<(Int8, Int8, Int8, Array<PrereleaseTagStructSql>, Array<Text>)>::write_tuple(
+        WriteTuple::<(
+            Int8,
+            Int8,
+            Int8,
+            Nullable<Array<PrereleaseTagStructSql>>,
+            Nullable<Array<Text>>,
+        )>::write_tuple(
             &(
                 self.major,
                 self.minor,
                 self.bug,
-                &self.prerelease,
-                &self.build,
+                if self.prerelease.is_empty() {
+                    None
+                } else {
+                    Some(&self.prerelease)
+                },
+                if self.build.is_empty() {
+                    None
+                } else {
+                    Some(&self.build)
+                },
             ),
             out,
         )

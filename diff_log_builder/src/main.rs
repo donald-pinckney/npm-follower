@@ -21,9 +21,10 @@ fn main() {
     let mut num_changes_so_far = 0;
 
     // TODO: Extract this into function (duplicated in download_queuer/src/main.rs)
+    println!("message,millis,read,write");
     loop {
         print!(
-            "Fetching seq > {}, page size = {} ({:.1}%)",
+            "Fetching seq > {} page size = {} ({:.1}%)",
             processed_up_to,
             PAGE_SIZE,
             100.0 * (num_changes_so_far as f64) / (num_changes_total as f64)
@@ -51,12 +52,7 @@ fn main() {
         processed_up_to = last_seq_in_page;
 
         let duration = start.elapsed();
-        println!(
-            "  [{} ms]  [{} read]  [{} wrote]",
-            duration.as_millis(),
-            read_bytes,
-            write_bytes
-        );
+        println!(",{},{},{}", duration.as_millis(), read_bytes, write_bytes);
 
         if num_changes < PAGE_SIZE {
             break;

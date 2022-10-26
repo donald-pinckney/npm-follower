@@ -27,11 +27,12 @@ CREATE TYPE semver_struct AS (
 );
 CREATE DOMAIN semver AS semver_struct CHECK (
   VALUE IS NULL OR (
-  (VALUE).major IS NOT NULL AND 
-  (VALUE).minor IS NOT NULL AND
-  (VALUE).bug IS NOT NULL AND
-  (VALUE).prerelease IS NOT NULL AND
-  (VALUE).build IS NOT NULL)
+    (VALUE).major IS NOT NULL AND 
+    (VALUE).minor IS NOT NULL AND
+    (VALUE).bug IS NOT NULL --AND
+    -- (VALUE).prerelease IS NOT NULL AND
+    -- (VALUE).build IS NOT NULL
+  )
 );
 
 
@@ -43,7 +44,7 @@ CREATE TYPE version_comparator_struct AS (
 CREATE DOMAIN version_comparator AS version_comparator_struct CHECK (
   (NOT VALUE IS NULL) AND (
   (VALUE).operator IS NOT NULL AND 
-  (((VALUE).operator = '*' AND (VALUE).semver IS NULL) OR ((VALUE).operator <> '*' AND (VALUE).semver IS NOT NULL)))
+  (((VALUE).operator = '*' AND (VALUE).semver IS NULL) OR ((VALUE).operator <> '*' AND NOT (VALUE).semver IS NULL)))
 );
 
 
@@ -296,9 +297,9 @@ CREATE TABLE diff_log (
     -- (dt = 'set_package_latest_tag'  AND package_only_packument IS NULL     AND v IS NULL AND version_packument IS NULL) OR
     (dt = 'patch_package_references'  AND package_only_packument IS NULL     AND v IS NULL AND version_packument IS NULL) OR
     (dt = 'delete_package'          AND package_only_packument IS NULL     AND v IS NULL     AND version_packument IS NULL) OR
-    (dt = 'create_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NOT NULL) OR
-    (dt = 'update_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NOT NULL) OR
-    (dt = 'delete_version'          AND package_only_packument IS NULL     AND v IS NOT NULL AND version_packument IS NULL)
+    (dt = 'create_version'          AND package_only_packument IS NULL     AND (NOT v IS NULL) AND version_packument IS NOT NULL) OR
+    (dt = 'update_version'          AND package_only_packument IS NULL     AND (NOT v IS NULL) AND version_packument IS NOT NULL) OR
+    (dt = 'delete_version'          AND package_only_packument IS NULL     AND (NOT v IS NULL) AND version_packument IS NULL)
   )
 );
 

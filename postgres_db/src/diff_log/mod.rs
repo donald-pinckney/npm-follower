@@ -28,7 +28,7 @@ struct DiffLogRow {
     version_packument: Option<Value>,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Debug)]
 #[table_name = "diff_log"]
 struct NewDiffLogRow {
     seq: i64,
@@ -168,7 +168,7 @@ fn insert_diff_log_rows_chunk(rows: &[NewDiffLogRow], conn: &DbConnection) -> us
     diesel::insert_into(diff_log)
         .values(rows)
         .execute(&conn.conn)
-        .expect("Failed to insert diff log rows into DB")
+        .unwrap_or_else(|_| panic!("Failed to insert diff log rows into DB"))
 }
 
 #[cfg(test)]
