@@ -526,13 +526,13 @@ mod tests {
 
             let inserted = diesel::insert_into(test_parsed_spec_to_sql)
                 .values(&data)
-                .get_results(&conn.conn)
+                .get_results(&mut conn.conn)
                 .unwrap();
             assert_eq!(data, inserted);
 
             let filter_all = test_parsed_spec_to_sql
                 .filter(id.ge(1))
-                .load(&conn.conn)
+                .load(&mut conn.conn)
                 .unwrap();
             assert_eq!(data, filter_all);
         });

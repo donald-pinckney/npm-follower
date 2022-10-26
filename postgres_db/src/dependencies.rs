@@ -116,7 +116,7 @@ pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i
     let deps = dependencies
         .filter(md5digest.eq(name_digest))
         .filter(dst_package_id_if_exists.is_null())
-        .load::<QueriedDependency>(&conn.conn)
+        .load::<QueriedDependency>(&mut conn.conn)
         .expect("Error loading dependencies");
 
     // find the package id of the package with the same name
@@ -125,7 +125,7 @@ pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i
         if dep.dst_package_name == pack_name {
             diesel::update(dependencies.find(dep.id))
                 .set(dst_package_id_if_exists.eq(pack_id))
-                .execute(&conn.conn)
+                .execute(&mut conn.conn)
                 .expect("Error updating dependencies");
             break;
         }
@@ -143,7 +143,7 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
         let deps_with_same_hash: Vec<(i64, String, Value)> = dependencies
             .select((id, dst_package_name, raw_spec))
             .filter(md5digest_with_version.eq(&dep.md5digest_with_version))
-            .load(&conn.conn)
+            .load(&mut conn.conn)
             .expect("Error loading dependencies");
 
         let insert_query = diesel::insert_into(dependencies).values(&dep).returning(id);
@@ -151,7 +151,7 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
         // if there are no deps with the same hash, just insert the dep
         if deps_with_same_hash.is_empty() {
             let inserted = insert_query
-                .get_result::<i64>(&conn.conn)
+                .get_result::<i64>(&mut conn.conn)
                 .unwrap_or_else(|e| {
                     eprintln!("Got error: {}", e);
                     eprintln!("on dep: {:?}", dep);
@@ -170,7 +170,7 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
                 diesel::update(dependencies)
                     .filter(id.eq(dep_with_same_hash.0))
                     .set(freq_count.eq(freq_count + dep.freq_count))
-                    .execute(&conn.conn)
+                    .execute(&mut conn.conn)
                     .expect("Error updating dependencies");
                 ids.push(dep_with_same_hash.0);
                 did_find_match = true;
@@ -180,7 +180,7 @@ pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i
 
         if !did_find_match {
             let inserted = insert_query
-                .get_result::<i64>(&conn.conn)
+                .get_result::<i64>(&mut conn.conn)
                 .unwrap_or_else(|e| {
                     eprintln!("Got error: {}", e);
                     eprintln!("on dep: {:?}", dep);

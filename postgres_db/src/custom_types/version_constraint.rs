@@ -130,13 +130,13 @@ mod tests {
 
             let inserted = diesel::insert_into(test_version_constraint_to_sql)
                 .values(&data)
-                .get_results(&conn.conn)
+                .get_results(&mut conn.conn)
                 .unwrap();
             assert_eq!(data, inserted);
 
             let filter_all = test_version_constraint_to_sql
                 .filter(id.ge(1))
-                .load(&conn.conn)
+                .load(&mut conn.conn)
                 .unwrap();
             assert_eq!(data, filter_all);
 
@@ -147,7 +147,7 @@ mod tests {
             let (_, info) = unwrap_db_error(
                 diesel::insert_into(test_version_constraint_to_sql)
                     .values(&bad_data1)
-                    .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
                     .unwrap_err(),
             );
             assert!(info
@@ -161,7 +161,7 @@ mod tests {
             let (_, info) = unwrap_db_error(
                 diesel::insert_into(test_version_constraint_to_sql)
                     .values(&bad_data2)
-                    .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
                     .unwrap_err(),
             );
             assert!(info
@@ -175,7 +175,7 @@ mod tests {
             let (_, info) = unwrap_db_error(
                 diesel::insert_into(test_version_constraint_to_sql)
                     .values(&bad_data3)
-                    .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
                     .unwrap_err(),
             );
             assert!(info
@@ -189,7 +189,7 @@ mod tests {
             let (_, info) = unwrap_db_error(
                 diesel::insert_into(test_version_constraint_to_sql)
                     .values(&bad_data4)
-                    .get_results::<TestVersionConstraintToSql>(&conn.conn)
+                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
                     .unwrap_err(),
             );
             assert!(info
