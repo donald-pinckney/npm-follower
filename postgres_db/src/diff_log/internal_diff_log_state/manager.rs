@@ -86,7 +86,7 @@ impl DiffStateManager {
                 let package_state = state.0.as_mut().unwrap();
 
                 package_state.package_pack_hash = Some(hash.unwrap().clone());
-                assert_eq!(package_state.deleted, false);
+                assert!(!package_state.deleted);
 
                 state.1 = if state.1 == FlushOp::Create {
                     FlushOp::Create
@@ -111,7 +111,7 @@ impl DiffStateManager {
 
                 // And the package must already exist for us to be doing a delete
                 let package_state = state.0.as_mut().unwrap();
-                assert_eq!(package_state.deleted, false);
+                assert!(!package_state.deleted);
 
                 package_state.deleted = true;
 
@@ -177,7 +177,7 @@ impl DiffStateManager {
                         .versions
                         .into_iter()
                         .map(|(v, v_state)| InternalDiffLogVersionStateElem {
-                            v: v,
+                            v,
                             pack_hash: v_state.version_pack_hash,
                             deleted: v_state.deleted,
                         })
@@ -192,9 +192,15 @@ impl DiffStateManager {
     }
 }
 
+impl Default for DiffStateManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use std::{collections::BTreeMap, rc::Rc};
+    use std::collections::BTreeMap;
 
     use chrono::Utc;
     use serde_json::Map;
@@ -260,7 +266,7 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), None);
-            assert_eq!(pack1_state.deleted, false);
+            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);
 
@@ -280,7 +286,7 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), Some(&hash1));
-            assert_eq!(pack1_state.deleted, false);
+            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);
 
@@ -289,7 +295,7 @@ mod tests {
             // Check DB state
             let pack1_state = sql::lookup_package(&pack1, conn).unwrap();
             assert_eq!(pack1_state.package_only_packument_hash, hash1);
-            assert_eq!(pack1_state.deleted, false);
+            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(sql::lookup_package(&pack2, conn), None);
         });
@@ -374,7 +380,7 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), None);
-            assert_eq!(pack1_state.deleted, false);
+            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);
 
@@ -395,7 +401,7 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), None);
-            assert_eq!(pack1_state.deleted, false);
+            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 1);
             assert_eq!(
                 pack1_state.versions[&v0],
@@ -426,7 +432,7 @@ mod tests {
                 pack1_state.package_pack_hash.as_ref().unwrap(),
                 &hash1_with_latest
             );
-            assert_eq!(pack1_state.deleted, false);
+            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 1);
             assert_eq!(
                 pack1_state.versions[&v0],
@@ -442,7 +448,7 @@ mod tests {
             // Check DB state
             let pack1_state = sql::lookup_package(&pack1, conn).unwrap();
             assert_eq!(pack1_state.package_only_packument_hash, hash1_with_latest);
-            assert_eq!(pack1_state.deleted, false);
+            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 1);
             assert_eq!(
                 pack1_state.versions[0],
@@ -469,8 +475,6 @@ mod tests {
             other_dist_tags: Map::new(),
         };
         let (_, hash1, _) = pack1_pack.serialize_and_hash();
-        let diff1 = DiffLogInstruction::CreatePackage(pack1_pack.clone());
-        let diff1_set_latest = DiffLogInstruction::UpdatePackage(pack1_pack);
 
         testing::using_test_db(|conn| {
             let mut manager = DiffStateManager::new();

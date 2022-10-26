@@ -514,7 +514,7 @@ mod tests {
 
         testing::using_test_db(|conn| {
             let _temp_table = testing::TempTable::new(
-                &conn,
+                conn,
                 "test_parsed_spec_to_sql",
                 "id SERIAL PRIMARY KEY, s parsed_spec NOT NULL",
             );

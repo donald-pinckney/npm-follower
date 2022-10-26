@@ -201,7 +201,7 @@ mod tests {
 
         testing::using_test_db(|conn| {
             let _temp_table = testing::TempTable::new(
-                &conn,
+                conn,
                 "test_semver_to_sql",
                 "id SERIAL PRIMARY KEY, v semver",
             );

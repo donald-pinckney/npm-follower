@@ -2,21 +2,16 @@ pub mod deserialize;
 
 use postgres_db::change_log::Change;
 use postgres_db::custom_types::Semver;
-use postgres_db::dependencies::Dependencie;
 use postgres_db::diff_log;
 use postgres_db::diff_log::internal_diff_log_state::manager::DiffStateManager;
 use postgres_db::diff_log::DiffLogInstruction;
 use postgres_db::diff_log::NewDiffLogEntry;
 use postgres_db::diff_log::NewDiffLogEntryWithHash;
-use postgres_db::packages::Package;
 use postgres_db::packument::AllVersionPackuments;
 use postgres_db::packument::PackageOnlyPackument;
 use postgres_db::packument::VersionOnlyPackument;
-use postgres_db::versions::Version;
 use postgres_db::DbConnection;
 use std::collections::BTreeSet;
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::iter;
 use std::panic;
 
@@ -174,7 +169,7 @@ fn process_change(
                         NewDiffLogEntryWithHash {
                             entry: NewDiffLogEntry {
                                 seq,
-                                package_name: package_name.clone(),
+                                package_name,
                                 instr: DiffLogInstruction::DeletePackage,
                             },
                             hash: None,

@@ -1,4 +1,3 @@
-use crate::custom_types::PackageMetadata;
 use crate::custom_types::{ParsedSpec, RepoInfo, Semver};
 use chrono::DateTime;
 use chrono::Utc;

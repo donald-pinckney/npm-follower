@@ -2,8 +2,7 @@ use super::sql_types::*;
 use super::DiffTypeEnum;
 use diesel::deserialize;
 use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output, WriteTuple};
-use diesel::sql_types::{Nullable, Record};
+use diesel::serialize::{self, IsNull, Output};
 use diesel::types::{FromSql, ToSql};
 use std::io::Write;
 

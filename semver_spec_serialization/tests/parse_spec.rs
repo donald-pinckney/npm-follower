@@ -4,7 +4,7 @@ extern crate lazy_static;
 use postgres_db::custom_types::{
     AliasSubspec, ParsedSpec, PrereleaseTag, Semver, VersionComparator, VersionConstraint,
 };
-use semver_spec_serialization::{parse_spec_via_node};
+use semver_spec_serialization::parse_spec_via_node;
 
 lazy_static! {
     static ref SUCCESS_CASES: Vec<(&'static str, ParsedSpec)> = vec![
@@ -237,7 +237,7 @@ fn test_parse_spec_via_node_invalid_cases() {
         let spec = parse_spec_via_node(input).unwrap();
         match spec {
             ParsedSpec::Invalid(err) => assert!(err.contains(err_contains)),
-            _ => assert!(false),
+            _ => panic!(),
         }
     }
 }
@@ -267,4 +267,3 @@ fn semver(
         build,
     }
 }
-

@@ -124,7 +124,7 @@ mod tests {
 
         testing::using_test_db(|conn| {
             let _temp_table = testing::TempTable::new(
-                &conn,
+                conn,
                 "test_version_constraint_to_sql",
                 "id SERIAL PRIMARY KEY, c constraint_disjuncts NOT NULL",
             );

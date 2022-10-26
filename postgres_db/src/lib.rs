@@ -22,8 +22,6 @@ pub mod testing;
 
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use dotenv::dotenv;
-use std::env;
 
 pub struct DbConnection {
     pub(crate) conn: PgConnection,
@@ -31,6 +29,9 @@ pub struct DbConnection {
 
 #[cfg(not(test))]
 pub fn connect() -> DbConnection {
+    use dotenv::dotenv;
+    use std::env;
+
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");

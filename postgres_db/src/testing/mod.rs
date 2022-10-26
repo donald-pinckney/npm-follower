@@ -1,4 +1,3 @@
-use crate::custom_types::{PrereleaseTag, Semver};
 use crate::diesel::connection::SimpleConnection;
 use crate::DbConnection;
 use diesel::pg::PgConnection;
@@ -125,6 +124,9 @@ impl<'a> Drop for TempTable<'a> {
             .unwrap();
     }
 }
+
+#[cfg(test)]
+use crate::custom_types::{PrereleaseTag, Semver};
 
 #[cfg(test)]
 impl Semver {
