@@ -1,7 +1,7 @@
 use crate::diesel::connection::SimpleConnection;
 use crate::DbConnection;
-use diesel::pg::PgConnection;
 use diesel::prelude::*;
+use diesel::{pg::PgConnection, sql_query};
 use dotenv::dotenv;
 use lazy_static::lazy_static;
 use std::env;
@@ -119,9 +119,8 @@ impl<'a> TempTable<'a> {
 
 impl<'a> Drop for TempTable<'a> {
     fn drop(&mut self) {
-        self.connection
-            .conn
-            .execute(&format!("DROP TABLE {}", self.table_name))
+        sql_query(&format!("DROP TABLE {}", self.table_name))
+            .execute(&mut self.connection.conn)
             .unwrap();
     }
 }
