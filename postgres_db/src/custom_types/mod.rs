@@ -274,6 +274,7 @@ pub mod sql_types {
 
 mod diff_log;
 mod download_failed;
+mod helpers;
 mod package_metadata;
 mod parsed_spec;
 mod repo_info;

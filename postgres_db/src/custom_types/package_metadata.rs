@@ -1,17 +1,20 @@
+use crate::schema::sql_types::PackageMetadataStruct;
+
 use super::sql_types::*;
 use super::PackageMetadata;
 use super::Semver;
 use chrono::{DateTime, Utc};
 use diesel::deserialize;
+use diesel::deserialize::FromSql;
 use diesel::pg::Pg;
+use diesel::serialize::ToSql;
 use diesel::serialize::{self, IsNull, Output, WriteTuple};
 use diesel::sql_types::{Int8, Jsonb, Nullable, Record, Timestamptz};
-use diesel::types::{FromSql, ToSql};
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
 use std::io::Write;
 
-// ---------- PackageMetadataStructSql <----> PackageMetadata
+// ---------- PackageMetadataStruct <----> PackageMetadata
 
 type PackageMetadataStructRecordSql = (
     PackageStateSql,
@@ -76,8 +79,8 @@ fn other_times_dict_to_sql(m: BTreeMap<Semver, DateTime<Utc>>) -> Value {
     )
 }
 
-impl<'a> ToSql<PackageMetadataStructSql, Pg> for PackageMetadata {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl<'a> ToSql<PackageMetadataStruct, Pg> for PackageMetadata {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let record: PackageMetadataStructRecordRust = match self {
             PackageMetadata::Normal {
                 dist_tag_latest_version: lv,
@@ -115,7 +118,7 @@ impl<'a> ToSql<PackageMetadataStructSql, Pg> for PackageMetadata {
     }
 }
 
-impl<'a> FromSql<PackageMetadataStructSql, Pg> for PackageMetadata {
+impl<'a> FromSql<PackageMetadataStruct, Pg> for PackageMetadata {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
         let tup: PackageMetadataStructRecordRust =
             FromSql::<Record<PackageMetadataStructRecordSql>, Pg>::from_sql(bytes)?;
@@ -157,7 +160,7 @@ enum PackageState {
 }
 
 impl ToSql<PackageStateSql, Pg> for PackageState {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match *self {
             PackageState::Normal => out.write_all(b"normal")?,
             PackageState::Unpublished => out.write_all(b"unpublished")?,
@@ -169,7 +172,9 @@ impl ToSql<PackageStateSql, Pg> for PackageState {
 
 impl FromSql<PackageStateSql, Pg> for PackageState {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+        let bytes = super::helpers::deserialize_not_none(bytes)?;
+
+        match bytes {
             b"normal" => Ok(PackageState::Normal),
             b"unpublished" => Ok(PackageState::Unpublished),
             b"deleted" => Ok(PackageState::Deleted),
@@ -193,11 +198,11 @@ mod tests {
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Package_metadata_struct;
+        use crate::schema::sql_types::PackageMetadataStruct;
 
         test_package_metadata_to_sql {
             id -> Integer,
-            m -> Package_metadata_struct,
+            m -> PackageMetadataStruct,
         }
     }
 

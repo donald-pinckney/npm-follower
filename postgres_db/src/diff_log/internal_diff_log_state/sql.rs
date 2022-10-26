@@ -1,18 +1,17 @@
 use std::io::Write;
 
-use crate::custom_types::sql_types::InternalDiffLogVersionStateSql;
-use crate::custom_types::sql_types::SemverSql;
 use crate::custom_types::Semver;
 use crate::DbConnection;
 
 use crate::schema;
+use crate::schema::sql_types::SemverStruct;
 use diesel::deserialize;
+use diesel::deserialize::FromSql;
 use diesel::pg::Pg;
 use diesel::prelude::*;
 use diesel::serialize;
-use diesel::types::FromSql;
-use diesel::types::Record;
-use diesel::types::ToSql;
+use diesel::serialize::ToSql;
+use diesel::sql_types::Record;
 use diesel::Insertable;
 use diesel::QueryDsl;
 use diesel::Queryable;
@@ -43,17 +42,29 @@ pub(crate) struct InternalDiffLogVersionStateElem {
     pub(crate) deleted: bool,
 }
 
-impl<'a> ToSql<InternalDiffLogVersionStateSql, Pg> for InternalDiffLogVersionStateElem {
-    fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, Pg>) -> serialize::Result {
+impl<'a> ToSql<schema::sql_types::InternalDiffLogVersionState, Pg>
+    for InternalDiffLogVersionStateElem
+{
+    fn to_sql(&self, out: &mut serialize::Output<Pg>) -> serialize::Result {
         let record: (&Semver, &String, bool) = (&self.v, &self.pack_hash, self.deleted);
-        serialize::WriteTuple::<(SemverSql, diesel::sql_types::Text, diesel::sql_types::Bool)>::write_tuple(&record, out)
+        serialize::WriteTuple::<(
+            SemverStruct,
+            diesel::sql_types::Text,
+            diesel::sql_types::Bool,
+        )>::write_tuple(&record, out)
     }
 }
 
-impl<'a> FromSql<InternalDiffLogVersionStateSql, Pg> for InternalDiffLogVersionStateElem {
+impl<'a> FromSql<schema::sql_types::InternalDiffLogVersionState, Pg>
+    for InternalDiffLogVersionStateElem
+{
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
         let tup: (Semver, String, bool) = FromSql::<
-            Record<(SemverSql, diesel::sql_types::Text, diesel::sql_types::Bool)>,
+            Record<(
+                SemverStruct,
+                diesel::sql_types::Text,
+                diesel::sql_types::Bool,
+            )>,
             Pg,
         >::from_sql(bytes)?;
         Ok(InternalDiffLogVersionStateElem {

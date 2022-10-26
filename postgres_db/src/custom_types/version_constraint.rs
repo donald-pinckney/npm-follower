@@ -1,10 +1,9 @@
 use super::sql_types::*;
 use super::{VersionComparator, VersionConstraint};
-use diesel::deserialize;
+use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
-use diesel::serialize::{self, Output, WriteTuple};
+use diesel::serialize::{self, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Record};
-use diesel::types::{FromSql, ToSql};
 use std::io::Write;
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
@@ -14,7 +13,7 @@ struct ConstraintConjuncts(Vec<VersionComparator>);
 // ---------- ConstraintConjunctsSql <----> ConstraintConjuncts
 
 impl<'a> ToSql<ConstraintConjunctsSql, Pg> for ConstraintConjuncts {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         WriteTuple::<(Array<VersionComparatorSql>,)>::write_tuple(&(&self.0,), out)
     }
 }
@@ -30,7 +29,7 @@ impl<'a> FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjuncts {
 // ---------- Array<ConstraintConjunctsSql> <----> VersionConstraint
 
 impl ToSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let disjuncts: Vec<_> = self
             .0
             .iter()
@@ -59,11 +58,11 @@ mod tests {
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Constraint_conjuncts_struct;
+        use crate::custom_types::sql_types::ConstraintConjunctsSql;
 
         test_version_constraint_to_sql {
             id -> Integer,
-            c -> Array<Constraint_conjuncts_struct>,
+            c -> Array<ConstraintConjunctsSql>,
         }
     }
 

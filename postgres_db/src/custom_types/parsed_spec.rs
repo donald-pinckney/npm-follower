@@ -1,10 +1,11 @@
+use crate::schema::sql_types::ParsedSpecStruct;
+
 use super::sql_types::*;
 use super::{AliasSubspec, ParsedSpec, VersionConstraint};
-use diesel::deserialize;
+use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output, WriteTuple};
+use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Int8, Nullable, Record, Text};
-use diesel::types::{FromSql, ToSql};
 use std::io::Write;
 
 // ---------- ParsedSpecStructSql <----> ParsedSpec
@@ -41,8 +42,8 @@ type ParsedSpecStructRecordRust = (
     Option<String>,
 );
 
-impl<'a> ToSql<ParsedSpecStructSql, Pg> for ParsedSpec {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl<'a> ToSql<ParsedSpecStruct, Pg> for ParsedSpec {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let record: ParsedSpecStructRecordRust = match self {
             ParsedSpec::Range(vc) => (
                 SpecTypeEnum::Range,
@@ -185,7 +186,7 @@ impl<'a> ToSql<ParsedSpecStructSql, Pg> for ParsedSpec {
     }
 }
 
-impl<'a> FromSql<ParsedSpecStructSql, Pg> for ParsedSpec {
+impl<'a> FromSql<ParsedSpecStruct, Pg> for ParsedSpec {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
         let tup: ParsedSpecStructRecordRust =
             FromSql::<Record<ParsedSpecStructRecordSql>, Pg>::from_sql(bytes)?;
@@ -350,7 +351,7 @@ enum SpecTypeEnum {
 struct SpecTypeEnumSql;
 
 impl ToSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             SpecTypeEnum::Range => out.write_all(b"range")?,
             SpecTypeEnum::Tag => out.write_all(b"tag")?,
@@ -367,7 +368,9 @@ impl ToSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
 
 impl FromSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+        let bytes = super::helpers::deserialize_not_none(bytes)?;
+
+        match bytes {
             b"range" => Ok(SpecTypeEnum::Range),
             b"tag" => Ok(SpecTypeEnum::Tag),
             b"git" => Ok(SpecTypeEnum::Git),
@@ -395,7 +398,7 @@ enum AliasSubspecTypeEnum {
 struct AliasSubspecTypeEnumSql;
 
 impl ToSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             AliasSubspecTypeEnum::Range => out.write_all(b"range")?,
             AliasSubspecTypeEnum::Tag => out.write_all(b"tag")?,
@@ -406,7 +409,9 @@ impl ToSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
 
 impl FromSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+        let bytes = super::helpers::deserialize_not_none(bytes)?;
+
+        match bytes {
             b"range" => Ok(AliasSubspecTypeEnum::Range),
             b"tag" => Ok(AliasSubspecTypeEnum::Tag),
             _ => Err("Unrecognized enum variant".into()),
@@ -426,11 +431,11 @@ mod tests {
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Parsed_spec_struct;
+        use crate::schema::sql_types::ParsedSpecStruct;
 
         test_parsed_spec_to_sql {
             id -> Integer,
-            s -> Parsed_spec_struct,
+            s -> ParsedSpecStruct,
         }
     }
 

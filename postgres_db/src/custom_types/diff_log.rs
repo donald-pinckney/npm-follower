@@ -1,13 +1,14 @@
-use super::sql_types::*;
+use crate::schema::sql_types::DiffType;
+
 use super::DiffTypeEnum;
 use diesel::deserialize;
+use diesel::deserialize::FromSql;
 use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output};
-use diesel::types::{FromSql, ToSql};
+use diesel::serialize::{self, IsNull, Output, ToSql};
 use std::io::Write;
 
-impl ToSql<DiffTypeEnumSql, Pg> for DiffTypeEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl ToSql<DiffType, Pg> for DiffTypeEnum {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             DiffTypeEnum::CreatePackage => out.write_all(b"create_package")?,
             DiffTypeEnum::UpdatePackage => out.write_all(b"update_package")?,
@@ -22,9 +23,11 @@ impl ToSql<DiffTypeEnumSql, Pg> for DiffTypeEnum {
     }
 }
 
-impl FromSql<DiffTypeEnumSql, Pg> for DiffTypeEnum {
+impl FromSql<DiffType, Pg> for DiffTypeEnum {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+        let bytes = super::helpers::deserialize_not_none(bytes)?;
+
+        match bytes {
             b"create_package" => Ok(DiffTypeEnum::CreatePackage),
             b"update_package" => Ok(DiffTypeEnum::UpdatePackage),
             // b"set_package_latest_tag" => Ok(DiffTypeEnum::SetPackageLatestTag),

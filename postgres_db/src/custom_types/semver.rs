@@ -1,10 +1,11 @@
+use crate::schema::sql_types::SemverStruct;
+
 use super::sql_types::*;
 use super::{PrereleaseTag, Semver};
-use diesel::deserialize;
+use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output, WriteTuple};
+use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Int8, Nullable, Record, Text};
-use diesel::types::{FromSql, ToSql};
 use std::io::Write;
 
 // ---------- SemverSql <----> Semver
@@ -21,7 +22,7 @@ enum PrereleaseTagTypeEnum {
 struct PrereleaseTagTypeEnumSql;
 
 impl ToSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             PrereleaseTag::String(s) => WriteTuple::<(
                 PrereleaseTagTypeEnumSql,
@@ -48,7 +49,7 @@ impl ToSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
 }
 
 impl ToSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             PrereleaseTagTypeEnum::String => out.write_all(b"string")?,
             PrereleaseTagTypeEnum::Int => out.write_all(b"int")?,
@@ -64,15 +65,21 @@ impl FromSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
             Pg,
         >::from_sql(bytes)?;
         match tag_type {
-            PrereleaseTagTypeEnum::String => Ok(PrereleaseTag::String(not_none!(str_case))),
-            PrereleaseTagTypeEnum::Int => Ok(PrereleaseTag::Int(not_none!(int_case))),
+            PrereleaseTagTypeEnum::String => Ok(PrereleaseTag::String(
+                super::helpers::deserialize_not_none(str_case)?,
+            )),
+            PrereleaseTagTypeEnum::Int => Ok(PrereleaseTag::Int(
+                super::helpers::deserialize_not_none(int_case)?,
+            )),
         }
     }
 }
 
 impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+        let bytes = super::helpers::deserialize_not_none(bytes)?;
+
+        match bytes {
             b"string" => Ok(PrereleaseTagTypeEnum::String),
             b"int" => Ok(PrereleaseTagTypeEnum::Int),
             _ => Err("Unrecognized enum variant".into()),
@@ -80,7 +87,7 @@ impl FromSql<PrereleaseTagTypeEnumSql, Pg> for PrereleaseTagTypeEnum {
     }
 }
 
-impl FromSql<SemverSql, Pg> for Semver {
+impl FromSql<SemverStruct, Pg> for Semver {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
         let (major, minor, bug, prerelease, build): (
             i64,
@@ -108,8 +115,8 @@ impl FromSql<SemverSql, Pg> for Semver {
     }
 }
 
-impl ToSql<SemverSql, Pg> for Semver {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl ToSql<SemverStruct, Pg> for Semver {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         WriteTuple::<(
             Int8,
             Int8,
@@ -147,11 +154,11 @@ mod tests {
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Semver_struct;
+        use crate::schema::sql_types::SemverStruct;
 
         test_semver_to_sql {
             id -> Integer,
-            v -> Semver_struct,
+            v -> SemverStruct,
         }
     }
 

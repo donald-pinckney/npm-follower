@@ -1,12 +1,13 @@
+use crate::schema::sql_types::RepoInfoStruct;
+
 use super::{sql_types::*, RepoHostInfo, RepoInfo, Vcs};
-use diesel::deserialize;
+use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output, WriteTuple};
+use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Nullable, Record, Text};
-use diesel::types::{FromSql, ToSql};
 use std::io::Write;
 
-// ---------- RepoInfo <----> RepoInfoSql
+// ---------- RepoInfo <----> RepoInfoStruct
 
 type RepoInfoStructRecordSql = (
     Text,
@@ -28,8 +29,8 @@ type RepoInfoStructRecordRust = (
     Option<String>,
 );
 
-impl ToSql<RepoInfoSql, Pg> for RepoInfo {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl ToSql<RepoInfoStruct, Pg> for RepoInfo {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let record: RepoInfoStructRecordRust = match &self.host_info {
             RepoHostInfo::Github { user, repo } => (
                 self.cloneable_repo_url.clone(),
@@ -82,7 +83,7 @@ impl ToSql<RepoInfoSql, Pg> for RepoInfo {
     }
 }
 
-impl FromSql<RepoInfoSql, Pg> for RepoInfo {
+impl FromSql<RepoInfoStruct, Pg> for RepoInfo {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
         let tup: RepoInfoStructRecordRust =
             FromSql::<Record<RepoInfoStructRecordSql>, Pg>::from_sql(bytes)?;
@@ -129,7 +130,7 @@ enum RepoHostEnum {
 struct RepoHostEnumSql;
 
 impl ToSql<RepoHostEnumSql, Pg> for RepoHostEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             RepoHostEnum::Github => out.write_all(b"github")?,
             RepoHostEnum::Bitbucket => out.write_all(b"bitbucket")?,
@@ -143,7 +144,9 @@ impl ToSql<RepoHostEnumSql, Pg> for RepoHostEnum {
 
 impl FromSql<RepoHostEnumSql, Pg> for RepoHostEnum {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+        let bytes = super::helpers::deserialize_not_none(bytes)?;
+
+        match bytes {
             b"github" => Ok(RepoHostEnum::Github),
             b"bitbucket" => Ok(RepoHostEnum::Bitbucket),
             b"gitlab" => Ok(RepoHostEnum::Gitlab),
@@ -161,7 +164,7 @@ impl FromSql<RepoHostEnumSql, Pg> for RepoHostEnum {
 struct VcsEnumSql;
 
 impl ToSql<VcsEnumSql, Pg> for Vcs {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             Vcs::Git => out.write_all(b"git")?,
         }
@@ -171,7 +174,9 @@ impl ToSql<VcsEnumSql, Pg> for Vcs {
 
 impl FromSql<VcsEnumSql, Pg> for Vcs {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+        let bytes = super::helpers::deserialize_not_none(bytes)?;
+
+        match bytes {
             b"git" => Ok(Vcs::Git),
             _ => Err("Unrecognized enum variant".into()),
         }
@@ -190,11 +195,11 @@ mod tests {
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Repo_info_struct;
+        use crate::schema::sql_types::RepoInfoStruct;
 
         test_repo_info_to_sql {
             id -> Integer,
-            r -> Nullable<Repo_info_struct>,
+            r -> Nullable<RepoInfoStruct>,
         }
     }
 
