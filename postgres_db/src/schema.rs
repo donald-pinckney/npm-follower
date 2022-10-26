@@ -106,7 +106,7 @@ diesel::table! {
         package_name -> Text,
         package_only_packument_hash -> Text,
         deleted -> Bool,
-        versions -> Array<Nullable<InternalDiffLogVersionState>>,
+        versions -> Array<InternalDiffLogVersionState>,
     }
 }
 
@@ -144,10 +144,10 @@ diesel::table! {
         created -> Timestamptz,
         deleted -> Bool,
         extra_metadata -> Jsonb,
-        prod_dependencies -> Array<Nullable<Int8>>,
-        dev_dependencies -> Array<Nullable<Int8>>,
-        peer_dependencies -> Array<Nullable<Int8>>,
-        optional_dependencies -> Array<Nullable<Int8>>,
+        prod_dependencies -> Array<Int8>,
+        dev_dependencies -> Array<Int8>,
+        peer_dependencies -> Array<Int8>,
+        optional_dependencies -> Array<Int8>,
         secret -> Bool,
     }
 }

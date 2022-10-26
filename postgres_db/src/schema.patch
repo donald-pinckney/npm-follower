@@ -1,0 +1,40 @@
+diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
+index e3e9a87..cc4a2b7 100644
+--- a/postgres_db/src/schema.rs
++++ b/postgres_db/src/schema.rs
+@@ -103,13 +103,13 @@ diesel::table! {
+     use super::sql_types::InternalDiffLogVersionState;
+ 
+     internal_diff_log_state (package_name) {
+         package_name -> Text,
+         package_only_packument_hash -> Text,
+         deleted -> Bool,
+-        versions -> Array<Nullable<InternalDiffLogVersionState>>,
++        versions -> Array<InternalDiffLogVersionState>,
+     }
+ }
+ 
+ diesel::table! {
+     internal_state (key) {
+         key -> Varchar,
+@@ -141,16 +141,16 @@ diesel::table! {
+         tarball_url -> Text,
+         repository_raw -> Nullable<Jsonb>,
+         repository_parsed -> Nullable<RepoInfoStruct>,
+         created -> Timestamptz,
+         deleted -> Bool,
+         extra_metadata -> Jsonb,
+-        prod_dependencies -> Array<Nullable<Int8>>,
+-        dev_dependencies -> Array<Nullable<Int8>>,
+-        peer_dependencies -> Array<Nullable<Int8>>,
+-        optional_dependencies -> Array<Nullable<Int8>>,
++        prod_dependencies -> Array<Int8>,
++        dev_dependencies -> Array<Int8>,
++        peer_dependencies -> Array<Int8>,
++        optional_dependencies -> Array<Int8>,
+         secret -> Bool,
+     }
+ }
+ 
+ diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
+ diesel::joinable!(diff_log -> change_log (seq));
