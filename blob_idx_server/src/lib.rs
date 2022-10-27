@@ -21,12 +21,13 @@ struct LockWrapper {
     /// Write-write on the same chunk file is not allowed.
     /// Read-write on the same chunk file is allowed for the same node_id for different keys.
     /// Read-write on the same chunk file and same key is not allowed.
-    lock: bool,
+    lock: Option<String>, // the string is the node_id
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct FileInfo {
     size: u64,
+    node_id: String,
     file_id: u32,
     file_name: String,
 }
@@ -117,13 +118,14 @@ impl BlobStorage {
                         .sadd("__locked_files__", file_id)
                         .unwrap();
                     // check if file exists already
-                    if let Some(file_info) = self.file_pool.get(&file_id) {
-                        break (file_info.value().clone(), false);
+                    if self.file_pool.contains_key(&file_id) {
+                        break (file_id, false);
                     } else {
                         // if not, we create a new file
                         let file_name = format!("blob_{}.bin", file_id);
                         let file_info = FileInfo {
                             size: 0,
+                            node_id: node_id.clone(),
                             file_id,
                             file_name,
                         };
@@ -134,12 +136,37 @@ impl BlobStorage {
                             .await
                             .sadd("__file_pool__", serde_json::to_string(&file_info).unwrap())
                             .unwrap();
-                        break (file_info, true);
+                        break (file_id, true);
                     }
                 }
             }
         };
-        Err(BlobError::AlreadyExists)
+
+        // get mut the file info
+        let mut file_info = self.file_pool.get_mut(&file_id).unwrap();
+        let byte_offset = file_info.value().size;
+        let slice = BlobStorageSlice {
+            file_id,
+            byte_offset,
+            num_bytes,
+            needs_creation,
+        };
+        let lock_wrapper = LockWrapper {
+            slice: slice.clone(),
+            lock: Some(node_id),
+        };
+        file_info.size += num_bytes;
+
+        // insert into the map
+        self.map.insert(key.clone(), lock_wrapper.clone());
+        let _: () = self
+            .redis
+            .lock()
+            .await
+            .set(key, serde_json::to_string(&lock_wrapper).unwrap())
+            .unwrap();
+
+        Ok(slice)
     }
 
     pub async fn keep_alive_create_lock(
