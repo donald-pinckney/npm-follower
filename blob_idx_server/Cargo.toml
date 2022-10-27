@@ -1,0 +1,16 @@
+[package]
+name = "blob_idx_server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dashmap = "5.4.0"
+dotenvy = "0.15.6"
+hyper = { version = "0.14.20", features = ["full"] }
+rand = "0.8.5"
+redis = "0.21.6"
+serde = "1.0.147"
+serde_json = { version = "1.0.87", features = ["preserve_order"] }
+tokio = { version = "1", features = ["full"] }
