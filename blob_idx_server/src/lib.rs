@@ -14,7 +14,7 @@ pub struct BlobStorageSlice {
     pub needs_creation: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum LockType {
     Read,
     Write,
@@ -24,7 +24,6 @@ enum LockType {
 struct BlobStorageLock {
     node_id: String,
     lock_type: LockType,
-    notify: Arc<Notify>,
 }
 
 // CONCURRENCY NOTES:
@@ -38,6 +37,8 @@ struct BlobStorageLock {
 #[derive(Debug, Clone)]
 struct LockWrapper {
     slice: BlobStorageSlice,
+    written: bool,
+    unlock_notify: Arc<Notify>,
     lock: Option<BlobStorageLock>,
 }
 
@@ -48,7 +49,8 @@ impl Serialize for LockWrapper {
     {
         let mut state = serializer.serialize_struct("LockWrapper", 2)?;
         state.serialize_field("slice", &self.slice)?;
-        // don't serialize the lock
+        state.serialize_field("written", &self.written)?;
+        // don't serialize the lock and unlock_notify
         state.end()
     }
 }
@@ -61,28 +63,67 @@ impl<'a> Deserialize<'a> for LockWrapper {
         #[derive(Deserialize)]
         struct LockWrapperHelper {
             slice: BlobStorageSlice,
+            written: bool,
         }
 
         let helper = LockWrapperHelper::deserialize(deserializer)?;
         Ok(LockWrapper {
             slice: helper.slice,
+            written: helper.written,
+            unlock_notify: Arc::new(Notify::new()),
             lock: None,
         })
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 struct FileInfo {
     size: u64,
-    node_id: String,
     file_id: u32,
     file_name: String,
+    unlock_notify: Arc<Notify>,
+}
+
+impl Serialize for FileInfo {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("LockWrapper", 2)?;
+        state.serialize_field("size", &self.size)?;
+        state.serialize_field("file_id", &self.file_id)?;
+        state.serialize_field("file_name", &self.file_name)?;
+        // don't serialize the unlock_notify
+        state.end()
+    }
+}
+
+impl<'a> Deserialize<'a> for FileInfo {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'a>,
+    {
+        #[derive(Deserialize)]
+        struct FileInfoHelper {
+            size: u64,
+            file_id: u32,
+            file_name: String,
+        }
+
+        let helper = FileInfoHelper::deserialize(deserializer)?;
+        Ok(FileInfo {
+            size: helper.size,
+            file_id: helper.file_id,
+            file_name: helper.file_name,
+            unlock_notify: Arc::new(Notify::new()),
+        })
+    }
 }
 
 #[derive(Debug, Clone)]
 struct FileLock {
     lock_type: LockType,
-    notify: Arc<Notify>,
+    node_id: String,
 }
 
 /// A thread-safe blob storage API.
@@ -120,9 +161,9 @@ impl BlobStorage {
     }
 
     async fn map_lookup(&self, key: &str) -> Result<LockWrapper, BlobError> {
-        // there are two keys that are prohibited:
-        // __file_pool__ and __locked_files__
-        if key == "__file_pool__" || key == "__locked_files__" {
+        // there is a key that is prohitibed from being used:
+        // - __file_pool__
+        if key == "__file_pool__" {
             return Err(BlobError::ProhibitedKey);
         }
 
@@ -144,6 +185,32 @@ impl BlobStorage {
         }
     }
 
+    async fn map_lookup_mut(
+        &self,
+        key: &str,
+    ) -> Result<dashmap::mapref::one::RefMut<'_, String, LockWrapper>, BlobError> {
+        if key == "__file_pool__" {
+            return Err(BlobError::ProhibitedKey);
+        }
+
+        // first, check the in-memory map
+        if self.map.contains_key(key) {
+            return Ok(self.map.get_mut(key).unwrap());
+        }
+
+        // if not found, check the redis map, and load it into the in-memory map
+        let mut redis = self.redis.lock().await;
+        let v: Option<String> = redis.get(key).unwrap();
+        if let Some(v) = v {
+            // serialize the string into a LockWrapper
+            let v: LockWrapper = serde_json::from_str(&v).unwrap();
+            self.map.insert(key.to_string(), v);
+            Ok(self.map.get_mut(key).unwrap())
+        } else {
+            Err(BlobError::DoesNotExist)
+        }
+    }
+
     pub async fn create_and_lock(
         &self,
         key: String,
@@ -155,6 +222,8 @@ impl BlobStorage {
             return Err(BlobError::AlreadyExists);
         }
 
+        let notify = Arc::new(Notify::new());
+
         // picks random file id from 0 to 999, and checks if it is locked.
         // if it is locked, picks another one, then locks the file.
         // returns the id of the file and a boolean that represents if the file needs to be created.
@@ -162,6 +231,10 @@ impl BlobStorage {
             // lock file picking
             let _guard = self.file_lock.lock().await;
             let mut rng = rand::thread_rng();
+            // TODO: this is dumb, make this better:
+            // - do intersection of pools, finding ones that are not locked
+            // - if intersection is empty, we wait for a random file to be unlocked
+            // - if intersection is not empty, pick a random one from intersection
             loop {
                 let file_id = rng.gen_range(0..1000);
                 if !self.locked_files.contains_key(&file_id) {
@@ -170,26 +243,21 @@ impl BlobStorage {
                         file_id,
                         FileLock {
                             lock_type: LockType::Write,
-                            notify: Arc::new(Notify::new()),
+                            node_id: node_id.clone(),
                         },
                     );
-                    let _: () = self
-                        .redis
-                        .lock()
-                        .await
-                        .sadd("__locked_files__", file_id)
-                        .unwrap();
                     // check if file exists already
                     if self.file_pool.contains_key(&file_id) {
                         break (file_id, false);
                     } else {
                         // if not, we create a new file
+                        // TODO: actually create the file on disk
                         let file_name = format!("blob_{}.bin", file_id);
                         let file_info = FileInfo {
                             size: 0,
-                            node_id: node_id.clone(),
                             file_id,
                             file_name,
+                            unlock_notify: notify.clone(),
                         };
                         self.file_pool.insert(file_id, file_info.clone());
                         let _: () = self
@@ -205,8 +273,11 @@ impl BlobStorage {
         };
 
         // get mut the file info
-        let mut file_info = self.file_pool.get_mut(&file_id).unwrap();
-        let byte_offset = file_info.value().size;
+        let byte_offset = {
+            let mut file_info = self.file_pool.get_mut(&file_id).unwrap();
+            file_info.size += num_bytes;
+            file_info.value().size
+        };
         let slice = BlobStorageSlice {
             file_id,
             byte_offset,
@@ -216,14 +287,13 @@ impl BlobStorage {
         let lock = BlobStorageLock {
             node_id,
             lock_type: LockType::Write,
-            notify: Arc::new(Notify::new()),
         };
         let lock_wrapper = LockWrapper {
             slice: slice.clone(),
+            written: false,
+            unlock_notify: notify,
             lock: Some(lock),
         };
-
-        file_info.size += num_bytes;
 
         // insert into the map
         self.map.insert(key.clone(), lock_wrapper.clone());
@@ -246,16 +316,101 @@ impl BlobStorage {
     }
 
     pub async fn create_unlock(&self, key: String, node_id: String) -> Result<(), BlobError> {
-        todo!()
+        let (lock, notify, file_id) = {
+            let chunk = self.map_lookup(&key).await?;
+            let lock = chunk
+                .lock
+                .as_ref()
+                .ok_or(BlobError::CreateNotLocked)?
+                .clone();
+            let file_id = chunk.slice.file_id;
+            (lock, chunk.unlock_notify, file_id)
+        };
+        if lock.lock_type != LockType::Write {
+            return Err(BlobError::CreateNotLocked);
+        }
+        if lock.node_id != node_id {
+            return Err(BlobError::WrongNode);
+        }
+        {
+            let file_lock = self
+                .locked_files
+                .get(&file_id)
+                .ok_or(BlobError::CreateNotLocked)?;
+
+            if file_lock.node_id != node_id {
+                return Err(BlobError::WrongNode);
+            }
+        }
+
+        // notify that lock is released
+        notify.notify_one();
+        {
+            let mut entry = self.map_lookup_mut(&key).await?;
+            let chunk_wrap = entry.value_mut();
+            chunk_wrap.lock = None;
+            chunk_wrap.written = true;
+            // set written to true in redis
+            let _: () = self
+                .redis
+                .lock()
+                .await
+                .set(key, serde_json::to_string(&chunk_wrap).unwrap())
+                .unwrap();
+        }
+        self.locked_files.remove(&file_id);
+
+        Ok(())
     }
 
     pub async fn lookup(&self, key: String) -> Result<BlobStorageSlice, BlobError> {
         let v = self.map_lookup(&key).await?;
+        if !v.written {
+            return Err(BlobError::NotWritten);
+        }
         Ok(v.slice)
     }
 
     pub async fn read_lock(&self, key: String, node_id: String) -> Result<(), BlobError> {
-        todo!()
+        let mut entry = self.map_lookup_mut(&key).await?;
+        let mut chunk_wrap = entry.value_mut();
+
+        if chunk_wrap.lock.is_none() {
+            // check if file is locked
+            if let Some(file_lock) = self.locked_files.get(&chunk_wrap.slice.file_id) {
+                // check if it is write locked, if not we can read lock
+                if file_lock.lock_type == LockType::Write {
+                    // if it's write locked, we need to check if it's locked by us
+                    if file_lock.node_id != node_id {
+                        // if not, we wait for the lock to be released
+                        // (chunk_wrap.unlock_notify is the same lock as the lock on the file)
+                        chunk_wrap.unlock_notify.notified().await;
+
+                        // then we lock it as ours
+                        self.locked_files.insert(
+                            chunk_wrap.slice.file_id,
+                            FileLock {
+                                lock_type: LockType::Read,
+                                node_id: node_id.clone(),
+                            },
+                        );
+                    }
+                }
+            }
+        } else if let Some(lock) = chunk_wrap.lock.as_ref() {
+            // if it's already locked, we check if it's write locked. if so we wait for it to be
+            // unlocked
+            if lock.lock_type == LockType::Write {
+                chunk_wrap.unlock_notify.notified().await;
+            }
+        }
+        // read lock the chunk
+        chunk_wrap.lock = Some(BlobStorageLock {
+            node_id,
+            lock_type: LockType::Read,
+        });
+
+        Ok(())
     }
 
     pub async fn keep_alive_read_lock(
@@ -276,6 +431,8 @@ pub enum BlobError {
     AlreadyExists,
     CreateNotLocked,
     DoesNotExist,
+    NotWritten,
+    WrongNode,
     ReadNotLocked,
     ProhibitedKey,
 }
@@ -288,6 +445,8 @@ impl std::fmt::Display for BlobError {
             BlobError::DoesNotExist => write!(f, "Blob does not exist"),
             BlobError::ReadNotLocked => write!(f, "Blob read not locked"),
             BlobError::ProhibitedKey => write!(f, "Blob key is prohibited"),
+            BlobError::WrongNode => write!(f, "Blob is locked by another node"),
+            BlobError::NotWritten => write!(f, "Blob is not written"),
         }
     }
 }
