@@ -55,6 +55,7 @@ impl BlobStorage {
         let redis = redis::Client::open(std::env::var("BLOB_REDIS_URL").expect("BLOB_REDIS_URL"))
             .expect("redis client");
         let con = redis.get_connection().unwrap();
+        // TODO: actually load file pools
         BlobStorage {
             redis: Arc::new(Mutex::new(con)),
             map: Arc::new(DashMap::new()),
