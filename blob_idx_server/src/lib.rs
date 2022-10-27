@@ -38,7 +38,8 @@ struct BlobStorageLock {
 struct LockWrapper {
     slice: BlobStorageSlice,
     written: bool,
-    unlock_notify: Arc<Notify>,
+    unlock_read_notify: Arc<Notify>,
+    unlock_write_notify: Arc<Notify>,
     lock: Option<BlobStorageLock>,
 }
 
@@ -70,7 +71,8 @@ impl<'a> Deserialize<'a> for LockWrapper {
         Ok(LockWrapper {
             slice: helper.slice,
             written: helper.written,
-            unlock_notify: Arc::new(Notify::new()),
+            unlock_read_notify: Arc::new(Notify::new()),
+            unlock_write_notify: Arc::new(Notify::new()),
             lock: None,
         })
     }
@@ -81,7 +83,8 @@ struct FileInfo {
     size: u64,
     file_id: u32,
     file_name: String,
-    unlock_notify: Arc<Notify>,
+    unlock_read_notify: Arc<Notify>,
+    unlock_write_notify: Arc<Notify>,
 }
 
 impl Serialize for FileInfo {
@@ -115,7 +118,8 @@ impl<'a> Deserialize<'a> for FileInfo {
             size: helper.size,
             file_id: helper.file_id,
             file_name: helper.file_name,
-            unlock_notify: Arc::new(Notify::new()),
+            unlock_read_notify: Arc::new(Notify::new()),
+            unlock_write_notify: Arc::new(Notify::new()),
         })
     }
 }
@@ -222,7 +226,8 @@ impl BlobStorage {
             return Err(BlobError::AlreadyExists);
         }
 
-        let notify = Arc::new(Notify::new());
+        let read_notify = Arc::new(Notify::new());
+        let write_notify = Arc::new(Notify::new());
 
         // picks random file id from 0 to 999, and checks if it is locked.
         // if it is locked, picks another one, then locks the file.
@@ -257,7 +262,8 @@ impl BlobStorage {
                             size: 0,
                             file_id,
                             file_name,
-                            unlock_notify: notify.clone(),
+                            unlock_read_notify: read_notify.clone(),
+                            unlock_write_notify: write_notify.clone(),
                         };
                         self.file_pool.insert(file_id, file_info.clone());
                         let _: () = self
@@ -291,7 +297,8 @@ impl BlobStorage {
         let lock_wrapper = LockWrapper {
             slice: slice.clone(),
             written: false,
-            unlock_notify: notify,
+            unlock_read_notify: read_notify,
+            unlock_write_notify: write_notify,
             lock: Some(lock),
         };
 
@@ -324,7 +331,7 @@ impl BlobStorage {
                 .ok_or(BlobError::CreateNotLocked)?
                 .clone();
             let file_id = chunk.slice.file_id;
-            (lock, chunk.unlock_notify, file_id)
+            (lock, chunk.unlock_write_notify, file_id)
         };
         if lock.lock_type != LockType::Write {
             return Err(BlobError::CreateNotLocked);
@@ -343,7 +350,7 @@ impl BlobStorage {
             }
         }
 
-        // notify that lock is released
+        // notify that write lock is released
         notify.notify_one();
         {
             let mut entry = self.map_lookup_mut(&key).await?;
@@ -372,19 +379,29 @@ impl BlobStorage {
     }
 
     pub async fn read_lock(&self, key: String, node_id: String) -> Result<(), BlobError> {
-        let mut entry = self.map_lookup_mut(&key).await?;
-        let mut chunk_wrap = entry.value_mut();
+        let chunk_wrap = {
+            let val = self.map_lookup(&key).await?;
+            val.clone()
+        };
 
         if chunk_wrap.lock.is_none() {
             // check if file is locked
-            if let Some(file_lock) = self.locked_files.get(&chunk_wrap.slice.file_id) {
+            let maybe_file_lock = self.locked_files.get(&chunk_wrap.slice.file_id);
+            if maybe_file_lock.is_some() {
+                let (lock_node_id, lock_type) = {
+                    let file_lock = maybe_file_lock.unwrap();
+                    let node_id = file_lock.node_id.clone();
+                    let lock_type = file_lock.lock_type.clone();
+                    drop(file_lock);
+                    (node_id, lock_type)
+                };
                 // check if it is write locked, if not we can read lock
-                if file_lock.lock_type == LockType::Write {
+                if lock_type == LockType::Write {
                     // if it's write locked, we need to check if it's locked by us
-                    if file_lock.node_id != node_id {
+                    if lock_node_id != node_id {
                         // if not, we wait for the lock to be released
                         // (chunk_wrap.unlock_notify is the same lock as the lock on the file)
-                        chunk_wrap.unlock_notify.notified().await;
+                        chunk_wrap.unlock_write_notify.notified().await;
 
                         // then we lock it as ours
                         self.locked_files.insert(
@@ -401,9 +418,12 @@ impl BlobStorage {
             // if it's already locked, we check if it's write locked. if so we wait for it to be
             // unlocked
             if lock.lock_type == LockType::Write {
-                chunk_wrap.unlock_notify.notified().await;
+                chunk_wrap.unlock_write_notify.notified().await;
             }
         }
+
+        let mut entry = self.map_lookup_mut(&key).await?;
+        let mut chunk_wrap = entry.value_mut();
         // read lock the chunk
         chunk_wrap.lock = Some(BlobStorageLock {
             node_id,
@@ -422,7 +442,51 @@ impl BlobStorage {
     }
 
     pub async fn read_unlock(&self, key: String, node_id: String) -> Result<(), BlobError> {
-        todo!()
+        let (lock, notify, file_id) = {
+            let chunk = self.map_lookup(&key).await?;
+            let lock = chunk
+                .lock
+                .as_ref()
+                .ok_or(BlobError::CreateNotLocked)?
+                .clone();
+            let file_id = chunk.slice.file_id;
+            (lock, chunk.unlock_read_notify, file_id)
+        };
+        if lock.lock_type != LockType::Write {
+            return Err(BlobError::CreateNotLocked);
+        }
+        if lock.node_id != node_id {
+            return Err(BlobError::WrongNode);
+        }
+        {
+            let file_lock = self
+                .locked_files
+                .get(&file_id)
+                .ok_or(BlobError::ReadNotLocked)?;
+
+            if file_lock.node_id != node_id {
+                return Err(BlobError::WrongNode);
+            }
+        }
+
+        // notify that read lock is released
+        notify.notify_one();
+        {
+            let mut entry = self.map_lookup_mut(&key).await?;
+            let chunk_wrap = entry.value_mut();
+            chunk_wrap.lock = None;
+            chunk_wrap.written = true;
+            // set written to true in redis
+            let _: () = self
+                .redis
+                .lock()
+                .await
+                .set(key, serde_json::to_string(&chunk_wrap).unwrap())
+                .unwrap();
+        }
+        self.locked_files.remove(&file_id);
+
+        Ok(())
     }
 }
 
