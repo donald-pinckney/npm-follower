@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use dashmap::{DashMap, DashSet};
+use dashmap::DashMap;
 use rand::Rng;
 use redis::Commands;
-use serde::{Deserialize, Serialize, __private::de::FlatInternallyTaggedAccess};
-use tokio::sync::Mutex;
+use serde::{ser::SerializeStruct, Deserialize, Serialize};
+use tokio::sync::{Mutex, Notify};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlobStorageSlice {
@@ -14,14 +14,61 @@ pub struct BlobStorageSlice {
     pub needs_creation: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
+enum LockType {
+    Read,
+    Write,
+}
+
+#[derive(Debug, Clone)]
+struct BlobStorageLock {
+    node_id: String,
+    lock_type: LockType,
+    notify: Arc<Notify>,
+}
+
+// CONCURRENCY NOTES:
+// Read-read is always allowed.
+// Write-write on the same chunk file is not allowed.
+// Read-write on the same chunk file is allowed for the same node_id for different keys.
+// Read-write on the same chunk file and same key is not allowed.
+
+/// Wrapper for a blob storage slice. Has a notifier that is notified
+/// when the slice is no longer locked.
+#[derive(Debug, Clone)]
 struct LockWrapper {
     slice: BlobStorageSlice,
-    /// Read-read is always allowed.
-    /// Write-write on the same chunk file is not allowed.
-    /// Read-write on the same chunk file is allowed for the same node_id for different keys.
-    /// Read-write on the same chunk file and same key is not allowed.
-    lock: Option<String>, // the string is the node_id
+    lock: Option<BlobStorageLock>,
+}
+
+impl Serialize for LockWrapper {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("LockWrapper", 2)?;
+        state.serialize_field("slice", &self.slice)?;
+        // don't serialize the lock
+        state.end()
+    }
+}
+
+impl<'a> Deserialize<'a> for LockWrapper {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'a>,
+    {
+        #[derive(Deserialize)]
+        struct LockWrapperHelper {
+            slice: BlobStorageSlice,
+        }
+
+        let helper = LockWrapperHelper::deserialize(deserializer)?;
+        Ok(LockWrapper {
+            slice: helper.slice,
+            lock: None,
+        })
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -32,16 +79,23 @@ struct FileInfo {
     file_name: String,
 }
 
+#[derive(Debug, Clone)]
+struct FileLock {
+    lock_type: LockType,
+    notify: Arc<Notify>,
+}
+
 /// A thread-safe blob storage API.
 /// Clone is cheap as it is reference counted.
 #[derive(Clone)]
 pub struct BlobStorage {
     redis: Arc<Mutex<redis::Connection>>,
     map: Arc<DashMap<String, LockWrapper>>, // map [key] -> [slice + lock]
-    /// pool of all the files
-    file_pool: Arc<DashMap<u32, FileInfo>>,
-    /// pool of all the files that are currently being written to
-    locked_files: Arc<DashSet<u32>>,
+    /// pool of all the files (locked or not)
+    file_pool: Arc<DashMap<u32, FileInfo>>, // TODO: could do an array but i'm lazy now
+    /// pool of all the files that are currently being written to.
+    /// maps to a notifier that is notified when the file is write-unlocked.
+    locked_files: Arc<DashMap<u32, FileLock>>,
     /// lock for picking a new file id
     file_lock: Arc<Mutex<()>>,
 }
@@ -60,7 +114,7 @@ impl BlobStorage {
             redis: Arc::new(Mutex::new(con)),
             map: Arc::new(DashMap::new()),
             file_pool: Arc::new(DashMap::new()),
-            locked_files: Arc::new(DashSet::new()),
+            locked_files: Arc::new(DashMap::new()),
             file_lock: Arc::new(Mutex::new(())),
         }
     }
@@ -105,13 +159,20 @@ impl BlobStorage {
         // if it is locked, picks another one, then locks the file.
         // returns the id of the file and a boolean that represents if the file needs to be created.
         let (file_id, needs_creation) = {
+            // lock file picking
             let _guard = self.file_lock.lock().await;
             let mut rng = rand::thread_rng();
             loop {
                 let file_id = rng.gen_range(0..1000);
-                if !self.locked_files.contains(&file_id) {
+                if !self.locked_files.contains_key(&file_id) {
                     // we lock the file
-                    self.locked_files.insert(file_id);
+                    self.locked_files.insert(
+                        file_id,
+                        FileLock {
+                            lock_type: LockType::Write,
+                            notify: Arc::new(Notify::new()),
+                        },
+                    );
                     let _: () = self
                         .redis
                         .lock()
@@ -152,10 +213,16 @@ impl BlobStorage {
             num_bytes,
             needs_creation,
         };
+        let lock = BlobStorageLock {
+            node_id,
+            lock_type: LockType::Write,
+            notify: Arc::new(Notify::new()),
+        };
         let lock_wrapper = LockWrapper {
             slice: slice.clone(),
-            lock: Some(node_id),
+            lock: Some(lock),
         };
+
         file_info.size += num_bytes;
 
         // insert into the map
