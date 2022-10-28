@@ -189,6 +189,7 @@ impl FromSql<PackageStateSql, Pg> for PackageState {
 mod tests {
     use std::collections::BTreeMap;
 
+    use crate::connection;
     use crate::custom_types::PackageMetadata;
     use crate::custom_types::Semver;
     use crate::testing;
