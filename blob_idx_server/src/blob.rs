@@ -509,7 +509,7 @@ impl BlobStorage {
             let file_id = chunk.slice.file_id;
             (lock, chunk.unlock_read_notify, file_id)
         };
-        if lock.lock_type != LockType::Write {
+        if lock.lock_type != LockType::Read {
             return Err(BlobError::CreateNotLocked);
         }
         if lock.node_id != node_id {
