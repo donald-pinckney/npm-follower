@@ -128,77 +128,80 @@ mod tests {
         ];
 
         testing::using_test_db(|conn| {
-            let _temp_table = testing::TempTable::new(
+            testing::using_temp_table(
                 conn,
                 "test_version_constraint_to_sql",
                 "id SERIAL PRIMARY KEY, c constraint_disjuncts NOT NULL",
+                |conn| {
+                    let inserted = conn
+                        .get_results(
+                            diesel::insert_into(test_version_constraint_to_sql).values(&data),
+                        )
+                        .unwrap();
+                    assert_eq!(data, inserted);
+
+                    let filter_all = conn
+                        .load(test_version_constraint_to_sql.filter(id.ge(1)))
+                        .unwrap();
+                    assert_eq!(data, filter_all);
+
+                    let bad_data1 = vec![TestVersionConstraintToSql {
+                        id: 6,
+                        c: VersionConstraint(vec![]),
+                    }];
+                    let (_, info) = unwrap_db_error(
+                        conn.get_results::<_, TestVersionConstraintToSql>(
+                            diesel::insert_into(test_version_constraint_to_sql).values(&bad_data1),
+                        )
+                        .unwrap_err(), // .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
+                    );
+                    assert!(info
+                        .message()
+                        .contains(r#"violates check constraint "constraint_disjuncts_check""#));
+
+                    let bad_data2 = vec![TestVersionConstraintToSql {
+                        id: 6,
+                        c: VersionConstraint(vec![vec![]]),
+                    }];
+                    let (_, info) = unwrap_db_error(
+                        conn.get_results::<_, TestVersionConstraintToSql>(
+                            diesel::insert_into(test_version_constraint_to_sql).values(&bad_data2),
+                        )
+                        .unwrap_err(),
+                    );
+                    assert!(info
+                        .message()
+                        .contains(r#"violates check constraint "constraint_conjuncts_check""#));
+
+                    let bad_data3 = vec![TestVersionConstraintToSql {
+                        id: 6,
+                        c: VersionConstraint(vec![vec![c2.clone()], vec![]]),
+                    }];
+                    let (_, info) = unwrap_db_error(
+                        conn.get_results::<_, TestVersionConstraintToSql>(
+                            diesel::insert_into(test_version_constraint_to_sql).values(&bad_data3),
+                        )
+                        .unwrap_err(),
+                    );
+                    assert!(info
+                        .message()
+                        .contains(r#"violates check constraint "constraint_conjuncts_check""#));
+
+                    let bad_data4 = vec![TestVersionConstraintToSql {
+                        id: 6,
+                        c: VersionConstraint(vec![vec![], vec![c2]]),
+                    }];
+                    let (_, info) = unwrap_db_error(
+                        conn.get_results::<_, TestVersionConstraintToSql>(
+                            diesel::insert_into(test_version_constraint_to_sql).values(&bad_data4),
+                        )
+                        .unwrap_err(),
+                    );
+                    assert!(info
+                        .message()
+                        .contains(r#"violates check constraint "constraint_conjuncts_check""#));
+                },
             );
-
-            let inserted = conn
-                .get_results(diesel::insert_into(test_version_constraint_to_sql).values(&data))
-                .unwrap();
-            assert_eq!(data, inserted);
-
-            let filter_all = conn
-                .load(test_version_constraint_to_sql.filter(id.ge(1)))
-                .unwrap();
-            assert_eq!(data, filter_all);
-
-            let bad_data1 = vec![TestVersionConstraintToSql {
-                id: 6,
-                c: VersionConstraint(vec![]),
-            }];
-            let (_, info) = unwrap_db_error(
-                conn.get_results::<_, TestVersionConstraintToSql>(
-                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data1),
-                )
-                .unwrap_err(), // .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
-            );
-            assert!(info
-                .message()
-                .contains(r#"violates check constraint "constraint_disjuncts_check""#));
-
-            let bad_data2 = vec![TestVersionConstraintToSql {
-                id: 6,
-                c: VersionConstraint(vec![vec![]]),
-            }];
-            let (_, info) = unwrap_db_error(
-                conn.get_results::<_, TestVersionConstraintToSql>(
-                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data2),
-                )
-                .unwrap_err(),
-            );
-            assert!(info
-                .message()
-                .contains(r#"violates check constraint "constraint_conjuncts_check""#));
-
-            let bad_data3 = vec![TestVersionConstraintToSql {
-                id: 6,
-                c: VersionConstraint(vec![vec![c2.clone()], vec![]]),
-            }];
-            let (_, info) = unwrap_db_error(
-                conn.get_results::<_, TestVersionConstraintToSql>(
-                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data3),
-                )
-                .unwrap_err(),
-            );
-            assert!(info
-                .message()
-                .contains(r#"violates check constraint "constraint_conjuncts_check""#));
-
-            let bad_data4 = vec![TestVersionConstraintToSql {
-                id: 6,
-                c: VersionConstraint(vec![vec![], vec![c2]]),
-            }];
-            let (_, info) = unwrap_db_error(
-                conn.get_results::<_, TestVersionConstraintToSql>(
-                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data4),
-                )
-                .unwrap_err(),
-            );
-            assert!(info
-                .message()
-                .contains(r#"violates check constraint "constraint_conjuncts_check""#));
         });
     }
 

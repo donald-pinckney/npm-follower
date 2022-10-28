@@ -519,19 +519,20 @@ mod tests {
         ];
 
         testing::using_test_db(|conn| {
-            let _temp_table = testing::TempTable::new(
+            testing::using_temp_table(
                 conn,
                 "test_parsed_spec_to_sql",
                 "id SERIAL PRIMARY KEY, s parsed_spec NOT NULL",
+                |conn| {
+                    let inserted = conn
+                        .get_results(diesel::insert_into(test_parsed_spec_to_sql).values(&data))
+                        .unwrap();
+                    assert_eq!(data, inserted);
+
+                    let filter_all = conn.load(test_parsed_spec_to_sql.filter(id.ge(1))).unwrap();
+                    assert_eq!(data, filter_all);
+                },
             );
-
-            let inserted = conn
-                .get_results(diesel::insert_into(test_parsed_spec_to_sql).values(&data))
-                .unwrap();
-            assert_eq!(data, inserted);
-
-            let filter_all = conn.load(test_parsed_spec_to_sql.filter(id.ge(1))).unwrap();
-            assert_eq!(data, filter_all);
         });
     }
 }

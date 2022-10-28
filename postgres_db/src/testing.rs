@@ -28,33 +28,22 @@ impl Semver {
 }
 
 // Used to create and automatically drop temporary tables, used for tests.
-pub struct TempTable<'a> {
-    pub connection: &'a mut DbConnection,
-    pub table_name: &'static str,
-}
+pub fn using_temp_table<F>(
+    conn: &mut DbConnection,
+    table_name: &'static str,
+    columns: &'static str,
+    f: F,
+) where
+    F: FnOnce(&mut DbConnection),
+{
+    conn.batch_execute(&format!(
+        "DROP TABLE IF EXISTS {}; CREATE TABLE {} ({})",
+        table_name, table_name, columns
+    ))
+    .unwrap();
 
-impl<'a> TempTable<'a> {
-    pub fn new(
-        connection: &'a mut DbConnection,
-        table_name: &'static str,
-        columns: &'static str,
-    ) -> Self {
-        connection
-            .batch_execute(&format!(
-                "DROP TABLE IF EXISTS {}; CREATE TABLE {} ({})",
-                table_name, table_name, columns
-            ))
-            .unwrap();
-        TempTable {
-            connection,
-            table_name,
-        }
-    }
-}
+    f(conn);
 
-impl<'a> Drop for TempTable<'a> {
-    fn drop(&mut self) {
-        let drop_query = sql_query(&format!("DROP TABLE {}", self.table_name));
-        self.connection.execute(drop_query).unwrap();
-    }
+    let drop_query = sql_query(&format!("DROP TABLE {}", table_name));
+    conn.execute(drop_query).unwrap();
 }

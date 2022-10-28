@@ -208,40 +208,41 @@ mod tests {
         ];
 
         testing::using_test_db(|conn| {
-            let _temp_table = testing::TempTable::new(
+            testing::using_temp_table(
                 conn,
                 "test_semver_to_sql",
                 "id SERIAL PRIMARY KEY, v semver",
-            );
+                |conn| {
+                    let inserted = conn
+                        .get_results(diesel::insert_into(test_semver_to_sql).values(&data))
+                        .unwrap();
+                    assert_eq!(data, inserted);
 
-            let inserted = conn
-                .get_results(diesel::insert_into(test_semver_to_sql).values(&data))
-                .unwrap();
-            assert_eq!(data, inserted);
+                    let filter_all = conn.load(test_semver_to_sql.filter(id.ge(1))).unwrap();
+                    assert_eq!(data, filter_all);
 
-            let filter_all = conn.load(test_semver_to_sql.filter(id.ge(1))).unwrap();
-            assert_eq!(data, filter_all);
-
-            let filter_eq_data = vec![TestSemverToSql {
-                id: 1,
-                v: Semver {
-                    major: 1,
-                    minor: 2,
-                    bug: 3,
-                    prerelease: vec![],
-                    build: vec![],
+                    let filter_eq_data = vec![TestSemverToSql {
+                        id: 1,
+                        v: Semver {
+                            major: 1,
+                            minor: 2,
+                            bug: 3,
+                            prerelease: vec![],
+                            build: vec![],
+                        },
+                    }];
+                    let filter_eq = conn
+                        .load(test_semver_to_sql.filter(v.eq(Semver {
+                            major: 1,
+                            minor: 2,
+                            bug: 3,
+                            prerelease: vec![],
+                            build: vec![],
+                        })))
+                        .unwrap();
+                    assert_eq!(filter_eq_data, filter_eq);
                 },
-            }];
-            let filter_eq = conn
-                .load(test_semver_to_sql.filter(v.eq(Semver {
-                    major: 1,
-                    minor: 2,
-                    bug: 3,
-                    prerelease: vec![],
-                    build: vec![],
-                })))
-                .unwrap();
-            assert_eq!(filter_eq_data, filter_eq);
+            );
         });
     }
 }
