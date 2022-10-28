@@ -147,9 +147,8 @@ impl<'conn> DbConnectionBorrowed<'conn> {
 #[cfg(test)]
 pub(crate) mod testing {
     use crate::connection::DbConnection;
-    use crate::diesel::connection::SimpleConnection;
+    use diesel::pg::PgConnection;
     use diesel::prelude::*;
-    use diesel::{pg::PgConnection, sql_query};
     use dotenv::dotenv;
     use lazy_static::lazy_static;
     use std::env;

@@ -8,7 +8,6 @@ use crate::packument::VersionOnlyPackument;
 use super::connection::DbConnection;
 use super::schema;
 use super::schema::diff_log;
-use diesel::prelude::*;
 use diesel::Insertable;
 use diesel::Queryable;
 use serde_json::Value;
@@ -183,7 +182,6 @@ mod tests {
     use crate::packument::VersionOnlyPackument;
     use crate::testing;
     use chrono::Utc;
-    use diesel::RunQueryDsl;
     use serde_json::Map;
     use serde_json::Value;
 

@@ -60,7 +60,6 @@ mod tests {
     use crate::custom_types::{PrereleaseTag, Semver, VersionComparator, VersionConstraint};
     use crate::testing;
     use diesel::prelude::*;
-    use diesel::RunQueryDsl;
 
     table! {
         use diesel::sql_types::*;

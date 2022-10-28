@@ -2,7 +2,7 @@ use std::io::Write;
 
 use crate::schema::sql_types::RepoInfoStruct;
 
-use super::{sql_types::*, RepoHostInfo, RepoInfo, Vcs};
+use super::{RepoHostInfo, RepoInfo, Vcs};
 use diesel::deserialize::{self, FromSql};
 use diesel::pg::{Pg, PgValue};
 use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
@@ -192,7 +192,6 @@ mod tests {
     use crate::custom_types::Vcs;
     use crate::testing;
     use diesel::prelude::*;
-    use diesel::RunQueryDsl;
 
     table! {
         use diesel::sql_types::*;

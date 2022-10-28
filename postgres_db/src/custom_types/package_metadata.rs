@@ -1,6 +1,5 @@
 use crate::schema::sql_types::PackageMetadataStruct;
 
-use super::sql_types::*;
 use super::PackageMetadata;
 use super::Semver;
 use chrono::{DateTime, Utc};
@@ -189,14 +188,12 @@ impl FromSql<PackageStateSql, Pg> for PackageState {
 mod tests {
     use std::collections::BTreeMap;
 
-    use crate::connection;
     use crate::custom_types::PackageMetadata;
     use crate::custom_types::Semver;
     use crate::testing;
     use chrono::NaiveTime;
     use chrono::Utc;
     use diesel::prelude::*;
-    use diesel::RunQueryDsl;
 
     table! {
         use diesel::sql_types::*;
