@@ -1,6 +1,7 @@
 pub mod deserialize;
 
 use postgres_db::change_log::Change;
+use postgres_db::connection::DbConnectionInTransaction;
 use postgres_db::custom_types::Semver;
 use postgres_db::diff_log;
 use postgres_db::diff_log::internal_diff_log_state::manager::DiffStateManager;
@@ -10,7 +11,6 @@ use postgres_db::diff_log::NewDiffLogEntryWithHash;
 use postgres_db::packument::AllVersionPackuments;
 use postgres_db::packument::PackageOnlyPackument;
 use postgres_db::packument::VersionOnlyPackument;
-use postgres_db::DbConnection;
 use std::collections::BTreeSet;
 use std::iter;
 use std::panic;
@@ -19,7 +19,10 @@ use serde_json::{Map, Value};
 
 use utils::RemoveInto;
 
-pub fn process_changes(conn: &mut DbConnection, changes: Vec<Change>) -> (usize, usize) {
+pub fn process_changes(
+    conn: &mut DbConnectionInTransaction,
+    changes: Vec<Change>,
+) -> (usize, usize) {
     let mut state_manager = DiffStateManager::new();
     let mut new_diff_entries: Vec<NewDiffLogEntryWithHash> = Vec::new();
 
@@ -42,7 +45,7 @@ pub fn process_changes(conn: &mut DbConnection, changes: Vec<Change>) -> (usize,
 }
 
 fn process_change(
-    conn: &mut DbConnection,
+    conn: &mut DbConnectionInTransaction,
     c: Change,
     state_manager: &mut DiffStateManager,
     new_diff_entries: &mut Vec<NewDiffLogEntryWithHash>,

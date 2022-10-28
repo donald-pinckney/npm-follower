@@ -127,6 +127,7 @@ impl FromSql<VersionOperatorEnumSql, Pg> for VersionOperatorEnum {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::connection::QueryRunner;
     use crate::custom_types::{PrereleaseTag, Semver, VersionComparator};
     use crate::testing;
     use diesel::prelude::*;

@@ -1,6 +1,7 @@
 use diesel::sql_query;
 
 use crate::connection::DbConnection;
+use crate::connection::QueryRunner;
 use crate::custom_types::{PrereleaseTag, Semver};
 
 pub use crate::connection::testing::using_test_db;

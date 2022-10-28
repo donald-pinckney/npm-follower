@@ -423,6 +423,7 @@ impl FromSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::connection::QueryRunner;
     use crate::custom_types::{
         AliasSubspec, ParsedSpec, PrereleaseTag, Semver, VersionComparator, VersionConstraint,
     };

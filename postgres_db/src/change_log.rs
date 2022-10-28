@@ -1,6 +1,7 @@
 use super::connection::DbConnection;
 use super::schema;
 use super::schema::change_log;
+use crate::connection::QueryRunner;
 use diesel::prelude::*;
 use diesel::Queryable;
 

@@ -2,7 +2,8 @@ use async_std::task;
 use changes_stream2::ChangeEvent;
 use changes_stream2::{ChangesStream, Event};
 use futures_util::stream::StreamExt;
-use postgres_db::{change_log, DbConnection};
+use postgres_db::change_log;
+use postgres_db::connection::DbConnection;
 use std::fs::File;
 use std::path::Path;
 use std::time::Duration;
@@ -12,10 +13,10 @@ use utils::check_no_concurrent_processes;
 async fn main() {
     check_no_concurrent_processes("changes_fetcher");
 
-    let conn = postgres_db::connect();
+    let mut conn = DbConnection::connect();
 
     loop {
-        listen_for_npm_changes_forever(&conn).await;
+        listen_for_npm_changes_forever(&mut conn).await;
         println!("NPM changes streamer ended. Sleeping for 300 seconds before restarting...");
         task::sleep(Duration::from_secs(300)).await;
     }

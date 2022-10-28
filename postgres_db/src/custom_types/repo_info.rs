@@ -187,6 +187,7 @@ impl FromSql<VcsEnumSql, Pg> for Vcs {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::connection::QueryRunner;
     use crate::custom_types::RepoHostInfo;
     use crate::custom_types::RepoInfo;
     use crate::custom_types::Vcs;

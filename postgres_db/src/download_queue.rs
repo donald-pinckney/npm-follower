@@ -1,3 +1,4 @@
+use crate::connection::QueryRunner;
 use crate::custom_types::DownloadFailed;
 use crate::download_tarball;
 use crate::download_tarball::DownloadedTarball;
@@ -31,6 +32,7 @@ pub struct DownloadTask {
 }
 
 impl DownloadTask {
+    #[allow(clippy::too_many_arguments)]
     pub fn fresh_task(
         url: String,
         shasum: Option<String>,

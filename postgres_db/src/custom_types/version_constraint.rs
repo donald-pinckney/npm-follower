@@ -34,11 +34,7 @@ impl<'a> FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjunctsOwned {
 
 impl ToSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
     fn to_sql<'a>(&'a self, out: &mut Output<'a, '_, Pg>) -> serialize::Result {
-        let disjuncts: Vec<_> = self
-            .0
-            .iter()
-            .map(|d| ConstraintConjunctsBorrowed(d))
-            .collect();
+        let disjuncts: Vec<_> = self.0.iter().map(ConstraintConjunctsBorrowed).collect();
         let mut stuff = out.reborrow();
         // todo!()
         // Failure of type inference :(
@@ -57,6 +53,7 @@ impl FromSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::connection::QueryRunner;
     use crate::custom_types::{PrereleaseTag, Semver, VersionComparator, VersionConstraint};
     use crate::testing;
     use diesel::prelude::*;

@@ -1,11 +1,11 @@
 pub mod internal_diff_log_state;
 
+use crate::connection::QueryRunner;
 use crate::custom_types::DiffTypeEnum;
 use crate::custom_types::Semver;
 use crate::packument::PackageOnlyPackument;
 use crate::packument::VersionOnlyPackument;
 
-use super::connection::DbConnection;
 use super::schema;
 use super::schema::diff_log;
 use diesel::Insertable;
@@ -141,7 +141,10 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
 
 const INSERT_CHUNK_SIZE: usize = 2048;
 
-pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &mut DbConnection) -> usize {
+pub fn insert_diff_log_entries<R: QueryRunner>(
+    entries: Vec<NewDiffLogEntry>,
+    conn: &mut R,
+) -> usize {
     let rows: Vec<NewDiffLogRow> = entries.into_iter().map(|e| e.into()).collect();
 
     let mut chunk_iter = rows.chunks_exact(INSERT_CHUNK_SIZE);
@@ -155,7 +158,7 @@ pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &mut DbConne
     modify_count
 }
 
-fn insert_diff_log_rows_chunk(rows: &[NewDiffLogRow], conn: &mut DbConnection) -> usize {
+fn insert_diff_log_rows_chunk<R: QueryRunner>(rows: &[NewDiffLogRow], conn: &mut R) -> usize {
     use schema::diff_log::dsl::*;
 
     if rows.len() > INSERT_CHUNK_SIZE {
@@ -173,6 +176,7 @@ mod tests {
 
     use crate::change_log;
     use crate::connection::DbConnection;
+    use crate::connection::QueryRunner;
     use crate::custom_types::PrereleaseTag;
     use crate::custom_types::Semver;
     use crate::diff_log::insert_diff_log_entries;
@@ -181,6 +185,7 @@ mod tests {
     use crate::packument::PackageOnlyPackument;
     use crate::packument::VersionOnlyPackument;
     use crate::testing;
+
     use chrono::Utc;
     use serde_json::Map;
     use serde_json::Value;

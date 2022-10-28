@@ -148,6 +148,7 @@ impl ToSql<SemverStruct, Pg> for Semver {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::connection::QueryRunner;
     use crate::custom_types::{PrereleaseTag, Semver};
     use crate::testing;
     use diesel::prelude::*;

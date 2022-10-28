@@ -1,3 +1,4 @@
+use crate::connection::QueryRunner;
 use crate::download_queue::DownloadTask;
 
 use super::schema::downloaded_tarballs;

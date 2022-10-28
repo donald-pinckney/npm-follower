@@ -1,11 +1,9 @@
-use postgres_db::{
-    download_queue::{
-        get_total_tasks_num, load_chunk_init, load_chunk_next, update_from_error,
-        update_from_tarballs, DownloadTask, TASKS_CHUNK_SIZE,
-    },
-    download_tarball::DownloadedTarball,
-    DbConnection,
+use postgres_db::connection::DbConnection;
+use postgres_db::download_queue::{
+    get_total_tasks_num, load_chunk_init, load_chunk_next, update_from_error, update_from_tarballs,
+    DownloadTask, TASKS_CHUNK_SIZE,
 };
+use postgres_db::download_tarball::DownloadedTarball;
 use std::{os::unix::prelude::PermissionsExt, sync::mpsc::channel};
 
 use crate::{
