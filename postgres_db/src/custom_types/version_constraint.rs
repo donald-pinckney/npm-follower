@@ -7,41 +7,48 @@ use diesel::sql_types::{Array, Record};
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
 #[sql_type = "ConstraintConjunctsSql"]
-struct ConstraintConjuncts(Vec<VersionComparator>);
+struct ConstraintConjunctsBorrowed<'a>(&'a Vec<VersionComparator>);
+
+#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[sql_type = "ConstraintConjunctsSql"]
+struct ConstraintConjunctsOwned(Vec<VersionComparator>);
 
 // ---------- ConstraintConjunctsSql <----> ConstraintConjuncts
 
-impl<'a> ToSql<ConstraintConjunctsSql, Pg> for ConstraintConjuncts {
+impl<'a> ToSql<ConstraintConjunctsSql, Pg> for ConstraintConjunctsBorrowed<'a> {
     fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         WriteTuple::<(Array<VersionComparatorSql>,)>::write_tuple(&(&self.0,), out)
     }
 }
 
-impl<'a> FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjuncts {
+impl<'a> FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjunctsOwned {
     fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let (stuff,): (Vec<VersionComparator>,) =
             FromSql::<Record<(Array<VersionComparatorSql>,)>, Pg>::from_sql(bytes)?;
-        Ok(ConstraintConjuncts(stuff))
+        // todo!()
+        Ok(ConstraintConjunctsOwned(stuff))
     }
 }
 
 // ---------- Array<ConstraintConjunctsSql> <----> VersionConstraint
 
 impl ToSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
-    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
+    fn to_sql<'a>(&'a self, out: &mut Output<'a, '_, Pg>) -> serialize::Result {
         let disjuncts: Vec<_> = self
             .0
             .iter()
-            .map(|d| ConstraintConjuncts(d.clone()))
+            .map(|d| ConstraintConjunctsBorrowed(d))
             .collect();
+        let mut stuff = out.reborrow();
+        // todo!()
         // Failure of type inference :(
-        ToSql::<Array<ConstraintConjunctsSql>, Pg>::to_sql(&disjuncts, out)
+        ToSql::<Array<ConstraintConjunctsSql>, Pg>::to_sql(&disjuncts, &mut stuff)
     }
 }
 
 impl FromSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
     fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
-        let vals: Vec<ConstraintConjuncts> =
+        let vals: Vec<ConstraintConjunctsOwned> =
             FromSql::<Array<ConstraintConjunctsSql>, Pg>::from_sql(bytes)?;
         Ok(VersionConstraint(vals.into_iter().map(|d| d.0).collect()))
     }
