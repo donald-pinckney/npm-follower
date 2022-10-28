@@ -42,7 +42,7 @@ fn main() {
 
         let last_seq_in_page = changes.last().unwrap().seq;
 
-        let (read_bytes, write_bytes) = conn
+        let (read_bytes, _write_bytes) = conn
             .run_psql_transaction(|mut trans_conn| {
                 let (read_bytes, write_bytes) = process_changes(&mut trans_conn, changes);
                 internal_state::set_diff_log_processed_seq(last_seq_in_page, &mut trans_conn);
