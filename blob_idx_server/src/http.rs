@@ -159,9 +159,9 @@ impl Service<Request<Body>> for Svc {
             match thunk.await {
                 Ok(s) => mk_res(s),
                 Err(HTTPError::Blob(e)) => {
-                    mk_error(json!({"error": e.to_string()}).to_string(), 500)
+                    mk_error(json!({"error": e.to_string()}).to_string(), 400)
                 }
-                Err(e) => mk_error(json!({"error": e.to_string()}).to_string(), 501),
+                Err(e) => mk_error(json!({"error": e.to_string()}).to_string(), 500),
             }
         })
     }

@@ -459,18 +459,18 @@ impl BlobStorage {
                         // if not, we wait for the lock to be released
                         // (chunk_wrap.unlock_notify is the same lock as the lock on the file)
                         chunk_wrap.unlock_write_notify.notified().await;
-
-                        // then we lock it as ours
-                        self.locked_files.insert(
-                            chunk_wrap.slice.file_id,
-                            FileLock {
-                                lock_type: LockType::Read,
-                                node_id: node_id.clone(),
-                            },
-                        );
                     }
                 }
             }
+
+            // then we lock it as ours
+            self.locked_files.insert(
+                chunk_wrap.slice.file_id,
+                FileLock {
+                    lock_type: LockType::Read,
+                    node_id: node_id.clone(),
+                },
+            );
         } else if let Some(lock) = chunk_wrap.lock.as_ref() {
             // if it's already locked, we check if it's write locked. if so we wait for it to be
             // unlocked
@@ -515,16 +515,15 @@ impl BlobStorage {
         if lock.node_id != node_id {
             return Err(BlobError::WrongNode);
         }
-        {
+        let unlock_file = {
             let file_lock = self
                 .locked_files
                 .get(&file_id)
                 .ok_or(BlobError::ReadNotLocked)?;
 
-            if file_lock.node_id != node_id {
-                return Err(BlobError::WrongNode);
-            }
-        }
+            // in this case, we dont unlock the file, but we do unlock the chunk
+            file_lock.node_id == node_id
+        };
 
         // notify that read lock is released
         notify.notify_one();
@@ -541,7 +540,9 @@ impl BlobStorage {
                 .set(key, serde_json::to_string(&chunk_wrap).unwrap())
                 .unwrap();
         }
-        self.locked_files.remove(&file_id);
+        if unlock_file {
+            self.locked_files.remove(&file_id);
+        }
 
         Ok(())
     }
