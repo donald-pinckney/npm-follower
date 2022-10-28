@@ -101,7 +101,7 @@ impl Serialize for FileInfo {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("LockWrapper", 2)?;
+        let mut state = serializer.serialize_struct("FileInfo", 3)?;
         state.serialize_field("size", &self.size)?;
         state.serialize_field("file_id", &self.file_id)?;
         state.serialize_field("file_name", &self.file_name)?;
