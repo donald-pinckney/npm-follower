@@ -19,7 +19,7 @@ use serde_json::{Map, Value};
 
 use utils::RemoveInto;
 
-pub fn process_changes(conn: &DbConnection, changes: Vec<Change>) -> (usize, usize) {
+pub fn process_changes(conn: &mut DbConnection, changes: Vec<Change>) -> (usize, usize) {
     let mut state_manager = DiffStateManager::new();
     let mut new_diff_entries: Vec<NewDiffLogEntryWithHash> = Vec::new();
 
@@ -42,7 +42,7 @@ pub fn process_changes(conn: &DbConnection, changes: Vec<Change>) -> (usize, usi
 }
 
 fn process_change(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     c: Change,
     state_manager: &mut DiffStateManager,
     new_diff_entries: &mut Vec<NewDiffLogEntryWithHash>,

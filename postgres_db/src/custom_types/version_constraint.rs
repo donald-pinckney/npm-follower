@@ -127,15 +127,13 @@ mod tests {
                 "id SERIAL PRIMARY KEY, c constraint_disjuncts NOT NULL",
             );
 
-            let inserted = diesel::insert_into(test_version_constraint_to_sql)
-                .values(&data)
-                .get_results(&mut conn.conn)
+            let inserted = conn
+                .get_results(diesel::insert_into(test_version_constraint_to_sql).values(&data))
                 .unwrap();
             assert_eq!(data, inserted);
 
-            let filter_all = test_version_constraint_to_sql
-                .filter(id.ge(1))
-                .load(&mut conn.conn)
+            let filter_all = conn
+                .load(test_version_constraint_to_sql.filter(id.ge(1)))
                 .unwrap();
             assert_eq!(data, filter_all);
 
@@ -144,10 +142,10 @@ mod tests {
                 c: VersionConstraint(vec![]),
             }];
             let (_, info) = unwrap_db_error(
-                diesel::insert_into(test_version_constraint_to_sql)
-                    .values(&bad_data1)
-                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
-                    .unwrap_err(),
+                conn.get_results::<_, TestVersionConstraintToSql>(
+                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data1),
+                )
+                .unwrap_err(), // .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
             );
             assert!(info
                 .message()
@@ -158,10 +156,10 @@ mod tests {
                 c: VersionConstraint(vec![vec![]]),
             }];
             let (_, info) = unwrap_db_error(
-                diesel::insert_into(test_version_constraint_to_sql)
-                    .values(&bad_data2)
-                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
-                    .unwrap_err(),
+                conn.get_results::<_, TestVersionConstraintToSql>(
+                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data2),
+                )
+                .unwrap_err(),
             );
             assert!(info
                 .message()
@@ -172,10 +170,10 @@ mod tests {
                 c: VersionConstraint(vec![vec![c2.clone()], vec![]]),
             }];
             let (_, info) = unwrap_db_error(
-                diesel::insert_into(test_version_constraint_to_sql)
-                    .values(&bad_data3)
-                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
-                    .unwrap_err(),
+                conn.get_results::<_, TestVersionConstraintToSql>(
+                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data3),
+                )
+                .unwrap_err(),
             );
             assert!(info
                 .message()
@@ -186,10 +184,10 @@ mod tests {
                 c: VersionConstraint(vec![vec![], vec![c2]]),
             }];
             let (_, info) = unwrap_db_error(
-                diesel::insert_into(test_version_constraint_to_sql)
-                    .values(&bad_data4)
-                    .get_results::<TestVersionConstraintToSql>(&mut conn.conn)
-                    .unwrap_err(),
+                conn.get_results::<_, TestVersionConstraintToSql>(
+                    diesel::insert_into(test_version_constraint_to_sql).values(&bad_data4),
+                )
+                .unwrap_err(),
             );
             assert!(info
                 .message()

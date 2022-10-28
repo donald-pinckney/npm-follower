@@ -21,7 +21,7 @@ async fn main() {
     }
 }
 
-async fn listen_for_npm_changes_forever(conn: &DbConnection) {
+async fn listen_for_npm_changes_forever(conn: &mut DbConnection) {
     let since_when = change_log::query_latest_change_seq(conn);
 
     let db_url = "https://replicate.npmjs.com";
@@ -73,7 +73,7 @@ async fn listen_for_npm_changes_forever(conn: &DbConnection) {
     }
 }
 
-pub fn process_change_event(conn: &DbConnection, change: ChangeEvent) {
+pub fn process_change_event(conn: &mut DbConnection, change: ChangeEvent) {
     let seq = change.seq.as_i64().unwrap();
     let change_json =
         serde_json::to_value(&change).expect("Failed to serialize ChangeEvent to a Value");
@@ -81,7 +81,7 @@ pub fn process_change_event(conn: &DbConnection, change: ChangeEvent) {
     change_log::insert_change(conn, seq, change_json);
 }
 
-fn _insert_saved_log_file(conn: &DbConnection) {
+fn _insert_saved_log_file(conn: &mut DbConnection) {
     use indicatif::{ProgressBar, ProgressIterator, ProgressStyle};
     use std::io::BufRead;
 

@@ -26,7 +26,7 @@ impl Package {
 }
 
 // TODO [perf]: could consider memoizing this
-pub fn query_pkg_id(conn: &DbConnection, pkg_name: &str) -> Option<i64> {
+pub fn query_pkg_id(conn: &mut DbConnection, pkg_name: &str) -> Option<i64> {
     use super::schema::packages::dsl::*;
 
     let result = packages
@@ -40,7 +40,7 @@ pub fn query_pkg_id(conn: &DbConnection, pkg_name: &str) -> Option<i64> {
 
 // Inserts package into the database and returns the id of the row that was just inserted.
 // Also returns a bool that is true if the package already existed.
-pub fn insert_package(conn: &DbConnection, package: Package) -> (i64, bool) {
+pub fn insert_package(conn: &mut DbConnection, package: Package) -> (i64, bool) {
     use super::schema::packages::dsl::*;
 
     // check if the package already exists
@@ -60,12 +60,12 @@ pub fn insert_package(conn: &DbConnection, package: Package) -> (i64, bool) {
         .returning(id)
         .get_result::<i64>(&conn.conn)
         .expect("Error saving new package");
-    
+
     (pkg_id, already_existed)
 }
 
 // Patches the missing latest version id of the package, for packages with Normal package metadata.
-pub fn patch_latest_version_id(conn: &DbConnection, package_id: i64, version_id: i64) {
+pub fn patch_latest_version_id(conn: &mut DbConnection, package_id: i64, version_id: i64) {
     use super::schema::packages::dsl::*;
 
     // get the package

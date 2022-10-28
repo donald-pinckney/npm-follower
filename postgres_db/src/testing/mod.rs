@@ -1,5 +1,5 @@
+use crate::connection::DbConnection;
 use crate::diesel::connection::SimpleConnection;
-use crate::DbConnection;
 use diesel::prelude::*;
 use diesel::{pg::PgConnection, sql_query};
 use dotenv::dotenv;
@@ -74,7 +74,7 @@ fn setup_test_db() -> DbConnection {
 
 pub fn using_test_db<F, R>(f: F) -> R
 where
-    F: FnOnce(&DbConnection) -> R,
+    F: FnOnce(&mut DbConnection) -> R,
 {
     let _locked = match TEST_CONN_LOCK.lock() {
         Ok(g) => g,
@@ -82,8 +82,8 @@ where
     };
 
     let res = {
-        let conn = setup_test_db();
-        f(&conn)
+        let mut conn = setup_test_db();
+        f(&mut conn)
     };
 
     // drop_testing_db();
@@ -93,18 +93,17 @@ where
 
 // Used to create and automatically drop temporary tables, used for tests.
 pub struct TempTable<'a> {
-    pub connection: &'a DbConnection,
+    pub connection: &'a mut DbConnection,
     pub table_name: &'static str,
 }
 
 impl<'a> TempTable<'a> {
     pub fn new(
-        connection: &'a DbConnection,
+        connection: &'a mut DbConnection,
         table_name: &'static str,
         columns: &'static str,
     ) -> Self {
         connection
-            .conn
             .batch_execute(&format!(
                 "DROP TABLE IF EXISTS {}; CREATE TABLE {} ({})",
                 table_name, table_name, columns
@@ -119,9 +118,8 @@ impl<'a> TempTable<'a> {
 
 impl<'a> Drop for TempTable<'a> {
     fn drop(&mut self) {
-        sql_query(&format!("DROP TABLE {}", self.table_name))
-            .execute(&mut self.connection.conn)
-            .unwrap();
+        let drop_query = sql_query(&format!("DROP TABLE {}", self.table_name));
+        self.connection.execute(drop_query).unwrap();
     }
 }
 

@@ -1,5 +1,5 @@
+use crate::connection::DbConnection;
 use crate::custom_types::Semver;
-use crate::DbConnection;
 
 use crate::schema;
 use crate::schema::sql_types::SemverStruct;
@@ -74,34 +74,28 @@ impl<'a> FromSql<schema::sql_types::InternalDiffLogVersionState, Pg>
     }
 }
 
-pub(crate) fn create_packages(rows: Vec<InternalDiffLogStateRow>, conn: &DbConnection) {
+pub(crate) fn create_packages(rows: Vec<InternalDiffLogStateRow>, conn: &mut DbConnection) {
     use schema::internal_diff_log_state::dsl::*;
 
     // TODO[bug]: batch this
-    diesel::insert_into(internal_diff_log_state)
-        .values(rows)
-        .execute(&mut conn.conn)
+    conn.execute(diesel::insert_into(internal_diff_log_state).values(rows))
         .unwrap_or_else(|e| panic!("Error saving new rows: {}", e));
 }
 
 pub(crate) fn lookup_package(
     package_name_str: &String,
-    conn: &DbConnection,
+    conn: &mut DbConnection,
 ) -> Option<InternalDiffLogStateRow> {
     use schema::internal_diff_log_state::dsl::*;
 
-    internal_diff_log_state
-        .filter(package_name.eq(package_name_str))
-        .get_result(&mut conn.conn)
+    conn.get_result(internal_diff_log_state.filter(package_name.eq(package_name_str)))
         .optional()
         .unwrap_or_else(|e| panic!("Error fetching row: {}", e))
 }
 
-pub(crate) fn update_packages(rows: Vec<InternalDiffLogStateRow>, conn: &DbConnection) {
+pub(crate) fn update_packages(rows: Vec<InternalDiffLogStateRow>, conn: &mut DbConnection) {
     for r in rows {
-        diesel::update(&r)
-            .set(&r)
-            .execute(&mut conn.conn)
+        conn.execute(diesel::update(&r).set(&r))
             .unwrap_or_else(|e| panic!("Error updating rows: {}", e));
     }
 }

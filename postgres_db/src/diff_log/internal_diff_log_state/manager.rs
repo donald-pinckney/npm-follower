@@ -1,9 +1,9 @@
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 
+use crate::connection::DbConnection;
 use crate::diff_log::DiffLogInstruction;
 use crate::diff_log::NewDiffLogEntryWithHash;
-use crate::DbConnection;
 
 use super::sql;
 use super::sql::InternalDiffLogStateRow;
@@ -32,7 +32,7 @@ impl DiffStateManager {
     pub fn lookup_package(
         &mut self,
         package_name_str: String,
-        conn: &DbConnection,
+        conn: &mut DbConnection,
     ) -> Option<&InternalDiffLogPackageState> {
         let x = self
             .local_state
@@ -159,7 +159,7 @@ impl DiffStateManager {
         }
     }
 
-    pub fn flush_to_db(self, conn: &DbConnection) {
+    pub fn flush_to_db(self, conn: &mut DbConnection) {
         // println!("Entire local state:");
         // dbg!(&self.local_state);
         // panic!("done");

@@ -223,15 +223,13 @@ mod tests {
                 "id SERIAL PRIMARY KEY, vc version_comparator",
             );
 
-            let inserted = diesel::insert_into(test_version_comparator_to_sql)
-                .values(&data)
-                .get_results(&mut conn.conn)
+            let inserted = conn
+                .get_results(diesel::insert_into(test_version_comparator_to_sql).values(&data))
                 .unwrap();
             assert_eq!(data, inserted);
 
-            let filter_all = test_version_comparator_to_sql
-                .filter(id.ge(1))
-                .load(&mut conn.conn)
+            let filter_all = conn
+                .load(test_version_comparator_to_sql.filter(id.ge(1)))
                 .unwrap();
             assert_eq!(data, filter_all);
 
@@ -239,9 +237,8 @@ mod tests {
                 id: 10,
                 vc: VersionComparator::Lt(v2.clone()),
             }];
-            let filter_eq = test_version_comparator_to_sql
-                .filter(vc.eq(VersionComparator::Lt(v2)))
-                .load(&mut conn.conn)
+            let filter_eq = conn
+                .load(test_version_comparator_to_sql.filter(vc.eq(VersionComparator::Lt(v2))))
                 .unwrap();
             assert_eq!(filter_eq_data, filter_eq);
         });

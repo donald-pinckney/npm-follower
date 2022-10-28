@@ -4,8 +4,8 @@ use super::schema::downloaded_tarballs;
 use chrono::{DateTime, Utc};
 use diesel::Queryable;
 
+use super::connection::DbConnection;
 use super::schema;
-use super::DbConnection;
 use diesel::prelude::*;
 
 #[derive(Queryable, Insertable, Debug)]
@@ -47,14 +47,14 @@ impl DownloadedTarball {
 }
 
 pub fn get_downloaded_urls_matching_tasks(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     chunk: &[DownloadTask],
 ) -> Vec<String> {
     use schema::downloaded_tarballs::dsl::*;
 
-    downloaded_tarballs
+    let get_matching_tarball_urls_query = downloaded_tarballs
         .select(tarball_url)
-        .filter(tarball_url.eq_any(chunk.iter().map(|t| &t.url)))
-        .load(&mut conn.conn)
+        .filter(tarball_url.eq_any(chunk.iter().map(|t| &t.url)));
+    conn.load(get_matching_tarball_urls_query)
         .expect("Error checking for max sequence in change_log table")
 }

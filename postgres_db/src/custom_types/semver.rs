@@ -214,16 +214,12 @@ mod tests {
                 "id SERIAL PRIMARY KEY, v semver",
             );
 
-            let inserted = diesel::insert_into(test_semver_to_sql)
-                .values(&data)
-                .get_results(&mut conn.conn)
+            let inserted = conn
+                .get_results(diesel::insert_into(test_semver_to_sql).values(&data))
                 .unwrap();
             assert_eq!(data, inserted);
 
-            let filter_all = test_semver_to_sql
-                .filter(id.ge(1))
-                .load(&mut conn.conn)
-                .unwrap();
+            let filter_all = conn.load(test_semver_to_sql.filter(id.ge(1))).unwrap();
             assert_eq!(data, filter_all);
 
             let filter_eq_data = vec![TestSemverToSql {
@@ -236,15 +232,14 @@ mod tests {
                     build: vec![],
                 },
             }];
-            let filter_eq = test_semver_to_sql
-                .filter(v.eq(Semver {
+            let filter_eq = conn
+                .load(test_semver_to_sql.filter(v.eq(Semver {
                     major: 1,
                     minor: 2,
                     bug: 3,
                     prerelease: vec![],
                     build: vec![],
-                }))
-                .load(&mut conn.conn)
+                })))
                 .unwrap();
             assert_eq!(filter_eq_data, filter_eq);
         });

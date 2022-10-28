@@ -294,15 +294,13 @@ mod tests {
                 "id SERIAL PRIMARY KEY, m package_metadata NOT NULL",
             );
 
-            let inserted = diesel::insert_into(test_package_metadata_to_sql)
-                .values(&data)
-                .get_results(&mut conn.conn)
+            let inserted = conn
+                .get_results(diesel::insert_into(test_package_metadata_to_sql).values(&data))
                 .unwrap();
             assert_eq!(data, inserted);
 
-            let filter_all = test_package_metadata_to_sql
-                .filter(id.ge(1))
-                .load(&mut conn.conn)
+            let filter_all = conn
+                .load(test_package_metadata_to_sql.filter(id.ge(1)))
                 .unwrap();
             assert_eq!(data, filter_all);
         });

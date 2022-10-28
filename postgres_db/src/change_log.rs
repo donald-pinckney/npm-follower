@@ -1,6 +1,6 @@
+use super::connection::DbConnection;
 use super::schema;
 use super::schema::change_log;
-use super::DbConnection;
 use diesel::prelude::*;
 use diesel::Queryable;
 
@@ -10,24 +10,19 @@ pub struct Change {
     pub raw_json: serde_json::Value,
 }
 
-pub fn query_latest_change_seq(conn: &DbConnection) -> Option<i64> {
+pub fn query_latest_change_seq(conn: &mut DbConnection) -> Option<i64> {
     use diesel::dsl::*;
     use schema::change_log::dsl::*;
 
-    change_log
-        .select(max(seq))
-        .first(&mut conn.conn)
+    conn.first(change_log.select(max(seq)))
         .expect("Error checking for max sequence in change_log table")
 }
 
-pub fn query_num_changes_after_seq(after_seq: i64, conn: &DbConnection) -> i64 {
+pub fn query_num_changes_after_seq(after_seq: i64, conn: &mut DbConnection) -> i64 {
     use diesel::dsl::*;
     use schema::change_log::dsl::*;
 
-    change_log
-        .filter(seq.gt(after_seq))
-        .select(count(seq))
-        .first(&mut conn.conn)
+    conn.first(change_log.filter(seq.gt(after_seq)).select(count(seq)))
         .unwrap_or_else(|_| {
             panic!(
                 "Error querying DB for number of changes after seq: {}",
@@ -39,21 +34,22 @@ pub fn query_num_changes_after_seq(after_seq: i64, conn: &DbConnection) -> i64 {
 pub fn query_changes_after_seq(
     after_seq: i64,
     limit_size: i64,
-    conn: &DbConnection,
+    conn: &mut DbConnection,
 ) -> Vec<Change> {
     use schema::change_log::dsl::*;
 
-    change_log
-        .filter(seq.gt(after_seq))
-        .limit(limit_size)
-        .order(seq)
-        .load(&mut conn.conn)
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error querying DB for changes after seq: {} (limit size = {})",
-                after_seq, limit_size
-            )
-        })
+    conn.load(
+        change_log
+            .filter(seq.gt(after_seq))
+            .limit(limit_size)
+            .order(seq),
+    )
+    .unwrap_or_else(|_| {
+        panic!(
+            "Error querying DB for changes after seq: {} (limit size = {})",
+            after_seq, limit_size
+        )
+    })
 }
 
 #[derive(Insertable, Debug)]
@@ -63,7 +59,7 @@ struct NewChange<'a> {
     raw_json: &'a serde_json::Value,
 }
 
-pub fn insert_change(conn: &DbConnection, seq: i64, raw_json: serde_json::Value) {
+pub fn insert_change(conn: &mut DbConnection, seq: i64, raw_json: serde_json::Value) {
     let unsanitized_json_str = serde_json::to_string(&raw_json).unwrap();
     let sanitized_json_str = sanitize_null_escapes(&unsanitized_json_str);
     let sanitized_value: serde_json::Value = serde_json::from_str(&sanitized_json_str)
@@ -79,9 +75,7 @@ pub fn insert_change(conn: &DbConnection, seq: i64, raw_json: serde_json::Value)
         raw_json: &sanitized_value,
     };
 
-    diesel::insert_into(change_log::table)
-        .values(&new_change)
-        .execute(&mut conn.conn)
+    conn.execute(diesel::insert_into(change_log::table).values(&new_change))
         .unwrap_or_else(|_| {
             panic!(
                 "Error saving new row: {:?}.\n\nunsanitized:\n{}\n\nsanitized:\n{}\n\nseq:\n{}",

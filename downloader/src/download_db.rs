@@ -49,7 +49,7 @@ pub async fn download_task(
 }
 
 /// Updates the database with the given tarballs and then clears the queue.
-pub fn update_from_tarball_queue(conn: &DbConnection, tarballs: &mut Vec<DownloadedTarball>) {
+pub fn update_from_tarball_queue(conn: &mut DbConnection, tarballs: &mut Vec<DownloadedTarball>) {
     if tarballs.is_empty() {
         return;
     }
@@ -67,7 +67,7 @@ pub fn update_from_tarball_queue(conn: &DbConnection, tarballs: &mut Vec<Downloa
 ///
 /// If the number of workers is 0 or greater than TASKS_CHUNK_SIZE (unreasonable amount).
 pub fn download_to_dest(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     dest: &str,
     num_workers: usize,
     retry_failed: bool,

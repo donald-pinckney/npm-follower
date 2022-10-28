@@ -5,9 +5,9 @@ use crate::custom_types::Semver;
 use crate::packument::PackageOnlyPackument;
 use crate::packument::VersionOnlyPackument;
 
+use super::connection::DbConnection;
 use super::schema;
 use super::schema::diff_log;
-use super::DbConnection;
 use diesel::prelude::*;
 use diesel::Insertable;
 use diesel::Queryable;
@@ -142,7 +142,7 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
 
 const INSERT_CHUNK_SIZE: usize = 2048;
 
-pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &DbConnection) -> usize {
+pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &mut DbConnection) -> usize {
     let rows: Vec<NewDiffLogRow> = entries.into_iter().map(|e| e.into()).collect();
 
     let mut chunk_iter = rows.chunks_exact(INSERT_CHUNK_SIZE);
@@ -156,16 +156,14 @@ pub fn insert_diff_log_entries(entries: Vec<NewDiffLogEntry>, conn: &DbConnectio
     modify_count
 }
 
-fn insert_diff_log_rows_chunk(rows: &[NewDiffLogRow], conn: &DbConnection) -> usize {
+fn insert_diff_log_rows_chunk(rows: &[NewDiffLogRow], conn: &mut DbConnection) -> usize {
     use schema::diff_log::dsl::*;
 
     if rows.len() > INSERT_CHUNK_SIZE {
         panic!("Programming error: insert_diff_log_rows_chunk must be called with a chunk of size <= INSERT_CHUNK_SIZE ({})", INSERT_CHUNK_SIZE);
     }
 
-    diesel::insert_into(diff_log)
-        .values(rows)
-        .execute(&mut conn.conn)
+    conn.execute(diesel::insert_into(diff_log).values(rows))
         .unwrap_or_else(|_| panic!("Failed to insert diff log rows into DB"))
 }
 
@@ -175,6 +173,7 @@ mod tests {
     use std::collections::BTreeMap;
 
     use crate::change_log;
+    use crate::connection::DbConnection;
     use crate::custom_types::PrereleaseTag;
     use crate::custom_types::Semver;
     use crate::diff_log::insert_diff_log_entries;
@@ -183,7 +182,6 @@ mod tests {
     use crate::packument::PackageOnlyPackument;
     use crate::packument::VersionOnlyPackument;
     use crate::testing;
-    use crate::DbConnection;
     use chrono::Utc;
     use diesel::RunQueryDsl;
     use serde_json::Map;
@@ -193,11 +191,11 @@ mod tests {
     use super::DiffLogInstruction;
     use super::NewDiffLogEntry;
 
-    fn get_all_diff_logs(conn: &DbConnection) -> Vec<DiffLogEntry> {
+    fn get_all_diff_logs(conn: &mut DbConnection) -> Vec<DiffLogEntry> {
         use super::schema::diff_log::dsl::*;
 
         // TODO[bug]: batch this
-        let rows: Vec<DiffLogRow> = diff_log.load(&mut conn.conn).unwrap();
+        let rows: Vec<DiffLogRow> = conn.load(diff_log).unwrap();
 
         rows.into_iter().map(|r| r.into()).collect()
     }

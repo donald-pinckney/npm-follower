@@ -107,7 +107,7 @@ impl Dependencie {
     }
 }
 
-pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i64) {
+pub fn update_deps_missing_pack(conn: &mut DbConnection, pack_name: &str, pack_id: i64) {
     use super::schema::dependencies::dsl::*;
 
     let name_digest = format!("{:x}", md5::compute(&pack_name));
@@ -132,7 +132,7 @@ pub fn update_deps_missing_pack(conn: &DbConnection, pack_name: &str, pack_id: i
     }
 }
 
-pub fn insert_dependencies(conn: &DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
+pub fn insert_dependencies(conn: &mut DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
     use super::schema::dependencies::dsl::*;
 
     // TODO [perf]: batch these inserts. Tried that, seemed to make it worse :(
