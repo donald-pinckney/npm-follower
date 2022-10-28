@@ -80,7 +80,7 @@ impl FromSql<VersionComparatorSql, Pg> for VersionComparator {
 }
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "VersionOperatorEnumSql"]
+#[diesel(sql_type = VersionOperatorEnumSql)]
 enum VersionOperatorEnum {
     Any,
     Eq,
@@ -91,7 +91,7 @@ enum VersionOperatorEnum {
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "version_operator_enum")]
+#[diesel(postgres_type(name = "version_operator_enum"))]
 struct VersionOperatorEnumSql;
 
 impl ToSql<VersionOperatorEnumSql, Pg> for VersionOperatorEnum {
@@ -142,7 +142,7 @@ mod tests {
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_version_comparator_to_sql"]
+    #[diesel(table_name = test_version_comparator_to_sql)]
     struct TestVersionComparatorToSql {
         id: i32,
         vc: VersionComparator,

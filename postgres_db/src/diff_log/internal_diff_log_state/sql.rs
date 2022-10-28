@@ -18,8 +18,8 @@ use schema::internal_diff_log_state;
 
 #[derive(Queryable, Insertable, AsChangeset, Identifiable)]
 #[cfg_attr(test, derive(PartialEq, Eq, Debug, Clone))]
-#[table_name = "internal_diff_log_state"]
-#[primary_key(package_name)]
+#[diesel(table_name = internal_diff_log_state)]
+#[diesel(primary_key(package_name))]
 pub(crate) struct InternalDiffLogStateRow {
     pub(crate) package_name: String,
     pub(crate) package_only_packument_hash: String,

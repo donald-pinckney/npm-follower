@@ -53,7 +53,7 @@ pub fn query_changes_after_seq(
 }
 
 #[derive(Insertable, Debug)]
-#[table_name = "change_log"]
+#[diesel(table_name = change_log)]
 struct NewChange<'a> {
     seq: i64,
     raw_json: &'a serde_json::Value,

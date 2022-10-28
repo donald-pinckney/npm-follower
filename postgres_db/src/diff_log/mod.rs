@@ -26,7 +26,7 @@ struct DiffLogRow {
 }
 
 #[derive(Insertable, Debug)]
-#[table_name = "diff_log"]
+#[diesel(table_name = diff_log)]
 struct NewDiffLogRow {
     seq: i64,
     package_name: String,

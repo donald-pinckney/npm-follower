@@ -12,14 +12,14 @@ use diesel::sql_types::{Array, Int8, Nullable, Record, Text};
 // ---------- SemverSql <----> Semver
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "PrereleaseTagTypeEnumSql"]
+#[diesel(sql_type = PrereleaseTagTypeEnumSql)]
 enum PrereleaseTagTypeEnum {
     String,
     Int,
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "prerelease_tag_type_enum")]
+#[diesel(postgres_type(name = "prerelease_tag_type_enum"))]
 struct PrereleaseTagTypeEnumSql;
 
 impl ToSql<PrereleaseTagStructSql, Pg> for PrereleaseTag {
@@ -163,7 +163,7 @@ mod tests {
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_semver_to_sql"]
+    #[diesel(table_name = test_semver_to_sql)]
     struct TestSemverToSql {
         id: i32,
         v: Semver,

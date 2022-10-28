@@ -148,11 +148,11 @@ impl<'a> FromSql<PackageMetadataStruct, Pg> for PackageMetadata {
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "package_state_enum")]
+#[diesel(postgres_type(name = "package_state_enum"))]
 struct PackageStateSql;
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "PackageStateSql"]
+#[diesel(sql_type = PackageStateSql)]
 enum PackageState {
     Normal,
     Unpublished,
@@ -206,7 +206,7 @@ mod tests {
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_package_metadata_to_sql"]
+    #[diesel(table_name = test_package_metadata_to_sql)]
     struct TestPackageMetadataToSql {
         id: i32,
         m: PackageMetadata,

@@ -117,7 +117,7 @@ impl FromSql<RepoInfoStruct, Pg> for RepoInfo {
 // ---------- RepoHostEnum <----> RepoHostEnumSql
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "RepoHostEnumSql"]
+#[diesel(sql_type = RepoHostEnumSql)]
 enum RepoHostEnum {
     Github,
     Bitbucket,
@@ -127,7 +127,7 @@ enum RepoHostEnum {
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "repo_host_enum")]
+#[diesel(postgres_type(name = "repo_host_enum"))]
 struct RepoHostEnumSql;
 
 impl ToSql<RepoHostEnumSql, Pg> for RepoHostEnum {
@@ -161,7 +161,7 @@ impl FromSql<RepoHostEnumSql, Pg> for RepoHostEnum {
 // ---------- Vcs <----> VcsEnumSql
 
 #[derive(SqlType)]
-#[postgres(type_name = "vcs_type_enum")]
+#[diesel(postgres_type(name = "vcs_type_enum"))]
 struct VcsEnumSql;
 
 impl ToSql<VcsEnumSql, Pg> for Vcs {
@@ -204,7 +204,7 @@ mod tests {
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_repo_info_to_sql"]
+    #[diesel(table_name = test_repo_info_to_sql)]
     struct TestRepoInfoToSql {
         id: i32,
         r: Option<RepoInfo>,

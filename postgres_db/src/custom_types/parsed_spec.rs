@@ -335,7 +335,7 @@ impl<'a> FromSql<ParsedSpecStruct, Pg> for ParsedSpec {
 // ---------- SpecTypeEnumSql <----> SpecTypeEnum
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "SpecTypeEnumSql"]
+#[diesel(sql_type = SpecTypeEnumSql)]
 enum SpecTypeEnum {
     Range,
     Tag,
@@ -348,7 +348,7 @@ enum SpecTypeEnum {
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "dependency_type_enum")]
+#[diesel(postgres_type(name = "dependency_type_enum"))]
 struct SpecTypeEnumSql;
 
 impl ToSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
@@ -388,14 +388,14 @@ impl FromSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
 // ---------- AliasSubspecTypeEnumSql <----> AliasSubspecTypeEnum
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "AliasSubspecTypeEnumSql"]
+#[diesel(sql_type = AliasSubspecTypeEnumSql)]
 enum AliasSubspecTypeEnum {
     Range,
     Tag,
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "alias_subdependency_type_enum")]
+#[diesel(postgres_type(name = "alias_subdependency_type_enum"))]
 struct AliasSubspecTypeEnumSql;
 
 impl ToSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
@@ -440,7 +440,7 @@ mod tests {
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_parsed_spec_to_sql"]
+    #[diesel(table_name = test_parsed_spec_to_sql)]
     struct TestParsedSpecToSql {
         id: i32,
         s: ParsedSpec,

@@ -6,11 +6,11 @@ use diesel::serialize::{self, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Record};
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "ConstraintConjunctsSql"]
+#[diesel(sql_type = ConstraintConjunctsSql)]
 struct ConstraintConjunctsBorrowed<'a>(&'a Vec<VersionComparator>);
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "ConstraintConjunctsSql"]
+#[diesel(sql_type = ConstraintConjunctsSql)]
 struct ConstraintConjunctsOwned(Vec<VersionComparator>);
 
 // ---------- ConstraintConjunctsSql <----> ConstraintConjuncts
@@ -72,7 +72,7 @@ mod tests {
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_version_constraint_to_sql"]
+    #[diesel(table_name = test_version_constraint_to_sql)]
     struct TestVersionConstraintToSql {
         id: i32,
         c: VersionConstraint,

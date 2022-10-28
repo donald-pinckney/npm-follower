@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use sql_types::*;
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
-#[sql_type = "Text"]
+#[diesel(sql_type = Text)]
 pub enum DownloadFailed {
     Res(u16),
     Io,
@@ -28,7 +28,7 @@ pub enum DownloadFailed {
     PartialOrd,
     Ord,
 )]
-#[sql_type = "crate::schema::sql_types::SemverStruct"]
+#[diesel(sql_type = crate::schema::sql_types::SemverStruct)]
 pub struct Semver {
     pub major: i64,
     pub minor: i64,
@@ -75,7 +75,7 @@ impl std::fmt::Display for Semver {
     PartialOrd,
     Ord,
 )]
-#[sql_type = "PrereleaseTagStructSql"]
+#[diesel(sql_type = PrereleaseTagStructSql)]
 pub enum PrereleaseTag {
     String(String),
     Int(i64),
@@ -91,7 +91,7 @@ impl std::fmt::Display for PrereleaseTag {
 }
 
 #[derive(Debug, Hash, FromSqlRow, AsExpression, Serialize, Deserialize, Clone, PartialEq, Eq)]
-#[sql_type = "crate::schema::sql_types::ParsedSpecStruct"]
+#[diesel(sql_type = crate::schema::sql_types::ParsedSpecStruct)]
 pub enum ParsedSpec {
     Range(VersionConstraint),
     Tag(String),
@@ -110,7 +110,7 @@ pub enum AliasSubspec {
 }
 
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-#[sql_type = "VersionComparatorSql"]
+#[diesel(sql_type = VersionComparatorSql)]
 pub enum VersionComparator {
     Any,
     Eq(Semver),
@@ -121,11 +121,11 @@ pub enum VersionComparator {
 }
 
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-#[sql_type = "Array<ConstraintConjunctsSql>"]
+#[diesel(sql_type = Array<ConstraintConjunctsSql>)]
 pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 
 #[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone)]
-#[sql_type = "crate::schema::sql_types::PackageMetadataStruct"]
+#[diesel(sql_type = crate::schema::sql_types::PackageMetadataStruct)]
 pub enum PackageMetadata {
     Normal {
         dist_tag_latest_version: Option<i64>,
@@ -143,7 +143,7 @@ pub enum PackageMetadata {
 }
 
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
-#[sql_type = "crate::schema::sql_types::RepoInfoStruct"]
+#[diesel(sql_type = crate::schema::sql_types::RepoInfoStruct)]
 pub struct RepoInfo {
     pub cloneable_repo_url: String,
     pub cloneable_repo_dir: String,
@@ -210,7 +210,7 @@ pub enum RepoHostInfo {
 
 // TODO: make not pub
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression, Clone, Eq, Hash, Serialize, Deserialize)]
-#[sql_type = "crate::schema::sql_types::DiffType"]
+#[diesel(sql_type = crate::schema::sql_types::DiffType)]
 pub enum DiffTypeEnum {
     CreatePackage,
     UpdatePackage,
@@ -224,39 +224,39 @@ pub enum DiffTypeEnum {
 
 pub mod sql_types {
     // #[derive(SqlType, QueryId)]
-    // #[postgres(type_name = "semver_struct")] // or should it be semver (domain)?
+    // #[diesel(postgres_type(name = "semver_struct"))] // or should it be semver (domain)?
     // pub struct SemverSql;
 
     #[derive(SqlType)]
-    #[postgres(type_name = "prerelease_tag_struct")] // or should it be prerelease_tag (domain)?
+    #[diesel(postgres_type(name = "prerelease_tag_struct"))] // or should it be prerelease_tag (domain)?
     pub struct PrereleaseTagStructSql;
 
     #[derive(SqlType, QueryId)]
-    #[postgres(type_name = "version_comparator_struct")] // or should it be version_comparator (domain)?
+    #[diesel(postgres_type(name = "version_comparator_struct"))] // or should it be version_comparator (domain)?
     pub struct VersionComparatorSql;
 
     #[derive(SqlType)]
-    #[postgres(type_name = "constraint_conjuncts_struct")] // or should it be constraint_conjuncts (domain)?
+    #[diesel(postgres_type(name = "constraint_conjuncts_struct"))] // or should it be constraint_conjuncts (domain)?
     pub struct ConstraintConjunctsSql;
 
     // #[derive(SqlType)]
-    // #[postgres(type_name = "parsed_spec_struct")] // or should it be parsed_spec (domain)?
+    // #[diesel(postgres_type(name = "parsed_spec_struct"))] // or should it be parsed_spec (domain)?
     // pub struct ParsedSpecStructSql;
 
     // #[derive(SqlType)]
-    // #[postgres(type_name = "package_metadata_struct")] // or should it be package_metadata (domain)?
+    // #[diesel(postgres_type(name = "package_metadata_struct"))] // or should it be package_metadata (domain)?
     // pub struct PackageMetadataStructSql;
 
     // #[derive(SqlType, QueryId)]
-    // #[postgres(type_name = "repo_info_struct")]
+    // #[diesel(postgres_type(name = "repo_info_struct"))]
     // pub struct RepoInfoSql;
 
     // #[derive(SqlType)]
-    // #[postgres(type_name = "diff_type")]
+    // #[diesel(postgres_type(name = "diff_type"))]
     // pub struct DiffTypeEnumSql;
 
     // #[derive(SqlType)]
-    // #[postgres(type_name = "internal_diff_log_version_state")]
+    // #[diesel(postgres_type(name = "internal_diff_log_version_state"))]
     // pub struct InternalDiffLogVersionStateSql;
 }
 
