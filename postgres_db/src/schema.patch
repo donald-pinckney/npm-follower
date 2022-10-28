@@ -1,7 +1,22 @@
 diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
-index e3e9a87..cc4a2b7 100644
+index e3e9a87..725b501 100644
 --- a/postgres_db/src/schema.rs
 +++ b/postgres_db/src/schema.rs
+@@ -18,13 +18,13 @@ pub mod sql_types {
+     pub struct ParsedSpecStruct;
+ 
+     #[derive(diesel::sql_types::SqlType)]
+     #[diesel(postgres_type(name = "repo_info_struct"))]
+     pub struct RepoInfoStruct;
+ 
+-    #[derive(diesel::sql_types::SqlType)]
++    #[derive(diesel::sql_types::SqlType, diesel::query_builder::QueryId)]
+     #[diesel(postgres_type(name = "semver_struct"))]
+     pub struct SemverStruct;
+ }
+ 
+ diesel::table! {
+     change_log (seq) {
 @@ -103,13 +103,13 @@ diesel::table! {
      use super::sql_types::InternalDiffLogVersionState;
  
