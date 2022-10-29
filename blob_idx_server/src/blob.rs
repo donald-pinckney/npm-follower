@@ -568,6 +568,14 @@ impl BlobStorage {
         }
         Ok(v.slice)
     }
+
+    /// Waits for all locks to be released
+    pub async fn shutdown(&self) {
+        let _guard = self.file_lock.lock().await;
+        for lock in self.locked_files.iter() {
+            lock.value().notify_unlock.notified().await;
+        }
+    }
 }
 
 #[derive(Debug)]
