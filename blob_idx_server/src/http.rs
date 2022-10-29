@@ -9,7 +9,7 @@ use futures::Future;
 use hyper::{service::Service, Body, Request, Response, Server};
 use serde_json::json;
 
-use crate::blob::{BlobError, BlobStorage};
+use crate::blob::{BlobEntry, BlobError, BlobStorage};
 
 pub struct HTTP {
     // the host and port for a http server
@@ -22,11 +22,14 @@ impl HTTP {
         HTTP { host, port }
     }
 
-    pub async fn start(self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn start(
+        self,
+        max_files: u32,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let addr = SocketAddr::from_str(&format!("{}:{}", self.host, self.port))?;
 
         let server = Server::bind(&addr).serve(MakeSvc {
-            session: BlobStorage::init().await,
+            session: BlobStorage::init(max_files).await,
         });
 
         println!("Listening on http://{}", addr);
@@ -103,41 +106,35 @@ impl Service<Request<Body>> for Svc {
                         let path = req.uri().path().to_string();
                         match path.as_str() {
                             "/create_and_lock" => {
-                                let key = get_key(&body, "key")?.to_string();
-                                let num_bytes =
-                                    get_key(&body, "num_bytes")?.as_u64().ok_or_else(|| {
-                                        HTTPError::InvalidBody("num_bytes".to_string())
-                                    })?;
-                                let node_id = get_key(&body, "node_id")?.to_string();
+                                let blob_entries: Vec<BlobEntry> =
+                                    serde_json::from_str(&get_key(&body, "entries")?.to_string())?;
+                                let node_id =
+                                    get_key(&body, "node_id")?.as_str().unwrap().to_string();
                                 let res = cloned_session
-                                    .create_and_lock(key, num_bytes, node_id)
+                                    .create_and_lock(blob_entries, node_id)
                                     .await?;
                                 #[cfg(debug_assertions)]
                                 cloned_session.debug_print("ran create_and_lock").await;
                                 Ok(serde_json::to_string(&res)?)
                             }
                             "/create_unlock" => {
-                                let key = get_key(&body, "key")?.to_string();
-                                let node_id = get_key(&body, "node_id")?.to_string();
-                                cloned_session.create_unlock(key, node_id).await?;
+                                let file_id =
+                                    get_key(&body, "file_id")?.as_u64().ok_or_else(|| {
+                                        HTTPError::InvalidBody("file_id must be a u32".to_string())
+                                    })?;
+                                // check that file_id can be represented as a u32
+                                if file_id > u32::MAX as u64 {
+                                    return Err(HTTPError::InvalidBody(
+                                        "file_id must be a u32".to_string(),
+                                    ));
+                                }
+                                let node_id =
+                                    get_key(&body, "node_id")?.as_str().unwrap().to_string();
+                                cloned_session
+                                    .create_unlock(file_id as u32, node_id)
+                                    .await?;
                                 #[cfg(debug_assertions)]
                                 cloned_session.debug_print("ran create_unlock").await;
-                                Ok("".to_string())
-                            }
-                            "/read_lock" => {
-                                let key = get_key(&body, "key")?.to_string();
-                                let node_id = get_key(&body, "node_id")?.to_string();
-                                cloned_session.read_lock(key, node_id).await?;
-                                #[cfg(debug_assertions)]
-                                cloned_session.debug_print("ran read_lock").await;
-                                Ok("".to_string())
-                            }
-                            "/read_unlock" => {
-                                let key = get_key(&body, "key")?.to_string();
-                                let node_id = get_key(&body, "node_id")?.to_string();
-                                cloned_session.read_unlock(key, node_id).await?;
-                                #[cfg(debug_assertions)]
-                                cloned_session.debug_print("ran read_unlock").await;
                                 Ok("".to_string())
                             }
                             p => Err(HTTPError::InvalidPath(p.to_string())),
@@ -145,7 +142,7 @@ impl Service<Request<Body>> for Svc {
                     }
                     "GET" => match req.uri().path().to_string().as_str() {
                         "/lookup" => {
-                            let key = get_key(&body, "key")?.to_string();
+                            let key = get_key(&body, "key")?.as_str().unwrap().to_string();
                             let res = cloned_session.lookup(key).await?;
                             #[cfg(debug_assertions)]
                             cloned_session.debug_print("ran lookup").await;
