@@ -2,6 +2,7 @@ use std::{
     net::SocketAddr,
     pin::Pin,
     str::FromStr,
+    sync::Arc,
     task::{Context, Poll},
 };
 
@@ -29,7 +30,7 @@ impl HTTP {
         let addr = SocketAddr::from_str(&format!("{}:{}", self.host, self.port))?;
 
         let server = Server::bind(&addr).serve(MakeSvc {
-            session: BlobStorage::init(max_files).await,
+            session: Arc::new(BlobStorage::init(max_files).await),
         });
 
         println!("Listening on http://{}", addr);
@@ -41,7 +42,7 @@ impl HTTP {
 
 /// Represents a service for the hyper http server
 struct Svc {
-    session: BlobStorage,
+    session: Arc<BlobStorage>,
 }
 
 impl Service<Request<Body>> for Svc {
@@ -68,16 +69,13 @@ impl Service<Request<Body>> for Svc {
         // routes:
         //  - POST:
         //     - /create_and_lock
-        //       - body: { "key": "some_key", "num_bytes": 100, "node_id": "some_node_id" }
-        //       - returns: BlobStorageSlice or error
+        //       - body: {"entries": [{"key": "some_key", "num_bytes": 100}, ...], "node_id": "some_node_id"}
+        //       - returns: BlobOffset or error
         //     - /create_unlock
-        //       - body: { "key": "some_key", "node_id": "some_node_id" }
+        //       - body: {"key": "some_key", "node_id": "some_node_id"}
         //       - returns: empty or error
-        //     - /read_lock
-        //       - body: { "key": "some_key", "node_id": "some_node_id" }
-        //       - returns: empty or error
-        //     - /read_unlock
-        //       - body: { "key": "some_key", "node_id": "some_node_id" }
+        //     - /keep_alive_lock
+        //       - body: {"file_id": 100}
         //       - returns: empty or error
         //  - GET:
         //     - /lookup
@@ -137,6 +135,22 @@ impl Service<Request<Body>> for Svc {
                                 cloned_session.debug_print("ran create_unlock").await;
                                 Ok("".to_string())
                             }
+                            "/keep_alive_lock" => {
+                                let file_id =
+                                    get_key(&body, "file_id")?.as_u64().ok_or_else(|| {
+                                        HTTPError::InvalidBody("file_id must be a u32".to_string())
+                                    })?;
+                                // check that file_id can be represented as a u32
+                                if file_id > u32::MAX as u64 {
+                                    return Err(HTTPError::InvalidBody(
+                                        "file_id must be a u32".to_string(),
+                                    ));
+                                }
+                                cloned_session.keep_alive_lock(file_id as u32).await?;
+                                #[cfg(debug_assertions)]
+                                cloned_session.debug_print("ran keep_alive_lock").await;
+                                Ok("".to_string())
+                            }
                             p => Err(HTTPError::InvalidPath(p.to_string())),
                         }
                     }
@@ -167,7 +181,7 @@ impl Service<Request<Body>> for Svc {
 /// Represents a maker for a service for the hyper http server
 
 struct MakeSvc {
-    session: BlobStorage,
+    session: Arc<BlobStorage>,
 }
 
 impl<T> Service<T> for MakeSvc {

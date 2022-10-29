@@ -4,7 +4,10 @@ use dashmap::DashMap;
 use rand::{seq::SliceRandom, Rng};
 use redis::Commands;
 use serde::{ser::SerializeStruct, Deserialize, Serialize};
-use tokio::sync::{Mutex, Notify};
+use tokio::sync::{
+    mpsc::{Receiver, Sender},
+    Mutex, Notify,
+};
 
 /// A slice containing the information of a blob, linked to a key.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -133,21 +136,28 @@ impl<'a> Deserialize<'a> for FileInfo {
 struct FileLock {
     node_id: String,
     keys: Vec<String>, // locked keys
+    notify_unlock: Arc<Notify>,
+}
+
+#[derive(Debug)]
+struct CleanerInstance {
+    keep_alive: Sender<()>,
+    task: tokio::task::JoinHandle<()>,
 }
 
 /// A thread-safe blob storage API.
-/// Clone is cheap as it is reference counted.
-#[derive(Clone)]
 pub struct BlobStorage {
-    redis: Arc<Mutex<redis::Connection>>,
-    map: Arc<DashMap<String, LockWrapper>>, // map [key] -> [slice + lock]
+    redis: Mutex<redis::Connection>,
+    map: DashMap<String, LockWrapper>, // map [key] -> [slice + lock]
     /// pool of all the files (locked or not)
-    file_pool: Arc<DashMap<u32, FileInfo>>, // TODO: could do an array but i'm lazy now
+    file_pool: DashMap<u32, FileInfo>, // TODO: could do an array but i'm lazy now
     /// pool of all the files that are currently being written to.
     /// maps to a notifier that is notified when the file is write-unlocked.
     locked_files: Arc<DashMap<u32, FileLock>>,
     /// lock for picking a new file id
-    file_lock: Arc<Mutex<()>>,
+    file_lock: Mutex<()>,
+    /// The map of lock cleanup tasks.
+    cleanup_tasks: DashMap<u32, CleanerInstance>,
     /// The maximum number of chunk files to use.
     max_files: u32,
 }
@@ -175,20 +185,63 @@ impl BlobStorage {
                         file_pool.insert(file_info.file_id, file_info);
                     }
                 }
-                Arc::new(file_pool)
+                file_pool
             } else {
-                Arc::new(DashMap::new())
+                DashMap::new()
             }
         };
 
         BlobStorage {
-            redis: Arc::new(Mutex::new(con)),
-            map: Arc::new(DashMap::new()),
+            redis: Mutex::new(con),
+            map: DashMap::new(),
             file_pool,
             locked_files: Arc::new(DashMap::new()),
-            file_lock: Arc::new(Mutex::new(())),
+            file_lock: Mutex::new(()),
+            cleanup_tasks: DashMap::new(),
             max_files,
         }
+    }
+
+    /// spawns a lock cleaner, that cleans the lock of the file after 10 minutes.
+    /// If a file is sent over the keep_alive_ch channel, the timer is reset.
+    fn spawn_lock_cleaner(&self, file_id: u32) {
+        let (tx, rx) = tokio::sync::mpsc::channel(1);
+        let locked_files = self.locked_files.clone();
+        let task = tokio::spawn(async move {
+            let mut keep_alive_ch = rx;
+            let duration = std::time::Duration::from_secs(10 * 60);
+            let mut timer = tokio::time::interval(duration);
+            timer.tick().await; // start ticking
+            loop {
+                tokio::select! {
+                    _ = timer.tick() => { // 10 min timer expired
+                        if let Some((_, file_lock)) = locked_files.remove(&file_id) {
+                            println!("cleaning up lock for file {}", file_id);
+                            file_lock.notify_unlock.notify_waiters();
+                            keep_alive_ch.close();
+                            return;
+                        } else {
+                            // means the file was manually unlocked before the timer finished
+                            keep_alive_ch.close();
+                            return;
+                        }
+                    }
+                    Some(()) = keep_alive_ch.recv() => {
+                        // reset the timer
+                        println!("resetting timer for file {}", file_id);
+                        timer.reset();
+                    }
+                }
+            }
+        });
+
+        self.cleanup_tasks.insert(
+            file_id,
+            CleanerInstance {
+                keep_alive: tx,
+                task,
+            },
+        );
     }
 
     pub(crate) async fn debug_print(&self, prefix: &str) {
@@ -225,6 +278,13 @@ impl BlobStorage {
         }
 
         println!("\tlocked_files:\n{}\n", locked_files_str);
+
+        let mut cleaners_str = String::new();
+        for a in self.cleanup_tasks.iter() {
+            cleaners_str.push_str(&format!("\t\t{}\n", a.key()));
+        }
+
+        println!("\tcleaners:\n{}\n", cleaners_str);
     }
 
     async fn map_lookup(&self, key: &str) -> Result<LockWrapper, BlobError> {
@@ -375,8 +435,17 @@ impl BlobStorage {
             FileLock {
                 node_id: node_id.clone(),
                 keys: keys.clone(),
+                notify_unlock: self
+                    .file_pool
+                    .get(&file_id)
+                    .unwrap()
+                    .value()
+                    .unlock_notify
+                    .clone(),
             },
         );
+
+        self.spawn_lock_cleaner(file_id);
 
         // release file picking lock
         drop(_guard);
@@ -442,8 +511,18 @@ impl BlobStorage {
         Ok(blob_offset)
     }
 
-    pub async fn keep_alive_lock(&self, key: String, node_id: String) -> Result<(), BlobError> {
-        todo!()
+    pub async fn keep_alive_lock(&self, file_id: u32) -> Result<(), BlobError> {
+        if self.locked_files.contains_key(&file_id) {
+            let cleaner = self.cleanup_tasks.get(&file_id).unwrap();
+            cleaner
+                .keep_alive
+                .send(())
+                .await
+                .map_err(|_| BlobError::LockExpired)?;
+            Ok(())
+        } else {
+            Err(BlobError::CreateNotLocked)
+        }
     }
 
     pub async fn create_unlock(&self, file_id: u32, node_id: String) -> Result<(), BlobError> {
@@ -471,6 +550,8 @@ impl BlobStorage {
 
         // remove the file lock
         self.locked_files.remove(&file_id);
+        // remove the cleanup task
+        self.cleanup_tasks.remove(&file_id);
 
         // notify all the keys that are waiting for this file to be unlocked
         // that they
@@ -481,7 +562,6 @@ impl BlobStorage {
     }
 
     pub async fn lookup(&self, key: String) -> Result<BlobStorageSlice, BlobError> {
-        println!("lookup: {:?}", key);
         let v = self.map_lookup(&key).await?;
         if !v.written {
             return Err(BlobError::NotWritten);
@@ -498,6 +578,7 @@ pub enum BlobError {
     DoesNotExist,
     NotWritten,
     WrongNode,
+    LockExpired,
     ProhibitedKey,
 }
 
@@ -510,6 +591,7 @@ impl std::fmt::Display for BlobError {
             BlobError::DoesNotExist => write!(f, "Blob does not exist"),
             BlobError::ProhibitedKey => write!(f, "Blob key is prohibited"),
             BlobError::WrongNode => write!(f, "Blob is locked by another node"),
+            BlobError::LockExpired => write!(f, "Blob lock expired"),
             BlobError::NotWritten => write!(f, "Blob is not written"),
         }
     }
