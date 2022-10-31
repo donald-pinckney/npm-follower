@@ -1,9 +1,31 @@
+use lazy_static::lazy_static;
 use tokio::task::JoinHandle;
 
 use crate::{
     blob::{BlobOffset, BlobStorageConfig, BlobStorageSlice},
     http::{BlobEntry, CreateAndLockRequest, CreateUnlockRequest, LookupRequest, HTTP},
 };
+
+lazy_static! {
+    static ref GLOBAL_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::new(());
+}
+
+macro_rules! blob_test {
+    ($body:block) => {
+        let _lock = GLOBAL_LOCK.lock().await;
+        redis_cleanup();
+        let server = run_test_server(make_config(1, 5)).await; // we have 1 file max
+
+        // wait for the server to start
+        while let Err(_) = reqwest::get("http://127.0.0.1:1337/").await {
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        }
+
+        $body;
+        server.shutdown().await;
+        drop(_lock);
+    };
+}
 
 fn make_config(max_files: u32, lock_timeout: u64) -> BlobStorageConfig {
     BlobStorageConfig {
@@ -99,21 +121,6 @@ async fn send_lookup_request(
         .unwrap();
 
     serde_json::from_str::<BlobStorageSlice>(&resp).map_err(|_| resp)
-}
-
-macro_rules! blob_test {
-    ($body:block) => {
-        redis_cleanup();
-        let server = run_test_server(make_config(1, 5)).await; // we have 1 file max
-
-        // wait for the server to start
-        while let Err(_) = reqwest::get("http://127.0.0.1:1337/").await {
-            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-        }
-
-        $body;
-        server.shutdown().await;
-    };
 }
 
 #[tokio::test]
