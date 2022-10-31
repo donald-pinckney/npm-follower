@@ -205,44 +205,51 @@ async fn test_lock_wait() {
     // n1 initially locks, gets the lock
     let client1 = client.clone();
     let handle1 = tokio::task::spawn(async move {
-        send_create_and_lock_request(
+        let now = std::time::Instant::now();
+        let res = send_create_and_lock_request(
             &client1,
             CreateAndLockRequest {
                 entries: vec![BlobEntry::new("k1".to_string(), 1)],
                 node_id: "n1".to_string(),
             },
         )
-        .await
+        .await;
+        (res, now.elapsed())
     });
 
     // n2 waits for lock
     let client2 = client.clone();
     let handle2 = tokio::task::spawn(async move {
-        send_create_and_lock_request(
+        let now = std::time::Instant::now();
+        let res = send_create_and_lock_request(
             &client2,
             CreateAndLockRequest {
                 entries: vec![BlobEntry::new("k2".to_string(), 3)],
                 node_id: "n2".to_string(),
             },
         )
-        .await
+        .await;
+        (res, now.elapsed())
     });
 
     // n3 waits for lock
     let client3 = client.clone();
     let handle3 = tokio::task::spawn(async move {
-        send_create_and_lock_request(
+        let now = std::time::Instant::now();
+        let res = send_create_and_lock_request(
             &client3,
             CreateAndLockRequest {
                 entries: vec![BlobEntry::new("k3".to_string(), 10)],
                 node_id: "n3".to_string(),
             },
         )
-        .await
+        .await;
+        (res, now.elapsed())
     });
 
     // wait for first
-    let o1 = handle1.await.unwrap().unwrap();
+    let (o1, time1) = handle1.await.unwrap();
+    let o1 = o1.unwrap();
 
     // unlock first
     let resp = send_create_unlock_request(
@@ -258,7 +265,8 @@ async fn test_lock_wait() {
     assert_eq!(resp.0, 200);
 
     // wait for second
-    let o2 = handle2.await.unwrap().unwrap();
+    let (o2, time2) = handle2.await.unwrap();
+    let o2 = o2.unwrap();
 
     // unlock n2
     let resp = send_create_unlock_request(
@@ -274,7 +282,8 @@ async fn test_lock_wait() {
     assert_eq!(resp.0, 200);
 
     // wait for third
-    let o3 = handle3.await.unwrap().unwrap();
+    let (o3, time3) = handle3.await.unwrap();
+    let o3 = o3.unwrap();
 
     // unlock n3
     let resp = send_create_unlock_request(
@@ -285,6 +294,10 @@ async fn test_lock_wait() {
         },
     )
     .await;
+
+    // check that they indeed waited
+    assert!(time1 < time2);
+    assert!(time2 < time3);
 
     println!("resp: {}", resp.1);
     assert_eq!(resp.0, 200);
