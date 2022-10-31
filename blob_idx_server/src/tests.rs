@@ -11,10 +11,10 @@ lazy_static! {
 }
 
 macro_rules! blob_test {
-    ($body:block) => {
+    ($body:block, $cfg:expr) => {
         let _lock = GLOBAL_LOCK.lock().await;
         redis_cleanup();
-        let server = run_test_server(make_config(1, 5)).await; // we have 1 file max
+        let server = run_test_server($cfg).await; // we have 1 file max
 
         // wait for the server to start
         while let Err(_) = reqwest::get("http://127.0.0.1:1337/").await {
@@ -24,6 +24,10 @@ macro_rules! blob_test {
         $body;
         server.shutdown().await;
         drop(_lock);
+    };
+    // default config
+    ($body:block) => {
+        blob_test!($body, make_config(1, 5));
     };
 }
 
