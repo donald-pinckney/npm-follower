@@ -169,18 +169,29 @@ fn insert_diff_log_rows_chunk<R: QueryRunner>(rows: &[NewDiffLogRow], conn: &mut
         .unwrap_or_else(|_| panic!("Failed to insert diff log rows into DB"))
 }
 
+pub mod testing {
+    use super::*;
+
+    pub fn get_all_diff_logs<R: QueryRunner>(conn: &mut R) -> Vec<DiffLogEntry> {
+        use super::schema::diff_log::dsl::*;
+
+        // TODO[bug]: batch this
+        let rows: Vec<DiffLogRow> = conn.load(diff_log).unwrap();
+
+        rows.into_iter().map(|r| r.into()).collect()
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
     use std::collections::BTreeMap;
 
+    use super::testing::get_all_diff_logs;
     use crate::change_log;
-    use crate::connection::DbConnection;
-    use crate::connection::QueryRunner;
     use crate::custom_types::PrereleaseTag;
     use crate::custom_types::Semver;
     use crate::diff_log::insert_diff_log_entries;
-    use crate::diff_log::DiffLogRow;
     use crate::packument::Dist;
     use crate::packument::PackageOnlyPackument;
     use crate::packument::VersionOnlyPackument;
@@ -193,15 +204,6 @@ mod tests {
     use super::DiffLogEntry;
     use super::DiffLogInstruction;
     use super::NewDiffLogEntry;
-
-    fn get_all_diff_logs(conn: &mut DbConnection) -> Vec<DiffLogEntry> {
-        use super::schema::diff_log::dsl::*;
-
-        // TODO[bug]: batch this
-        let rows: Vec<DiffLogRow> = conn.load(diff_log).unwrap();
-
-        rows.into_iter().map(|r| r.into()).collect()
-    }
 
     #[test]
     fn test_diff_log_read_write() {

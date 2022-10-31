@@ -20,25 +20,18 @@ use schema::internal_diff_log_state;
 #[cfg_attr(test, derive(PartialEq, Eq, Debug, Clone))]
 #[diesel(table_name = internal_diff_log_state)]
 #[diesel(primary_key(package_name))]
-pub(crate) struct InternalDiffLogStateRow {
-    pub(crate) package_name: String,
-    pub(crate) package_only_packument_hash: String,
-    pub(crate) deleted: bool,
-    pub(crate) versions: Vec<InternalDiffLogVersionStateElem>,
+pub struct InternalDiffLogStateRow {
+    pub package_name: String,
+    pub package_only_packument_hash: String,
+    pub deleted: bool,
+    pub versions: Vec<InternalDiffLogVersionStateElem>,
 }
 
-// #[derive(PartialEq, Eq, Debug, Clone)]
-// pub(crate) struct NewInternalDiffLogStateRow {
-//     pub(crate) package_only_packument_hash: String,
-//     pub(crate) deleted: bool,
-//     pub(crate) versions: Vec<InternalDiffLogVersionStateElem>,
-// }
-
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub(crate) struct InternalDiffLogVersionStateElem {
-    pub(crate) v: Semver,
-    pub(crate) pack_hash: String,
-    pub(crate) deleted: bool,
+pub struct InternalDiffLogVersionStateElem {
+    pub v: Semver,
+    pub pack_hash: String,
+    pub deleted: bool,
 }
 
 impl<'a> ToSql<schema::sql_types::InternalDiffLogVersionState, Pg>
@@ -97,6 +90,20 @@ pub(crate) fn update_packages<R: QueryRunner>(rows: Vec<InternalDiffLogStateRow>
     for r in rows {
         conn.execute(diesel::update(&r).set(&r))
             .unwrap_or_else(|e| panic!("Error updating rows: {}", e));
+    }
+}
+
+pub mod testing {
+    // use super::schema;
+    // use super::InternalDiffLogStateRow;
+    // use super::QueryRunner;
+    use super::*;
+
+    pub fn get_all_packages<R: QueryRunner>(conn: &mut R) -> Vec<InternalDiffLogStateRow> {
+        use schema::internal_diff_log_state::dsl::*;
+
+        conn.load(internal_diff_log_state.order(package_name))
+            .unwrap_or_else(|e| panic!("Error fetching row: {}", e))
     }
 }
 

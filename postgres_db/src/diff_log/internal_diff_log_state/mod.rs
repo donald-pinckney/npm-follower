@@ -1,5 +1,5 @@
 pub mod manager;
-mod sql;
+pub mod sql;
 
 use std::collections::BTreeMap;
 
