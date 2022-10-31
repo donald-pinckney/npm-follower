@@ -16,8 +16,8 @@ use diesel::QueryDsl;
 use diesel::Queryable;
 use schema::internal_diff_log_state;
 
-#[derive(Queryable, Insertable, AsChangeset, Identifiable)]
-#[cfg_attr(test, derive(PartialEq, Eq, Debug, Clone))]
+#[derive(Queryable, Insertable, AsChangeset, Identifiable, Debug, PartialEq, Eq)]
+#[cfg_attr(test, derive(Clone))]
 #[diesel(table_name = internal_diff_log_state)]
 #[diesel(primary_key(package_name))]
 pub struct InternalDiffLogStateRow {

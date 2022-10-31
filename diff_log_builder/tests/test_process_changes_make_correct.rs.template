@@ -1,0 +1,19 @@
+mod common;
+
+use std::collections::HashMap;
+
+use postgres_db::{
+    change_log::Change,
+    diff_log::{internal_diff_log_state::sql::InternalDiffLogStateRow, DiffLogEntry},
+};
+
+#[test]
+fn $TEST_NAME() {
+    let raw_batches_json_str = include_str!("$INPUT_PATH");
+
+    let raw_batches = common::read_change_batches(raw_batches_json_str);
+    let final_state = common::run_change_batches(raw_batches);
+
+    let ron_str = ron::ser::to_string_pretty(&final_state, ron::ser::PrettyConfig::new()).unwrap();
+    std::fs::write("$CORRECT_PATH", ron_str).unwrap();
+}

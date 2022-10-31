@@ -166,7 +166,7 @@ fn insert_diff_log_rows_chunk<R: QueryRunner>(rows: &[NewDiffLogRow], conn: &mut
     }
 
     conn.execute(diesel::insert_into(diff_log).values(rows))
-        .unwrap_or_else(|_| panic!("Failed to insert diff log rows into DB"))
+        .unwrap_or_else(|err| panic!("Failed to insert diff log rows into DB.\n{}", err))
 }
 
 pub mod testing {
