@@ -105,7 +105,12 @@ macro_rules! blob_test {
     ($body:block) => {
         redis_cleanup();
         let server = run_test_server(make_config(1, 5)).await; // we have 1 file max
-        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
+        // wait for the server to start
+        while let Err(_) = reqwest::get("http://127.0.0.1:1337/").await {
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        }
+
         $body;
         server.shutdown().await;
     };
