@@ -101,323 +101,329 @@ async fn send_lookup_request(
     serde_json::from_str::<BlobStorageSlice>(&resp).map_err(|_| resp)
 }
 
+macro_rules! blob_test {
+    ($body:block) => {
+        redis_cleanup();
+        let server = run_test_server(make_config(1, 5)).await; // we have 1 file max
+        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+        $body;
+        server.shutdown().await;
+    };
+}
+
 #[tokio::test]
 async fn test_simple_get_slice_unlock_lookup() {
-    redis_cleanup();
-    let server = run_test_server(make_config(1, 5)).await; // we have 1 file max
-    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
     let client = reqwest::Client::new();
+    blob_test!({
+        let offset = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![
+                    BlobEntry::new("k1".to_string(), 1),
+                    BlobEntry::new("k2".to_string(), 2),
+                ],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+        assert_eq!(offset.file_id, 0); // picks the first file
+        assert_eq!(offset.byte_offset, 0); // starts at 0
 
-    let offset = send_create_and_lock_request(
-        &client,
-        CreateAndLockRequest {
-            entries: vec![
-                BlobEntry::new("k1".to_string(), 1),
-                BlobEntry::new("k2".to_string(), 2),
-            ],
-            node_id: "n1".to_string(),
-        },
-    )
-    .await
-    .unwrap();
-    assert_eq!(offset.file_id, 0); // picks the first file
-    assert_eq!(offset.byte_offset, 0); // starts at 0
+        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+        // unlock
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: offset.file_id,
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
 
-    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-    // unlock
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: offset.file_id,
-            node_id: "n1".to_string(),
-        },
-    )
-    .await;
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
+        // lookup
+        let slice = send_lookup_request(
+            &client,
+            LookupRequest {
+                key: "k1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
 
-    // lookup
-    let slice = send_lookup_request(
-        &client,
-        LookupRequest {
-            key: "k1".to_string(),
-        },
-    )
-    .await
-    .unwrap();
+        assert_eq!(slice.file_id, 0);
+        assert_eq!(slice.byte_offset, 0);
+        assert_eq!(slice.num_bytes, 1);
 
-    assert_eq!(slice.file_id, 0);
-    assert_eq!(slice.byte_offset, 0);
-    assert_eq!(slice.num_bytes, 1);
+        // lock again
+        let offset = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![
+                    BlobEntry::new("k3".to_string(), 1),
+                    BlobEntry::new("k4".to_string(), 2),
+                ],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+        assert_eq!(offset.file_id, 0); // picks the first file
+        assert_eq!(offset.byte_offset, 3); // starts at 3
 
-    // lock again
-    let offset = send_create_and_lock_request(
-        &client,
-        CreateAndLockRequest {
-            entries: vec![
-                BlobEntry::new("k3".to_string(), 1),
-                BlobEntry::new("k4".to_string(), 2),
-            ],
-            node_id: "n1".to_string(),
-        },
-    )
-    .await
-    .unwrap();
-    assert_eq!(offset.file_id, 0); // picks the first file
-    assert_eq!(offset.byte_offset, 3); // starts at 3
+        // unlock
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: offset.file_id,
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
 
-    // unlock
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: offset.file_id,
-            node_id: "n1".to_string(),
-        },
-    )
-    .await;
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
+        // lookup
+        let slice = send_lookup_request(
+            &client,
+            LookupRequest {
+                key: "k4".to_string(),
+            },
+        )
+        .await
+        .unwrap();
 
-    // lookup
-    let slice = send_lookup_request(
-        &client,
-        LookupRequest {
-            key: "k4".to_string(),
-        },
-    )
-    .await
-    .unwrap();
-
-    assert_eq!(slice.file_id, 0);
-    assert_eq!(slice.byte_offset, 4);
-    assert_eq!(slice.num_bytes, 2);
-    server.shutdown().await;
+        assert_eq!(slice.file_id, 0);
+        assert_eq!(slice.byte_offset, 4);
+        assert_eq!(slice.num_bytes, 2);
+    });
 }
 
 #[tokio::test]
 /// This tests what happens when all files are locked, and multiple nodes try to lock
 async fn test_lock_wait() {
-    redis_cleanup();
-    let server = run_test_server(make_config(1, 1000)).await; // we have 1 file max, high timeout
-    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
     let client = reqwest::Client::new();
+    blob_test!({
+        // n1 initially locks, gets the lock
+        let client1 = client.clone();
+        let handle1 = tokio::task::spawn(async move {
+            let now = std::time::Instant::now();
+            let res = send_create_and_lock_request(
+                &client1,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                    node_id: "n1".to_string(),
+                },
+            )
+            .await;
+            (res, now.elapsed())
+        });
 
-    // n1 initially locks, gets the lock
-    let client1 = client.clone();
-    let handle1 = tokio::task::spawn(async move {
-        let now = std::time::Instant::now();
-        let res = send_create_and_lock_request(
-            &client1,
-            CreateAndLockRequest {
-                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+        // n2 waits for lock
+        let client2 = client.clone();
+        let handle2 = tokio::task::spawn(async move {
+            let now = std::time::Instant::now();
+            let res = send_create_and_lock_request(
+                &client2,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k2".to_string(), 3)],
+                    node_id: "n2".to_string(),
+                },
+            )
+            .await;
+            (res, now.elapsed())
+        });
+
+        // n3 waits for lock
+        let client3 = client.clone();
+        let handle3 = tokio::task::spawn(async move {
+            let now = std::time::Instant::now();
+            let res = send_create_and_lock_request(
+                &client3,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k3".to_string(), 10)],
+                    node_id: "n3".to_string(),
+                },
+            )
+            .await;
+            (res, now.elapsed())
+        });
+
+        // wait for first
+        let (o1, time1) = handle1.await.unwrap();
+        let o1 = o1.unwrap();
+
+        // unlock first
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: 0,
                 node_id: "n1".to_string(),
             },
         )
         .await;
-        (res, now.elapsed())
-    });
 
-    // n2 waits for lock
-    let client2 = client.clone();
-    let handle2 = tokio::task::spawn(async move {
-        let now = std::time::Instant::now();
-        let res = send_create_and_lock_request(
-            &client2,
-            CreateAndLockRequest {
-                entries: vec![BlobEntry::new("k2".to_string(), 3)],
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
+
+        // wait for second
+        let (o2, time2) = handle2.await.unwrap();
+        let o2 = o2.unwrap();
+
+        // unlock n2
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: 0,
                 node_id: "n2".to_string(),
             },
         )
         .await;
-        (res, now.elapsed())
-    });
 
-    // n3 waits for lock
-    let client3 = client.clone();
-    let handle3 = tokio::task::spawn(async move {
-        let now = std::time::Instant::now();
-        let res = send_create_and_lock_request(
-            &client3,
-            CreateAndLockRequest {
-                entries: vec![BlobEntry::new("k3".to_string(), 10)],
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
+
+        // wait for third
+        let (o3, time3) = handle3.await.unwrap();
+        let o3 = o3.unwrap();
+
+        // unlock n3
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: 0,
                 node_id: "n3".to_string(),
             },
         )
         .await;
-        (res, now.elapsed())
-    });
 
-    // wait for first
-    let (o1, time1) = handle1.await.unwrap();
-    let o1 = o1.unwrap();
+        // check that they indeed waited
+        assert!(time1 < time2);
+        assert!(time2 < time3);
+        println!("time1: {:?}", time1);
+        println!("time2: {:?}", time2);
+        println!("time3: {:?}", time3);
 
-    // unlock first
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: 0,
-            node_id: "n1".to_string(),
-        },
-    )
-    .await;
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
 
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
+        // check offsets (needs creation)
+        assert_eq!(o1.file_id, 0);
+        assert!(o1.needs_creation);
+        assert_eq!(o1.byte_offset, 0);
 
-    // wait for second
-    let (o2, time2) = handle2.await.unwrap();
-    let o2 = o2.unwrap();
+        assert_eq!(o2.file_id, 0);
+        assert!(!o2.needs_creation);
+        assert_eq!(o2.byte_offset, 1);
 
-    // unlock n2
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: 0,
-            node_id: "n2".to_string(),
-        },
-    )
-    .await;
+        assert_eq!(o3.file_id, 0);
+        assert!(!o3.needs_creation);
+        assert_eq!(o3.byte_offset, 4);
 
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
+        // -------------------------------------------------------
+        // now that everything is unlocked, we redo the same thing
+        // -------------------------------------------------------
 
-    // wait for third
-    let (o3, time3) = handle3.await.unwrap();
-    let o3 = o3.unwrap();
+        // n1 initially locks, gets the lock
+        let client1 = client.clone();
+        let handle1 = tokio::task::spawn(async move {
+            send_create_and_lock_request(
+                &client1,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k4".to_string(), 1)],
+                    node_id: "n1".to_string(),
+                },
+            )
+            .await
+        });
 
-    // unlock n3
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: 0,
-            node_id: "n3".to_string(),
-        },
-    )
-    .await;
+        // n2 waits for lock
+        let client2 = client.clone();
+        let handle2 = tokio::task::spawn(async move {
+            send_create_and_lock_request(
+                &client2,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k5".to_string(), 3)],
+                    node_id: "n2".to_string(),
+                },
+            )
+            .await
+        });
 
-    // check that they indeed waited
-    assert!(time1 < time2);
-    assert!(time2 < time3);
+        // n3 waits for lock
+        let client3 = client.clone();
+        let handle3 = tokio::task::spawn(async move {
+            send_create_and_lock_request(
+                &client3,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k6".to_string(), 10)],
+                    node_id: "n3".to_string(),
+                },
+            )
+            .await
+        });
 
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
+        // wait for first
+        let o1 = handle1.await.unwrap().unwrap();
 
-    // check offsets (needs creation)
-    assert_eq!(o1.file_id, 0);
-    assert!(o1.needs_creation);
-    assert_eq!(o1.byte_offset, 0);
-
-    assert_eq!(o2.file_id, 0);
-    assert!(!o2.needs_creation);
-    assert_eq!(o2.byte_offset, 1);
-
-    assert_eq!(o3.file_id, 0);
-    assert!(!o3.needs_creation);
-    assert_eq!(o3.byte_offset, 4);
-
-    // -------------------------------------------------------
-    // now that everything is unlocked, we redo the same thing
-    // -------------------------------------------------------
-
-    // n1 initially locks, gets the lock
-    let client1 = client.clone();
-    let handle1 = tokio::task::spawn(async move {
-        send_create_and_lock_request(
-            &client1,
-            CreateAndLockRequest {
-                entries: vec![BlobEntry::new("k4".to_string(), 1)],
+        // unlock first
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: 0,
                 node_id: "n1".to_string(),
             },
         )
-        .await
-    });
+        .await;
 
-    // n2 waits for lock
-    let client2 = client.clone();
-    let handle2 = tokio::task::spawn(async move {
-        send_create_and_lock_request(
-            &client2,
-            CreateAndLockRequest {
-                entries: vec![BlobEntry::new("k5".to_string(), 3)],
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
+
+        // wait for second
+        let o2 = handle2.await.unwrap().unwrap();
+
+        // unlock n2
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: 0,
                 node_id: "n2".to_string(),
             },
         )
-        .await
-    });
+        .await;
 
-    // n3 waits for lock
-    let client3 = client.clone();
-    let handle3 = tokio::task::spawn(async move {
-        send_create_and_lock_request(
-            &client3,
-            CreateAndLockRequest {
-                entries: vec![BlobEntry::new("k6".to_string(), 10)],
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
+
+        // wait for third
+        let o3 = handle3.await.unwrap().unwrap();
+
+        // unlock n3
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: 0,
                 node_id: "n3".to_string(),
             },
         )
-        .await
+        .await;
+
+        println!("resp: {}", resp.1);
+        assert_eq!(resp.0, 200);
+
+        // check offsets (now doesn't need creation)
+        assert_eq!(o1.file_id, 0);
+        assert!(!o1.needs_creation);
+        assert_eq!(o1.byte_offset, 14);
+
+        assert_eq!(o2.file_id, 0);
+        assert!(!o2.needs_creation);
+        assert_eq!(o2.byte_offset, 15);
+
+        assert_eq!(o3.file_id, 0);
+        assert!(!o3.needs_creation);
+        assert_eq!(o3.byte_offset, 18);
     });
-
-    // wait for first
-    let o1 = handle1.await.unwrap().unwrap();
-
-    // unlock first
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: 0,
-            node_id: "n1".to_string(),
-        },
-    )
-    .await;
-
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
-
-    // wait for second
-    let o2 = handle2.await.unwrap().unwrap();
-
-    // unlock n2
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: 0,
-            node_id: "n2".to_string(),
-        },
-    )
-    .await;
-
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
-
-    // wait for third
-    let o3 = handle3.await.unwrap().unwrap();
-
-    // unlock n3
-    let resp = send_create_unlock_request(
-        &client,
-        CreateUnlockRequest {
-            file_id: 0,
-            node_id: "n3".to_string(),
-        },
-    )
-    .await;
-
-    println!("resp: {}", resp.1);
-    assert_eq!(resp.0, 200);
-
-    // check offsets (now doesn't need creation)
-    assert_eq!(o1.file_id, 0);
-    assert!(!o1.needs_creation);
-    assert_eq!(o1.byte_offset, 14);
-
-    assert_eq!(o2.file_id, 0);
-    assert!(!o2.needs_creation);
-    assert_eq!(o2.byte_offset, 15);
-
-    assert_eq!(o3.file_id, 0);
-    assert!(!o3.needs_creation);
-    assert_eq!(o3.byte_offset, 18);
-
-    server.shutdown().await;
 }
