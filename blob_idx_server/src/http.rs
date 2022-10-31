@@ -8,9 +8,10 @@ use std::{
 
 use futures::Future;
 use hyper::{service::Service, Body, Request, Response, Server};
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::blob::{BlobEntry, BlobError, BlobStorage};
+use crate::blob::{BlobError, BlobStorage, BlobStorageConfig};
 
 pub struct HTTP {
     // the host and port for a http server
@@ -25,17 +26,18 @@ impl HTTP {
 
     pub async fn start(
         self,
-        max_files: u32,
+        blob_config: BlobStorageConfig,
+        shutdown_signal: impl Future<Output = ()>,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let addr = SocketAddr::from_str(&format!("{}:{}", self.host, self.port))?;
 
         let server = Server::bind(&addr).serve(MakeSvc {
-            session: Arc::new(BlobStorage::init(max_files).await),
+            session: Arc::new(BlobStorage::init(blob_config).await),
         });
 
         println!("Listening on http://{}", addr);
 
-        server.await?;
+        server.with_graceful_shutdown(shutdown_signal).await?;
         Ok(())
     }
 }
@@ -43,6 +45,48 @@ impl HTTP {
 /// Represents a service for the hyper http server
 struct Svc {
     session: Arc<BlobStorage>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct CreateAndLockRequest {
+    pub entries: Vec<BlobEntry>,
+    pub node_id: String,
+}
+
+/// A key to number of bytes mapping.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BlobEntry {
+    pub key: String,
+    pub num_bytes: u64,
+}
+
+impl BlobEntry {
+    pub fn new(key: String, num_bytes: u64) -> Self {
+        Self { key, num_bytes }
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct CreateUnlockRequest {
+    pub file_id: u32,
+    pub node_id: String,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct KeepAliveLockRequest {
+    pub file_id: u32,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct LookupRequest {
+    pub key: String,
+}
+
+fn try_from_str<'a, T>(s: &'a str) -> Result<T, HTTPError>
+where
+    T: Deserialize<'a>,
+{
+    serde_json::from_str(s).map_err(|e| HTTPError::InvalidBody(format!("Invalid json: {}", e)))
 }
 
 impl Service<Request<Body>> for Svc {
@@ -82,19 +126,10 @@ impl Service<Request<Body>> for Svc {
         //       - body: { "key": "some_key" }
         //       - returns: BlobStorageSlice or error
         Box::pin(async move {
-            fn get_key<'a>(
-                body: &'a serde_json::Value,
-                key: &str,
-            ) -> Result<&'a serde_json::Value, HTTPError> {
-                body.get(key)
-                    .ok_or_else(|| HTTPError::InvalidBody(key.to_string()))
-            }
-
             let thunk = async move {
                 // get the body
                 let body = hyper::body::to_bytes(req.body_mut()).await?;
                 let body = String::from_utf8(body.to_vec()).expect("invalid utf8");
-                let body: serde_json::Value = serde_json::from_str(&body)?;
 
                 // get the method
                 let method = req.method().to_string();
@@ -104,49 +139,26 @@ impl Service<Request<Body>> for Svc {
                         let path = req.uri().path().to_string();
                         match path.as_str() {
                             "/create_and_lock" => {
-                                let blob_entries: Vec<BlobEntry> =
-                                    serde_json::from_str(&get_key(&body, "entries")?.to_string())?;
-                                let node_id =
-                                    get_key(&body, "node_id")?.as_str().unwrap().to_string();
+                                let body: CreateAndLockRequest = try_from_str(&body)?;
                                 let res = cloned_session
-                                    .create_and_lock(blob_entries, node_id)
+                                    .create_and_lock(body.entries, body.node_id)
                                     .await?;
                                 #[cfg(debug_assertions)]
                                 cloned_session.debug_print("ran create_and_lock").await;
                                 Ok(serde_json::to_string(&res)?)
                             }
                             "/create_unlock" => {
-                                let file_id =
-                                    get_key(&body, "file_id")?.as_u64().ok_or_else(|| {
-                                        HTTPError::InvalidBody("file_id must be a u32".to_string())
-                                    })?;
-                                // check that file_id can be represented as a u32
-                                if file_id > u32::MAX as u64 {
-                                    return Err(HTTPError::InvalidBody(
-                                        "file_id must be a u32".to_string(),
-                                    ));
-                                }
-                                let node_id =
-                                    get_key(&body, "node_id")?.as_str().unwrap().to_string();
+                                let body: CreateUnlockRequest = try_from_str(&body)?;
                                 cloned_session
-                                    .create_unlock(file_id as u32, node_id)
+                                    .create_unlock(body.file_id, body.node_id)
                                     .await?;
                                 #[cfg(debug_assertions)]
                                 cloned_session.debug_print("ran create_unlock").await;
                                 Ok("".to_string())
                             }
                             "/keep_alive_lock" => {
-                                let file_id =
-                                    get_key(&body, "file_id")?.as_u64().ok_or_else(|| {
-                                        HTTPError::InvalidBody("file_id must be a u32".to_string())
-                                    })?;
-                                // check that file_id can be represented as a u32
-                                if file_id > u32::MAX as u64 {
-                                    return Err(HTTPError::InvalidBody(
-                                        "file_id must be a u32".to_string(),
-                                    ));
-                                }
-                                cloned_session.keep_alive_lock(file_id as u32).await?;
+                                let body: KeepAliveLockRequest = try_from_str(&body)?;
+                                cloned_session.keep_alive_lock(body.file_id).await?;
                                 #[cfg(debug_assertions)]
                                 cloned_session.debug_print("ran keep_alive_lock").await;
                                 Ok("".to_string())
@@ -156,8 +168,8 @@ impl Service<Request<Body>> for Svc {
                     }
                     "GET" => match req.uri().path().to_string().as_str() {
                         "/lookup" => {
-                            let key = get_key(&body, "key")?.as_str().unwrap().to_string();
-                            let res = cloned_session.lookup(key).await?;
+                            let body: LookupRequest = try_from_str(&body)?;
+                            let res = cloned_session.lookup(body.key).await?;
                             #[cfg(debug_assertions)]
                             cloned_session.debug_print("ran lookup").await;
                             Ok(serde_json::to_string(&res)?)

@@ -12,6 +12,7 @@ futures = "0.3.25"
 hyper = { version = "0.14.20", features = ["full"] }
 rand = "0.8.5"
 redis = "0.21.6"
+reqwest = "0.11.12"
 serde = { version = "1.0.147", features = ["derive"] }
 serde_json = { version = "1.0.87", features = ["preserve_order"] }
 tokio = { version = "1", features = ["full"] }

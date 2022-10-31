@@ -1,8 +1,12 @@
-use blob_idx_server::http::HTTP;
+use blob_idx_server::{blob, http::HTTP};
 
 #[tokio::main]
 async fn main() {
     let http = HTTP::new("127.0.0.1".to_string(), "8080".to_string());
-    // low value for testing
-    http.start(2).await.expect("Failed to start http server");
+    let (tx, mut shutdown_signal) = tokio::sync::mpsc::channel::<()>(1);
+    http.start(blob::BlobStorageConfig::default(), async move {
+        shutdown_signal.recv().await;
+    })
+    .await
+    .expect("Failed to start http server");
 }

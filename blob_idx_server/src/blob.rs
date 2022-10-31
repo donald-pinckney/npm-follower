@@ -9,6 +9,8 @@ use tokio::sync::{
     Mutex, Notify,
 };
 
+use crate::http::BlobEntry;
+
 /// A slice containing the information of a blob, linked to a key.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlobStorageSlice {
@@ -25,19 +27,6 @@ pub struct BlobOffset {
     pub file_name: String,
     pub byte_offset: u64,
     pub needs_creation: bool,
-}
-
-/// A key to number of bytes mapping.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BlobEntry {
-    pub key: String,
-    pub num_bytes: u64,
-}
-
-impl BlobEntry {
-    pub fn new(key: String, num_bytes: u64) -> Self {
-        Self { key, num_bytes }
-    }
 }
 
 // CONCURRENCY NOTES:
@@ -145,8 +134,33 @@ struct CleanerInstance {
     task: tokio::task::JoinHandle<()>,
 }
 
+/// Configuration to initialize a blob storage.
+#[derive(Debug, Clone)]
+pub struct BlobStorageConfig {
+    /// The url to the redis server.
+    pub redis_url: String,
+    /// The maximum number of chunk files to use.
+    pub max_files: u32,
+    /// How much time to wait before cleaning up a lock in seconds.
+    pub lock_timeout: u64,
+}
+
+impl Default for BlobStorageConfig {
+    fn default() -> Self {
+        dotenvy::dotenv().ok();
+        let redis_url = std::env::var("BLOB_REDIS_URL").expect("BLOB_REDIS_URL");
+        Self {
+            redis_url,
+            max_files: 1000,
+            lock_timeout: 10 * 60,
+        }
+    }
+}
+
 /// A thread-safe blob storage API.
 pub struct BlobStorage {
+    /// The configuration of the blob storage.
+    config: BlobStorageConfig,
     redis: Mutex<redis::Connection>,
     map: DashMap<String, LockWrapper>, // map [key] -> [slice + lock]
     /// pool of all the files (locked or not)
@@ -158,18 +172,14 @@ pub struct BlobStorage {
     file_lock: Mutex<()>,
     /// The map of lock cleanup tasks.
     cleanup_tasks: DashMap<u32, CleanerInstance>,
-    /// The maximum number of chunk files to use.
-    max_files: u32,
 }
 
 /// INFO: https://github.com/donald-pinckney/npm-follower/wiki/Design-of-the-Blob-Storage-Index-Server
 impl BlobStorage {
     /// NOTE: with redis, on new we fully load the file pools.
     /// meanwhile for the k/v map, we lazily load it on first access.
-    pub async fn init(max_files: u32) -> BlobStorage {
-        dotenvy::dotenv().ok();
-        let redis = redis::Client::open(std::env::var("BLOB_REDIS_URL").expect("BLOB_REDIS_URL"))
-            .expect("redis client");
+    pub async fn init(config: BlobStorageConfig) -> BlobStorage {
+        let redis = redis::Client::open(config.redis_url.as_str()).expect("redis client");
         let mut con = redis.get_connection().unwrap();
         // load file pool from redis
         let file_pool = {
@@ -192,13 +202,13 @@ impl BlobStorage {
         };
 
         BlobStorage {
+            config,
             redis: Mutex::new(con),
             map: DashMap::new(),
             file_pool,
             locked_files: Arc::new(DashMap::new()),
             file_lock: Mutex::new(()),
             cleanup_tasks: DashMap::new(),
-            max_files,
         }
     }
 
@@ -207,9 +217,10 @@ impl BlobStorage {
     fn spawn_lock_cleaner(&self, file_id: u32) {
         let (tx, rx) = tokio::sync::mpsc::channel(1);
         let locked_files = self.locked_files.clone();
+        let lock_timeout = self.config.lock_timeout;
         let task = tokio::spawn(async move {
             let mut keep_alive_ch = rx;
-            let duration = std::time::Duration::from_secs(10 * 60);
+            let duration = std::time::Duration::from_secs(lock_timeout);
             let mut timer = tokio::time::interval(duration);
             timer.tick().await; // start ticking
             loop {
@@ -385,7 +396,7 @@ impl BlobStorage {
             // - otherwise, if we are at full capacity we filter locked files from pool:
             //  - if filter is empty, we wait for a random file to be unlocked
             //  - if filter is not empty, pick a random one from intersection
-            if self.file_pool.len() as u32 != self.max_files {
+            if self.file_pool.len() as u32 != self.config.max_files {
                 // we create a new file
                 let file_id = self.file_pool.len() as u32;
                 let file_name = format!("blob_{}.bin", file_id);
@@ -408,7 +419,7 @@ impl BlobStorage {
                     // wait for a random file to be unlocked
                     let file_id = {
                         let mut rng = rand::thread_rng();
-                        rng.gen_range(0..self.max_files)
+                        rng.gen_range(0..self.config.max_files)
                     };
                     let notify = self
                         .file_pool
