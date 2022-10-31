@@ -823,3 +823,128 @@ async fn more_than_one_file() {
         cfg
     );
 }
+
+#[tokio::test]
+async fn test_not_written() {
+    let client = reqwest::Client::new();
+    blob_test!({
+        // lock a file
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(resp.file_id, 0);
+
+        // try to lookup before unlock
+        let resp = send_lookup_request(
+            &client,
+            LookupRequest {
+                key: "k1".to_string(),
+            },
+        )
+        .await;
+
+        assert!(resp.is_err());
+        assert!(resp.unwrap_err().contains("Blob is not written"));
+    });
+}
+
+#[tokio::test]
+async fn test_wrong_node_id() {
+    let client = reqwest::Client::new();
+    blob_test!({
+        // lock with n1
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(resp.file_id, 0);
+
+        // try to unlock with n2
+        let resp = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: resp.file_id,
+                node_id: "n2".to_string(),
+            },
+        )
+        .await;
+
+        assert_eq!(resp.0, 400);
+        assert!(resp.1.contains("Blob is locked by another node"));
+    });
+}
+
+#[tokio::test]
+async fn test_slice_doesnt_exist() {
+    let client = reqwest::Client::new();
+    blob_test!({
+        // lookup a slice that doesn't exist
+        let resp = send_lookup_request(
+            &client,
+            LookupRequest {
+                key: "k1".to_string(),
+            },
+        )
+        .await;
+
+        assert!(resp.is_err());
+        assert!(resp.unwrap_err().contains("Blob does not exist"));
+    });
+}
+
+#[tokio::test]
+async fn test_unlock_twice() {
+    let client = reqwest::Client::new();
+    blob_test!({
+        // lock a file
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(resp.file_id, 0);
+
+        // unlock it
+        let u = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: resp.file_id,
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+
+        assert_eq!(u.0, 200);
+
+        // unlock it again
+        let u = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: resp.file_id,
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+
+        assert_eq!(u.0, 400);
+        assert!(u.1.contains("Blob create not locked"));
+    });
+}

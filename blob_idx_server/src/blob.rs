@@ -4,10 +4,7 @@ use dashmap::DashMap;
 use rand::{seq::SliceRandom, Rng};
 use redis::Commands;
 use serde::{ser::SerializeStruct, Deserialize, Serialize};
-use tokio::sync::{
-    mpsc::{Receiver, Sender},
-    Mutex, Notify,
-};
+use tokio::sync::{mpsc::Sender, Mutex, Notify};
 
 use crate::http::BlobEntry;
 
