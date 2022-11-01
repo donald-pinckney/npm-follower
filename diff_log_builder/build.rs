@@ -9,6 +9,19 @@ use std::path::PathBuf;
 
 // Adapated from: https://blog.cyplo.dev/posts/2018/12/generate-rust-tests-from-data/
 
+static TEST_BUILDER_CONFIGS: &[InputOutputTestBuilderConfig] = &[
+    InputOutputTestBuilderConfig {
+        test_suite_name: "deserialize_change",
+        header: r#"
+        "#,
+    },
+    InputOutputTestBuilderConfig {
+        test_suite_name: "process_changes",
+        header: r#"
+            "#,
+    },
+];
+
 struct InputOutputTestBuilderConfig {
     test_suite_name: &'static str,
     header: &'static str,
@@ -138,7 +151,6 @@ impl InputOutputTestBuilderConfig {
         correct_path: &Path,
     ) -> Result<(), String> {
         let input_path = input_path.canonicalize().unwrap();
-        let correct_path = correct_path.canonicalize().unwrap();
 
         let test_name = format!("test_{}_{}_check", self.test_suite_name, name);
 
@@ -165,7 +177,6 @@ impl InputOutputTestBuilderConfig {
         correct_path: &Path,
     ) -> Result<(), String> {
         let input_path = input_path.canonicalize().unwrap();
-        let correct_path = correct_path.canonicalize().unwrap();
 
         let test_name = format!("test_{}_{}_make", self.test_suite_name, name);
 
@@ -183,16 +194,9 @@ impl InputOutputTestBuilderConfig {
     }
 }
 
-static TEST_BUILDER_CONFIGS: &[InputOutputTestBuilderConfig] = &[InputOutputTestBuilderConfig {
-    test_suite_name: "deserialize_change",
-    header: r#"
-        use postgres_db::change_log::Change;
-        use diff_log_builder::deserialize_change;
-        "#,
-}];
-
 // build script's entry point
 fn main() {
+    println!("cargo:rerun-if-changed=\"build.rs\"");
     println!("cargo:rerun-if-changed=\"resources/\"");
 
     for c in TEST_BUILDER_CONFIGS {

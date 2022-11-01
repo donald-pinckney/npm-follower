@@ -1,12 +1,3 @@
-mod common;
-
-use std::collections::HashMap;
-
-use postgres_db::{
-    change_log::Change,
-    diff_log::{internal_diff_log_state::sql::InternalDiffLogStateRow, DiffLogEntry},
-};
-
 #[test]
 fn $TEST_NAME() {
     let raw_batches_json_str = include_str!("$INPUT_PATH");

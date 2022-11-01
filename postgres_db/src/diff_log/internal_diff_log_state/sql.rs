@@ -15,8 +15,9 @@ use diesel::Insertable;
 use diesel::QueryDsl;
 use diesel::Queryable;
 use schema::internal_diff_log_state;
+use serde::Serialize;
 
-#[derive(Queryable, Insertable, AsChangeset, Identifiable, Debug, PartialEq, Eq)]
+#[derive(Queryable, Insertable, AsChangeset, Identifiable, Debug, PartialEq, Eq, Serialize)]
 #[cfg_attr(test, derive(Clone))]
 #[diesel(table_name = internal_diff_log_state)]
 #[diesel(primary_key(package_name))]
@@ -27,7 +28,7 @@ pub struct InternalDiffLogStateRow {
     pub versions: Vec<InternalDiffLogVersionStateElem>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize)]
 pub struct InternalDiffLogVersionStateElem {
     pub v: Semver,
     pub pack_hash: String,

@@ -1,11 +1,13 @@
 use super::*;
 use diff_log_builder::process_changes;
+use serde::Serialize;
 use serde_json::Value;
 
 pub fn read_change_batches(s: &str) -> Vec<Vec<Value>> {
     serde_json::from_str(s).unwrap()
 }
 
+#[derive(Serialize)]
 pub struct DiffTestState {
     pub hash_state: HashMap<String, InternalDiffLogStateRow>,
     pub diff_log: Vec<DiffLogEntry>,

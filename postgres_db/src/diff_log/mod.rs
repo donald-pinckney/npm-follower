@@ -10,6 +10,7 @@ use super::schema;
 use super::schema::diff_log;
 use diesel::Insertable;
 use diesel::Queryable;
+use serde::Serialize;
 use serde_json::Value;
 
 // TODO[perf]: add some Rcs so things are passed by reference more.
@@ -36,7 +37,7 @@ struct NewDiffLogRow {
     version_packument: Option<Value>,
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Serialize)]
 pub struct DiffLogEntry {
     id: i64,
     seq: i64,
@@ -59,7 +60,7 @@ pub struct NewDiffLogEntryWithHash {
     pub hash: Option<String>,
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Serialize)]
 pub enum DiffLogInstruction {
     CreatePackage(PackageOnlyPackument),
     UpdatePackage(PackageOnlyPackument),
