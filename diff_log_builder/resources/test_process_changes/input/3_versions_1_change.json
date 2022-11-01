@@ -1,10 +1,10 @@
 [
     [
         {
-            "id": "atomizify",
+            "id": "foo",
             "seq": 1,
             "doc": {
-                "_id": "atomizify",
+                "_id": "foo",
                 "_rev": "doesnt matter",
                 "dist-tags": {
                     "latest": "1.0.2"
@@ -18,44 +18,44 @@
                 },
                 "versions": {
                     "1.0.0": {
-                        "_id": "atomizify@1.0.0",
+                        "_id": "foo@1.0.0",
                         "dist": {
-                            "tarball": "https://registry.npmjs.org/atomizify/-/atomizify-1.0.0.tgz"
+                            "tarball": "https://registry.npmjs.org/foo/-/foo-1.0.0.tgz"
                         },
-                        "peerDependencies": [
-                            "dallas"
-                        ],
+                        "dependencies": {
+                            "bar": "^1.0.0"
+                        },
                         "repository": {
                             "type": "git",
-                            "url": "git+https://github.com/MarieMalarme/atomizify.git"
+                            "url": "git+https://github.com/MarieMalarme/foo.git"
                         },
                         "version": "1.0.0"
                     },
                     "1.0.1": {
-                        "_id": "atomizify@1.0.1",
+                        "_id": "foo@1.0.1",
                         "dist": {
-                            "tarball": "https://registry.npmjs.org/atomizify/-/atomizify-1.0.1.tgz"
+                            "tarball": "https://registry.npmjs.org/foo/-/foo-1.0.1.tgz"
                         },
-                        "peerDependencies": [
-                            "dallas"
-                        ],
+                        "dependencies": {
+                            "bar": "~1.0.1"
+                        },
                         "repository": {
                             "type": "git",
-                            "url": "git+https://github.com/MarieMalarme/atomizify.git"
+                            "url": "git+https://github.com/MarieMalarme/foo.git"
                         },
                         "version": "1.0.1"
                     },
                     "1.0.2": {
-                        "_id": "atomizify@1.0.2",
+                        "_id": "foo@1.0.2",
                         "dist": {
-                            "tarball": "https://registry.npmjs.org/atomizify/-/atomizify-1.0.2.tgz"
+                            "tarball": "https://registry.npmjs.org/foo/-/foo-1.0.2.tgz"
                         },
-                        "peerDependencies": [
-                            "dallas"
-                        ],
+                        "dependencies": {
+                            "bar": "<1.2.0"
+                        },
                         "repository": {
                             "type": "git",
-                            "url": "git+https://github.com/MarieMalarme/atomizify.git"
+                            "url": "git+https://github.com/MarieMalarme/foo.git"
                         },
                         "version": "1.0.2"
                     }
