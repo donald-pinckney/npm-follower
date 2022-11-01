@@ -948,3 +948,69 @@ async fn test_unlock_twice() {
         assert!(u.1.contains("Blob create not locked"));
     });
 }
+
+#[tokio::test]
+async fn test_duplicate_keys() {
+    let client = reqwest::Client::new();
+    blob_test!({
+        // lock a file
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![
+                    BlobEntry::new("k1".to_string(), 1),
+                    BlobEntry::new("k1".to_string(), 1),
+                ],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+
+        assert!(resp.is_err());
+        assert!(resp.unwrap_err().contains("Blob duplicate keys"));
+    });
+}
+
+#[tokio::test]
+async fn test_already_created_key() {
+    let client = reqwest::Client::new();
+    blob_test!({
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(resp.file_id, 0);
+
+        // unlock
+
+        let u = send_create_unlock_request(
+            &client,
+            CreateUnlockRequest {
+                file_id: resp.file_id,
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+
+        assert_eq!(u.0, 200);
+
+        // try to create again
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+
+        assert!(resp.is_err());
+        assert!(resp.unwrap_err().contains("Blob already exists"));
+    });
+}
