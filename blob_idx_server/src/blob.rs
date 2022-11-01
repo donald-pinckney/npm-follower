@@ -285,14 +285,14 @@ impl BlobStorage {
             locked_files_str.push_str(&format!("\t\t{}: {:?}\n", a.key(), a.value()));
         }
 
-        println!("\tlocked_files:\n{}\n", locked_files_str);
+        println!("\tlocked_files:\n{}", locked_files_str);
 
         let mut cleaners_str = String::new();
         for a in self.cleanup_tasks.iter() {
-            cleaners_str.push_str(&format!("\t\t{}\n", a.key()));
+            cleaners_str.push_str(&format!("{} ", a.key()));
         }
 
-        println!("\tcleaners:\n{}\n", cleaners_str);
+        println!("\tcleaners: {}\n", cleaners_str);
     }
 
     async fn map_lookup(&self, key: &str) -> Result<LockWrapper, BlobError> {
@@ -370,8 +370,17 @@ impl BlobStorage {
         let keys = entries.iter().map(|e| e.key.clone()).collect::<Vec<_>>();
         // check that keys does not exist already
         for key in keys.iter() {
-            if self.map_lookup(key).await.is_ok() {
-                return Err(BlobError::AlreadyExists);
+            if let Ok(l) = self.map_lookup(key).await {
+                // if the key is written, we can't write to it
+                // but if the key is not written, we can overwrite it if the file is unlocked
+                if l.written {
+                    return Err(BlobError::AlreadyExists);
+                }
+
+                // check that the file is not locked (may be a cleaned key)
+                if self.locked_files.contains_key(&l.slice.file_id) {
+                    return Err(BlobError::AlreadyExists);
+                }
             }
         }
 

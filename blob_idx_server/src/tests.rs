@@ -5,7 +5,7 @@ use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 
 use crate::{
-    blob::{BlobOffset, BlobStorageConfig, BlobStorageSlice},
+    blob::{self, BlobOffset, BlobStorageConfig, BlobStorageSlice},
     http::{
         BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest, LookupRequest,
         HTTP,
@@ -1013,4 +1013,120 @@ async fn test_already_created_key() {
         assert!(resp.is_err());
         assert!(resp.unwrap_err().contains("Blob already exists"));
     });
+}
+
+#[tokio::test]
+async fn test_lock_twice() {
+    let client = reqwest::Client::new();
+    blob_test!({
+        // lock key "k1"
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(resp.file_id, 0);
+
+        // lock same key again
+        let resp = send_create_and_lock_request(
+            &client,
+            CreateAndLockRequest {
+                entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                node_id: "n1".to_string(),
+            },
+        )
+        .await;
+
+        assert!(resp.is_err());
+        assert!(resp.unwrap_err().contains("Blob already exists"));
+    });
+}
+
+/// This tests what happens when a node locks, then it gets cleaned, and and another node
+/// wants to lock the same key.
+#[tokio::test]
+async fn test_rewrite_cleaned() {
+    let client = reqwest::Client::new();
+    let cfg = make_config(1, 2);
+
+    blob_test!(
+        {
+            // lock a file
+            let resp = send_create_and_lock_request(
+                &client,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                    node_id: "n1".to_string(),
+                },
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(resp.file_id, 0);
+            assert_eq!(resp.byte_offset, 0);
+
+            // wait for the lock to expire
+            tokio::time::sleep(Duration::from_secs(2)).await;
+
+            // lock another different key
+
+            let resp = send_create_and_lock_request(
+                &client,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k2".to_string(), 1)],
+                    node_id: "n2".to_string(),
+                },
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(resp.file_id, 0);
+            assert_eq!(resp.byte_offset, 1);
+
+            // unlock it
+            let u = send_create_unlock_request(
+                &client,
+                CreateUnlockRequest {
+                    file_id: resp.file_id,
+                    node_id: "n2".to_string(),
+                },
+            )
+            .await;
+
+            assert_eq!(u.0, 200);
+
+            // now, try to lock the first key again
+
+            let resp = send_create_and_lock_request(
+                &client,
+                CreateAndLockRequest {
+                    entries: vec![BlobEntry::new("k1".to_string(), 1)],
+                    node_id: "n2".to_string(),
+                },
+            )
+            .await
+            .unwrap();
+
+            assert_eq!(resp.file_id, 0);
+            assert_eq!(resp.byte_offset, 2); // NOTE: important, it wouldn't be 0
+
+            // unlock
+            let u = send_create_unlock_request(
+                &client,
+                CreateUnlockRequest {
+                    file_id: resp.file_id,
+                    node_id: "n2".to_string(),
+                },
+            )
+            .await;
+
+            assert_eq!(u.0, 200);
+        },
+        cfg
+    );
 }
