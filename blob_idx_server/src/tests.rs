@@ -66,7 +66,11 @@ impl TestServer {
 }
 
 async fn run_test_server(cfg: BlobStorageConfig) -> TestServer {
-    let http = HTTP::new("127.0.0.1".to_string(), "1337".to_string());
+    let http = HTTP::new(
+        "127.0.0.1".to_string(),
+        "1337".to_string(),
+        "123".to_string(),
+    );
     let (tx, mut rx) = tokio::sync::mpsc::channel::<()>(1);
 
     let task = tokio::spawn(async move {
@@ -95,6 +99,7 @@ async fn send_create_and_lock_request(
     let resp = client
         .post("http://127.0.0.1:1337/create_and_lock")
         .body(serde_json::to_string(&req).unwrap())
+        .header("Authorization", "123")
         .send()
         .await
         .unwrap()
@@ -112,6 +117,7 @@ async fn send_create_unlock_request(
     let resp = client
         .post("http://127.0.0.1:1337/create_unlock")
         .body(serde_json::to_string(&req).unwrap())
+        .header("Authorization", "123")
         .send()
         .await
         .unwrap();
@@ -126,6 +132,7 @@ async fn send_keepalive_request(
     let resp = client
         .post("http://127.0.0.1:1337/keep_alive_lock")
         .body(serde_json::to_string(&req).unwrap())
+        .header("Authorization", "123")
         .send()
         .await
         .unwrap();
@@ -140,6 +147,7 @@ async fn send_lookup_request(
     let resp = client
         .get("http://127.0.0.1:1337/lookup")
         .body(serde_json::to_string(&req).unwrap())
+        .header("Authorization", "123")
         .send()
         .await
         .unwrap()

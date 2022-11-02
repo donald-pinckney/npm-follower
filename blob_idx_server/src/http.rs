@@ -17,11 +17,16 @@ pub struct HTTP {
     // the host and port for a http server
     host: String,
     port: String,
+    api_key: String,
 }
 
 impl HTTP {
-    pub fn new(host: String, port: String) -> Self {
-        HTTP { host, port }
+    pub fn new(host: String, port: String, api_key: String) -> Self {
+        HTTP {
+            host,
+            port,
+            api_key,
+        }
     }
 
     pub async fn start(
@@ -33,6 +38,7 @@ impl HTTP {
 
         let server = Server::bind(&addr).serve(MakeSvc {
             session: Arc::new(BlobStorage::init(blob_config).await),
+            api_key: self.api_key,
         });
 
         println!("Listening on http://{}", addr);
@@ -45,6 +51,7 @@ impl HTTP {
 /// Represents a service for the hyper http server
 struct Svc {
     session: Arc<BlobStorage>,
+    api_key: String,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -110,6 +117,7 @@ impl Service<Request<Body>> for Svc {
         }
 
         let cloned_session = self.session.clone();
+        let api_key = self.api_key.clone();
         // routes:
         //  - POST:
         //     - /create_and_lock
@@ -130,6 +138,17 @@ impl Service<Request<Body>> for Svc {
                 // get the body
                 let body = hyper::body::to_bytes(req.body_mut()).await?;
                 let body = String::from_utf8(body.to_vec()).expect("invalid utf8");
+
+                // get auth header
+                let auth_header = req.headers().get("Authorization");
+
+                // check api key equals to the one in the header
+                if auth_header.is_none()
+                    || auth_header.unwrap().to_str().is_err()
+                    || auth_header.unwrap().to_str().unwrap() != api_key
+                {
+                    return Err(HTTPError::InvalidKey);
+                }
 
                 // get the method
                 let method = req.method().to_string();
@@ -194,6 +213,7 @@ impl Service<Request<Body>> for Svc {
 
 struct MakeSvc {
     session: Arc<BlobStorage>,
+    api_key: String,
 }
 
 impl<T> Service<T> for MakeSvc {
@@ -207,7 +227,8 @@ impl<T> Service<T> for MakeSvc {
 
     fn call(&mut self, _: T) -> Self::Future {
         let session = self.session.clone();
-        let fut = async move { Ok(Svc { session }) };
+        let api_key = self.api_key.clone();
+        let fut = async move { Ok(Svc { session, api_key }) };
         Box::pin(fut)
     }
 }
@@ -220,6 +241,7 @@ pub enum HTTPError {
     Serde(serde_json::Error),
     InvalidBody(String), // missing a field in the body
     InvalidMethod(String),
+    InvalidKey,
     InvalidPath(String),
 }
 
@@ -257,6 +279,7 @@ impl std::fmt::Display for HTTPError {
             HTTPError::InvalidMethod(e) => write!(f, "Invalid method: {}", e),
             HTTPError::InvalidPath(e) => write!(f, "Invalid path: {}", e),
             HTTPError::Serde(e) => write!(f, "Serde error: {}", e),
+            HTTPError::InvalidKey => write!(f, "Invalid api key"),
         }
     }
 }
