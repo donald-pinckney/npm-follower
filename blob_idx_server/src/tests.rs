@@ -97,7 +97,7 @@ async fn send_create_and_lock_request(
     req: CreateAndLockRequest,
 ) -> Result<BlobOffset, String> {
     let resp = client
-        .post("http://127.0.0.1:1337/create_and_lock")
+        .post("http://127.0.0.1:1337/blob/create_and_lock")
         .body(serde_json::to_string(&req).unwrap())
         .header("Authorization", "123")
         .send()
@@ -115,7 +115,7 @@ async fn send_create_unlock_request(
     req: CreateUnlockRequest,
 ) -> (reqwest::StatusCode, String) {
     let resp = client
-        .post("http://127.0.0.1:1337/create_unlock")
+        .post("http://127.0.0.1:1337/blob/create_unlock")
         .body(serde_json::to_string(&req).unwrap())
         .header("Authorization", "123")
         .send()
@@ -130,7 +130,7 @@ async fn send_keepalive_request(
     req: KeepAliveLockRequest,
 ) -> (reqwest::StatusCode, String) {
     let resp = client
-        .post("http://127.0.0.1:1337/keep_alive_lock")
+        .post("http://127.0.0.1:1337/blob/keep_alive_lock")
         .body(serde_json::to_string(&req).unwrap())
         .header("Authorization", "123")
         .send()
@@ -145,7 +145,7 @@ async fn send_lookup_request(
     req: LookupRequest,
 ) -> Result<BlobStorageSlice, String> {
     let resp = client
-        .get("http://127.0.0.1:1337/lookup")
+        .get("http://127.0.0.1:1337/blob/lookup")
         .body(serde_json::to_string(&req).unwrap())
         .header("Authorization", "123")
         .send()

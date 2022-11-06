@@ -120,17 +120,17 @@ impl Service<Request<Body>> for Svc {
         let api_key = self.api_key.clone();
         // routes:
         //  - POST:
-        //     - /create_and_lock
+        //     - /blob/create_and_lock
         //       - body: {"entries": [{"key": "some_key", "num_bytes": 100}, ...], "node_id": "some_node_id"}
         //       - returns: BlobOffset or error
-        //     - /create_unlock
+        //     - /blob/create_unlock
         //       - body: {"key": "some_key", "node_id": "some_node_id"}
         //       - returns: empty or error
-        //     - /keep_alive_lock
+        //     - /blob/keep_alive_lock
         //       - body: {"file_id": 100}
         //       - returns: empty or error
         //  - GET:
-        //     - /lookup
+        //     - /blob/lookup
         //       - body: { "key": "some_key" }
         //       - returns: BlobStorageSlice or error
         Box::pin(async move {
@@ -157,20 +157,24 @@ impl Service<Request<Body>> for Svc {
                         // get the path
                         let path = req.uri().path().to_string();
                         match path.as_str() {
-                            "/create_and_lock" => {
-                                routes::create_and_lock(blob_store, try_from_str(&body)?).await
+                            "/blob/create_and_lock" => {
+                                routes::blob::create_and_lock(blob_store, try_from_str(&body)?)
+                                    .await
                             }
-                            "/create_unlock" => {
-                                routes::create_unlock(blob_store, try_from_str(&body)?).await
+                            "/blob/create_unlock" => {
+                                routes::blob::create_unlock(blob_store, try_from_str(&body)?).await
                             }
-                            "/keep_alive_lock" => {
-                                routes::keep_alive_lock(blob_store, try_from_str(&body)?).await
+                            "/blob/keep_alive_lock" => {
+                                routes::blob::keep_alive_lock(blob_store, try_from_str(&body)?)
+                                    .await
                             }
                             p => Err(HTTPError::InvalidPath(p.to_string())),
                         }
                     }
                     "GET" => match req.uri().path().to_string().as_str() {
-                        "/lookup" => routes::lookup(blob_store, try_from_str(&body)?).await,
+                        "/blob/lookup" => {
+                            routes::blob::lookup(blob_store, try_from_str(&body)?).await
+                        }
                         p => Err(HTTPError::InvalidPath(p.to_string())),
                     },
                     _ => Err(HTTPError::InvalidMethod(method)),
@@ -194,44 +198,47 @@ mod routes {
 
     use super::*;
 
-    pub(super) async fn lookup(
-        blob: Arc<BlobStorage>,
-        body: LookupRequest,
-    ) -> Result<String, HTTPError> {
-        let res = blob.lookup(body.key).await?;
-        #[cfg(debug_assertions)]
-        blob.debug_print("ran lookup").await;
-        Ok(serde_json::to_string(&res)?)
-    }
+    pub(super) mod blob {
+        use super::*;
+        pub(crate) async fn lookup(
+            blob: Arc<BlobStorage>,
+            body: LookupRequest,
+        ) -> Result<String, HTTPError> {
+            let res = blob.lookup(body.key).await?;
+            #[cfg(debug_assertions)]
+            blob.debug_print("ran lookup").await;
+            Ok(serde_json::to_string(&res)?)
+        }
 
-    pub(super) async fn keep_alive_lock(
-        blob: Arc<BlobStorage>,
-        body: KeepAliveLockRequest,
-    ) -> Result<String, HTTPError> {
-        blob.keep_alive_lock(body.file_id).await?;
-        #[cfg(debug_assertions)]
-        blob.debug_print("ran keep_alive_lock").await;
-        Ok("".to_string())
-    }
+        pub(crate) async fn keep_alive_lock(
+            blob: Arc<BlobStorage>,
+            body: KeepAliveLockRequest,
+        ) -> Result<String, HTTPError> {
+            blob.keep_alive_lock(body.file_id).await?;
+            #[cfg(debug_assertions)]
+            blob.debug_print("ran keep_alive_lock").await;
+            Ok("".to_string())
+        }
 
-    pub(super) async fn create_unlock(
-        blob: Arc<BlobStorage>,
-        body: CreateUnlockRequest,
-    ) -> Result<String, HTTPError> {
-        blob.create_unlock(body.file_id, body.node_id).await?;
-        #[cfg(debug_assertions)]
-        blob.debug_print("ran create_unlock").await;
-        Ok("".to_string())
-    }
+        pub(crate) async fn create_unlock(
+            blob: Arc<BlobStorage>,
+            body: CreateUnlockRequest,
+        ) -> Result<String, HTTPError> {
+            blob.create_unlock(body.file_id, body.node_id).await?;
+            #[cfg(debug_assertions)]
+            blob.debug_print("ran create_unlock").await;
+            Ok("".to_string())
+        }
 
-    pub(super) async fn create_and_lock(
-        blob: Arc<BlobStorage>,
-        body: CreateAndLockRequest,
-    ) -> Result<String, HTTPError> {
-        let res = blob.create_and_lock(body.entries, body.node_id).await?;
-        #[cfg(debug_assertions)]
-        blob.debug_print("ran create_and_lock").await;
-        Ok(serde_json::to_string(&res)?)
+        pub(crate) async fn create_and_lock(
+            blob: Arc<BlobStorage>,
+            body: CreateAndLockRequest,
+        ) -> Result<String, HTTPError> {
+            let res = blob.create_and_lock(body.entries, body.node_id).await?;
+            #[cfg(debug_assertions)]
+            blob.debug_print("ran create_and_lock").await;
+            Ok(serde_json::to_string(&res)?)
+        }
     }
 }
 
