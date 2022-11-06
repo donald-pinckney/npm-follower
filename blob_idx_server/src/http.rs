@@ -50,7 +50,7 @@ impl HTTP {
 
 /// Represents a service for the hyper http server
 struct Svc {
-    session: Arc<BlobStorage>,
+    blob_store: Arc<BlobStorage>,
     api_key: String,
 }
 
@@ -116,7 +116,7 @@ impl Service<Request<Body>> for Svc {
             Ok(Response::builder().body(Body::from(s)).unwrap())
         }
 
-        let cloned_session = self.session.clone();
+        let blob_store = self.blob_store.clone();
         let api_key = self.api_key.clone();
         // routes:
         //  - POST:
@@ -158,41 +158,19 @@ impl Service<Request<Body>> for Svc {
                         let path = req.uri().path().to_string();
                         match path.as_str() {
                             "/create_and_lock" => {
-                                let body: CreateAndLockRequest = try_from_str(&body)?;
-                                let res = cloned_session
-                                    .create_and_lock(body.entries, body.node_id)
-                                    .await?;
-                                #[cfg(debug_assertions)]
-                                cloned_session.debug_print("ran create_and_lock").await;
-                                Ok(serde_json::to_string(&res)?)
+                                routes::create_and_lock(blob_store, try_from_str(&body)?).await
                             }
                             "/create_unlock" => {
-                                let body: CreateUnlockRequest = try_from_str(&body)?;
-                                cloned_session
-                                    .create_unlock(body.file_id, body.node_id)
-                                    .await?;
-                                #[cfg(debug_assertions)]
-                                cloned_session.debug_print("ran create_unlock").await;
-                                Ok("".to_string())
+                                routes::create_unlock(blob_store, try_from_str(&body)?).await
                             }
                             "/keep_alive_lock" => {
-                                let body: KeepAliveLockRequest = try_from_str(&body)?;
-                                cloned_session.keep_alive_lock(body.file_id).await?;
-                                #[cfg(debug_assertions)]
-                                cloned_session.debug_print("ran keep_alive_lock").await;
-                                Ok("".to_string())
+                                routes::keep_alive_lock(blob_store, try_from_str(&body)?).await
                             }
                             p => Err(HTTPError::InvalidPath(p.to_string())),
                         }
                     }
                     "GET" => match req.uri().path().to_string().as_str() {
-                        "/lookup" => {
-                            let body: LookupRequest = try_from_str(&body)?;
-                            let res = cloned_session.lookup(body.key).await?;
-                            #[cfg(debug_assertions)]
-                            cloned_session.debug_print("ran lookup").await;
-                            Ok(serde_json::to_string(&res)?)
-                        }
+                        "/lookup" => routes::lookup(blob_store, try_from_str(&body)?).await,
                         p => Err(HTTPError::InvalidPath(p.to_string())),
                     },
                     _ => Err(HTTPError::InvalidMethod(method)),
@@ -209,11 +187,69 @@ impl Service<Request<Body>> for Svc {
     }
 }
 
+mod routes {
+    use std::sync::Arc;
+
+    use crate::blob::BlobStorage;
+
+    use super::*;
+
+    pub(super) async fn lookup(
+        blob: Arc<BlobStorage>,
+        body: LookupRequest,
+    ) -> Result<String, HTTPError> {
+        let res = blob.lookup(body.key).await?;
+        #[cfg(debug_assertions)]
+        blob.debug_print("ran lookup").await;
+        Ok(serde_json::to_string(&res)?)
+    }
+
+    pub(super) async fn keep_alive_lock(
+        blob: Arc<BlobStorage>,
+        body: KeepAliveLockRequest,
+    ) -> Result<String, HTTPError> {
+        blob.keep_alive_lock(body.file_id).await?;
+        #[cfg(debug_assertions)]
+        blob.debug_print("ran keep_alive_lock").await;
+        Ok("".to_string())
+    }
+
+    pub(super) async fn create_unlock(
+        blob: Arc<BlobStorage>,
+        body: CreateUnlockRequest,
+    ) -> Result<String, HTTPError> {
+        blob.create_unlock(body.file_id, body.node_id).await?;
+        #[cfg(debug_assertions)]
+        blob.debug_print("ran create_unlock").await;
+        Ok("".to_string())
+    }
+
+    pub(super) async fn create_and_lock(
+        blob: Arc<BlobStorage>,
+        body: CreateAndLockRequest,
+    ) -> Result<String, HTTPError> {
+        let res = blob.create_and_lock(body.entries, body.node_id).await?;
+        #[cfg(debug_assertions)]
+        blob.debug_print("ran create_and_lock").await;
+        Ok(serde_json::to_string(&res)?)
+    }
+}
+
 /// Represents a maker for a service for the hyper http server
 
+#[derive(Clone)]
 struct MakeSvc {
     session: Arc<BlobStorage>,
     api_key: String,
+}
+
+impl From<MakeSvc> for Svc {
+    fn from(m: MakeSvc) -> Self {
+        Svc {
+            blob_store: m.session,
+            api_key: m.api_key,
+        }
+    }
 }
 
 impl<T> Service<T> for MakeSvc {
@@ -226,9 +262,8 @@ impl<T> Service<T> for MakeSvc {
     }
 
     fn call(&mut self, _: T) -> Self::Future {
-        let session = self.session.clone();
-        let api_key = self.api_key.clone();
-        let fut = async move { Ok(Svc { session, api_key }) };
+        let svc = self.clone();
+        let fut = async move { Ok(svc.into()) };
         Box::pin(fut)
     }
 }
