@@ -1,3 +1,4 @@
+use chrono::TimeZone;
 use dashmap::DashMap;
 use tokio::sync::{
     mpsc::{Receiver, Sender},
@@ -55,15 +56,85 @@ impl WorkerPool {
     }
 
     /// Populates the worker pool with workers.
+    /// Checks if there are any workers already running in discovery, if so,
+    /// it will add them to the pool.
     ///
     /// # Panics
     /// If the worker pool is already populated (i.e. not empty).
     async fn populate(&mut self) -> Result<(), JobError> {
         assert!(self.pool.is_empty());
-        for i in 0..self.max_worker_jobs {
+
+        // produces "job_id status hour:min:sec node_id"
+        let cmd = "squeue -u $USER | grep job_work | awk -F ' +' '{print $2, $6, $7, $9}'";
+        let output = self.ssh_session.run_command(cmd).await?;
+
+        // check if empty
+        let mut worker_count = 0;
+        if !output.is_empty() {
+            let lines = output.lines();
+            for line in lines {
+                if worker_count >= self.max_worker_jobs {
+                    break;
+                }
+                let mut parts = line.split_whitespace();
+                let job_id = parts
+                    .next()
+                    .unwrap()
+                    .parse::<u64>()
+                    .expect("Failed to parse job_id");
+                let status = parts.next().unwrap();
+                let time = parts.next().unwrap();
+
+                // parse time from "hour:min:sec", but could just be "min:sec"
+                let time = if time.matches(':').count() == 3 {
+                    let mut parts = time.split(':');
+                    let hour = parts.next().unwrap().parse::<i64>().unwrap();
+                    let min = parts.next().unwrap().parse::<i64>().unwrap();
+                    let sec = parts.next().unwrap().parse::<i64>().unwrap();
+                    // get current time and subtract the time from the job
+                    let now = chrono::Utc::now();
+                    now - chrono::Duration::hours(hour)
+                        - chrono::Duration::minutes(min)
+                        - chrono::Duration::seconds(sec)
+                } else {
+                    let mut parts = time.split(':');
+                    let min = parts.next().unwrap().parse::<i64>().unwrap();
+                    let sec = parts.next().unwrap().parse::<i64>().unwrap();
+                    // get current time and subtract the time from the job
+                    let now = chrono::Utc::now();
+                    now - chrono::Duration::minutes(min) - chrono::Duration::seconds(sec)
+                };
+
+                let node_id = parts.next().unwrap();
+                debug!("Found worker: {} {} {} {}", job_id, status, time, node_id);
+                let worker_status = {
+                    if status == "R" {
+                        WorkerStatus::Running {
+                            started_at: time,
+                            node_id: node_id.to_string(),
+                        }
+                    } else {
+                        WorkerStatus::Queued
+                    }
+                };
+                self.pool.insert(
+                    job_id,
+                    Worker {
+                        job_id,
+                        status: worker_status,
+                        avail_tx: self.avail_tx.clone(),
+                    },
+                );
+                self.avail_tx.send(job_id).await.unwrap();
+                worker_count += 1;
+            }
+        }
+
+        for i in worker_count..self.max_worker_jobs {
             debug!("Adding worker {}", i);
             self.spawn_worker(true).await?;
         }
+
         Ok(())
     }
 
@@ -111,6 +182,8 @@ impl WorkerPool {
             },
             ..worker
         };
+
+        debug!("Worker {:?} is running", new_worker);
 
         self.pool.insert(new_worker.job_id, new_worker.clone());
 
