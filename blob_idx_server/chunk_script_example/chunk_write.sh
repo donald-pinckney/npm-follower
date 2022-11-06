@@ -1,12 +1,12 @@
 #!/bin/bash
 
-BLOB_FILE=./chunk
-TO_WRITE=$1 # file to append to the blob
-OFFSET_FILE=$2 # file to store the offset,size of the blob
+BLOB_FILE=$1 # the blob file to write to
+TO_WRITE=$2 # file to append to the blob
+OFFSET_FILE=$3 # file to store the offset,size of the blob
 
 # check if both arguments are provided
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <file to append> <offset file>"
+if [ $# -ne 3 ]; then
+    echo "Usage: $0 <blob_file> <file_to_append> <offset_file>"
     exit 1
 fi
 
@@ -30,3 +30,5 @@ COUNT=$(($SIZE - $OFFSET))
 echo "Offset: $OFFSET"
 
 echo "$OFFSET,$COUNT" > $OFFSET_FILE
+
+exit 0

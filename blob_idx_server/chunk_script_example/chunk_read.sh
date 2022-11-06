@@ -1,17 +1,24 @@
 #!/bin/bash
 
-BLOB_FILE=./chunk
-OFFSET_FILE=$1
+BLOB_FILE=$1
+OFFSET_FILE=$2
 
-# check if argument is given
-if [ -z "$1" ]; then
-    echo "Usage: $0 <offset_file>"
+# check if arguments are provided
+if [ -z "$BLOB_FILE" ] || [ -z "$OFFSET_FILE" ]; then
+    echo "Usage: $0 <blob_file> <offset_file>"
     exit 1
 fi
+
 
 # check if offset file exists
 if [ ! -f "$OFFSET_FILE" ]; then
     echo "Offset file does not exist"
+    exit 1
+fi
+
+# check if blob file exists
+if [ ! -f "$BLOB_FILE" ]; then
+    echo "Blob file does not exist"
     exit 1
 fi
 
