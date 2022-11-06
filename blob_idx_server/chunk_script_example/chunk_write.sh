@@ -16,17 +16,17 @@ if [ ! -f $BLOB_FILE ]; then
 fi
 
 OFFSET=`stat -c %s $BLOB_FILE`
-
+FILE_SIZE=`stat -c %s $TO_WRITE`
+echo "to write: $FILE_SIZE"
 
 
 # append to the blob
 echo "Appending $TO_WRITE to $BLOB_FILE"
-printf "%s" "$(<$TO_WRITE)" >> $BLOB_FILE
+dd if=$TO_WRITE of=$BLOB_FILE bs=1 seek=$OFFSET conv=notrunc 2>/dev/null
 
 # store the offset,size of the blob
 SIZE=`stat -c %s $BLOB_FILE`
 COUNT=$(($SIZE - $OFFSET))
 echo "Offset: $OFFSET"
-echo "File size: $SIZE"
 
 echo "$OFFSET,$COUNT" > $OFFSET_FILE
