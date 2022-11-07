@@ -1,0 +1,307 @@
+Some(("myfirst-react-publish", Normal(
+    latest: Some((
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2019-03-21T12:06:41.038Z",
+    modified: "2019-03-21T12:06:46.476Z",
+    other_dist_tags: {},
+), {
+    (
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [
+            ("react", (
+                raw: "^16.7.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 16,
+                            minor: 7,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 17,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("webpack", (
+                raw: "^4.29.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 4,
+                            minor: 29,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 5,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("react-dom", (
+                raw: "^16.7.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 16,
+                            minor: 7,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 17,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("@babel/core", (
+                raw: "^7.2.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 7,
+                            minor: 2,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 8,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("webpack-cli", (
+                raw: "^3.2.1",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 2,
+                            bug: 1,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("babel-loader", (
+                raw: "^8.0.5",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 8,
+                            minor: 0,
+                            bug: 5,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 9,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("@babel/preset-env", (
+                raw: "^7.3.1",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 7,
+                            minor: 3,
+                            bug: 1,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 8,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("webpack-dev-server", (
+                raw: "^3.1.14",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 1,
+                            bug: 14,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("@babel/preset-react", (
+                raw: "^7.0.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 7,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 8,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [
+            ("react", (
+                raw: "^16.7.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 16,
+                            minor: 7,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 17,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/myfirst-react-publish/-/myfirst-react-publish-1.0.0.tgz",
+            shasum: Some("14e1bfa5d97cf71a3597701d2d49d81d3f3b32ff"),
+            unpacked_size: Some(6615),
+            file_count: Some(11),
+            integrity: Some("sha512-7wSPj5xNjPpLJUSFgF5d2tTR52AJye8QtW2C2idhsKsOlHgsfCw/BKoKjrdoKy9WUhue5XUvwWkN6PYGg0NTjw=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJck35RCRA9TVsSAnZWagAALs4P+gKz+NL9dV2MjvamdnnJ\nhFMkhWGAP9kY9gtX6y/UJ5JDIUlF3pJaX3+eOHnMrndu+UItD/cbFRTaEXG2\nNMV6FLpi7onj3+JYENiI5Wy5zOKm+axGVAIintuuS3OjzRs8yMkkELWeTjoG\n2ZUflo1Mhqw1MAsEcipo9U3S8dIH7RyFt9QWw612ad1jIeuccp7ETqcVBe5d\nUf4hmGx1rAzLgYuRNglNPPkfCgR9HF2EPJ9DSjOTLBmf7AajPcAAqQb44TVS\nrJCTlfFbWpODWTqK88niFZg4RoRVYfTav9gzcIW7WwnJv54d7LCZIrn2BPAF\nkWiSXLlb6/scZI1jo9f2hN5CJMruC+R1Rl0Qb86yd42w8Ayk0Iux+8WImaiw\nZWgpAPB2s8JGS//ouRcH9J2wuhn9hBPzH+SYVEHfVvpofvyHpqwCxgglkBpc\n6dRAdyWK673Mc8jrj+1re2Z4v3uWBCgCeq4WjH9J0Hsg7ZGPJH6P9nNWKckA\nD9GJeE6FP5UTFk7mOtkHooKulMZKkwWjaOWV+UxuKJr9dNRHOsxQrMnML+8u\nARIHZf2U4fZ9M28x6LeiTC1gl8PKBoLvyNXoAP4SM+ed+c6MhY2iJyjR9vj9\nE6t954WyW3wUYJiz/dMrAXfWh6UDt/cUhb3C/Ks0daenGxsftlFdMzevIOk3\nhTsm\r\n=JnKe\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-03-21T12:06:41.173Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "myfirst-react-publish@1.0.0",
+            "_nodeVersion": "11.9.0",
+            "_npmOperationalInternal": {
+                "tmp": "tmp/myfirst-react-publish_1.0.0_1553170001039_0.09057132251014055",
+                "host": "s3://npm-registry-packages",
+            },
+            "_npmUser": {
+                "name": "suchism",
+                "email": "suchi.hyd@gmail.com",
+            },
+            "_npmVersion": "6.5.0",
+            "author": {
+                "name": "xxx",
+            },
+            "description": "test",
+            "directories": {},
+            "license": "ISC",
+            "main": "build/index.js",
+            "maintainers": [
+                {
+                    "name": "suchism",
+                    "email": "suchi.hyd@gmail.com",
+                },
+            ],
+            "name": "myfirst-react-publish",
+            "repo": {
+                "url": "",
+                "type": "",
+            },
+            "scripts": {
+                "dev": "webpack-dev-server --env testServer --mode development --open",
+                "build": "webpack --env publish --mode production",
+                "start": "webpack --env publish --mode production --watch",
+            },
+            "version": "1.0.0",
+        },
+    ),
+}))

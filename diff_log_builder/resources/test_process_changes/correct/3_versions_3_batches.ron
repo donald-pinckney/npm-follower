@@ -1,0 +1,318 @@
+(
+    hash_state: {
+        "foo": (
+            package_name: "foo",
+            package_only_packument_hash: "04e718ed8c4343b7b1acf8c92be912e907621d9ff70f31f7e1430a61f22a322c",
+            deleted: false,
+            versions: [
+                (
+                    v: (
+                        major: 1,
+                        minor: 0,
+                        bug: 0,
+                        prerelease: [],
+                        build: [],
+                    ),
+                    pack_hash: "9294da31f7f47185b9c82936718110e51035cdc31e51a2acea0d14458e9339b8",
+                    deleted: false,
+                ),
+                (
+                    v: (
+                        major: 1,
+                        minor: 0,
+                        bug: 1,
+                        prerelease: [],
+                        build: [],
+                    ),
+                    pack_hash: "a684116587cae3979240adbb815edb821f0e2755930e975e35753ab1f51c5fb1",
+                    deleted: false,
+                ),
+                (
+                    v: (
+                        major: 1,
+                        minor: 0,
+                        bug: 2,
+                        prerelease: [],
+                        build: [],
+                    ),
+                    pack_hash: "65247b0642e022618876810697c0113da855add7a749514179e7ae4bdf2df0b9",
+                    deleted: false,
+                ),
+            ],
+        ),
+    },
+    diff_log: [
+        (
+            id: 1,
+            seq: 1,
+            package_name: "foo",
+            instr: CreatePackage(Normal(
+                latest: None,
+                created: "2021-01-21T00:31:48.316Z",
+                modified: "2021-01-21T00:31:48.316Z",
+                other_dist_tags: {},
+            )),
+        ),
+        (
+            id: 2,
+            seq: 1,
+            package_name: "foo",
+            instr: CreateVersion((
+                major: 1,
+                minor: 0,
+                bug: 0,
+                prerelease: [],
+                build: [],
+            ), (
+                prod_dependencies: [
+                    ("bar", (
+                        raw: "^1.0.0",
+                        parsed: Range(([
+                            [
+                                Gte((
+                                    major: 1,
+                                    minor: 0,
+                                    bug: 0,
+                                    prerelease: [],
+                                    build: [],
+                                )),
+                                Lt((
+                                    major: 2,
+                                    minor: 0,
+                                    bug: 0,
+                                    prerelease: [
+                                        Int(0),
+                                    ],
+                                    build: [],
+                                )),
+                            ],
+                        ])),
+                    )),
+                ],
+                dev_dependencies: [],
+                peer_dependencies: [],
+                optional_dependencies: [],
+                dist: (
+                    tarball_url: "https://registry.npmjs.org/foo/-/foo-1.0.0.tgz",
+                    shasum: None,
+                    unpacked_size: None,
+                    file_count: None,
+                    integrity: None,
+                    signature0_sig: None,
+                    signature0_keyid: None,
+                    npm_signature: None,
+                ),
+                repository: Some((
+                    raw: {
+                        "url": "git+https://github.com/MarieMalarme/foo.git",
+                        "type": "git",
+                    },
+                    info: (
+                        cloneable_repo_url: "https://github.com/MarieMalarme/foo",
+                        cloneable_repo_dir: "",
+                        vcs: Git,
+                        host_info: Github(
+                            user: "MarieMalarme",
+                            repo: "foo",
+                        ),
+                    ),
+                )),
+                time: "2021-01-21T00:31:48.316Z",
+                extra_metadata: {
+                    "_id": "foo@1.0.0",
+                    "version": "1.0.0",
+                },
+            )),
+        ),
+        (
+            id: 3,
+            seq: 1,
+            package_name: "foo",
+            instr: UpdatePackage(Normal(
+                latest: Some((
+                    major: 1,
+                    minor: 0,
+                    bug: 0,
+                    prerelease: [],
+                    build: [],
+                )),
+                created: "2021-01-21T00:31:48.316Z",
+                modified: "2021-01-21T00:31:48.316Z",
+                other_dist_tags: {},
+            )),
+        ),
+        (
+            id: 4,
+            seq: 1,
+            package_name: "foo",
+            instr: PatchPackageReferences,
+        ),
+        (
+            id: 5,
+            seq: 2,
+            package_name: "foo",
+            instr: CreateVersion((
+                major: 1,
+                minor: 0,
+                bug: 1,
+                prerelease: [],
+                build: [],
+            ), (
+                prod_dependencies: [
+                    ("bar", (
+                        raw: "~1.0.1",
+                        parsed: Range(([
+                            [
+                                Gte((
+                                    major: 1,
+                                    minor: 0,
+                                    bug: 1,
+                                    prerelease: [],
+                                    build: [],
+                                )),
+                                Lt((
+                                    major: 1,
+                                    minor: 1,
+                                    bug: 0,
+                                    prerelease: [
+                                        Int(0),
+                                    ],
+                                    build: [],
+                                )),
+                            ],
+                        ])),
+                    )),
+                ],
+                dev_dependencies: [],
+                peer_dependencies: [],
+                optional_dependencies: [],
+                dist: (
+                    tarball_url: "https://registry.npmjs.org/foo/-/foo-1.0.1.tgz",
+                    shasum: None,
+                    unpacked_size: None,
+                    file_count: None,
+                    integrity: None,
+                    signature0_sig: None,
+                    signature0_keyid: None,
+                    npm_signature: None,
+                ),
+                repository: Some((
+                    raw: {
+                        "url": "git+https://github.com/MarieMalarme/foo.git",
+                        "type": "git",
+                    },
+                    info: (
+                        cloneable_repo_url: "https://github.com/MarieMalarme/foo",
+                        cloneable_repo_dir: "",
+                        vcs: Git,
+                        host_info: Github(
+                            user: "MarieMalarme",
+                            repo: "foo",
+                        ),
+                    ),
+                )),
+                time: "2021-01-21T23:50:24.040Z",
+                extra_metadata: {
+                    "_id": "foo@1.0.1",
+                    "version": "1.0.1",
+                },
+            )),
+        ),
+        (
+            id: 6,
+            seq: 2,
+            package_name: "foo",
+            instr: UpdatePackage(Normal(
+                latest: Some((
+                    major: 1,
+                    minor: 0,
+                    bug: 1,
+                    prerelease: [],
+                    build: [],
+                )),
+                created: "2021-01-21T00:31:48.154Z",
+                modified: "2021-01-21T23:50:24.040Z",
+                other_dist_tags: {},
+            )),
+        ),
+        (
+            id: 7,
+            seq: 3,
+            package_name: "foo",
+            instr: CreateVersion((
+                major: 1,
+                minor: 0,
+                bug: 2,
+                prerelease: [],
+                build: [],
+            ), (
+                prod_dependencies: [
+                    ("bar", (
+                        raw: "<1.2.0",
+                        parsed: Range(([
+                            [
+                                Lt((
+                                    major: 1,
+                                    minor: 2,
+                                    bug: 0,
+                                    prerelease: [],
+                                    build: [],
+                                )),
+                            ],
+                        ])),
+                    )),
+                ],
+                dev_dependencies: [],
+                peer_dependencies: [],
+                optional_dependencies: [],
+                dist: (
+                    tarball_url: "https://registry.npmjs.org/foo/-/foo-1.0.2.tgz",
+                    shasum: None,
+                    unpacked_size: None,
+                    file_count: None,
+                    integrity: None,
+                    signature0_sig: None,
+                    signature0_keyid: None,
+                    npm_signature: None,
+                ),
+                repository: Some((
+                    raw: {
+                        "url": "git+https://github.com/MarieMalarme/foo.git",
+                        "type": "git",
+                    },
+                    info: (
+                        cloneable_repo_url: "https://github.com/MarieMalarme/foo",
+                        cloneable_repo_dir: "",
+                        vcs: Git,
+                        host_info: Github(
+                            user: "MarieMalarme",
+                            repo: "foo",
+                        ),
+                    ),
+                )),
+                time: "2021-01-22T10:46:59.761Z",
+                extra_metadata: {
+                    "_id": "foo@1.0.2",
+                    "version": "1.0.2",
+                },
+            )),
+        ),
+        (
+            id: 8,
+            seq: 3,
+            package_name: "foo",
+            instr: UpdatePackage(Normal(
+                latest: Some((
+                    major: 1,
+                    minor: 0,
+                    bug: 2,
+                    prerelease: [],
+                    build: [],
+                )),
+                created: "2021-01-21T00:31:48.154Z",
+                modified: "2021-01-22T10:46:59.761Z",
+                other_dist_tags: {},
+            )),
+        ),
+    ],
+)

@@ -1,17 +1,20 @@
-use super::sql_types::*;
+use crate::schema::sql_types::PackageMetadataStruct;
+
 use super::PackageMetadata;
 use super::Semver;
 use chrono::{DateTime, Utc};
 use diesel::deserialize;
+use diesel::deserialize::FromSql;
 use diesel::pg::Pg;
+use diesel::pg::PgValue;
+use diesel::serialize::ToSql;
 use diesel::serialize::{self, IsNull, Output, WriteTuple};
 use diesel::sql_types::{Int8, Jsonb, Nullable, Record, Timestamptz};
-use diesel::types::{FromSql, ToSql};
 use serde_json::{Map, Value};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::io::Write;
 
-// ---------- PackageMetadataStructSql <----> PackageMetadata
+// ---------- PackageMetadataStruct <----> PackageMetadata
 
 type PackageMetadataStructRecordSql = (
     PackageStateSql,
@@ -33,24 +36,26 @@ type PackageMetadataStructRecordRust = (
     Option<Value>,
 );
 
-fn dist_tag_dict_from_sql(v: Value) -> Result<HashMap<String, String>, serde_json::Error> {
+fn dist_tag_dict_from_sql(v: Value) -> Result<BTreeMap<String, String>, serde_json::Error> {
     let mv = serde_json::from_value::<Map<String, Value>>(v)?;
-    let mut result = HashMap::new();
+    let mut result = BTreeMap::new();
     for (k, kv) in mv.into_iter() {
         result.insert(k, serde_json::from_value::<String>(kv)?);
     }
     Ok(result)
 }
 
-fn dist_tag_dict_to_sql(m: HashMap<String, String>) -> Value {
+// TODO[perf]: optimize this out?
+fn dist_tag_dict_to_sql(m: BTreeMap<String, String>) -> Value {
     Value::Object(m.into_iter().map(|(k, v)| (k, Value::String(v))).collect())
 }
 
+// TODO[perf]: optimize this out?
 fn other_times_dict_from_sql(
     v: Value,
-) -> Result<HashMap<Semver, DateTime<Utc>>, serde_json::Error> {
+) -> Result<BTreeMap<Semver, DateTime<Utc>>, serde_json::Error> {
     let mv = serde_json::from_value::<Map<String, Value>>(v)?;
-    let mut result = HashMap::new();
+    let mut result = BTreeMap::new();
     for (k, kv) in mv.into_iter() {
         result.insert(
             serde_json::from_str::<Semver>(&k)?,
@@ -60,7 +65,8 @@ fn other_times_dict_from_sql(
     Ok(result)
 }
 
-fn other_times_dict_to_sql(m: HashMap<Semver, DateTime<Utc>>) -> Value {
+// TODO[perf]: optimize this out?
+fn other_times_dict_to_sql(m: BTreeMap<Semver, DateTime<Utc>>) -> Value {
     Value::Object(
         m.into_iter()
             .map(|(k, v)| {
@@ -73,8 +79,8 @@ fn other_times_dict_to_sql(m: HashMap<Semver, DateTime<Utc>>) -> Value {
     )
 }
 
-impl<'a> ToSql<PackageMetadataStructSql, Pg> for PackageMetadata {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl<'a> ToSql<PackageMetadataStruct, Pg> for PackageMetadata {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let record: PackageMetadataStructRecordRust = match self {
             PackageMetadata::Normal {
                 dist_tag_latest_version: lv,
@@ -112,8 +118,8 @@ impl<'a> ToSql<PackageMetadataStructSql, Pg> for PackageMetadata {
     }
 }
 
-impl<'a> FromSql<PackageMetadataStructSql, Pg> for PackageMetadata {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+impl<'a> FromSql<PackageMetadataStruct, Pg> for PackageMetadata {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: PackageMetadataStructRecordRust =
             FromSql::<Record<PackageMetadataStructRecordSql>, Pg>::from_sql(bytes)?;
         match tup {
@@ -142,11 +148,11 @@ impl<'a> FromSql<PackageMetadataStructSql, Pg> for PackageMetadata {
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "package_state_enum")]
+#[diesel(postgres_type(name = "package_state_enum"))]
 struct PackageStateSql;
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "PackageStateSql"]
+#[diesel(sql_type = PackageStateSql)]
 enum PackageState {
     Normal,
     Unpublished,
@@ -154,7 +160,7 @@ enum PackageState {
 }
 
 impl ToSql<PackageStateSql, Pg> for PackageState {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match *self {
             PackageState::Normal => out.write_all(b"normal")?,
             PackageState::Unpublished => out.write_all(b"unpublished")?,
@@ -165,8 +171,10 @@ impl ToSql<PackageStateSql, Pg> for PackageState {
 }
 
 impl FromSql<PackageStateSql, Pg> for PackageState {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
+
+        match bytes {
             b"normal" => Ok(PackageState::Normal),
             b"unpublished" => Ok(PackageState::Unpublished),
             b"deleted" => Ok(PackageState::Deleted),
@@ -178,28 +186,28 @@ impl FromSql<PackageStateSql, Pg> for PackageState {
 // Unit tests
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::collections::BTreeMap;
 
+    use crate::connection::QueryRunner;
     use crate::custom_types::PackageMetadata;
     use crate::custom_types::Semver;
     use crate::testing;
     use chrono::NaiveTime;
     use chrono::Utc;
     use diesel::prelude::*;
-    use diesel::RunQueryDsl;
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Package_metadata_struct;
+        use crate::schema::sql_types::PackageMetadataStruct;
 
         test_package_metadata_to_sql {
             id -> Integer,
-            m -> Package_metadata_struct,
+            m -> PackageMetadataStruct,
         }
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_package_metadata_to_sql"]
+    #[diesel(table_name = test_package_metadata_to_sql)]
     struct TestPackageMetadataToSql {
         id: i32,
         m: PackageMetadata,
@@ -217,14 +225,14 @@ mod tests {
             vec![("dogs".to_string(), serde_json::Value::String("mice".into()))].into_iter(),
         ));
 
-        let empty_odts = HashMap::new();
-        let some_odts = HashMap::from([
+        let empty_odts = BTreeMap::new();
+        let some_odts = BTreeMap::from([
             ("cats".into(), "1.3.5".into()),
             ("old".into(), "0.3.1".into()),
         ]);
 
-        let empty_otd = HashMap::new();
-        let some_otd = HashMap::from([(
+        let empty_otd = BTreeMap::new();
+        let some_otd = BTreeMap::from([(
             Semver {
                 major: 1,
                 minor: 2,
@@ -279,23 +287,24 @@ mod tests {
         ];
 
         testing::using_test_db(|conn| {
-            let _temp_table = testing::TempTable::new(
-                &conn,
+            testing::using_temp_table(
+                conn,
                 "test_package_metadata_to_sql",
                 "id SERIAL PRIMARY KEY, m package_metadata NOT NULL",
+                |conn| {
+                    let inserted = conn
+                        .get_results(
+                            diesel::insert_into(test_package_metadata_to_sql).values(&data),
+                        )
+                        .unwrap();
+                    assert_eq!(data, inserted);
+
+                    let filter_all = conn
+                        .load(test_package_metadata_to_sql.filter(id.ge(1)))
+                        .unwrap();
+                    assert_eq!(data, filter_all);
+                },
             );
-    
-            let inserted = diesel::insert_into(test_package_metadata_to_sql)
-                .values(&data)
-                .get_results(&conn.conn)
-                .unwrap();
-            assert_eq!(data, inserted);
-    
-            let filter_all = test_package_metadata_to_sql
-                .filter(id.ge(1))
-                .load(&conn.conn)
-                .unwrap();
-            assert_eq!(data, filter_all);
         });
     }
 }

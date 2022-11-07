@@ -1,13 +1,12 @@
 use super::DownloadFailed;
-use diesel::deserialize;
-use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output};
+use diesel::deserialize::{self, FromSql};
+use diesel::pg::{Pg, PgValue};
+use diesel::serialize::{self, IsNull, Output, ToSql};
 use diesel::sql_types::Text;
-use diesel::types::{FromSql, ToSql};
 use std::io::Write;
 
 impl ToSql<Text, Pg> for DownloadFailed {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             DownloadFailed::Res(code) => out.write_all(format!("res{}", code).as_bytes())?,
             DownloadFailed::Io => out.write_all(b"io")?,
@@ -19,14 +18,15 @@ impl ToSql<Text, Pg> for DownloadFailed {
 }
 
 impl FromSql<Text, Pg> for DownloadFailed {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        if let Some(bytes) = bytes {
-            if bytes.starts_with(b"res") {
-                let code = std::str::from_utf8(&bytes[3..]).unwrap().parse::<u16>()?;
-                return Ok(DownloadFailed::Res(code));
-            }
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
+
+        if bytes.starts_with(b"res") {
+            let code = std::str::from_utf8(&bytes[3..]).unwrap().parse::<u16>()?;
+            return Ok(DownloadFailed::Res(code));
         }
-        match not_none!(bytes) {
+
+        match bytes {
             b"other" => Ok(DownloadFailed::Other),
             b"io" => Ok(DownloadFailed::Io),
             b"badly_formatted_url" => Ok(DownloadFailed::BadlyFormattedUrl),
@@ -34,4 +34,3 @@ impl FromSql<Text, Pg> for DownloadFailed {
         }
     }
 }
-

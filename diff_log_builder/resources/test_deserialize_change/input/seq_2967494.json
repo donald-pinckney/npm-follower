@@ -1,0 +1,159 @@
+{
+    "changes": [
+        {
+            "rev": "12-b61fcefe7558b8173e1bb295de2d6e2f"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "Sheet",
+        "_rev": "12-b61fcefe7558b8173e1bb295de2d6e2f",
+        "ctime": "2010-11-09T23:35:16Z",
+        "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
+        "dist-tags": {
+            "latest": "1.0.2rc1"
+        },
+        "maintainers": [
+            {
+                "email": "thomas@subtlegradient.com",
+                "name": "subtlegradient"
+            }
+        ],
+        "mtime": "2010-11-09T23:35:16Z",
+        "name": "Sheet",
+        "readme": "",
+        "readmeFilename": "",
+        "versions": {
+            "1.0.1": {
+                "_id": "Sheet@1.0.1",
+                "_nodeSupported": true,
+                "_nodeVersion": "v0.3.1-pre",
+                "_npmVersion": "0.2.7-2",
+                "authors": [
+                    "Thomas Aylott"
+                ],
+                "bugs": {
+                    "web": "http://github.com/subtleGradient/Sheet.js/issues"
+                },
+                "contributors": [
+                    {
+                        "email": "thomas@subtlegradient.com",
+                        "name": "Thomas Aylott",
+                        "web": "http://subtlegradient.com"
+                    }
+                ],
+                "copyright": "\u00a9 2010 Thomas Aylott",
+                "ctime": "2010-11-09T23:35:16Z",
+                "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
+                "directories": {
+                    "doc": ".",
+                    "lib": "./Source",
+                    "src": "./Source",
+                    "test": "./Test"
+                },
+                "dist": {
+                    "shasum": "35e7fb60873f0022193342d0b9218ad79d18d01f",
+                    "tarball": "https://registry.npmjs.org/Sheet/-/Sheet-1.0.1.tgz"
+                },
+                "engines": {
+                    "node": "*"
+                },
+                "keywords": [
+                    "CSS",
+                    "CSSOM",
+                    "styleSheet",
+                    "cssRule",
+                    "style",
+                    "parse"
+                ],
+                "license": "MIT License",
+                "licenses": [
+                    {
+                        "type": "MIT",
+                        "url": "http://creativecommons.org/licenses/MIT/"
+                    }
+                ],
+                "main": "./Source/Sheet",
+                "mtime": "2010-11-09T23:35:16Z",
+                "name": "Sheet",
+                "repositories": [
+                    {
+                        "type": "git",
+                        "url": "http://github.com/subtleGradient/Sheet.js/"
+                    }
+                ],
+                "sources": [
+                    "Source/Sheet.js",
+                    "Source/SheetParser.CSS.js"
+                ],
+                "version": "1.0.1"
+            },
+            "1.0.2rc1": {
+                "_id": "Sheet@1.0.2rc1",
+                "_nodeSupported": true,
+                "_nodeVersion": "v0.3.1-pre",
+                "_npmVersion": "0.2.7-2",
+                "authors": [
+                    "Thomas Aylott"
+                ],
+                "bugs": {
+                    "web": "http://github.com/subtleGradient/Sheet.js/issues"
+                },
+                "contributors": [
+                    {
+                        "email": "thomas@subtlegradient.com",
+                        "name": "Thomas Aylott",
+                        "web": "http://subtlegradient.com"
+                    }
+                ],
+                "copyright": "\u00a9 2010 Thomas Aylott",
+                "ctime": "2010-11-09T23:35:16Z",
+                "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
+                "directories": {
+                    "doc": ".",
+                    "lib": "./Source",
+                    "src": "./Source",
+                    "test": "./Test"
+                },
+                "dist": {
+                    "shasum": "6ef4839d92a87aa14ed57a93f30c428ac7af9b89",
+                    "tarball": "https://registry.npmjs.org/Sheet/-/Sheet-1.0.2rc1.tgz"
+                },
+                "engines": {
+                    "node": "*"
+                },
+                "keywords": [
+                    "CSS",
+                    "CSSOM",
+                    "styleSheet",
+                    "cssRule",
+                    "style",
+                    "parse"
+                ],
+                "license": "MIT License",
+                "licenses": [
+                    {
+                        "type": "MIT",
+                        "url": "http://creativecommons.org/licenses/MIT/"
+                    }
+                ],
+                "main": "./Source/Sheet",
+                "mtime": "2010-11-09T23:35:16Z",
+                "name": "Sheet",
+                "repositories": [
+                    {
+                        "type": "git",
+                        "url": "http://github.com/subtleGradient/Sheet.js/"
+                    }
+                ],
+                "sources": [
+                    "Source/Sheet.js",
+                    "Source/SheetParser.CSS.js"
+                ],
+                "version": "1.0.2rc1"
+            }
+        }
+    },
+    "id": "Sheet",
+    "seq": 2967494
+}

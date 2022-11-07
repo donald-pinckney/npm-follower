@@ -1,12 +1,14 @@
-use super::{sql_types::*, RepoHostInfo, RepoInfo, Vcs};
-use diesel::deserialize;
-use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output, WriteTuple};
-use diesel::sql_types::{Nullable, Record, Text};
-use diesel::types::{FromSql, ToSql};
 use std::io::Write;
 
-// ---------- RepoInfo <----> RepoInfoSql
+use crate::schema::sql_types::RepoInfoStruct;
+
+use super::{RepoHostInfo, RepoInfo, Vcs};
+use diesel::deserialize::{self, FromSql};
+use diesel::pg::{Pg, PgValue};
+use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
+use diesel::sql_types::{Nullable, Record, Text};
+
+// ---------- RepoInfo <----> RepoInfoStruct
 
 type RepoInfoStructRecordSql = (
     Text,
@@ -28,8 +30,8 @@ type RepoInfoStructRecordRust = (
     Option<String>,
 );
 
-impl ToSql<RepoInfoSql, Pg> for RepoInfo {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl ToSql<RepoInfoStruct, Pg> for RepoInfo {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let record: RepoInfoStructRecordRust = match &self.host_info {
             RepoHostInfo::Github { user, repo } => (
                 self.cloneable_repo_url.clone(),
@@ -82,8 +84,8 @@ impl ToSql<RepoInfoSql, Pg> for RepoInfo {
     }
 }
 
-impl FromSql<RepoInfoSql, Pg> for RepoInfo {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+impl FromSql<RepoInfoStruct, Pg> for RepoInfo {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: RepoInfoStructRecordRust =
             FromSql::<Record<RepoInfoStructRecordSql>, Pg>::from_sql(bytes)?;
         let (url, dir, vcs) = (tup.0, tup.1, tup.2);
@@ -115,7 +117,7 @@ impl FromSql<RepoInfoSql, Pg> for RepoInfo {
 // ---------- RepoHostEnum <----> RepoHostEnumSql
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "RepoHostEnumSql"]
+#[diesel(sql_type = RepoHostEnumSql)]
 enum RepoHostEnum {
     Github,
     Bitbucket,
@@ -125,11 +127,11 @@ enum RepoHostEnum {
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "repo_host_enum")]
+#[diesel(postgres_type(name = "repo_host_enum"))]
 struct RepoHostEnumSql;
 
 impl ToSql<RepoHostEnumSql, Pg> for RepoHostEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             RepoHostEnum::Github => out.write_all(b"github")?,
             RepoHostEnum::Bitbucket => out.write_all(b"bitbucket")?,
@@ -142,8 +144,10 @@ impl ToSql<RepoHostEnumSql, Pg> for RepoHostEnum {
 }
 
 impl FromSql<RepoHostEnumSql, Pg> for RepoHostEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
+
+        match bytes {
             b"github" => Ok(RepoHostEnum::Github),
             b"bitbucket" => Ok(RepoHostEnum::Bitbucket),
             b"gitlab" => Ok(RepoHostEnum::Gitlab),
@@ -157,11 +161,11 @@ impl FromSql<RepoHostEnumSql, Pg> for RepoHostEnum {
 // ---------- Vcs <----> VcsEnumSql
 
 #[derive(SqlType)]
-#[postgres(type_name = "vcs_type_enum")]
+#[diesel(postgres_type(name = "vcs_type_enum"))]
 struct VcsEnumSql;
 
 impl ToSql<VcsEnumSql, Pg> for Vcs {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             Vcs::Git => out.write_all(b"git")?,
         }
@@ -170,8 +174,10 @@ impl ToSql<VcsEnumSql, Pg> for Vcs {
 }
 
 impl FromSql<VcsEnumSql, Pg> for Vcs {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
+
+        match bytes {
             b"git" => Ok(Vcs::Git),
             _ => Err("Unrecognized enum variant".into()),
         }
@@ -181,25 +187,25 @@ impl FromSql<VcsEnumSql, Pg> for Vcs {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::connection::QueryRunner;
     use crate::custom_types::RepoHostInfo;
     use crate::custom_types::RepoInfo;
     use crate::custom_types::Vcs;
     use crate::testing;
     use diesel::prelude::*;
-    use diesel::RunQueryDsl;
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Repo_info_struct;
+        use crate::schema::sql_types::RepoInfoStruct;
 
         test_repo_info_to_sql {
             id -> Integer,
-            r -> Nullable<Repo_info_struct>,
+            r -> Nullable<RepoInfoStruct>,
         }
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_repo_info_to_sql"]
+    #[diesel(table_name = test_repo_info_to_sql)]
     struct TestRepoInfoToSql {
         id: i32,
         r: Option<RepoInfo>,
@@ -273,23 +279,20 @@ mod tests {
         ];
 
         testing::using_test_db(|conn| {
-            let _temp_table = testing::TempTable::new(
-                &conn,
+            testing::using_temp_table(
+                conn,
                 "test_repo_info_to_sql",
                 "id SERIAL PRIMARY KEY, r repo_info",
+                |conn| {
+                    let inserted = conn
+                        .get_results(diesel::insert_into(test_repo_info_to_sql).values(&data))
+                        .unwrap();
+                    assert_eq!(data, inserted);
+
+                    let filter_all = conn.load(test_repo_info_to_sql.filter(id.ge(1))).unwrap();
+                    assert_eq!(data, filter_all);
+                },
             );
-
-            let inserted = diesel::insert_into(test_repo_info_to_sql)
-                .values(&data)
-                .get_results(&conn.conn)
-                .unwrap();
-            assert_eq!(data, inserted);
-
-            let filter_all = test_repo_info_to_sql
-                .filter(id.ge(1))
-                .load(&conn.conn)
-                .unwrap();
-            assert_eq!(data, filter_all);
         });
     }
 }

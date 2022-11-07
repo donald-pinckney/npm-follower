@@ -1,11 +1,12 @@
+use crate::connection::QueryRunner;
 use crate::custom_types::DownloadFailed;
 use crate::download_tarball;
 use crate::download_tarball::DownloadedTarball;
 use std::collections::HashSet;
 
+use super::connection::DbConnection;
 use super::schema;
 use super::schema::download_tasks;
-use super::DbConnection;
 use chrono::{DateTime, Utc};
 use diesel::pg::upsert::excluded;
 use diesel::prelude::*;
@@ -31,6 +32,7 @@ pub struct DownloadTask {
 }
 
 impl DownloadTask {
+    #[allow(clippy::too_many_arguments)]
     pub fn fresh_task(
         url: String,
         shasum: Option<String>,
@@ -87,7 +89,7 @@ impl DownloadTask {
 
 const ENQUEUE_CHUNK_SIZE: usize = 2048;
 
-pub fn enqueue_downloads(the_downloads: Vec<DownloadTask>, conn: &DbConnection) -> usize {
+pub fn enqueue_downloads(the_downloads: Vec<DownloadTask>, conn: &mut DbConnection) -> usize {
     let mut chunk_iter = the_downloads.chunks_exact(ENQUEUE_CHUNK_SIZE);
     let mut modify_count = 0;
     for chunk in &mut chunk_iter {
@@ -99,7 +101,7 @@ pub fn enqueue_downloads(the_downloads: Vec<DownloadTask>, conn: &DbConnection) 
     modify_count
 }
 
-fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
+fn enqueue_chunk(conn: &mut DbConnection, chunk: &[DownloadTask]) -> usize {
     use schema::download_tasks::dsl::*;
 
     if chunk.len() > ENQUEUE_CHUNK_SIZE {
@@ -117,10 +119,10 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
         .collect();
 
     // A2. If URL x didn't exist in downloaded_tarballs, enqueue into download_tasks
-    diesel::insert_into(download_tasks)
+    let insert_query = diesel::insert_into(download_tasks)
         .values(chunk)
-        .on_conflict_do_nothing()
-        .execute(&conn.conn)
+        .on_conflict_do_nothing();
+    conn.execute(insert_query)
         .expect("Failed to enqueue downloads into DB")
 
     // Note: we could do a transaction here, but instead if we consider
@@ -218,112 +220,116 @@ fn enqueue_chunk(conn: &DbConnection, chunk: &[DownloadTask]) -> usize {
 
 pub const TASKS_CHUNK_SIZE: i64 = 2048;
 
-pub fn get_total_tasks_num(conn: &DbConnection, retry_failed: bool) -> i64 {
+pub fn get_total_tasks_num(conn: &mut DbConnection, retry_failed: bool) -> i64 {
     use schema::download_tasks::dsl::*;
 
     if retry_failed {
-        download_tasks
-            .count()
-            .get_result(&conn.conn)
+        conn.get_result(download_tasks.count())
             .expect("Failed to get number of tasks")
     } else {
-        download_tasks
-            .filter(failed.is_null())
-            .count()
-            .get_result(&conn.conn)
+        conn.get_result(download_tasks.filter(failed.is_null()).count())
             .expect("Failed to get number of tasks")
     }
 }
 
-pub fn load_chunk_init(conn: &DbConnection, retry_failed: bool) -> Vec<DownloadTask> {
+pub fn load_chunk_init(conn: &mut DbConnection, retry_failed: bool) -> Vec<DownloadTask> {
     use schema::download_tasks::dsl::*;
     if retry_failed {
-        download_tasks
-            .order(url.asc()) // order by the time they got queued, in ascending order
-            .limit(TASKS_CHUNK_SIZE)
-            .load(&conn.conn)
-            .expect("Failed to load download tasks from DB")
+        conn.load(
+            download_tasks
+                .order(url.asc()) // order by the time they got queued, in ascending order
+                .limit(TASKS_CHUNK_SIZE),
+        )
+        .expect("Failed to load download tasks from DB")
     } else {
-        download_tasks
-            .order(url.asc()) // order by the time they got queued, in ascending order
-            .filter(failed.is_null())
-            .limit(TASKS_CHUNK_SIZE)
-            .load(&conn.conn)
-            .expect("Failed to load download tasks from DB")
+        conn.load(
+            download_tasks
+                .order(url.asc()) // order by the time they got queued, in ascending order
+                .filter(failed.is_null())
+                .limit(TASKS_CHUNK_SIZE),
+        )
+        .expect("Failed to load download tasks from DB")
     }
 }
 
 pub fn load_chunk_next(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     last_url: &String,
     retry_failed: bool,
 ) -> Vec<DownloadTask> {
     use schema::download_tasks::dsl::*;
     if retry_failed {
-        download_tasks
-            .order(url.asc()) // order by the time they got queued, in ascending order
-            .filter(url.gt(last_url))
-            .limit(TASKS_CHUNK_SIZE)
-            .load(&conn.conn)
-            .expect("Failed to load download tasks from DB")
+        conn.load(
+            download_tasks
+                .order(url.asc()) // order by the time they got queued, in ascending order
+                .filter(url.gt(last_url))
+                .limit(TASKS_CHUNK_SIZE),
+        )
+        .expect("Failed to load download tasks from DB")
     } else {
-        download_tasks
-            .order(url.asc()) // order by the time they got queued, in ascending order
-            .filter(failed.is_null().and(url.gt(last_url)))
-            .limit(TASKS_CHUNK_SIZE)
-            .load(&conn.conn)
-            .expect("Failed to load download tasks from DB")
+        conn.load(
+            download_tasks
+                .order(url.asc()) // order by the time they got queued, in ascending order
+                .filter(failed.is_null().and(url.gt(last_url)))
+                .limit(TASKS_CHUNK_SIZE),
+        )
+        .expect("Failed to load download tasks from DB")
     }
 }
 
-pub fn update_from_tarballs(conn: &DbConnection, tarballs: &Vec<DownloadedTarball>) {
+pub fn update_from_tarballs(conn: &mut DbConnection, tarballs: &Vec<DownloadedTarball>) {
     println!("Inserting {} tarballs", tarballs.len());
 
     // insert all the tarballs from download_queue in the db
     {
         use schema::downloaded_tarballs::dsl::*; // have to scope the imports as they conflict.
-        diesel::insert_into(schema::downloaded_tarballs::table)
-            .values(tarballs)
-            .on_conflict(tarball_url)
-            .do_update()
-            .set((
-                tarball_url.eq(excluded(tarball_url)),
-                downloaded_at.eq(excluded(downloaded_at)),
-                shasum.eq(excluded(shasum)),
-                unpacked_size.eq(excluded(unpacked_size)),
-                file_count.eq(excluded(file_count)),
-                integrity.eq(excluded(integrity)),
-                signature0_sig.eq(excluded(signature0_sig)),
-                signature0_keyid.eq(excluded(signature0_keyid)),
-                npm_signature.eq(excluded(npm_signature)),
-                tgz_local_path.eq(excluded(tgz_local_path)),
-            ))
-            .execute(&conn.conn)
-            .expect("Failed to insert downloaded tarballs into DB");
+        conn.execute(
+            diesel::insert_into(schema::downloaded_tarballs::table)
+                .values(tarballs)
+                .on_conflict(tarball_url)
+                .do_update()
+                .set((
+                    tarball_url.eq(excluded(tarball_url)),
+                    downloaded_at.eq(excluded(downloaded_at)),
+                    shasum.eq(excluded(shasum)),
+                    unpacked_size.eq(excluded(unpacked_size)),
+                    file_count.eq(excluded(file_count)),
+                    integrity.eq(excluded(integrity)),
+                    signature0_sig.eq(excluded(signature0_sig)),
+                    signature0_keyid.eq(excluded(signature0_keyid)),
+                    npm_signature.eq(excluded(npm_signature)),
+                    tgz_local_path.eq(excluded(tgz_local_path)),
+                )),
+        )
+        .expect("Failed to insert downloaded tarballs into DB");
     }
 
     // delete the tasks from download_tasks that are contained in download_queue
     {
         use schema::download_tasks::dsl::*;
-        diesel::delete(download_tasks)
-            .filter(url.eq_any(tarballs.iter().map(|x| x.tarball_url.clone())))
-            .execute(&conn.conn)
-            .expect("Failed to delete downloaded tasks from DB");
+        conn.execute(
+            diesel::delete(download_tasks)
+                .filter(url.eq_any(tarballs.iter().map(|x| x.tarball_url.clone()))),
+        )
+        .expect("Failed to delete downloaded tasks from DB");
     }
 }
 
-pub fn update_from_error(conn: &DbConnection, task: &DownloadTask, error: DownloadFailed) {
+pub fn update_from_error(conn: &mut DbConnection, task: &DownloadTask, error: DownloadFailed) {
     use schema::download_tasks::dsl::*;
     // modify the task in the DB such that the failed column is set to its
     // corresponding error
-    diesel::update(schema::download_tasks::table.filter(schema::download_tasks::url.eq(&task.url)))
+    conn.execute(
+        diesel::update(
+            schema::download_tasks::table.filter(schema::download_tasks::url.eq(&task.url)),
+        )
         .set((
             failed.eq(Some(error)),
             last_failure.eq(Utc::now()),
             num_failures.eq(num_failures + 1),
-        ))
-        .execute(&conn.conn)
-        .expect("Failed to update download task after error");
+        )),
+    )
+    .expect("Failed to update download task after error");
 }
 
 #[cfg(test)]

@@ -1,0 +1,13 @@
+#[test]
+fn $TEST_NAME() {
+    let seq_json_str = include_str!("$INPUT_PATH");
+    
+    let change = Change { seq: 1, raw_json: serde_json::from_str(seq_json_str).unwrap() };
+
+    let deser_change = deserialize_change(change);
+
+    let correct_ron_str = include_str!("$CORRECT_PATH");
+    let correct_deser_change = ron::from_str(correct_ron_str).unwrap();
+
+    assert_eq!(deser_change, correct_deser_change);
+}

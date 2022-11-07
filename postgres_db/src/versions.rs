@@ -62,8 +62,7 @@ impl Version {
     }
 }
 
-
-pub fn insert_versions(conn: &DbConnection, version_vec: Vec<Version>) -> Vec<(i64, Semver)> {
+pub fn insert_versions(conn: &mut DbConnection, version_vec: Vec<Version>) -> Vec<(i64, Semver)> {
     use super::schema::versions::dsl::*;
 
     let semvers: Vec<_> = version_vec.iter().map(|v| v.semver.clone()).collect();
@@ -104,11 +103,11 @@ pub fn insert_versions(conn: &DbConnection, version_vec: Vec<Version>) -> Vec<(i
     ids.into_iter().zip(semvers.into_iter()).collect()
 }
 
-pub fn delete_versions_not_in(conn: &DbConnection, pkg_id: i64, vers: Vec<&Semver>) {
+pub fn delete_versions_not_in(conn: &mut DbConnection, pkg_id: i64, vers: Vec<&Semver>) {
     use super::schema::versions::dsl::*;
 
     println!("The maybe slow query is running!");
-    
+
     // get all versions with the given package id
     let all_vers = versions
         .filter(package_id.eq(pkg_id))

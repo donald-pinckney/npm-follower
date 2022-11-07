@@ -1,0 +1,91 @@
+Some(("h5-1810-npm", Normal(
+    latest: Some((
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2018-09-19T04:12:23.443Z",
+    modified: "2018-09-19T04:12:26.143Z",
+    other_dist_tags: {},
+), {
+    (
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/h5-1810-npm/-/h5-1810-npm-0.0.1.tgz",
+            shasum: Some("a64ed8549363116a23469fdd02e708b267e7347c"),
+            unpacked_size: Some(462),
+            file_count: Some(2),
+            integrity: Some("sha512-y4misA70qhHtguHwdNaVnHgPukDJ/ZRoo3VLPblojwp47Pb+COnMui6dGfHCqvgDNUxcwVI2xr2ez5/p40Py6g=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbocyoCRA9TVsSAnZWagAAxroP/1U048uIJHTxhxESJRAU\nVvu2xgJgCABkMuRsz7wVY3P1IJtNk+M8N9pOqtGOLLkQeJ081dhVVC6LP1AL\nQjlT+XQZ/sxvs9TktxIkUxezb29tEq9w+BK3MRVsf+UGqmntLqBSD0OQZL7L\nqtP7Wn5NtkMv2dPvyYOdcmJU4R4vs2SDDqJgcfVPDcS4A/zuOF+HP4ELPjyC\nJBH6qw/9G1Fny1pBHLRYpUfVvn51SlrcmENNP+eJJabIcy3zBLn2MQAhJk0c\nbkhcIEvqYw7Gl92BiM7GmrBslcGXTvNZRRscXbt93GXSZ2JAD8nO5gPrgfhA\nuJWaqkshuUq2b6oU7g5qYs/l5wAvoag35gWzGz/H0DrUmdtByBh7ln1t1hzg\nHYRKc4vPHNtXsLm73pQUe/cXAy0FSeKh0BfvH6/9ml3jSMuxeQ+376yVtTUS\nolxkpXNAW30kqjlp/9BC63g1pVRnVpAEZ0j9Gxmg88OaCSN09X+DJ9WflLXH\nEXeHSEhtORbHR/NMnqj8IXug7+W9eLxHUaDETTpWL8bbtTL3xYTRV6bfSJ5P\nF0tjT9stSMweRiGXZYATcOzJiWst5iC9B/nEoIzyBq7fwej+XFMLaz86/mPl\n+6H3+mGN7I5pVqs6kx3rNTZGFed+dGfo4yiDzrdf938rD+d9C8cdHbiNIhK9\nx6re\r\n=FJYX\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "url": "git+https://github.com/Jiang-Xiaoming/h5-1810.git",
+                "type": "Git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/Jiang-Xiaoming/h5-1810",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "Jiang-Xiaoming",
+                    repo: "h5-1810",
+                ),
+            ),
+        )),
+        time: "2018-09-19T04:12:23.575Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "h5-1810-npm@0.0.1",
+            "_nodeVersion": "8.9.0",
+            "_npmOperationalInternal": {
+                "tmp": "tmp/h5-1810-npm_0.0.1_1537330343443_0.8290061945508465",
+                "host": "s3://npm-registry-packages",
+            },
+            "_npmUser": {
+                "name": "jiangxiaoming",
+                "email": "2218215702@qq.com",
+            },
+            "_npmVersion": "5.5.1",
+            "author": {
+                "name": "Ming",
+            },
+            "bugs": {
+                "url": "https://github.com/Jiang-Xiaoming/h5-1810/issues",
+            },
+            "description": "A test pageage",
+            "directories": {},
+            "gitHead": "d8716fc34d1e2a71ec2aad165e7450e3972bdf29",
+            "homepage": "https://github.com/Jiang-Xiaoming/h5-1810#readme",
+            "keywords": [
+                "h5-1810",
+            ],
+            "license": "MIT",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "name": "jiangxiaoming",
+                    "email": "2218215702@qq.com",
+                },
+            ],
+            "name": "h5-1810-npm",
+            "scripts": {
+                "test": "mocha",
+            },
+            "version": "0.0.1",
+        },
+    ),
+}))

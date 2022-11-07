@@ -1,12 +1,13 @@
+use crate::connection::QueryRunner;
 use crate::download_queue::DownloadTask;
 
 use super::schema::downloaded_tarballs;
 use chrono::{DateTime, Utc};
 use diesel::Queryable;
 
-use diesel::prelude::*;
-use super::DbConnection;
+use super::connection::DbConnection;
 use super::schema;
+use diesel::prelude::*;
 
 #[derive(Queryable, Insertable, Debug)]
 #[diesel(table_name = downloaded_tarballs)]
@@ -46,13 +47,15 @@ impl DownloadedTarball {
     }
 }
 
-
-pub fn get_downloaded_urls_matching_tasks(conn: &DbConnection, chunk: &[DownloadTask]) -> Vec<String> {
+pub fn get_downloaded_urls_matching_tasks(
+    conn: &mut DbConnection,
+    chunk: &[DownloadTask],
+) -> Vec<String> {
     use schema::downloaded_tarballs::dsl::*;
 
-    downloaded_tarballs
+    let get_matching_tarball_urls_query = downloaded_tarballs
         .select(tarball_url)
-        .filter(tarball_url.eq_any(chunk.iter().map(|t| &t.url)))
-        .load(&conn.conn)
+        .filter(tarball_url.eq_any(chunk.iter().map(|t| &t.url)));
+    conn.load(get_matching_tarball_urls_query)
         .expect("Error checking for max sequence in change_log table")
 }

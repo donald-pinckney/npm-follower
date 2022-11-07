@@ -1,37 +1,42 @@
 pub mod packument;
 
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::panic;
+use crate::packument::Packument;
+use crate::packument::Spec;
+use crate::packument::VersionPackument;
+use postgres_db::change_log::Change;
+use postgres_db::custom_types::Semver;
+use postgres_db::dependencies::Dependencie;
 use postgres_db::packages::insert_package;
 use postgres_db::packages::Package;
 use postgres_db::versions::Version;
 use postgres_db::DbConnection;
-use postgres_db::change_log::Change;
-use postgres_db::custom_types::Semver;
-use postgres_db::dependencies::Dependencie;
-use crate::packument::Packument;
-use crate::packument::Spec;
-use crate::packument::VersionPackument;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::panic;
 
 use serde_json::{Map, Value};
 
 use utils::RemoveInto;
 
-
 pub fn deserialize_change(c: Change) -> Option<(String, Packument)> {
     let mut change_json = serde_json::from_value::<Map<String, Value>>(c.raw_json).unwrap();
-    let del = change_json.remove_key_unwrap_type::<bool>("deleted").unwrap();
+    let del = change_json
+        .remove_key_unwrap_type::<bool>("deleted")
+        .unwrap();
 
     let package_name = change_json.remove_key_unwrap_type::<String>("id").unwrap();
-    
+
     if package_name == "_design/app" || package_name == "_design/scratch" {
-        return None
+        return None;
     }
-    
-    let mut doc = change_json.remove_key_unwrap_type::<Map<String, Value>>("doc").unwrap();
+
+    let mut doc = change_json
+        .remove_key_unwrap_type::<Map<String, Value>>("doc")
+        .unwrap();
     let doc_id = doc.remove_key_unwrap_type::<String>("_id").unwrap();
-    let doc_deleted = doc.remove_key_unwrap_type::<bool>("_deleted").unwrap_or(false);
+    let doc_deleted = doc
+        .remove_key_unwrap_type::<bool>("_deleted")
+        .unwrap_or(false);
     doc.remove_key_unwrap_type::<String>("_rev").unwrap();
 
     if del != doc_deleted {
@@ -50,22 +55,23 @@ pub fn deserialize_change(c: Change) -> Option<(String, Packument)> {
     } else {
         let unpublished = doc
             .get("time")
-            .map(|time_value| 
-                time_value
-                    .as_object()
-                    .unwrap()
-                    .contains_key("unpublished")
-            )
+            .map(|time_value| time_value.as_object().unwrap().contains_key("unpublished"))
             .unwrap_or(false);
 
         if unpublished {
-            Some((package_name, packument::deserialize::deserialize_packument_blob_unpublished(doc)))
+            Some((
+                package_name,
+                packument::deserialize::deserialize_packument_blob_unpublished(doc),
+            ))
         } else {
             let has_dist_tags = doc.contains_key("dist-tags");
             if has_dist_tags {
-                Some((package_name, packument::deserialize::deserialize_packument_blob_normal(doc)))
+                Some((
+                    package_name,
+                    packument::deserialize::deserialize_packument_blob_normal(doc),
+                ))
             } else {
-                // If the packument says *not* deleted, 
+                // If the packument says *not* deleted,
                 // but has no fields, then we mark it as missing data.
                 // See seq = 4413127.
                 assert!(!doc.contains_key("time"));
@@ -73,12 +79,10 @@ pub fn deserialize_change(c: Change) -> Option<(String, Packument)> {
                 Some((package_name, Packument::MissingData))
             }
         }
-    }    
+    }
 }
 
-
-
-pub fn process_change(conn: &DbConnection, c: Change) {
+pub fn process_change(conn: &mut DbConnection, c: Change) {
     let seq = c.seq;
     // println!("\nparsing seq: {}", seq);
 
@@ -123,7 +127,7 @@ fn make_dep_countmap(
 }
 
 fn apply_versions(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     pack: packument::Packument,
     pkg_already_existed: bool,
     package_id: i64,
@@ -180,7 +184,6 @@ fn apply_versions(
                 inserted_deps
             };
 
-
             let mut versions_to_insert = vec![];
 
             for (sv, vpack) in &versions {
@@ -205,9 +208,8 @@ fn apply_versions(
                     secret,
                 );
 
-                versions_to_insert.push(ver);                
+                versions_to_insert.push(ver);
             }
-
 
             let ver_ids_semvers = postgres_db::versions::insert_versions(conn, versions_to_insert);
 
@@ -235,14 +237,18 @@ fn apply_versions(
             extra_version_times: _,
         } => {
             println!("Unpublished pkg: {}", package_id)
-        },
+        }
         Packument::MissingData | Packument::Deleted => {
             println!("Deleted pkg: {}", package_id)
         }
     }
 }
 
-pub fn apply_packument_change(conn: &DbConnection, package_name: String, pack: packument::Packument) {
+pub fn apply_packument_change(
+    conn: &mut DbConnection,
+    package_name: String,
+    pack: packument::Packument,
+) {
     let metadata = pack.clone().into();
 
     let secret = false;

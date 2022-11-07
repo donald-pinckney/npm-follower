@@ -1,11 +1,13 @@
+use std::io::Write;
+
+use crate::schema::sql_types::ParsedSpecStruct;
+
 use super::sql_types::*;
 use super::{AliasSubspec, ParsedSpec, VersionConstraint};
-use diesel::deserialize;
-use diesel::pg::Pg;
-use diesel::serialize::{self, IsNull, Output, WriteTuple};
+use diesel::deserialize::{self, FromSql};
+use diesel::pg::{Pg, PgValue};
+use diesel::serialize::{self, IsNull, Output, ToSql, WriteTuple};
 use diesel::sql_types::{Array, Int8, Nullable, Record, Text};
-use diesel::types::{FromSql, ToSql};
-use std::io::Write;
 
 // ---------- ParsedSpecStructSql <----> ParsedSpec
 
@@ -41,8 +43,8 @@ type ParsedSpecStructRecordRust = (
     Option<String>,
 );
 
-impl<'a> ToSql<ParsedSpecStructSql, Pg> for ParsedSpec {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+impl<'a> ToSql<ParsedSpecStruct, Pg> for ParsedSpec {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let record: ParsedSpecStructRecordRust = match self {
             ParsedSpec::Range(vc) => (
                 SpecTypeEnum::Range,
@@ -185,8 +187,8 @@ impl<'a> ToSql<ParsedSpecStructSql, Pg> for ParsedSpec {
     }
 }
 
-impl<'a> FromSql<ParsedSpecStructSql, Pg> for ParsedSpec {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+impl<'a> FromSql<ParsedSpecStruct, Pg> for ParsedSpec {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: ParsedSpecStructRecordRust =
             FromSql::<Record<ParsedSpecStructRecordSql>, Pg>::from_sql(bytes)?;
         match tup {
@@ -333,7 +335,7 @@ impl<'a> FromSql<ParsedSpecStructSql, Pg> for ParsedSpec {
 // ---------- SpecTypeEnumSql <----> SpecTypeEnum
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "SpecTypeEnumSql"]
+#[diesel(sql_type = SpecTypeEnumSql)]
 enum SpecTypeEnum {
     Range,
     Tag,
@@ -346,11 +348,11 @@ enum SpecTypeEnum {
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "dependency_type_enum")]
+#[diesel(postgres_type(name = "dependency_type_enum"))]
 struct SpecTypeEnumSql;
 
 impl ToSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             SpecTypeEnum::Range => out.write_all(b"range")?,
             SpecTypeEnum::Tag => out.write_all(b"tag")?,
@@ -366,8 +368,10 @@ impl ToSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
 }
 
 impl FromSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
+
+        match bytes {
             b"range" => Ok(SpecTypeEnum::Range),
             b"tag" => Ok(SpecTypeEnum::Tag),
             b"git" => Ok(SpecTypeEnum::Git),
@@ -384,18 +388,18 @@ impl FromSql<SpecTypeEnumSql, Pg> for SpecTypeEnum {
 // ---------- AliasSubspecTypeEnumSql <----> AliasSubspecTypeEnum
 
 #[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
-#[sql_type = "AliasSubspecTypeEnumSql"]
+#[diesel(sql_type = AliasSubspecTypeEnumSql)]
 enum AliasSubspecTypeEnum {
     Range,
     Tag,
 }
 
 #[derive(SqlType)]
-#[postgres(type_name = "alias_subdependency_type_enum")]
+#[diesel(postgres_type(name = "alias_subdependency_type_enum"))]
 struct AliasSubspecTypeEnumSql;
 
 impl ToSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
-    fn to_sql<W: Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         match self {
             AliasSubspecTypeEnum::Range => out.write_all(b"range")?,
             AliasSubspecTypeEnum::Tag => out.write_all(b"tag")?,
@@ -405,8 +409,10 @@ impl ToSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
 }
 
 impl FromSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
-    fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
-        match not_none!(bytes) {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
+
+        match bytes {
             b"range" => Ok(AliasSubspecTypeEnum::Range),
             b"tag" => Ok(AliasSubspecTypeEnum::Tag),
             _ => Err("Unrecognized enum variant".into()),
@@ -417,25 +423,25 @@ impl FromSql<AliasSubspecTypeEnumSql, Pg> for AliasSubspecTypeEnum {
 // Unit tests
 #[cfg(test)]
 mod tests {
+    use crate::connection::QueryRunner;
     use crate::custom_types::{
         AliasSubspec, ParsedSpec, PrereleaseTag, Semver, VersionComparator, VersionConstraint,
     };
     use crate::testing;
     use diesel::prelude::*;
-    use diesel::RunQueryDsl;
 
     table! {
         use diesel::sql_types::*;
-        use crate::custom_types::sql_type_names::Parsed_spec_struct;
+        use crate::schema::sql_types::ParsedSpecStruct;
 
         test_parsed_spec_to_sql {
             id -> Integer,
-            s -> Parsed_spec_struct,
+            s -> ParsedSpecStruct,
         }
     }
 
     #[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
-    #[table_name = "test_parsed_spec_to_sql"]
+    #[diesel(table_name = test_parsed_spec_to_sql)]
     struct TestParsedSpecToSql {
         id: i32,
         s: ParsedSpec,
@@ -513,23 +519,20 @@ mod tests {
         ];
 
         testing::using_test_db(|conn| {
-            let _temp_table = testing::TempTable::new(
-                &conn,
+            testing::using_temp_table(
+                conn,
                 "test_parsed_spec_to_sql",
                 "id SERIAL PRIMARY KEY, s parsed_spec NOT NULL",
+                |conn| {
+                    let inserted = conn
+                        .get_results(diesel::insert_into(test_parsed_spec_to_sql).values(&data))
+                        .unwrap();
+                    assert_eq!(data, inserted);
+
+                    let filter_all = conn.load(test_parsed_spec_to_sql.filter(id.ge(1))).unwrap();
+                    assert_eq!(data, filter_all);
+                },
             );
-
-            let inserted = diesel::insert_into(test_parsed_spec_to_sql)
-                .values(&data)
-                .get_results(&conn.conn)
-                .unwrap();
-            assert_eq!(data, inserted);
-
-            let filter_all = test_parsed_spec_to_sql
-                .filter(id.ge(1))
-                .load(&conn.conn)
-                .unwrap();
-            assert_eq!(data, filter_all);
         });
     }
 }

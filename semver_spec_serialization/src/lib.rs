@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate lazy_static;
 
-use std::io::{BufRead, BufReader, Read, Write};
+use std::io::{BufRead, BufReader, Write};
 use std::string::FromUtf8Error;
 use std::sync::Mutex;
 use std::{num::ParseIntError, os::unix::net::UnixStream};
@@ -28,7 +28,9 @@ lazy_static! {
         let mut js_dir = std::env::current_dir().unwrap();
         if js_dir.ends_with("semver_spec_serialization/") {
             js_dir.push("js_parser");
-        } else if js_dir.ends_with("relational_db_builder/") {
+        } else if js_dir.ends_with("relational_db_builder/")
+            || js_dir.ends_with("diff_log_builder/")
+        {
             js_dir.push("..");
             js_dir.push("semver_spec_serialization");
             js_dir.push("js_parser");

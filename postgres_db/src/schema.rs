@@ -1,23 +1,48 @@
-table! {
-    use diesel::sql_types::*;
-    use crate::custom_types::sql_type_names::*;
+// @generated automatically by Diesel CLI.
 
+pub mod sql_types {
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "diff_type"))]
+    pub struct DiffType;
+
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "internal_diff_log_version_state"))]
+    pub struct InternalDiffLogVersionState;
+
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "package_metadata_struct"))]
+    pub struct PackageMetadataStruct;
+
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "parsed_spec_struct"))]
+    pub struct ParsedSpecStruct;
+
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "repo_info_struct"))]
+    pub struct RepoInfoStruct;
+
+    #[derive(diesel::sql_types::SqlType, diesel::query_builder::QueryId)]
+    #[diesel(postgres_type(name = "semver_struct"))]
+    pub struct SemverStruct;
+}
+
+diesel::table! {
     change_log (seq) {
         seq -> Int8,
         raw_json -> Jsonb,
     }
 }
 
-table! {
+diesel::table! {
     use diesel::sql_types::*;
-    use crate::custom_types::sql_type_names::*;
+    use super::sql_types::ParsedSpecStruct;
 
     dependencies (id) {
         id -> Int8,
         dst_package_name -> Text,
         dst_package_id_if_exists -> Nullable<Int8>,
         raw_spec -> Jsonb,
-        spec -> Parsed_spec_struct,
+        spec -> ParsedSpecStruct,
         secret -> Bool,
         freq_count -> Int8,
         md5digest -> Text,
@@ -25,10 +50,23 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     use diesel::sql_types::*;
-    use crate::custom_types::sql_type_names::*;
+    use super::sql_types::DiffType;
+    use super::sql_types::SemverStruct;
 
+    diff_log (id) {
+        id -> Int8,
+        seq -> Int8,
+        package_name -> Text,
+        dt -> DiffType,
+        package_only_packument -> Nullable<Jsonb>,
+        v -> Nullable<SemverStruct>,
+        version_packument -> Nullable<Jsonb>,
+    }
+}
+
+diesel::table! {
     download_tasks (url) {
         url -> Varchar,
         shasum -> Nullable<Text>,
@@ -45,10 +83,7 @@ table! {
     }
 }
 
-table! {
-    use diesel::sql_types::*;
-    use crate::custom_types::sql_type_names::*;
-
+diesel::table! {
     downloaded_tarballs (tarball_url) {
         tarball_url -> Text,
         downloaded_at -> Timestamptz,
@@ -63,39 +98,49 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     use diesel::sql_types::*;
-    use crate::custom_types::sql_type_names::*;
+    use super::sql_types::InternalDiffLogVersionState;
 
+    internal_diff_log_state (package_name) {
+        package_name -> Text,
+        package_only_packument_hash -> Text,
+        deleted -> Bool,
+        versions -> Array<InternalDiffLogVersionState>,
+    }
+}
+
+diesel::table! {
     internal_state (key) {
         key -> Varchar,
         value -> Int8,
     }
 }
 
-table! {
+diesel::table! {
     use diesel::sql_types::*;
-    use crate::custom_types::sql_type_names::*;
+    use super::sql_types::PackageMetadataStruct;
 
     packages (id) {
         id -> Int8,
         name -> Text,
-        metadata -> Package_metadata_struct,
+        metadata -> PackageMetadataStruct,
         secret -> Bool,
     }
 }
 
-table! {
+diesel::table! {
     use diesel::sql_types::*;
-    use crate::custom_types::sql_type_names::*;
+    use super::sql_types::SemverStruct;
+    use super::sql_types::RepoInfoStruct;
 
     versions (id) {
         id -> Int8,
         package_id -> Int8,
-        semver -> Semver_struct,
+        semver -> SemverStruct,
         tarball_url -> Text,
         repository_raw -> Nullable<Jsonb>,
-        repository_parsed -> Nullable<Repo_info_struct>,
+        repository_parsed -> Nullable<RepoInfoStruct>,
         created -> Timestamptz,
         deleted -> Bool,
         extra_metadata -> Jsonb,
@@ -107,14 +152,17 @@ table! {
     }
 }
 
-joinable!(dependencies -> packages (dst_package_id_if_exists));
-joinable!(versions -> packages (package_id));
+diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
+diesel::joinable!(diff_log -> change_log (seq));
+diesel::joinable!(versions -> packages (package_id));
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     change_log,
     dependencies,
+    diff_log,
     download_tasks,
     downloaded_tarballs,
+    internal_diff_log_state,
     internal_state,
     packages,
     versions,

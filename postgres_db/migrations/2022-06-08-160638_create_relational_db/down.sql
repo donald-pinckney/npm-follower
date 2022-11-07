@@ -4,7 +4,13 @@ DROP INDEX dependencies_alias_package_name_idx;
 DROP INDEX dependencies_md5digest_idx;
 DROP INDEX dependencies_md5digest_with_version_idx;
 DROP INDEX versions_package_id_idx;
+DROP INDEX diff_log_pkg_idx;
+
 DROP TABLE packages, versions, dependencies CASCADE;
+DROP TABLE diff_log, internal_diff_log_state CASCADE;
+
+DROP TYPE       diff_type;
+DROP TYPE       internal_diff_log_version_state;
 
 DROP DOMAIN     repo_info;
 DROP TYPE       repo_info_struct;

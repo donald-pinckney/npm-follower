@@ -1,0 +1,137 @@
+{
+    "changes": [
+        {
+            "rev": "4-2f485cf2c2f227295b63f73dba1dc237"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "@adityac8/wasm-add",
+        "_rev": "4-2f485cf2c2f227295b63f73dba1dc237",
+        "dist-tags": {
+            "latest": "0.1.1"
+        },
+        "maintainers": [
+            {
+                "email": "adityadvlp@gmail.com",
+                "name": "adityac8"
+            }
+        ],
+        "name": "@adityac8/wasm-add",
+        "readme": "ERROR: No README data found!",
+        "readmeFilename": "",
+        "time": {
+            "0.1.0": "2018-05-19T11:35:14.717Z",
+            "0.1.1": "2018-06-12T17:00:19.594Z",
+            "created": "2018-05-19T11:35:14.271Z",
+            "modified": "2022-04-04T11:30:52.822Z"
+        },
+        "versions": {
+            "0.1.0": {
+                "_hasShrinkwrap": false,
+                "_id": "@adityac8/wasm-add@0.1.0",
+                "_nodeVersion": "8.9.4",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/wasm-add_0.1.0_1526729714549_0.6193097938909076"
+                },
+                "_npmUser": {
+                    "email": "adityadvlp@gmail.com",
+                    "name": "adityac8"
+                },
+                "_npmVersion": "5.6.0",
+                "bugs": {
+                    "url": "https://github.com/mgattozzi/wasm-add/issues"
+                },
+                "collaborators": [
+                    "Aditya Arora <adityadvlp@gmail.com>"
+                ],
+                "description": "Code used to demonstrate how to use wasm-pack",
+                "directories": {},
+                "dist": {
+                    "fileCount": 3,
+                    "integrity": "sha512-LHob16LM3Lm5wbzmoeU7ImYBBlepPTeUBmBiaz1NA1KsPJhc4Bx4l/M1mbkJzTR2xr13OcwwmUtlFjC7ydJeKQ==",
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbAAvzCRA9TVsSAnZWagAAT/IP/igXB8r/3fb/niaQFYm/\nw8KXYIe3oxL9DcAFhp0e8WiWeFfRypE3Np9uTIowhNjK4vil2/cQ+Mf/Cjp8\nvAkf1WJu51B8z++veIAsUXKpa4Bu65tEp6bnQIQ6LSWp5FdG6dVjkCHl+m9y\n21eyVTE1JYdihU5RaiY355pbcdNSwCo9XBFJ/hDWfdLCxkThwfiOnwkJ9I8n\n3nZkuq2tbG4JXnJuDdXDxQuUioDo71ZtvPENKaR2lkjVozN8Fj1jQL8PLYLB\nOLDtqPoAy2WkBedpChdrWgaOtICYXPzhn0Qmv7XyqfUOIK0sof1vIbjJpVEW\n5WPx6OqOqJCiv13FRMVae1Js7PQXwZjFxHofddd6FBJ+ZXtEHAZtf4J5Igbq\nhGeuHBl3yJQI4nctpC4Xnszfjd4vNYHk9AgcOCgubunD9FoVKiu34gqS9Ggb\nIniCD/fF2cGI5Mk85aXcB226z2XFlqL4bo31vZKTK1ulTd9pYfqerajoOxzq\nFeQofATbElF1NF5+ZSWiyQX3juMfOAKSORJtv4Zs6mvp6Ihk3HlwbpJAIRjt\nPs22vGa3rTQ+zsJTqOs0Eu4TKS/bqyuXz1IKaLsWWqMSXYR1nx9n3/zDbsCm\n2+2NqnzZwRNBb8aWEoZyvVHsdofnyTQF3KD2/HKu6iiZqgsqrw+U3T/nKuGk\n/WgL\r\n=xAse\r\n-----END PGP SIGNATURE-----\r\n",
+                    "shasum": "ff77f17f26801b6c07969000dcffd625abb4f3bc",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIFTbeIC/HOHEXI/xSJmOsez3VqtsB4Qw+13AICZhzZcpAiBeaGK6dErmBAKzRvaJzPbm+PNe9zpHEtJ8BiRkJ/weOg=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/@adityac8/wasm-add/-/wasm-add-0.1.0.tgz",
+                    "unpackedSize": 230345
+                },
+                "files": [
+                    "wasm_add_bg.wasm"
+                ],
+                "homepage": "https://github.com/mgattozzi/wasm-add#readme",
+                "license": "MIT/Apache-2.0",
+                "main": "wasm_add.js",
+                "maintainers": [
+                    {
+                        "email": "adityadvlp@gmail.com",
+                        "name": "adityac8"
+                    }
+                ],
+                "name": "@adityac8/wasm-add",
+                "repository": {
+                    "type": "git",
+                    "url": "git+https://github.com/mgattozzi/wasm-add.git"
+                },
+                "version": "0.1.0"
+            },
+            "0.1.1": {
+                "_hasShrinkwrap": false,
+                "_id": "@adityac8/wasm-add@0.1.1",
+                "_nodeVersion": "8.9.1",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/wasm-add_0.1.1_1528822819526_0.5588566803415853"
+                },
+                "_npmUser": {
+                    "email": "adityadvlp@gmail.com",
+                    "name": "adityac8"
+                },
+                "_npmVersion": "5.5.1",
+                "collaborators": [
+                    "Aditya Arora <adityadvlp@gmail.com>"
+                ],
+                "description": null,
+                "directories": {},
+                "dist": {
+                    "fileCount": 4,
+                    "integrity": "sha512-ZPmjKZYFuNFYru2J6Z/UBKo8hHHDss/YRvnWIeL7WsWpl8zBH4UI8b2W0mlCHiEaE+tMMRLSg+b8LsRblrWxRw==",
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbH/wkCRA9TVsSAnZWagAAxBMQAKNwAjhMV3x5OWkQwGVl\n8R2w5WwxDYB/8TOCsyFupAlPWzzIpIRh2you1nWA0KgqoCqsEXe+ydaUgjIr\nXZajom/4TN55B9LNGprlWgXaKIWeDZsz1qIHyKbhd3nGJ6oziRX8/MxLJXd7\nQy6UL/qxFtAFtrqeqccmgtzx8FT/i2O0UaoNxOjAfPJ0lcFFWUMOuOJxK7vI\nNHbkCI1kQF2sUC95RzWLa3XEKkCwAOK3oDZb4xp/7MQ8TmCQeXSssGcj79Di\noEhIkBaCvpgqjn4Rvsty0R9Z5aLdur7hBSIRJeifMkLx1AoiougUQ3t6LxdH\ncwMbwClIfjEr6N7fXDWRk2vVw6l1fo7IgQZZ5s+b5ig46iQ5mKoPkSEEt5Ps\nlNT6UBr6vDTTo7YljBtVrCcRjqRG6sVmjF9osGe+rMYkhcd5oIqivNryMNXh\nEWe1gtoiTpHDo+4RHNtrA07V6Gy2tF38wbPkAWNbp+OwnFPod4Bw4PKirStl\nJnQASTueP3DNFOk1yiI8eOMG5zrc3n/fLLGZcDJAq4MfcGd3+XS6TEN72P+1\nrai9PTXGRrYkSCNeBWo/ADeUT8rAcB1n/35JJdsauDVfzoZfaAhAm+ck7FOt\nLxmmu2E1nLckRFzCqjQAdEkfaUpM7ktnTrlSk7mQqXvHvavKNa+UQwAuVFMj\noRYh\r\n=fD6e\r\n-----END PGP SIGNATURE-----\r\n",
+                    "shasum": "34a5efaea367fbcc54dc128024209220ae9d5cfd",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIF6w3mzGLXwxN8EeKP3FgKhhE3Tqv+r305EuIZe4q828AiEA55nwlDcok9Kz+9MkiIKXbFhFKIfldEQXl25rE4yo4IA="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/@adityac8/wasm-add/-/wasm-add-0.1.1.tgz",
+                    "unpackedSize": 216297
+                },
+                "files": [
+                    "wasm_add_bg.wasm",
+                    "wasm_add.d.ts"
+                ],
+                "license": null,
+                "main": "wasm_add.js",
+                "maintainers": [
+                    {
+                        "email": "adityadvlp@gmail.com",
+                        "name": "adityac8"
+                    }
+                ],
+                "name": "@adityac8/wasm-add",
+                "repository": null,
+                "types": "wasm_add.d.ts",
+                "version": "0.1.1"
+            }
+        }
+    },
+    "id": "@adityac8/wasm-add",
+    "seq": 9689762
+}

@@ -1,0 +1,2835 @@
+{
+    "changes": [
+        {
+            "rev": "57-e5dd2bd7d842e47839d9bc72fb8a2de6"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "drceglamoney",
+        "_rev": "57-e5dd2bd7d842e47839d9bc72fb8a2de6",
+        "author": {
+            "name": "makin"
+        },
+        "dist-tags": {
+            "              2222      22222": "2.2.26",
+            "beta": "2.2.22",
+            "beta/male": "2.2.23",
+            "beta/male../../<h1>dsa": "2.2.24",
+            "latest": "2.2.33",
+            "length": "2.2.25"
+        },
+        "keywords": [
+            "?de=dg",
+            "words",
+            "fds"
+        ],
+        "license": "ISC",
+        "maintainers": [
+            {
+                "email": "1matarix123@gmail.com",
+                "name": "mrcytrus"
+            },
+            {
+                "email": "makin@wearehackerone.com",
+                "name": "makinho"
+            }
+        ],
+        "name": "drceglamoney",
+        "readme": "ERROR: No README data found!",
+        "readmeFilename": "",
+        "repository": {
+            "type": "git",
+            "url": "github.com/makindotcc/McHttpFrida"
+        },
+        "time": {
+            "2.1.37": "2021-11-10T23:03:30.656Z",
+            "2.1.38": "2021-11-10T23:05:52.066Z",
+            "2.1.39": "2021-11-10T23:07:23.582Z",
+            "2.1.40": "2021-11-10T23:08:15.838Z",
+            "2.1.41": "2021-11-10T23:09:46.761Z",
+            "2.1.42": "2021-11-10T23:11:24.025Z",
+            "2.1.43": "2021-11-10T23:12:32.302Z",
+            "2.1.44": "2021-11-10T23:13:10.193Z",
+            "2.1.45": "2021-11-10T23:16:53.257Z",
+            "2.1.47": "2021-11-10T23:17:57.047Z",
+            "2.1.48": "2021-11-10T23:19:07.748Z",
+            "2.1.49": "2021-11-10T23:20:16.592Z",
+            "2.1.50": "2021-11-10T23:22:02.602Z",
+            "2.1.51": "2021-11-10T23:24:08.006Z",
+            "2.1.52": "2021-11-10T23:26:18.694Z",
+            "2.1.53": "2021-11-10T23:27:46.530Z",
+            "2.1.54": "2021-11-10T23:28:41.061Z",
+            "2.1.56": "2021-11-10T23:36:53.462Z",
+            "2.1.57": "2021-11-10T23:39:35.278Z",
+            "2.1.59": "2021-11-10T23:42:43.641Z",
+            "2.10.0": "2021-11-10T23:46:57.409Z",
+            "2.11.0": "2021-11-10T23:47:52.060Z",
+            "2.12.0": "2021-11-10T23:48:58.946Z",
+            "2.13.0": "2021-11-10T23:51:51.321Z",
+            "2.14.0": "2021-11-10T23:52:54.736Z",
+            "2.15.0": "2021-11-10T23:54:12.063Z",
+            "2.16.0": "2021-11-10T23:55:10.037Z",
+            "2.17.0": "2021-11-11T00:21:30.983Z",
+            "2.18.0": "2021-11-11T00:27:36.160Z",
+            "2.2.10": "2021-11-11T00:56:11.999Z",
+            "2.2.11": "2021-11-11T00:58:34.198Z",
+            "2.2.12": "2021-11-11T01:00:04.637Z",
+            "2.2.13": "2021-11-11T01:01:16.540Z",
+            "2.2.14": "2021-11-11T01:02:46.091Z",
+            "2.2.15": "2021-11-11T01:08:24.906Z",
+            "2.2.17": "2021-11-11T02:03:13.996Z",
+            "2.2.18": "2021-11-11T02:04:08.304Z",
+            "2.2.19": "2021-11-11T02:14:38.326Z",
+            "2.2.20": "2021-11-11T02:17:07.112Z",
+            "2.2.21": "2021-11-11T02:20:09.493Z",
+            "2.2.22": "2021-11-11T02:21:07.999Z",
+            "2.2.23": "2021-11-11T02:22:33.525Z",
+            "2.2.24": "2021-11-11T02:23:45.530Z",
+            "2.2.25": "2021-11-11T02:30:04.396Z",
+            "2.2.26": "2021-11-11T02:41:42.802Z",
+            "2.2.32": "2021-11-11T03:17:55.197Z",
+            "2.2.33": "2021-11-11T05:37:29.408Z",
+            "2.21.0": "2021-11-11T00:36:35.729Z",
+            "2.22.0": "2021-11-11T00:40:29.996Z",
+            "created": "2021-11-10T23:03:30.514Z",
+            "modified": "2022-04-29T05:32:12.791Z"
+        },
+        "users": {
+            "mrcytrus": true
+        },
+        "versions": {
+            "2.1.37": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.37",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.37_1636585410514_0.23706319045249735"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-MTw4ecrgWlyVpLBjobtB/vjwbajRfjvaTyKN/In0EljhmHpqE6UptSxwwth66QfJA0qLoWhnteluBbH2E0ru1g==",
+                    "shasum": "1f5d8ff26697b1da34f15c11a26eabbd8590ab07",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIGoY2pjp5S/ooHiEbBz8poIMan2NfNICwskVJQx+IGqDAiEAxbXa26Lpj/Q9ERD4vy8WAqe4qPcVYAYDiSuay0jslUw="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.37.tgz",
+                    "unpackedSize": 326
+                },
+                "keywords": [
+                    "key",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.37"
+            },
+            "2.1.38": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.38",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.38_1636585551911_0.5998410874745885"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIF25iz2Hy9FJZkIaUMl+Fx+pmTEoN55fOunIp5QS+eNqAiA8OeV1zIPmOCGAaBzk6fqQJqafo82w7uQ9eLsA2AceRQ=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.38.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.38"
+            },
+            "2.1.39": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.39",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.39_1636585643453_0.870870373449752"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQC5EewtDT38mqYqmRSiMhKP/9zmGwiGBkOlmQDvWB1o4QIhAIZ1pzjCMMN+QHlAaYOxJGyxuIoh8TBaK6R4jP3r9PQ8"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.39.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "&de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.39"
+            },
+            "2.1.40": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.40",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.40_1636585695629_0.1371167494290806"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIEViP1v6/R7aOMjH6oVSDjgiK9w3ugTKOTkC93mz2I4CAiEAxhDRX6NCsdXyCsz2245HjfT6ZBY/HbUyJK6vkve1or0="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.40.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "&q=essa",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.40"
+            },
+            "2.1.41": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.41",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.41_1636585786434_0.8190678709504482"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQCkpn5PPM3onWndk0xL2eBkkQOP6UPHo0WcXHTe1RSMuwIhAP7P6r79cNMxwzSaKBHQvLg8RfCYu4NhcTrYYrmNdT20"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.41.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "&q=essa../../../../",
+                    "&q=essa../../../../~makinho",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.41"
+            },
+            "2.1.42": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.42",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.42_1636585883904_0.19906692553182204"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQDp6WqUyLiwJ8YOKfosaCFynKLUocNSHtZGnKetMI9x7wIgFmG9ECi961g+5kuuI7UFEhiEi+dbRHBrohekOdOTzok="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.42.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    [
+                        1
+                    ],
+                    1,
+                    {},
+                    ":)"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.42"
+            },
+            "2.1.43": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.43",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.43_1636585952137_0.7796076789098807"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCFl4mE8LBONDr58STWjo7v23DRrHJdXJU4WuM1yaPZawIgXe306gsCS2KP/3zETagB1IuwpPya48eCBHGS5/pZm6s="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.43.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    1
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.43"
+            },
+            "2.1.44": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.44",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.44_1636585990065_0.911996609115757"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQDb/Qc/hTvI8TvePyAJPuFC6oLaBSJDIFc+UCOqzUiJwwIgGyIFl0/oIrc0cZMwU5E4yH941cKc2ec54m1g9GDB2Q4="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.44.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    1,
+                    "\""
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.44"
+            },
+            "2.1.45": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.45",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.45_1636586213079_0.9587811857532398"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-Q4fUUOvxZtBuMQAVH0z93lEIZHJrPE7j59SwBUCbecDOV1s/80Pc3QL+fuOXUL3ePZ/hL95D3GT3zdsso2lxQg==",
+                    "shasum": "fdc38e1a08f231cf03fd47715cac88f8557960c7",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIFXSdaGNaWHVLzHANQHkYHsbrFdbEJccudXkU3SwCchcAiA3tUh0X7tM61qL8RipeW4avYmfPLnfscG68P9FJCaISw=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.45.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    1,
+                    "\""
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.45"
+            },
+            "2.1.47": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.47",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.47_1636586276896_0.5689016081611569"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-Q8783JUgYNR8U5j5qyUJay19zHByY5EFu4TZN8AOzwQYkRwdoWQNcJkqfKyM7d8owgyyEdzDaL5PJqZno46Ezg==",
+                    "shasum": "7fae5815aba9f392e818b713f5ee46e4da96f502",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCB0P74RLXfBA61WMW81GE2wFF+B3cXeQydCD1j17bbNgIgJLCprwku+BNfogB6P5ol+yeZfv/MlMzpSq/+o3x9tTM="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.47.tgz",
+                    "unpackedSize": 350
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.47"
+            },
+            "2.1.48": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.48",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.48_1636586347590_0.6821834560222466"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-Q8783JUgYNR8U5j5qyUJay19zHByY5EFu4TZN8AOzwQYkRwdoWQNcJkqfKyM7d8owgyyEdzDaL5PJqZno46Ezg==",
+                    "shasum": "7fae5815aba9f392e818b713f5ee46e4da96f502",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCOZ+H4WuckB6We20ZtvvkkPPd5oEgHY8Y4eZczCfDgsAIgOcv3jLKn3V576WWDatbQ1cpToiQXDzYwdROY4ZXZfGw="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.48.tgz",
+                    "unpackedSize": 350
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.48"
+            },
+            "2.1.49": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.49",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.49_1636586416446_0.9674669472110855"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-Q8783JUgYNR8U5j5qyUJay19zHByY5EFu4TZN8AOzwQYkRwdoWQNcJkqfKyM7d8owgyyEdzDaL5PJqZno46Ezg==",
+                    "shasum": "7fae5815aba9f392e818b713f5ee46e4da96f502",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIBAW7RWthdubpoBsbQE58/6gHUS4CNuuCrULTQcG/DElAiEAkjOB60/hkX3XdzPDg24xwCRIYPYmMaGj9NASR955/ms="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.49.tgz",
+                    "unpackedSize": 350
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.49"
+            },
+            "2.1.50": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.50",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.50_1636586522474_0.09480860273154623"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-Q8783JUgYNR8U5j5qyUJay19zHByY5EFu4TZN8AOzwQYkRwdoWQNcJkqfKyM7d8owgyyEdzDaL5PJqZno46Ezg==",
+                    "shasum": "7fae5815aba9f392e818b713f5ee46e4da96f502",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCQxZ4cabcZ3ClkS4QRR+DZslV5QULDHz1NF5UJOSSfWAIgPd+CU9WcHOCGYRAepo2p00j+VwqGVV2FelBpG8vkMH4="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.50.tgz",
+                    "unpackedSize": 350
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "dd<b>dss",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.50"
+            },
+            "2.1.51": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.51",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.51_1636586647872_0.010324776075188113"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIGnSgiu+w49WVpug38o3SUZcQea/aMZAkor15Dd8B4nKAiAIFnhRORybdqGEOQ999IjgsIB5TmvYwgR3/QW0dQH82w=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.51.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.51"
+            },
+            "2.1.52": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.52",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.52_1636586778563_0.8008825018289918"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIDb4Xk9N+4ffoTDMS+rHliSOql24VEuqb8ATe1qnbJg1AiAxnbpR+CYIW0mRNWC0izEkFpnzLO1E5IY5e+kznGdYrg=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.52.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": {},
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "https://github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.52"
+            },
+            "2.1.53": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.53",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.53_1636586866418_0.37872415917851243"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIFj5wSyMXtDpgD5aiWbevPJWQWHiVbvAcDSW72UbSV97AiAoc/IKFX1nwf8/a8g5DleFSlpYyTeEDlLGpCW9dqDYFw=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.53.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    ""
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "https://github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.53"
+            },
+            "2.1.54": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.54",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.54_1636586920947_0.5156448060181813"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIDFXdKCjlEcpwBbSVrLOXt3IJ5nZ9y1gYDV+Uhc3FfiFAiAPHOtKpH05pSE9z/UWPbGMzcaXgLVogZ5CnyFzuBNtPw=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.54.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    ""
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "https://www.makin.cc/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.54"
+            },
+            "2.1.56": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.56",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.56_1636587413333_0.5113226506394053"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-qaK+F9/TL1gygwWSLkplB9wUcjh+rG47/OtC06IWaLVeBEuOAJHh+VvqvgF48Sf2iXNIWBNS9EwdIJyZ8co2hA==",
+                    "shasum": "80169fd8e14d2922475b045dc7f9c0ab275f93ab",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIHclS/48zoHltr9LP6sH21nwQHKL1yai6DxQcwcGc/BRAiEAo79CS/fke4aB8WRUX1IJJ9CKjzkZCBYlE6ppEKljb8w="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.56.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.56"
+            },
+            "2.1.57": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.57",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.57_1636587575144_0.8150444154845542"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIGv2YlKYbJYC2LMBsJlw2R3F/drh+W7eSpEHioSppNDEAiEAxg9XHytN/WWZ6zWWXd2xiF/v15v7P4BYNtQxaORGMy0="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.57.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.57"
+            },
+            "2.1.59": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.1.59",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.1.59_1636587763532_0.8132192709306705"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCKPEXB/+Nd5gCGa2Ow9gKgAH6Y6RD3nO3JHSByUnu5+gIgV5eyHuesHvOMJvTHTgAPZa2sHxgaRjgPg8Ytxl7ZhZI="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.1.59.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.1.59"
+            },
+            "2.10.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.10.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.10.0_1636588017196_0.03644223293147819"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCICnHyaNm1Ih6Z1XuPpVojTXRPJUzK5Jl9/zGxzQSuUUcAiEAh0ABcUzYDh1MYnohU8xtaTyFMA6Ulh1Th7wEmTuSrQg="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.10.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.10.0"
+            },
+            "2.11.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.11.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.11.0_1636588071920_0.748352916161183"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIAFaB0++n2nXDb3va5bF5Qq+vyoS27Aj5lPyl/i5sla0AiEAnc7c7v4ObdQSVY0EVpFjztIz5kb2wxFKQmBVNKx/1hQ="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.11.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.11.0"
+            },
+            "2.12.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.12.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.12.0_1636588138817_0.16624971331849148"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIEiqiYBUqlyj+BnBdOHF8OOGO2v5ca2rRdtA7ocu22OgAiBoM6Y64hs8OrtX5t+rSIrPCxUl3Z6W5m5Jvg+92oNC/w=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.12.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.12.0"
+            },
+            "2.13.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.13.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.13.0_1636588311191_0.46541114320040733"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIG785E5hSp3hFB4j7e8In7xgD0ztovoG9+IJr/yy252JAiEAknjcDrsxVFvCoXpdpHzo6G+TbNDclhli5K2MU70X6Os="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.13.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.13.0"
+            },
+            "2.14.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.14.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.14.0_1636588374637_0.8387530646899568"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQDcza1Oihskwnj23673m3BD394VqHLkuq6jYGyAyOPqaAIhAMXZY//JtIviNlqD1za51R56vI7MOSeGwmur6E/eWQG9"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.14.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.14.0"
+            },
+            "2.15.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.15.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.15.0_1636588451921_0.42844467613263326"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQCHaC9FacgN8SEOZGmYiOVraso+p0P+FpwtbAhOMCAxnwIhAJ+fMgDBp962/wvs+IxzPyrYOgBuBj+BHOGatjqkHXAB"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.15.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.15.0"
+            },
+            "2.16.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.16.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.16.0_1636588509904_0.9974692313560698"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-5KZ889hmeGOwrEx9cKP7utKrUJ7knlNK3ulza2SnRvaYZZ/b/H0NfR5baWPCixi4iYiptMQ+Vg9RuG1u82DaxQ==",
+                    "shasum": "dfa49a1a34e8c27b01262b93f227474dd731230a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIApAq5n+4Tg8cjpoLi5MciQXsO4GYtcU6OMvVBziWYjEAiEA/YHkGVsv9yZvyYaIUX339IqroPZ53Q0rybhUqMmt5X8="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.16.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.16.0"
+            },
+            "2.17.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.17.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.17.0_1636590090881_0.16249991965427668"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIGKaacknfDaVgvnHgqA0421U3vYpi2Cz300i79maDRhfAiEAtk0fJ/NwMvalJuB6xLNQbFFj6b1C9v0i77xVsv32UPE="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.17.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.17.0"
+            },
+            "2.18.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.18.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.18.0_1636590456024_0.7004380267262134"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCethss9ei86aLRrEzDiw0FjuaWfD+1JCnN1EU6KkmHgQIgSwygo714i9meuNWOMb9kbhABOKjKE8cxVc4svD3wMPk="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.18.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.18.0"
+            },
+            "2.2.10": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.10",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.10_1636592171854_0.4073120718027434"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "wsddddddddsapfdspofdsopgfdopgfd": "^1.0.1"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-qy2jg7bvRfcT7Dec3QJ7TxBb/UYJ4gt+DAGDePirBcQdJAfQqtnJf0aExQY72W1aBJZbsJfn1FWpPFP1CUUzaQ==",
+                    "shasum": "926775829655de1ca7a6e05c136d03ff7e3466d4",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIETF+RnKV5ByDz/hsQdVSiK6XAaXN85IQ0sy8avwI08PAiEAwNBydsWqsw9moJanwluUCRREZy5dG832VNeP2FfkFIU="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.10.tgz",
+                    "unpackedSize": 484
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.10"
+            },
+            "2.2.11": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.11",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.11_1636592314079_0.14860014449810444"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "dasdasads": ""
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-uLuQI5WD3CvwZw8HHkibP1vzA4rftMAcoE+SfNTD8j5yoH0IRAKW2nggcGYfIGrEjjMFZLh914i/30xWUGcgug==",
+                    "shasum": "b8242f2e18879ddaa42fadf0a8f48ebb4c3bd7b0",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQDL9lq1nPb25O+CKDxptpnLUUF5btdHz/7/jyvrN4ARYgIhAJfgV5/purzYKy40HKHecMmdk+aEvsn1UD5iSx9Nk6c8"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.11.tgz",
+                    "unpackedSize": 452
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.11"
+            },
+            "2.2.12": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.12",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.12_1636592404490_0.11234754160382554"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "dasdasads": ""
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-ZLGY5oP+qD8bvkf969zWjasX52wpHw3Jz1HSa/5F0i4HqMFYcqBc4wKJnjJOZa3DkpSKio7gAVMLAGz+4wdg3A==",
+                    "shasum": "882c45220f4a9bd0d823af78c2065724cb1e60a6",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIH3n6B2cfItXO5BWS4yYbpW5Bf8CDBJuF6ZxFeJvNbUjAiEApiv0PMbijV+iymuGnl9qlgZUxiSOakGh+0zUbJ0Z3B8="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.12.tgz",
+                    "unpackedSize": 474
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.12"
+            },
+            "2.2.13": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.13",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.13_1636592476363_0.6977085871842656"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "dasdasads": ""
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-xcTu/YlcDIzz0TOUjVTltEh5X60JL2IqchXZb3Vy2+ADNfAcGmSSP8VVsSEr8SBqUvZnKxxNlASbsXL0wA3MNQ==",
+                    "shasum": "0687f1a1457862dd2e7362f9d6c696e9ea502dd8",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQCzsb1KQw48J47j5edJw/OmFe1mIwVKFoC4R7T42B1bRQIhAPgQDOSkXColilbsIcOfzUM8G8w+YKeJE3BMjp6CnKoQ"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.13.tgz",
+                    "unpackedSize": 483
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.13"
+            },
+            "2.2.14": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.14",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.14_1636592565872_0.9062660770113802"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "dasdasadsd": ""
+                },
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-nP563sLWYbDLPtfIKCsghHLs4Ab0CrQApmZOQxA7zdSdhmSrafWpDY5t7urPMO9BqM94L44eptnliCB9gZnMvA==",
+                    "shasum": "51735c0a38f2440eee410427c576e85e94484589",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCICVCXEhRPNcGX3LiU733NPguD2M3PU7HtpDlA20QuS1zAiEA9+rl6rGFH+46J0Tw7bWGIqMxibZt9pJf0nj5w2+AVfc="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.14.tgz",
+                    "unpackedSize": 494
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.14"
+            },
+            "2.2.15": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.15",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.15_1636592904758_0.32687552739534875"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "dsadfgsfdsfds": ""
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-eugEGfi4ntXOfgLt7YUylEzdsewZOxoVg9JT06h0gcZI3avDcX9LmdqyA4SjnXapDdF7cbuGtaZi0cVcG7nCog==",
+                    "shasum": "3360c391efc7f960999bd33718c141faac82d518",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCwf7Zbl42RFeZTVVR2zuqD9/yQuG8sDOnlM2VAHOEitgIgDHTVeKfVAA++zIJ/tNWaZNmmXH2joVB/ZzQdXePjJ4E="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.15.tgz",
+                    "unpackedSize": 446
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.15"
+            },
+            "2.2.17": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.17",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.17_1636596193824_0.30105198386391496"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {},
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-tWLWVDoerY+OuEeAssYnGlHXzH48XJNpPzlCMZ41gKSI3ubvW3bs7eRwQMdrA+NA8bhB3i5EifnSqyu5lXqs1A==",
+                    "shasum": "727aa72617a7cef6757947da4dae127a590793f9",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIH4FI+J6vwueK+6h42LRFXMKEIC13p8J3Wmk+5VLA/vGAiEA8ibfINeVd12WIG4GXMNSe2F3FTnJ2PMdgFVV98Vyr74="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.17.tgz",
+                    "unpackedSize": 458
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.17"
+            },
+            "2.2.18": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.18",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.18_1636596248171_0.29781579487014853"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "dsadas": ""
+                },
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-aeBnOpg6zJVk+kop/HnoNNZFsDkoNgii8yRYAJffEMSEIPcSZ5fGg2U7/8Py/u62ms0S3A/XVcO+2+OHwvWHYg==",
+                    "shasum": "1bc0a349531fade5de9db41111affd60c499bcb0",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQCXgQ/ot9F4Str8IYNPE8oJ1zJhdgME/1cJviH4XCu9aAIhALNs2PvrCErS4NIRgfa7dPPehi24Oks59maoHrBqqfAg"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.18.tgz",
+                    "unpackedSize": 467
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.18"
+            },
+            "2.2.19": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.19",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.19_1636596878206_0.6504476744300058"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": [
+                    "dsadas%"
+                ],
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-5RIWrIZ/wuuf0r8b70ZySgDgEYjIIbydyUbtfUZXDgtcxArDXx0OHn2mzjQxYK+rHjPWIFaB162l2ZvEI62zRg==",
+                    "shasum": "a5eff2647a787154bfbd243b0a5da5c185968457",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQDnEMKOkHnvJb5WX51x2wuD25mJiUAdnKxzdxOTaVwu6QIgLU1kywiil5qnQ0w9Xle5Tkd41NNW0ZM69GluSxRTqjw="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.19.tgz",
+                    "unpackedSize": 468
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.19"
+            },
+            "2.2.20": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.20",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.20_1636597026996_0.9686418940772881"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": "essa/ddsa/ddd",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-UYe3MhvOMeVoeQj98N7aGdzja7WztWXPFRPZBLFwguWwVf2yMK0HmIMsuMel4C6p9z3T+4/l1xNkTN638+X+Yw==",
+                    "shasum": "12fd063f1ac33e5fd56415c77892a6ecd5a6dc77",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIHE9zDNnz89ut4IWEaLWtBR/ZpTPO2HwlS3boGvWOltWAiAlhjBoz/lrYJQp2hegAGa3q5KRCEuTrhnjO9+TW5HlTg=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.20.tgz",
+                    "unpackedSize": 468
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.20"
+            },
+            "2.2.21": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.21",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.21_1636597209362_0.5854854178451356"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "toString": "dd"
+                },
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-LQtL3MdqHmgxn/WTKD5a41Gnlz+S8OkvimGZw9ybv8y4UzP8BK9hjUDNk+SMXuKAA5rUbMSmCTI5RN0Sy18kFA==",
+                    "shasum": "b629aabbf5add05724d32707cd199fb3d642a722",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQD3SpGKPNXkZMXjg1gwpvwTp6NCYIhDzuAD6c2J97iaQQIgWAGaUNmrCyNGq7aSbeOcwCC4haD4tSF7q+mtJRqUUjA="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.21.tgz",
+                    "unpackedSize": 451
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.21"
+            },
+            "2.2.22": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.22",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.22_1636597267757_0.8463991144097502"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "length": "100"
+                },
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-LQtL3MdqHmgxn/WTKD5a41Gnlz+S8OkvimGZw9ybv8y4UzP8BK9hjUDNk+SMXuKAA5rUbMSmCTI5RN0Sy18kFA==",
+                    "shasum": "b629aabbf5add05724d32707cd199fb3d642a722",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIEWUkeMOXSNnjVPsSNHEeo+xbxNdVc6zCIqU/n9Cy/tOAiB98DpphDZB/b5W12hEK0LAMxVBrEDArG+5lQ3E1rHWmw=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.22.tgz",
+                    "unpackedSize": 451
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.22"
+            },
+            "2.2.23": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.23",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.23_1636597353340_0.7138464268392672"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": [],
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-LQtL3MdqHmgxn/WTKD5a41Gnlz+S8OkvimGZw9ybv8y4UzP8BK9hjUDNk+SMXuKAA5rUbMSmCTI5RN0Sy18kFA==",
+                    "shasum": "b629aabbf5add05724d32707cd199fb3d642a722",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQDR9w7mA7F5bI5UzKluWGyPjFh5fjZ70Gi5nQy/RQTlUgIhANu8i50G14hq7dLSzZa5a/AJ3HcvXT4wFjqXSFyA98n7"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.23.tgz",
+                    "unpackedSize": 451
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.23"
+            },
+            "2.2.24": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.24",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.24_1636597425353_0.15142792220146095"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": [],
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-LQtL3MdqHmgxn/WTKD5a41Gnlz+S8OkvimGZw9ybv8y4UzP8BK9hjUDNk+SMXuKAA5rUbMSmCTI5RN0Sy18kFA==",
+                    "shasum": "b629aabbf5add05724d32707cd199fb3d642a722",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQCDS4pj1Bj05rPeKOJdR3bXfkIcDwADtHJX3WXqoGHTTwIgB2MrZuLApgEBpJBrvaVpb5EFMK7i/NC6ZNIDSZEmuzM="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.24.tgz",
+                    "unpackedSize": 451
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.24"
+            },
+            "2.2.25": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.25",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.25_1636597804268_0.5172350429099262"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": [],
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-LQtL3MdqHmgxn/WTKD5a41Gnlz+S8OkvimGZw9ybv8y4UzP8BK9hjUDNk+SMXuKAA5rUbMSmCTI5RN0Sy18kFA==",
+                    "shasum": "b629aabbf5add05724d32707cd199fb3d642a722",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQDfdXYFVl3fzLmRPakiZN/zZXJbQ1llNLq1VjplR/li2wIhAK7Jn5WMr6gJUXoRpUJeubxT1bLlsfYmG39BgJju08DW"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.25.tgz",
+                    "unpackedSize": 451
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.25"
+            },
+            "2.2.26": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.26",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.26_1636598502689_0.9468218674167754"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "-------------------------------------------": "",
+                    "console-time": "^1.0.9"
+                },
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-Ewv+cUP4GBA8pH0Jl04yhTdG+43exKiSpC2JQEs69w9xKDOhBFkjoGuWV8Vt2mV0Z+ukCPrQ3zM6XISzT/5BzA==",
+                    "shasum": "4e8a606ac5f88b1f6950eef1b6ca0f2c8580697d",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQD5ljMiAnveMh+XLu6j3OYXfbLIA9WzUCpB0gamM0416AIgXr+lfSD1FT4tA8OCjFYYR58TeQX/IaVqICHeg7y4BB4="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.26.tgz",
+                    "unpackedSize": 490
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "readme": "ERROR: No README data found!",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.26"
+            },
+            "2.2.32": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.32",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.32_1636600675039_0.4508888714369388"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {},
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-LJge8+9eUtgMMnc1T3+vopEn9qfWcGWM/XH37szVr4Bly8xjYJOMmXNg9CBZ2QvLjxpwFUdU6C8W+X3K+QNukg==",
+                    "shasum": "23796e444b0b9a50638d986ad7f7b55bdc0c61db",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQDNadMHlW4Ib0oS1sy6JoTE0qTJcn7yXH83Yzn0sK3bcgIhAMcJPewb5LPLligwjXJXi+M6LRIfOjtqp/5tlBqrwc3f"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.32.tgz",
+                    "unpackedSize": 455
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.32"
+            },
+            "2.2.33": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.2.33",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.2.33_1636609049298_0.4189305886888606"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "dependencies": {
+                    "@babel/cli": "2.2.2"
+                },
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-Qb3Q6rApWuHmyKDfvm9b99fJ3tHE7ZDop1LOQHh+pLCJrShrtn9MR4K8nDiFoLkXUKSU0E8raV11B8DZVgZszw==",
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJh2opgCRA9TVsSAnZWagAA34YP/RMUE6THljoJIiTl5DE7\nqzKQzm+NiLyxLNp8fgXQfjTKRYHHxrE1rCwdU9rIJT/XNQ3mOazGYVEUfNKN\nPaYVhx3bmQePGor7/+38uT2+DI8zMbGtj8uocg5p/Cjz4X98dYpVVCjmsW17\no76el57t5j6wZIvlAQrahLdmxUlSi0JuUuDpdJo93cpXcy2HwYHkupdMscZ4\n3diqaeni8OxvKN9my70rq6myoqr4t9kLAoOGWkt+Rg5mNOxTibKqCxCT2gHM\nEoGs/4+z3vU42PbQKBbcNmhW6wlEG6RtXJdC0wAVM2kRnHMymKGgoWuGOLlI\nEQ+X/kwcNPoZ6SIG0vPi9kUuHIX9lWGSX8dmmi3jeHYyUS0JnbMSDLvIrg0W\n0gyffychDpj9Nt64mlU0F143te3THz6eQO9OOEtN+zx6K2/LSfMbUy1GyanF\ngZenK+Iy4FedFBO7aOzWnvdEnfYD559fMVK1a3fC/3KhoYPn5oJvantX8tgG\n3GlI/HveEevIqU9m4/uKXmFNEeNxDjxtwwaW9CLBJHWb/Q9Dzzx26YSsRrge\npzn0eU8F56wY+twVS8xm+B2dXAnZYEXEg30ghew5xeWM1VvAIzHA9sUaHa9+\ncc3ZHD/0CrmrcEjv6eKH8k9KHCqOAkpDHRw6VciitWJGrrRGR4Hi8D38ABYp\nK6Tn\r\n=6Wdk\r\n-----END PGP SIGNATURE-----\r\n",
+                    "shasum": "b30c2ecb67ef2892e6fd25b069ee7fbf7de97d8a",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEUCIQD87xrLKkgkPF/WfthvmJ1sYRb3wNrq93mZFgNS447GYwIgRiUfxF1nmlzZjtgFI7xx5/6CHOOaqXmqB9Ndt2DMF1g="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.2.33.tgz",
+                    "unpackedSize": 481
+                },
+                "keywords": [
+                    "?de=dg",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "1matarix123@gmail.com",
+                        "name": "mrcytrus"
+                    },
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.2.33"
+            },
+            "2.21.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.21.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.21.0_1636590995597_0.8857129107961828"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQDvUJ5HmP6+j+wr7jn147iVQIz9AyQzKN07aqzR+ft8tgIhAOZz7/GK39PeQm8mNMWiIrfvyRr/KaGimMJmJRtk/y0t"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.21.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "?de=dg\ndasdsa",
+                    "words",
+                    "fds"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.21.0"
+            },
+            "2.22.0": {
+                "_hasShrinkwrap": false,
+                "_id": "drceglamoney@2.22.0",
+                "_nodeVersion": "14.17.5",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/drceglamoney_2.22.0_1636591229847_0.5912190997505058"
+                },
+                "_npmUser": {
+                    "email": "makin@wearehackerone.com",
+                    "name": "makinho"
+                },
+                "_npmVersion": "8.1.3",
+                "author": {
+                    "name": "makin\n\n\n"
+                },
+                "description": "npmtest",
+                "directories": {},
+                "dist": {
+                    "fileCount": 1,
+                    "integrity": "sha512-vv7DiK5dHm5W8hTeEGwJ79pD6p7Xls5QAKZClR8VB8ZE6VltHXSHVgx07FqkSz6En6mSz7EUIZc5wqLgFmrFqQ==",
+                    "shasum": "b23b6b8b27b34b1845798e11af4cbd0211334b47",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIEecw4eSCPsne9XjOQvWguWMCfQPGv3aMwGfptHEoWR1AiAPjefHbTWF+4wJpl/hFwk6BPW/4+Qo9m9Y8/g235+02A=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/drceglamoney/-/drceglamoney-2.22.0.tgz",
+                    "unpackedSize": 329
+                },
+                "keywords": [
+                    "&de=dg\ndasdsa",
+                    "@https://google.pl//////////////////////////////////////////////////////////////////////////////////////////////",
+                    "fds",
+                    "\n\r\n&@/https://google.pl//////////////////////////////////////////////////////////////////////"
+                ],
+                "license": "ISC",
+                "main": "index.js",
+                "maintainers": [
+                    {
+                        "email": "makin@wearehackerone.com",
+                        "name": "makinho"
+                    }
+                ],
+                "name": "drceglamoney",
+                "repository": {
+                    "type": "git",
+                    "url": "github.com/makindotcc/McHttpFrida"
+                },
+                "scripts": {
+                    "test": "test"
+                },
+                "version": "2.22.0"
+            }
+        }
+    },
+    "id": "drceglamoney",
+    "seq": 10921138
+}

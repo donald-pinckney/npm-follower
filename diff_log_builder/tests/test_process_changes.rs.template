@@ -1,0 +1,12 @@
+#[test]
+fn $TEST_NAME() {
+    let raw_batches_json_str = include_str!("$INPUT_PATH");
+
+    let raw_batches = common::read_change_batches(raw_batches_json_str);
+    let final_state = common::run_change_batches(raw_batches);
+
+    let correct_ron_str = include_str!("$CORRECT_PATH");
+    let correct_deser_change = ron::from_str(correct_ron_str).unwrap();
+
+    assert_eq!(final_state, correct_deser_change);
+}
