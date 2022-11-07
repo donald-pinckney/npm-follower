@@ -12,7 +12,7 @@ async fn main() {
     let discovery_ssh = std::env::var("DISCOVERY_SSH").expect("DISCOVERY_SSH must be set");
     let job_manager = job::JobManager::init(JobManagerConfig {
         ssh_user_host: discovery_ssh.to_string(),
-        max_worker_jobs: 5,
+        max_worker_jobs: 10,
     })
     .await;
     let (tx, mut shutdown_signal) = tokio::sync::mpsc::channel::<()>(1);

@@ -11,7 +11,8 @@ use hyper::{service::Service, Body, Request, Response, Server};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::blob::{BlobError, BlobStorage, BlobStorageConfig};
+use crate::blob::{BlobStorage, BlobStorageConfig};
+use crate::errors::{BlobError, JobError};
 
 pub struct HTTP {
     // the host and port for a http server

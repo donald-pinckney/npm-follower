@@ -6,7 +6,7 @@ use redis::Commands;
 use serde::{ser::SerializeStruct, Deserialize, Serialize};
 use tokio::sync::{mpsc::Sender, Mutex, Notify};
 
-use crate::http::BlobEntry;
+use crate::{errors::BlobError, http::BlobEntry};
 
 /// A slice containing the information of a blob, linked to a key.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -594,32 +594,3 @@ impl BlobStorage {
         }
     }
 }
-
-#[derive(Debug)]
-pub enum BlobError {
-    AlreadyExists,
-    CreateNotLocked,
-    DuplicateKeys,
-    DoesNotExist,
-    NotWritten,
-    WrongNode,
-    LockExpired,
-    ProhibitedKey,
-}
-
-impl std::fmt::Display for BlobError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            BlobError::AlreadyExists => write!(f, "Blob already exists"),
-            BlobError::CreateNotLocked => write!(f, "Blob create not locked"),
-            BlobError::DuplicateKeys => write!(f, "Blob duplicate keys"),
-            BlobError::DoesNotExist => write!(f, "Blob does not exist"),
-            BlobError::ProhibitedKey => write!(f, "Blob key is prohibited"),
-            BlobError::WrongNode => write!(f, "Blob is locked by another node"),
-            BlobError::LockExpired => write!(f, "Blob lock expired"),
-            BlobError::NotWritten => write!(f, "Blob is not written"),
-        }
-    }
-}
-
-impl std::error::Error for BlobError {}
