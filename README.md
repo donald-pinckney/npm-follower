@@ -44,6 +44,24 @@ diesel setup
 popd
 ```
 
+
+## InfluxDB Setup
+
+You may choose to either enable and setup InfluxDB for logging, or disable it.
+
+### Enabling and Setting up InfluxDB
+
+If you want to enable InfluxDB, you need to set `ENABLE_INFLUX_DB_LOGGING=true` and configure `INFLUX_DB_URL`, `INFLUX_DB_ORG`, `INFLUX_DB_BUCKET` in `.env`.
+Then you need to set your API token in `.secret.env`:
+
+```bash
+echo "INFLUX_DB_TOKEN=<TYPE API TOKEN HERE>" > .secret.env
+```
+
+### Disabling InfluxDB
+
+If you don't want to use InfluxDB logging, just disable it in `.env` by setting `ENABLE_INFLUX_DB_LOGGING=false`.
+
 ## Running the Scripts
 
 ### NPM Changes Follower

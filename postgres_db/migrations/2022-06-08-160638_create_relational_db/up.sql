@@ -303,6 +303,8 @@ CREATE TABLE diff_log (
   )
 );
 
+CREATE INDEX diff_log_pkg_idx ON diff_log (package_name);
+
 CREATE TYPE internal_diff_log_version_state AS (
   v semver,
   version_packument_hash TEXT,

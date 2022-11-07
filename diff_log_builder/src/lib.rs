@@ -11,18 +11,35 @@ use postgres_db::diff_log::NewDiffLogEntryWithHash;
 use postgres_db::packument::AllVersionPackuments;
 use postgres_db::packument::PackageOnlyPackument;
 use postgres_db::packument::VersionOnlyPackument;
+use std::any::Any;
 use std::collections::BTreeSet;
 use std::iter;
 use std::panic;
+use std::panic::AssertUnwindSafe;
+use std::time::Duration;
+use std::time::Instant;
 
 use serde_json::{Map, Value};
 
 use utils::RemoveInto;
 
+pub struct ProcessChangeSuccessMetrics {
+    pub read_bytes: usize,
+    pub write_bytes: usize,
+    pub write_duration: Duration,
+}
+
+#[derive(Debug)]
+pub struct ProcessChangeError {
+    pub seq: i64,
+    pub message: String,
+    pub err: Box<dyn Any + Send>,
+}
+
 pub fn process_changes(
     conn: &mut DbConnectionInTransaction,
     changes: Vec<Change>,
-) -> (usize, usize) {
+) -> Result<ProcessChangeSuccessMetrics, ProcessChangeError> {
     let mut state_manager = DiffStateManager::new();
     let mut new_diff_entries: Vec<NewDiffLogEntryWithHash> = Vec::new();
 
@@ -30,10 +47,29 @@ pub fn process_changes(
     let mut write_bytes = 0;
 
     for c in changes {
-        let (rb, wb) = process_change(conn, c, &mut state_manager, &mut new_diff_entries);
+        let seq = c.seq;
+
+        let result = panic::catch_unwind(AssertUnwindSafe(|| {
+            process_change(conn, c, &mut state_manager, &mut new_diff_entries)
+        }));
+
+        let (rb, wb) = match result {
+            Err(err) => {
+                let err_message = format!("Failed on seq: {}.\n:{:?}", seq, err);
+                return Result::Err(ProcessChangeError {
+                    seq,
+                    message: err_message,
+                    err,
+                });
+            }
+            Ok(r) => r,
+        };
+
         read_bytes += rb;
         write_bytes += wb;
     }
+
+    let write_start = Instant::now();
 
     state_manager.flush_to_db(conn);
     diff_log::insert_diff_log_entries(
@@ -41,7 +77,13 @@ pub fn process_changes(
         conn,
     );
 
-    (read_bytes, write_bytes)
+    let write_duration = write_start.elapsed();
+
+    Ok(ProcessChangeSuccessMetrics {
+        read_bytes,
+        write_bytes,
+        write_duration,
+    })
 }
 
 fn process_change(
@@ -55,17 +97,14 @@ fn process_change(
     let change_bytes = serde_json::to_vec(&c.raw_json).unwrap().len();
 
     // Parse the Change
-    let result = panic::catch_unwind(|| deserialize_change(c));
-    let (package_name, package_data, all_versions_data) = match result {
-        Err(err) => {
-            println!("Failed on seq: {}", seq);
-            panic::resume_unwind(err);
-        }
-        Ok(Some((name, package_data, all_versions_data))) => {
-            (name, package_data, all_versions_data)
-        }
-        Ok(None) => return (change_bytes, 0),
+    let (package_name, package_data, all_versions_data) = match deserialize_change(c) {
+        Some((name, package_data, all_versions_data)) => (name, package_data, all_versions_data),
+        None => return (change_bytes, 0),
     };
+
+    if package_name == "zidane" || package_name == "apizee-api" {
+        println!("{} in seq: {}", package_name, seq);
+    }
 
     let (_, package_data_hash, package_data_num_bytes) = package_data.serialize_and_hash();
 

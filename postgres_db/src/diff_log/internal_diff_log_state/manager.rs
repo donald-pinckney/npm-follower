@@ -86,7 +86,6 @@ impl DiffStateManager {
                 let package_state = state.0.as_mut().unwrap();
 
                 package_state.package_pack_hash = Some(hash.unwrap().clone());
-                assert!(!package_state.deleted);
 
                 state.1 = if state.1 == FlushOp::Create {
                     FlushOp::Create
@@ -111,7 +110,7 @@ impl DiffStateManager {
 
                 // And the package must already exist for us to be doing a delete
                 let package_state = state.0.as_mut().unwrap();
-                assert!(!package_state.deleted);
+                // assert!(!package_state.deleted);
 
                 package_state.deleted = true;
 

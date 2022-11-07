@@ -1,5 +1,5 @@
 [workspace]
-members = ["changes_fetcher", "postgres_db", "download_queuer", "downloader", "diff_log_builder", "semver_spec_serialization", "utils"]
+members = ["changes_fetcher", "postgres_db", "download_queuer", "downloader", "diff_log_builder", "semver_spec_serialization", "utils", "metrics_logging"]
 
 [profile.bench]
 debug = true

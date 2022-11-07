@@ -135,7 +135,11 @@ fn deserialize_version_blob(
         if num_versions == 1 {
             &modified_time
         } else {
-            panic!("UNEXPECTED: version {} does not have a time", version)
+            eprintln!(
+                "WARNING: version {} does not have a time. Imputing from modified time.",
+                version
+            );
+            &modified_time
         }
     });
 

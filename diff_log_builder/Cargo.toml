@@ -17,6 +17,7 @@ path = "src/main.rs"
 [dependencies]
 postgres_db = { path = "../postgres_db" }
 semver_spec_serialization = { path = "../semver_spec_serialization" }
+metrics_logging = { path = "../metrics_logging" }
 utils = { path = "../utils" }
 
 serde = { version = "1.0.136", features = ["derive"] }

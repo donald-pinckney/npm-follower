@@ -36,7 +36,7 @@ pub fn run_change_batches(raw_batches: Vec<Vec<Value>>) -> DiffTestState {
 
         for batch in change_batches {
             conn.run_psql_transaction(|mut trans_conn| {
-                process_changes(&mut trans_conn, batch);
+                process_changes(&mut trans_conn, batch).unwrap();
                 Ok(())
             })
             .unwrap();

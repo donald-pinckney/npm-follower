@@ -19,7 +19,7 @@ impl DbConnection {
         use dotenv::dotenv;
         use std::env;
 
-        dotenv().ok();
+        dotenv().expect("failed to load .env");
 
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         let conn = PgConnection::establish(&database_url)
@@ -195,7 +195,7 @@ pub mod testing {
     }
 
     fn drop_testing_db() {
-        dotenv().ok();
+        dotenv().expect("failed to load .env");
 
         let database_url_str =
             env::var("TESTING_DATABASE_URL").expect("TESTING_DATABASE_URL must be set");
@@ -221,7 +221,7 @@ pub mod testing {
     }
 
     fn setup_test_db() -> DbConnection {
-        dotenv().ok();
+        dotenv().expect("failed to load .env");
 
         let database_url =
             env::var("TESTING_DATABASE_URL").expect("TESTING_DATABASE_URL must be set");

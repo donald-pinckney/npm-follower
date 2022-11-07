@@ -4,3 +4,4 @@ Cargo.lock
 scratch/
 .idea/
 /scratch_data/
+.secret.env
