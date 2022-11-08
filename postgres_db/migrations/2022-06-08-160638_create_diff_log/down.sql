@@ -1,4 +1,5 @@
 DROP INDEX diff_log_pkg_idx;
+DROP INDEX diff_log_seq_idx;
 
 DROP TABLE diff_log, internal_diff_log_state CASCADE;
 

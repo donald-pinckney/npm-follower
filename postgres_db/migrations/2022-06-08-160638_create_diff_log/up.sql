@@ -82,7 +82,7 @@ CREATE TABLE diff_log (
 );
 
 CREATE INDEX diff_log_pkg_idx ON diff_log (package_name);
-
+CREATE INDEX diff_log_seq_idx ON diff_log (seq);
 
 CREATE TABLE internal_diff_log_state (
   package_name TEXT PRIMARY KEY NOT NULL,
