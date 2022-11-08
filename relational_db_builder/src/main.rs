@@ -11,9 +11,10 @@ const PAGE_SIZE: i64 = 1024;
 fn main() {
     check_no_concurrent_processes("relational_db_builder");
 
-    let conn = postgres_db::connect();
+    let mut conn = postgres_db::connect();
 
-    let mut processed_up_to = internal_state::query_relational_processed_seq(&conn).unwrap_or(0);
+    let mut processed_up_to =
+        internal_state::query_relational_processed_seq(&mut conn).unwrap_or(0);
 
     let num_changes_total = change_log::query_num_changes_after_seq(processed_up_to, &conn);
     let mut num_changes_so_far = 0;
@@ -47,5 +48,3 @@ fn main() {
         }
     }
 }
-
-
