@@ -90,7 +90,7 @@ pub fn new_metrics_logger(testing_mode: bool) -> MetricsLogger {
             let org = env::var("INFLUX_DB_ORG").unwrap();
             let bucket = env::var("INFLUX_DB_BUCKET").unwrap();
 
-            dotenv::from_filename(".secret.env").expect("failed to load .secret.env. To setup InfluxDB logging, run:\necho \"INFLUX_DB_TOKEN=<TYPE API TOKEN HERE>\" > .secret.env\n\nOr to disable InfluxDB, set ENABLE_INFLUX_DB_LOGGING=false in .env");
+            dotenv::from_filename(".secret.env").expect("failed to load .secret.env. To setup InfluxDB logging, run:\necho \"export INFLUX_DB_TOKEN=<TYPE API TOKEN HERE>\" > .secret.env\n\nOr to disable InfluxDB, set ENABLE_INFLUX_DB_LOGGING=false in .env");
 
             let token = env::var("INFLUX_DB_TOKEN").unwrap();
             MetricsLogger(Box::new(influx_db_logger::InfluxDbLogger::new(
