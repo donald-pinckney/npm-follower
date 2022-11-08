@@ -55,12 +55,41 @@ If you want to enable InfluxDB, you need to set `ENABLE_INFLUX_DB_LOGGING=true` 
 Then you need to set your API token in `.secret.env`:
 
 ```bash
-echo "INFLUX_DB_TOKEN=<TYPE API TOKEN HERE>" > .secret.env
+echo "export INFLUX_DB_TOKEN=<TYPE API TOKEN HERE>" > .secret.env
 ```
 
 ### Disabling InfluxDB
 
 If you don't want to use InfluxDB logging, just disable it in `.env` by setting `ENABLE_INFLUX_DB_LOGGING=false`.
+
+### Configuring Telegraf
+
+First, make sure `telegraf` has been started at least once:
+
+```bash
+systemctl start telegraf
+```
+
+Then, edit it:
+
+```bash
+systemctl edit telegraf
+```
+
+with the following contents:
+
+```conf
+[Service]
+EnvironmentFile=<PATH TO YOUR REPO CLONE>/.env
+EnvironmentFile=<PATH TO YOUR REPO CLONE>/.secret.env
+```
+
+Finally, restart Telegraf:
+
+```bash
+sudo systemctl daemon-reload
+pushd services; ./restart_telegraf.sh; popd
+```
 
 ## Running the Scripts
 
