@@ -2,7 +2,7 @@
 fn $TEST_NAME() {
     let seq_json_str = include_str!("$INPUT_PATH");
     
-    let change = Change { seq: 1, raw_json: serde_json::from_str(seq_json_str).unwrap() };
+    let change = Change { seq: 1, raw_json: serde_json::from_str(seq_json_str).unwrap(), received_time: None };
 
     let deser_change = deserialize_change(change);
 
