@@ -41,7 +41,6 @@ impl DiffStateManager {
                 let sql_row = sql::lookup_package(k, conn);
                 let loaded_state = sql_row.map(|r| InternalDiffLogPackageState {
                     package_pack_hash: Some(r.package_only_packument_hash),
-                    deleted: r.deleted,
                     versions: r
                         .versions
                         .into_iter()
@@ -76,7 +75,6 @@ impl DiffStateManager {
 
                 state.0 = Some(InternalDiffLogPackageState {
                     package_pack_hash: hash.cloned(), // This might be changed later with a SetPackageLatestTag instruction
-                    deleted: false,
                     versions: BTreeMap::new(),
                 });
                 state.1 = FlushOp::Create;
@@ -86,33 +84,6 @@ impl DiffStateManager {
                 let package_state = state.0.as_mut().unwrap();
 
                 package_state.package_pack_hash = Some(hash.unwrap().clone());
-
-                state.1 = if state.1 == FlushOp::Create {
-                    FlushOp::Create
-                } else {
-                    FlushOp::Set
-                };
-            }
-            // DiffLogInstruction::SetPackageLatestTag(_) => {
-            //     // And the package must already exist for us to be doing a latest tag set
-            //     let package_state = state.0.as_mut().unwrap();
-
-            //     package_state.package_pack_hash = Some(hash.unwrap().clone());
-
-            //     state.1 = if state.1 == FlushOp::Create {
-            //         FlushOp::Create
-            //     } else {
-            //         FlushOp::Set
-            //     };
-            // }
-            DiffLogInstruction::DeletePackage => {
-                assert!(hash.is_none());
-
-                // And the package must already exist for us to be doing a delete
-                let package_state = state.0.as_mut().unwrap();
-                // assert!(!package_state.deleted);
-
-                package_state.deleted = true;
 
                 state.1 = if state.1 == FlushOp::Create {
                     FlushOp::Create
@@ -171,7 +142,6 @@ impl DiffStateManager {
                 let row = InternalDiffLogStateRow {
                     package_name,
                     package_only_packument_hash: state.package_pack_hash.unwrap(),
-                    deleted: state.deleted,
                     versions: state
                         .versions
                         .into_iter()
@@ -265,7 +235,6 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), None);
-            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);
 
@@ -285,7 +254,6 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), Some(&hash1));
-            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);
 
@@ -294,7 +262,6 @@ mod tests {
             // Check DB state
             let pack1_state = sql::lookup_package(&pack1, conn).unwrap();
             assert_eq!(pack1_state.package_only_packument_hash, hash1);
-            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(sql::lookup_package(&pack2, conn), None);
         });
@@ -379,7 +346,6 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), None);
-            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 0);
             assert_eq!(manager.lookup_package(pack2.clone(), conn), None);
 
@@ -400,7 +366,6 @@ mod tests {
             // Check memory state
             let pack1_state = manager.lookup_package(pack1.clone(), conn).unwrap();
             assert_eq!(pack1_state.package_pack_hash.as_ref(), None);
-            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 1);
             assert_eq!(
                 pack1_state.versions[&v0],
@@ -431,7 +396,6 @@ mod tests {
                 pack1_state.package_pack_hash.as_ref().unwrap(),
                 &hash1_with_latest
             );
-            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 1);
             assert_eq!(
                 pack1_state.versions[&v0],
@@ -447,7 +411,6 @@ mod tests {
             // Check DB state
             let pack1_state = sql::lookup_package(&pack1, conn).unwrap();
             assert_eq!(pack1_state.package_only_packument_hash, hash1_with_latest);
-            assert!(!pack1_state.deleted);
             assert_eq!(pack1_state.versions.len(), 1);
             assert_eq!(
                 pack1_state.versions[0],
@@ -487,7 +450,6 @@ mod tests {
                 vec![InternalDiffLogStateRow {
                     package_name: pack1.clone(),
                     package_only_packument_hash: hash1.clone(),
-                    deleted: false,
                     versions: vec![],
                 }],
                 conn,
@@ -499,7 +461,6 @@ mod tests {
                 manager.lookup_package(pack1.clone(), conn),
                 Some(&InternalDiffLogPackageState {
                     package_pack_hash: Some(hash1.clone()),
-                    deleted: false,
                     versions: BTreeMap::new()
                 })
             );
@@ -510,7 +471,6 @@ mod tests {
                 manager.lookup_package(pack1.clone(), conn),
                 Some(&InternalDiffLogPackageState {
                     package_pack_hash: Some(hash1),
-                    deleted: false,
                     versions: BTreeMap::new()
                 })
             );

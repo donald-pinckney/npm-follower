@@ -1,5 +1,6 @@
 pub mod internal_diff_log_state;
 
+use crate::connection::DbConnection;
 use crate::connection::QueryRunner;
 use crate::custom_types::DiffTypeEnum;
 use crate::custom_types::Semver;
@@ -40,10 +41,10 @@ struct NewDiffLogRow {
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct DiffLogEntry {
-    id: i64,
-    seq: i64,
-    package_name: String,
-    instr: DiffLogInstruction,
+    pub id: i64,
+    pub seq: i64,
+    pub package_name: String,
+    pub instr: DiffLogInstruction,
 }
 
 #[derive(Debug)]
@@ -66,7 +67,6 @@ pub enum DiffLogInstruction {
     CreatePackage(PackageOnlyPackument),
     UpdatePackage(PackageOnlyPackument),
     PatchPackageReferences,
-    DeletePackage,
     CreateVersion(Semver, VersionOnlyPackument),
     UpdateVersion(Semver, VersionOnlyPackument),
     DeleteVersion(Semver),
@@ -82,7 +82,6 @@ impl From<DiffLogRow> for DiffLogEntry {
                 serde_json::from_value(r.package_only_packument.unwrap()).unwrap(),
             ),
             // DiffTypeEnum::SetPackageLatestTag => DiffLogInstruction::SetPackageLatestTag(r.v),
-            DiffTypeEnum::DeletePackage => DiffLogInstruction::DeletePackage,
             DiffTypeEnum::CreateVersion => DiffLogInstruction::CreateVersion(
                 r.v.unwrap(),
                 serde_json::from_value(r.version_packument.unwrap()).unwrap(),
@@ -116,7 +115,6 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
             // DiffLogInstruction::SetPackageLatestTag(v) => {
             //     (DiffTypeEnum::SetPackageLatestTag, None, v, None)
             // }
-            DiffLogInstruction::DeletePackage => (DiffTypeEnum::DeletePackage, None, None, None),
             DiffLogInstruction::CreateVersion(v, vp) => {
                 (DiffTypeEnum::CreateVersion, None, Some(v), Some(vp))
             }
@@ -139,6 +137,55 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
             version_packument: version_packument.map(|x| serde_json::to_value(x).unwrap()),
         }
     }
+}
+
+pub fn query_num_diff_entries_after_seq(after_seq: i64, conn: &mut DbConnection) -> i64 {
+    use diesel::dsl::*;
+    use diesel::prelude::*;
+    use schema::diff_log::dsl::*;
+
+    conn.first(diff_log.filter(seq.gt(after_seq)).select(count(id)))
+        .unwrap_or_else(|_| {
+            panic!(
+                "Error querying DB for number of changes after seq: {}",
+                after_seq
+            )
+        })
+}
+
+pub fn query_diff_entries_after_seq(
+    after_seq: i64,
+    limit_size: i64,
+    conn: &mut DbConnection,
+) -> Vec<DiffLogEntry> {
+    use super::schema::change_log;
+
+    use diesel::prelude::*;
+    use schema::change_log::dsl::*;
+
+    let seq_subquery = change_log
+        .filter(change_log::seq.gt(after_seq))
+        .limit(limit_size)
+        .order(change_log::seq);
+
+    let join_query = seq_subquery.inner_join(diff_log::table).select((
+        diff_log::id,
+        diff_log::seq,
+        diff_log::package_name,
+        diff_log::dt,
+        diff_log::package_only_packument,
+        diff_log::v,
+        diff_log::version_packument,
+    ));
+
+    let rows: Vec<DiffLogRow> = conn.load(join_query).unwrap_or_else(|err| {
+        panic!(
+            "Error querying DB for diff_log after seq {}:\n{}",
+            after_seq, err
+        )
+    });
+
+    rows.into_iter().map(|e| e.into()).collect()
 }
 
 const INSERT_CHUNK_SIZE: usize = 2048;
@@ -262,11 +309,6 @@ mod tests {
                 instr: DiffLogInstruction::UpdatePackage(garbage_pack_data.clone()),
             },
             NewDiffLogEntry {
-                seq: 102,
-                package_name: "react".into(),
-                instr: DiffLogInstruction::DeletePackage,
-            },
-            NewDiffLogEntry {
                 seq: 103,
                 package_name: "react".into(),
                 instr: DiffLogInstruction::CreateVersion(
@@ -303,12 +345,6 @@ mod tests {
                 instr: DiffLogInstruction::UpdatePackage(garbage_pack_data),
             },
             DiffLogEntry {
-                id: 3,
-                seq: 102,
-                package_name: "react".into(),
-                instr: DiffLogInstruction::DeletePackage,
-            },
-            DiffLogEntry {
                 id: 4,
                 seq: 103,
                 package_name: "react".into(),
@@ -331,13 +367,14 @@ mod tests {
             },
         ];
 
+        let now = Utc::now();
         testing::using_test_db(|conn| {
-            change_log::insert_change(conn, 100, Value::Null);
-            change_log::insert_change(conn, 101, Value::Null);
-            change_log::insert_change(conn, 102, Value::Null);
-            change_log::insert_change(conn, 103, Value::Null);
-            change_log::insert_change(conn, 104, Value::Null);
-            change_log::insert_change(conn, 105, Value::Null);
+            change_log::insert_change(conn, 100, Value::Null, now);
+            change_log::insert_change(conn, 101, Value::Null, now);
+            change_log::insert_change(conn, 102, Value::Null, now);
+            change_log::insert_change(conn, 103, Value::Null, now);
+            change_log::insert_change(conn, 104, Value::Null, now);
+            change_log::insert_change(conn, 105, Value::Null, now);
 
             let insert_count = insert_diff_log_entries(new_data, conn);
             let retrieved_data = get_all_diff_logs(conn);

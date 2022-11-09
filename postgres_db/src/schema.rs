@@ -30,6 +30,7 @@ diesel::table! {
     change_log (seq) {
         seq -> Int8,
         raw_json -> Jsonb,
+        received_time -> Nullable<Timestamptz>,
     }
 }
 
@@ -105,7 +106,6 @@ diesel::table! {
     internal_diff_log_state (package_name) {
         package_name -> Text,
         package_only_packument_hash -> Text,
-        deleted -> Bool,
         versions -> Array<InternalDiffLogVersionState>,
     }
 }

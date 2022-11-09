@@ -27,7 +27,6 @@ use serde::Serialize;
 pub struct InternalDiffLogStateRow {
     pub package_name: String,
     pub package_only_packument_hash: String,
-    pub deleted: bool,
     pub versions: Vec<InternalDiffLogVersionStateElem>,
 }
 
@@ -142,13 +141,11 @@ mod tests {
         let state0 = InternalDiffLogStateRow {
             package_name: pack_name.clone(),
             package_only_packument_hash: "asdfqwer".into(),
-            deleted: false,
             versions: vec![],
         };
         let state1 = InternalDiffLogStateRow {
             package_name: pack_name.clone(),
             package_only_packument_hash: "asdfqwer".into(),
-            deleted: false,
             versions: vec![InternalDiffLogVersionStateElem {
                 v: v1.clone(),
                 pack_hash: "asdf1234".into(),
@@ -159,7 +156,6 @@ mod tests {
             package_name: pack_name.clone(),
 
             package_only_packument_hash: "otherhash".into(),
-            deleted: false,
             versions: vec![
                 InternalDiffLogVersionStateElem {
                     v: v1.clone(),
@@ -177,7 +173,6 @@ mod tests {
             package_name: pack_name.clone(),
 
             package_only_packument_hash: "otherhash".into(),
-            deleted: false,
             versions: vec![
                 InternalDiffLogVersionStateElem {
                     v: v1.clone(),
@@ -195,7 +190,6 @@ mod tests {
             package_name: pack_name.clone(),
 
             package_only_packument_hash: "otherhash".into(),
-            deleted: true,
             versions: vec![
                 InternalDiffLogVersionStateElem {
                     v: v1,

@@ -74,7 +74,7 @@ CREATE TABLE diff_log (
     (dt = 'update_package'          AND package_only_packument IS NOT NULL AND v IS NULL     AND version_packument IS NULL) OR
     -- (dt = 'set_package_latest_tag'  AND package_only_packument IS NULL     AND v IS NULL AND version_packument IS NULL) OR
     (dt = 'patch_package_references'  AND package_only_packument IS NULL     AND v IS NULL AND version_packument IS NULL) OR
-    (dt = 'delete_package'          AND package_only_packument IS NULL     AND v IS NULL     AND version_packument IS NULL) OR
+    -- (dt = 'delete_package'          AND package_only_packument IS NULL     AND v IS NULL     AND version_packument IS NULL) OR
     (dt = 'create_version'          AND package_only_packument IS NULL     AND (NOT v IS NULL) AND version_packument IS NOT NULL) OR
     (dt = 'update_version'          AND package_only_packument IS NULL     AND (NOT v IS NULL) AND version_packument IS NOT NULL) OR
     (dt = 'delete_version'          AND package_only_packument IS NULL     AND (NOT v IS NULL) AND version_packument IS NULL)
@@ -82,12 +82,12 @@ CREATE TABLE diff_log (
 );
 
 CREATE INDEX diff_log_pkg_idx ON diff_log (package_name);
-
+CREATE INDEX diff_log_seq_idx ON diff_log (seq);
 
 CREATE TABLE internal_diff_log_state (
   package_name TEXT PRIMARY KEY NOT NULL,
   package_only_packument_hash TEXT NOT NULL,
-  deleted BOOLEAN NOT NULL,
+  -- deleted BOOLEAN NOT NULL,
   versions internal_diff_log_version_state[] NOT NULL
 );
 

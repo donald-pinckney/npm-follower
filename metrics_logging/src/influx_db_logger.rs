@@ -4,7 +4,8 @@ use tokio::runtime::Runtime;
 
 use crate::{
     DiffLogBatchCompleteMetrics, DiffLogEndSessionMetrics, DiffLogPanicMetrics,
-    DiffLogStartSessionMetrics, MetricsLoggerTrait,
+    DiffLogStartSessionMetrics, MetricsLoggerTrait, RelationalDbBatchCompleteMetrics,
+    RelationalDbEndSessionMetrics, RelationalDbPanicMetrics, RelationalDbStartSessionMetrics,
 };
 
 pub(crate) struct InfluxDbLogger {
@@ -180,5 +181,27 @@ impl MetricsLoggerTrait for InfluxDbLogger {
         self.rt
             .block_on(self.conn.write(&self.bucket, stream::iter(p)))
             .unwrap()
+    }
+
+    fn log_relational_db_builder_batch_complete_metrics(
+        &mut self,
+        metrics: RelationalDbBatchCompleteMetrics,
+    ) {
+        todo!()
+    }
+
+    fn log_relational_db_builder_start_session(
+        &mut self,
+        metrics: RelationalDbStartSessionMetrics,
+    ) {
+        todo!()
+    }
+
+    fn log_relational_db_builder_end_session(&mut self, metrics: RelationalDbEndSessionMetrics) {
+        todo!()
+    }
+
+    fn log_relational_db_builder_panic(&mut self, metrics: RelationalDbPanicMetrics) {
+        todo!()
     }
 }

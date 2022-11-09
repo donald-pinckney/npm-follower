@@ -1,5 +1,5 @@
 diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
-index e3e9a87..725b501 100644
+index 665d05c..da5ae54 100644
 --- a/postgres_db/src/schema.rs
 +++ b/postgres_db/src/schema.rs
 @@ -18,13 +18,13 @@ pub mod sql_types {
@@ -18,12 +18,12 @@ index e3e9a87..725b501 100644
  diesel::table! {
      change_log (seq) {
 @@ -103,13 +103,13 @@ diesel::table! {
+     use diesel::sql_types::*;
      use super::sql_types::InternalDiffLogVersionState;
  
      internal_diff_log_state (package_name) {
          package_name -> Text,
          package_only_packument_hash -> Text,
-         deleted -> Bool,
 -        versions -> Array<Nullable<InternalDiffLogVersionState>>,
 +        versions -> Array<InternalDiffLogVersionState>,
      }

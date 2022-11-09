@@ -1,3 +1,4 @@
+use chrono::Utc;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use diff_log_builder::deserialize_change;
 use postgres_db::change_log::Change;
@@ -14,6 +15,7 @@ pub fn bench_parse_big_change(c: &mut Criterion) {
     let change = Change {
         seq: 1,
         raw_json: v,
+        received_time: Some(Utc::now()),
     };
 
     c.bench_function("parse test_change_big.json", |b| {
@@ -26,6 +28,7 @@ pub fn bench_parse_small_change(c: &mut Criterion) {
     let change = Change {
         seq: 1,
         raw_json: v,
+        received_time: Some(Utc::now()),
     };
 
     c.bench_function("parse test_change_small.json", |b| {
@@ -37,6 +40,7 @@ fn clone_change(c: &Change) -> Change {
     Change {
         seq: c.seq,
         raw_json: c.raw_json.clone(),
+        received_time: c.received_time,
     }
 }
 
