@@ -30,6 +30,7 @@ diesel::table! {
     change_log (seq) {
         seq -> Int8,
         raw_json -> Jsonb,
+        received_time -> Nullable<Timestamptz>,
     }
 }
 

@@ -1,6 +1,7 @@
 use async_std::task;
 use changes_stream2::ChangeEvent;
 use changes_stream2::{ChangesStream, Event};
+use chrono::Utc;
 use futures_util::stream::StreamExt;
 use postgres_db::change_log;
 use postgres_db::connection::DbConnection;
@@ -75,11 +76,12 @@ async fn listen_for_npm_changes_forever(conn: &mut DbConnection) {
 }
 
 pub fn process_change_event(conn: &mut DbConnection, change: ChangeEvent) {
+    let now = Utc::now();
     let seq = change.seq.as_i64().unwrap();
     let change_json =
         serde_json::to_value(&change).expect("Failed to serialize ChangeEvent to a Value");
 
-    change_log::insert_change(conn, seq, change_json);
+    change_log::insert_change(conn, seq, change_json, now);
 }
 
 fn _insert_saved_log_file(conn: &mut DbConnection) {

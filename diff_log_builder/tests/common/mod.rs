@@ -1,4 +1,5 @@
 use super::*;
+use chrono::Utc;
 use diff_log_builder::process_changes;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -14,6 +15,8 @@ pub struct DiffTestState {
 }
 
 pub fn run_change_batches(raw_batches: Vec<Vec<Value>>) -> DiffTestState {
+    let change_recv_time = Utc::now();
+
     postgres_db::connection::testing::using_test_db(|conn| {
         let mut seq = 1;
         let change_batches: Vec<Vec<_>> = raw_batches
@@ -24,10 +27,16 @@ pub fn run_change_batches(raw_batches: Vec<Vec<Value>>) -> DiffTestState {
                         let this_seq = seq;
                         seq += 1;
                         // We just have to insert placeholder changes so that foreign key constraints are ok.
-                        postgres_db::change_log::insert_change(conn, this_seq, Value::Null);
+                        postgres_db::change_log::insert_change(
+                            conn,
+                            this_seq,
+                            Value::Null,
+                            change_recv_time,
+                        );
                         Change {
                             seq: this_seq,
                             raw_json: serde_json::from_value(val).unwrap(),
+                            received_time: Some(change_recv_time),
                         }
                     })
                     .collect()

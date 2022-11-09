@@ -381,13 +381,14 @@ mod tests {
             },
         ];
 
+        let now = Utc::now();
         testing::using_test_db(|conn| {
-            change_log::insert_change(conn, 100, Value::Null);
-            change_log::insert_change(conn, 101, Value::Null);
-            change_log::insert_change(conn, 102, Value::Null);
-            change_log::insert_change(conn, 103, Value::Null);
-            change_log::insert_change(conn, 104, Value::Null);
-            change_log::insert_change(conn, 105, Value::Null);
+            change_log::insert_change(conn, 100, Value::Null, now);
+            change_log::insert_change(conn, 101, Value::Null, now);
+            change_log::insert_change(conn, 102, Value::Null, now);
+            change_log::insert_change(conn, 103, Value::Null, now);
+            change_log::insert_change(conn, 104, Value::Null, now);
+            change_log::insert_change(conn, 105, Value::Null, now);
 
             let insert_count = insert_diff_log_entries(new_data, conn);
             let retrieved_data = get_all_diff_logs(conn);

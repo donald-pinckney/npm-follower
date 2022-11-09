@@ -2,6 +2,8 @@ use super::connection::DbConnection;
 use super::schema;
 use super::schema::change_log;
 use crate::connection::QueryRunner;
+use chrono::DateTime;
+use chrono::Utc;
 use diesel::prelude::*;
 use diesel::Queryable;
 
@@ -9,6 +11,7 @@ use diesel::Queryable;
 pub struct Change {
     pub seq: i64,
     pub raw_json: serde_json::Value,
+    pub received_time: Option<DateTime<Utc>>,
 }
 
 pub fn query_latest_change_seq(conn: &mut DbConnection) -> Option<i64> {
@@ -58,9 +61,15 @@ pub fn query_changes_after_seq(
 struct NewChange<'a> {
     seq: i64,
     raw_json: &'a serde_json::Value,
+    received_time: DateTime<Utc>,
 }
 
-pub fn insert_change(conn: &mut DbConnection, seq: i64, raw_json: serde_json::Value) {
+pub fn insert_change(
+    conn: &mut DbConnection,
+    seq: i64,
+    raw_json: serde_json::Value,
+    received_time: DateTime<Utc>,
+) {
     let unsanitized_json_str = serde_json::to_string(&raw_json).unwrap();
     let sanitized_json_str = sanitize_null_escapes(&unsanitized_json_str);
     let sanitized_value: serde_json::Value = serde_json::from_str(&sanitized_json_str)
@@ -74,6 +83,7 @@ pub fn insert_change(conn: &mut DbConnection, seq: i64, raw_json: serde_json::Va
     let new_change = NewChange {
         seq,
         raw_json: &sanitized_value,
+        received_time,
     };
 
     conn.execute(diesel::insert_into(change_log::table).values(&new_change))
