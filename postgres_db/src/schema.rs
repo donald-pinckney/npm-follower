@@ -21,7 +21,7 @@ pub mod sql_types {
     #[diesel(postgres_type(name = "repo_info_struct"))]
     pub struct RepoInfoStruct;
 
-    #[derive(diesel::sql_types::SqlType, diesel::query_builder::QueryId)]
+    #[derive(diesel::sql_types::SqlType)]
     #[diesel(postgres_type(name = "semver_struct"))]
     pub struct SemverStruct;
 }
@@ -106,8 +106,7 @@ diesel::table! {
     internal_diff_log_state (package_name) {
         package_name -> Text,
         package_only_packument_hash -> Text,
-        deleted -> Bool,
-        versions -> Array<InternalDiffLogVersionState>,
+        versions -> Array<Nullable<InternalDiffLogVersionState>>,
     }
 }
 
@@ -145,10 +144,10 @@ diesel::table! {
         created -> Timestamptz,
         deleted -> Bool,
         extra_metadata -> Jsonb,
-        prod_dependencies -> Array<Int8>,
-        dev_dependencies -> Array<Int8>,
-        peer_dependencies -> Array<Int8>,
-        optional_dependencies -> Array<Int8>,
+        prod_dependencies -> Array<Nullable<Int8>>,
+        dev_dependencies -> Array<Nullable<Int8>>,
+        peer_dependencies -> Array<Nullable<Int8>>,
+        optional_dependencies -> Array<Nullable<Int8>>,
         secret -> Bool,
     }
 }
