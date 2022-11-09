@@ -44,11 +44,62 @@ pub struct DiffLogPanicMetrics {
     pub panic_message: String,
 }
 
+pub struct RelationalDbBatchCompleteMetrics {
+    pub batch_start_time: DateTime<Utc>,
+    pub batch_start_seq_inclusive: i64,
+    pub batch_end_seq_inclusive: i64,
+    pub batch_num_processed_seqs: i64,
+    pub batch_num_processed_diff_entries: i64,
+    pub batch_bytes_read: i64,
+    pub batch_bytes_written: i64,
+    pub batch_reading_duration: Duration,
+    pub batch_writing_duration: Duration,
+    pub batch_total_duration: Duration,
+    pub session_num_seqs: i64,
+    pub session_num_diff_entries: i64,
+    pub session_num_seqs_processed_so_far: i64,
+    pub session_num_diff_entries_processed_so_far: i64,
+    pub session_start_time: DateTime<Utc>,
+}
+
+pub struct RelationalDbStartSessionMetrics {
+    pub session_start_time: DateTime<Utc>,
+    pub session_start_seq_exclusive: i64,
+    pub session_num_seqs: i64,
+    pub session_num_diff_entries: i64,
+}
+
+pub struct RelationalDbEndSessionMetrics {
+    pub session_start_time: DateTime<Utc>,
+    pub session_start_seq_exclusive: i64,
+    pub session_num_seqs: i64,
+    pub session_num_diff_entries: i64,
+    pub session_end_time: DateTime<Utc>,
+    pub session_end_seq_inclusive: i64,
+    pub session_total_duration: Duration,
+}
+
+#[derive(Serialize)]
+pub struct RelationalDbPanicMetrics {
+    pub panic_time: DateTime<Utc>,
+    pub panic_on_seq_id: i64,
+    pub panic_on_diff_entry_id: i64,
+    pub panic_message: String,
+}
+
 pub trait MetricsLoggerTrait {
     fn log_diff_log_builder_batch_complete_metrics(&mut self, metrics: DiffLogBatchCompleteMetrics);
     fn log_diff_log_builder_start_session(&mut self, metrics: DiffLogStartSessionMetrics);
     fn log_diff_log_builder_end_session(&mut self, metrics: DiffLogEndSessionMetrics);
     fn log_diff_log_builder_panic(&mut self, metrics: DiffLogPanicMetrics);
+
+    fn log_relational_db_builder_batch_complete_metrics(
+        &mut self,
+        metrics: RelationalDbBatchCompleteMetrics,
+    );
+    fn log_relational_db_builder_start_session(&mut self, metrics: RelationalDbStartSessionMetrics);
+    fn log_relational_db_builder_end_session(&mut self, metrics: RelationalDbEndSessionMetrics);
+    fn log_relational_db_builder_panic(&mut self, metrics: RelationalDbPanicMetrics);
 }
 
 pub struct MetricsLogger(Box<dyn MetricsLoggerTrait + Send + Sync>);
@@ -71,6 +122,29 @@ impl MetricsLoggerTrait for MetricsLogger {
 
     fn log_diff_log_builder_panic(&mut self, metrics: DiffLogPanicMetrics) {
         self.0.log_diff_log_builder_panic(metrics)
+    }
+
+    fn log_relational_db_builder_batch_complete_metrics(
+        &mut self,
+        metrics: RelationalDbBatchCompleteMetrics,
+    ) {
+        self.0
+            .log_relational_db_builder_batch_complete_metrics(metrics)
+    }
+
+    fn log_relational_db_builder_start_session(
+        &mut self,
+        metrics: RelationalDbStartSessionMetrics,
+    ) {
+        self.0.log_relational_db_builder_start_session(metrics)
+    }
+
+    fn log_relational_db_builder_end_session(&mut self, metrics: RelationalDbEndSessionMetrics) {
+        self.0.log_relational_db_builder_end_session(metrics)
+    }
+
+    fn log_relational_db_builder_panic(&mut self, metrics: RelationalDbPanicMetrics) {
+        self.0.log_relational_db_builder_panic(metrics)
     }
 }
 

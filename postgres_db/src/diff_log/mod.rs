@@ -41,10 +41,10 @@ struct NewDiffLogRow {
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct DiffLogEntry {
-    id: i64,
-    seq: i64,
-    package_name: String,
-    instr: DiffLogInstruction,
+    pub id: i64,
+    pub seq: i64,
+    pub package_name: String,
+    pub instr: DiffLogInstruction,
 }
 
 #[derive(Debug)]
@@ -140,6 +140,20 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
             version_packument: version_packument.map(|x| serde_json::to_value(x).unwrap()),
         }
     }
+}
+
+pub fn query_num_diff_entries_after_seq(after_seq: i64, conn: &mut DbConnection) -> i64 {
+    use diesel::dsl::*;
+    use diesel::prelude::*;
+    use schema::diff_log::dsl::*;
+
+    conn.first(diff_log.filter(seq.gt(after_seq)).select(count(id)))
+        .unwrap_or_else(|_| {
+            panic!(
+                "Error querying DB for number of changes after seq: {}",
+                after_seq
+            )
+        })
 }
 
 pub fn query_diff_entries_after_seq(

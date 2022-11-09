@@ -10,7 +10,8 @@ use chrono::{DateTime, Utc};
 
 use crate::{
     DiffLogBatchCompleteMetrics, DiffLogEndSessionMetrics, DiffLogPanicMetrics,
-    DiffLogStartSessionMetrics, MetricsLoggerTrait,
+    DiffLogStartSessionMetrics, MetricsLoggerTrait, RelationalDbBatchCompleteMetrics,
+    RelationalDbEndSessionMetrics, RelationalDbPanicMetrics, RelationalDbStartSessionMetrics,
 };
 
 pub struct CsvLogger {
@@ -167,5 +168,27 @@ impl MetricsLoggerTrait for CsvLogger {
         let csv = &mut self.get_csv_file("diff_log_builder_panic_metrics");
         csv.serialize(metrics).unwrap();
         csv.flush().unwrap();
+    }
+
+    fn log_relational_db_builder_batch_complete_metrics(
+        &mut self,
+        metrics: RelationalDbBatchCompleteMetrics,
+    ) {
+        todo!()
+    }
+
+    fn log_relational_db_builder_start_session(
+        &mut self,
+        metrics: RelationalDbStartSessionMetrics,
+    ) {
+        todo!()
+    }
+
+    fn log_relational_db_builder_end_session(&mut self, metrics: RelationalDbEndSessionMetrics) {
+        todo!()
+    }
+
+    fn log_relational_db_builder_panic(&mut self, metrics: RelationalDbPanicMetrics) {
+        todo!()
     }
 }

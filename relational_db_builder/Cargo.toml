@@ -18,6 +18,8 @@ path = "src/main.rs"
 postgres_db = { path = "../postgres_db" }
 # semver_spec_serialization = { path = "../semver_spec_serialization" }
 utils = { path = "../utils" }
+metrics_logging = { path = "../metrics_logging" }
+
 
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
@@ -32,6 +34,6 @@ criterion = { version = "0.3", features = ["html_reports"] }
 glob = "0.3.0"
 colored = "2.0.0"
 
-[[bench]]
-name = "insertion"
-harness = false
+#[[bench]]
+#name = "insertion"
+#harness = false
