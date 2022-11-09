@@ -8,7 +8,6 @@ use crate::custom_types::Semver;
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InternalDiffLogPackageState {
     pub package_pack_hash: Option<String>,
-    pub deleted: bool,
     pub versions: BTreeMap<Semver, InternalDiffLogVersionState>,
 }
 

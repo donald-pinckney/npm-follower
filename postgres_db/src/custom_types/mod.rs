@@ -216,7 +216,6 @@ pub enum DiffTypeEnum {
     UpdatePackage,
     // SetPackageLatestTag,
     PatchPackageReferences,
-    DeletePackage,
     CreateVersion,
     UpdateVersion,
     DeleteVersion,

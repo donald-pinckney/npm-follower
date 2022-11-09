@@ -67,7 +67,6 @@ pub enum DiffLogInstruction {
     CreatePackage(PackageOnlyPackument),
     UpdatePackage(PackageOnlyPackument),
     PatchPackageReferences,
-    DeletePackage,
     CreateVersion(Semver, VersionOnlyPackument),
     UpdateVersion(Semver, VersionOnlyPackument),
     DeleteVersion(Semver),
@@ -83,7 +82,6 @@ impl From<DiffLogRow> for DiffLogEntry {
                 serde_json::from_value(r.package_only_packument.unwrap()).unwrap(),
             ),
             // DiffTypeEnum::SetPackageLatestTag => DiffLogInstruction::SetPackageLatestTag(r.v),
-            DiffTypeEnum::DeletePackage => DiffLogInstruction::DeletePackage,
             DiffTypeEnum::CreateVersion => DiffLogInstruction::CreateVersion(
                 r.v.unwrap(),
                 serde_json::from_value(r.version_packument.unwrap()).unwrap(),
@@ -117,7 +115,6 @@ impl From<NewDiffLogEntry> for NewDiffLogRow {
             // DiffLogInstruction::SetPackageLatestTag(v) => {
             //     (DiffTypeEnum::SetPackageLatestTag, None, v, None)
             // }
-            DiffLogInstruction::DeletePackage => (DiffTypeEnum::DeletePackage, None, None, None),
             DiffLogInstruction::CreateVersion(v, vp) => {
                 (DiffTypeEnum::CreateVersion, None, Some(v), Some(vp))
             }
@@ -312,11 +309,6 @@ mod tests {
                 instr: DiffLogInstruction::UpdatePackage(garbage_pack_data.clone()),
             },
             NewDiffLogEntry {
-                seq: 102,
-                package_name: "react".into(),
-                instr: DiffLogInstruction::DeletePackage,
-            },
-            NewDiffLogEntry {
                 seq: 103,
                 package_name: "react".into(),
                 instr: DiffLogInstruction::CreateVersion(
@@ -351,12 +343,6 @@ mod tests {
                 seq: 101,
                 package_name: "react".into(),
                 instr: DiffLogInstruction::UpdatePackage(garbage_pack_data),
-            },
-            DiffLogEntry {
-                id: 3,
-                seq: 102,
-                package_name: "react".into(),
-                instr: DiffLogInstruction::DeletePackage,
             },
             DiffLogEntry {
                 id: 4,

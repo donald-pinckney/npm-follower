@@ -127,8 +127,6 @@ fn process_change(
                 // Now we can update the package
                 // If new package data != old package data:
                 //  UpdatePackage(...)
-                // If package is deleted:
-                //  DeletePackage(...)
 
                 let old_and_new_versions =
                     BTreeSet::from_iter(hash_state.versions.keys().chain(all_versions_data.keys()));
@@ -197,26 +195,12 @@ fn process_change(
                         NewDiffLogEntryWithHash {
                             entry: NewDiffLogEntry {
                                 seq,
-                                package_name: package_name.clone(),
-                                instr: DiffLogInstruction::UpdatePackage(package_data.clone()),
+                                package_name,
+                                instr: DiffLogInstruction::UpdatePackage(package_data),
                             },
                             hash: Some(package_data_hash),
                         },
                         package_data_num_bytes,
-                    ));
-                }
-
-                if !package_data.is_normal() {
-                    instrs_and_write_sizes.push((
-                        NewDiffLogEntryWithHash {
-                            entry: NewDiffLogEntry {
-                                seq,
-                                package_name,
-                                instr: DiffLogInstruction::DeletePackage,
-                            },
-                            hash: None,
-                        },
-                        0,
                     ));
                 }
 
@@ -225,117 +209,66 @@ fn process_change(
             None => {
                 // The package does not yet exist in the DB.
                 // So we must do:
-                // If package_data is `Normal`:
-                //  CreatePackage(package_data but with `latest` set to None)
-                //  CreateVersion(v1)
-                //  ...
-                //  CreateVersion(vn)
-                //  UpdatePackage(package_data with `latest` set back to its value)
-                //  PatchPackageReferences
-                // Else:
-                //  CreatePackage(package_data)
-                //  CreateVersion(v1)
-                //  ...
-                //  CreateVersion(vn)
-                //  DeletePackage if we are Unpublished, Deleted, or MissingData
-                //  PatchPackageReferences
+                // CreatePackage(package_data but with `latest` set to None)
+                // CreateVersion(v1)
+                // ...
+                // CreateVersion(vn)
+                // UpdatePackage(package_data with `latest` set back to its value), but only if needed
+                // PatchPackageReferences
 
                 let version_creation_instrs = all_versions_data.into_iter().map(|(v, v_data)| {
                     generate_create_version_instr(seq, &package_name, v, v_data)
                 });
 
-                match &package_data {
-                    PackageOnlyPackument::Normal {
-                        latest: _,
-                        created,
-                        modified,
-                        other_dist_tags,
-                    } => {
-                        let package_data_without_latest = PackageOnlyPackument::Normal {
-                            latest: None,
-                            created: *created,
-                            modified: *modified,
-                            other_dist_tags: other_dist_tags.clone(),
-                        };
+                let (package_data_without_latest, did_remove_latest) =
+                    pack_data_set_latest_to_none(&package_data);
 
-                        let instrs_and_write_sizes = iter::once((
-                            NewDiffLogEntryWithHash {
-                                entry: NewDiffLogEntry {
-                                    seq,
-                                    package_name: package_name.clone(),
-                                    instr: DiffLogInstruction::CreatePackage(
-                                        package_data_without_latest,
-                                    ),
-                                },
-                                hash: None,
+                let final_update_instr = if did_remove_latest {
+                    Some((
+                        NewDiffLogEntryWithHash {
+                            entry: NewDiffLogEntry {
+                                seq,
+                                package_name: package_name.clone(),
+                                instr: DiffLogInstruction::UpdatePackage(package_data),
                             },
-                            package_data_num_bytes,
-                        ))
-                        .chain(version_creation_instrs)
-                        .chain(iter::once((
-                            NewDiffLogEntryWithHash {
-                                entry: NewDiffLogEntry {
-                                    seq,
-                                    package_name: package_name.clone(),
-                                    instr: DiffLogInstruction::UpdatePackage(package_data),
-                                },
-                                hash: Some(package_data_hash),
-                            },
-                            package_data_num_bytes,
-                        )))
-                        .chain(iter::once((
-                            NewDiffLogEntryWithHash {
-                                entry: NewDiffLogEntry {
-                                    seq,
-                                    package_name: package_name.clone(),
-                                    instr: DiffLogInstruction::PatchPackageReferences,
-                                },
-                                hash: None,
-                            },
-                            0,
-                        )));
+                            hash: Some(package_data_hash.clone()),
+                        },
+                        package_data_num_bytes,
+                    ))
+                } else {
+                    None
+                };
 
-                        Vec::from_iter(instrs_and_write_sizes)
-                    }
-                    _ => {
-                        let instrs_and_write_sizes = iter::once((
-                            NewDiffLogEntryWithHash {
-                                entry: NewDiffLogEntry {
-                                    seq,
-                                    package_name: package_name.clone(),
-                                    instr: DiffLogInstruction::CreatePackage(package_data),
-                                },
-                                hash: Some(package_data_hash),
-                            },
-                            package_data_num_bytes,
-                        ))
-                        .chain(version_creation_instrs)
-                        .chain(iter::once((
-                            NewDiffLogEntryWithHash {
-                                entry: NewDiffLogEntry {
-                                    seq,
-                                    package_name: package_name.clone(),
-                                    instr: DiffLogInstruction::DeletePackage,
-                                },
-                                hash: None,
-                            },
-                            0,
-                        )))
-                        .chain(iter::once((
-                            NewDiffLogEntryWithHash {
-                                entry: NewDiffLogEntry {
-                                    seq,
-                                    package_name: package_name.clone(),
-                                    instr: DiffLogInstruction::PatchPackageReferences,
-                                },
-                                hash: None,
-                            },
-                            0,
-                        )));
+                let instrs_and_write_sizes = iter::once((
+                    NewDiffLogEntryWithHash {
+                        entry: NewDiffLogEntry {
+                            seq,
+                            package_name: package_name.clone(),
+                            instr: DiffLogInstruction::CreatePackage(package_data_without_latest),
+                        },
+                        hash: if did_remove_latest {
+                            None
+                        } else {
+                            Some(package_data_hash)
+                        },
+                    },
+                    package_data_num_bytes,
+                ))
+                .chain(version_creation_instrs)
+                .chain(final_update_instr.into_iter())
+                .chain(iter::once((
+                    NewDiffLogEntryWithHash {
+                        entry: NewDiffLogEntry {
+                            seq,
+                            package_name: package_name.clone(),
+                            instr: DiffLogInstruction::PatchPackageReferences,
+                        },
+                        hash: None,
+                    },
+                    0,
+                )));
 
-                        Vec::from_iter(instrs_and_write_sizes)
-                    }
-                }
+                Vec::from_iter(instrs_and_write_sizes)
             }
         };
 
@@ -349,6 +282,26 @@ fn process_change(
     new_diff_entries.extend(diff_instrs.into_iter().map(|x| x.0));
 
     (change_bytes, write_bytes)
+}
+
+fn pack_data_set_latest_to_none(pack_data: &PackageOnlyPackument) -> (PackageOnlyPackument, bool) {
+    match pack_data {
+        PackageOnlyPackument::Normal {
+            latest: _,
+            created,
+            modified,
+            other_dist_tags,
+        } => (
+            PackageOnlyPackument::Normal {
+                latest: None,
+                created: *created,
+                modified: *modified,
+                other_dist_tags: other_dist_tags.clone(),
+            },
+            true,
+        ),
+        _ => (pack_data.clone(), false),
+    }
 }
 
 fn generate_create_version_instr(
