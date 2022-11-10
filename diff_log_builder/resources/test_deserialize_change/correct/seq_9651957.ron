@@ -9,6 +9,7 @@ Some(("video-express", Normal(
     created: "2022-04-02T14:58:02.786Z",
     modified: "2022-04-02T14:58:03.046Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 0,

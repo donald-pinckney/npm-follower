@@ -11,6 +11,15 @@ Some(("angieslist-visitor-app-common", Normal(
     created: "2022-06-08T09:02:02.592Z",
     modified: "2022-06-08T09:02:03.919Z",
     other_dist_tags: {},
+    extra_version_times: [
+        ((
+            major: 2,
+            minor: 0,
+            bug: 772,
+            prerelease: [],
+            build: [],
+        ), "2021-11-16T07:15:06.362Z"),
+    ],
 ), {
     (
         major: 0,

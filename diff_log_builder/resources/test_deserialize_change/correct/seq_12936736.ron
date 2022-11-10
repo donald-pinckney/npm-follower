@@ -9,6 +9,15 @@ Some(("zidane", Normal(
     created: "2022-06-07T21:05:32.717Z",
     modified: "2022-06-07T21:11:11.242Z",
     other_dist_tags: {},
+    extra_version_times: [
+        ((
+            major: 0,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ), "2019-01-09T04:30:32.664Z"),
+    ],
 ), {
     (
         major: 1,

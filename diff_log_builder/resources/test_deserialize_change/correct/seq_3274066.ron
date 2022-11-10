@@ -9,11 +9,12 @@ Some(("sinopib", Normal(
     created: "2016-01-18T18:53:19.778Z",
     modified: "2016-01-18T19:50:13.563Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 1,
         minor: 4,
-        bug: 2,
+        bug: 0,
         prerelease: [],
         build: [],
     ): (
@@ -879,8 +880,8 @@ Some(("sinopib", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.2.tgz",
-            shasum: Some("13d7de795ff7e81e0c74d20be41f7a330f73c7fd"),
+            tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.0.tgz",
+            shasum: Some("38825dcfcf650c3f79506b073b37fe3c284333e6"),
             unpacked_size: None,
             file_count: None,
             integrity: None,
@@ -903,17 +904,17 @@ Some(("sinopib", Normal(
                 ),
             ),
         )),
-        time: "2016-01-18T19:20:47.345Z",
+        time: "2016-01-18T18:53:19.778Z",
         extra_metadata: {
             "_from": ".",
-            "_id": "sinopib@1.4.2",
+            "_id": "sinopib@1.4.0",
             "_nodeVersion": "4.0.0",
             "_npmUser": {
                 "email": "mathieumg@gmail.com",
                 "name": "mathieumg",
             },
             "_npmVersion": "2.4.2",
-            "_shasum": "13d7de795ff7e81e0c74d20be41f7a330f73c7fd",
+            "_shasum": "38825dcfcf650c3f79506b073b37fe3c284333e6",
             "author": {
                 "email": "alex@kocharin.ru",
                 "name": "Alex Kocharin",
@@ -928,7 +929,7 @@ Some(("sinopib", Normal(
             "engines": {
                 "node": ">=0.10",
             },
-            "gitHead": "09006c6ad981102f66d0f1002ad8f70c9e01b37b",
+            "gitHead": "a168d4a12ac45c1ba6814df9a39b168bb3cdf97e",
             "homepage": "https://github.com/rlidwka/sinopia",
             "keywords": [
                 "private",
@@ -963,7 +964,7 @@ Some(("sinopib", Normal(
                 "test-only": "mocha ./test/functional ./test/unit",
                 "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
             },
-            "version": "1.4.2",
+            "version": "1.4.0",
         },
     ),
     (
@@ -1925,7 +1926,7 @@ Some(("sinopib", Normal(
     (
         major: 1,
         minor: 4,
-        bug: 0,
+        bug: 2,
         prerelease: [],
         build: [],
     ): (
@@ -2791,8 +2792,8 @@ Some(("sinopib", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.0.tgz",
-            shasum: Some("38825dcfcf650c3f79506b073b37fe3c284333e6"),
+            tarball_url: "https://registry.npmjs.org/sinopib/-/sinopib-1.4.2.tgz",
+            shasum: Some("13d7de795ff7e81e0c74d20be41f7a330f73c7fd"),
             unpacked_size: None,
             file_count: None,
             integrity: None,
@@ -2815,17 +2816,17 @@ Some(("sinopib", Normal(
                 ),
             ),
         )),
-        time: "2016-01-18T18:53:19.778Z",
+        time: "2016-01-18T19:20:47.345Z",
         extra_metadata: {
             "_from": ".",
-            "_id": "sinopib@1.4.0",
+            "_id": "sinopib@1.4.2",
             "_nodeVersion": "4.0.0",
             "_npmUser": {
                 "email": "mathieumg@gmail.com",
                 "name": "mathieumg",
             },
             "_npmVersion": "2.4.2",
-            "_shasum": "38825dcfcf650c3f79506b073b37fe3c284333e6",
+            "_shasum": "13d7de795ff7e81e0c74d20be41f7a330f73c7fd",
             "author": {
                 "email": "alex@kocharin.ru",
                 "name": "Alex Kocharin",
@@ -2840,7 +2841,7 @@ Some(("sinopib", Normal(
             "engines": {
                 "node": ">=0.10",
             },
-            "gitHead": "a168d4a12ac45c1ba6814df9a39b168bb3cdf97e",
+            "gitHead": "09006c6ad981102f66d0f1002ad8f70c9e01b37b",
             "homepage": "https://github.com/rlidwka/sinopia",
             "keywords": [
                 "private",
@@ -2875,7 +2876,7 @@ Some(("sinopib", Normal(
                 "test-only": "mocha ./test/functional ./test/unit",
                 "test-travis": "eslint . && mocha -R spec ./test/functional ./test/unit",
             },
-            "version": "1.4.0",
+            "version": "1.4.2",
         },
     ),
     (

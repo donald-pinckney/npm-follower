@@ -9,6 +9,7 @@ Some(("testing233", Normal(
     created: "2015-03-23T00:07:22.761Z",
     modified: "2019-01-05T15:00:50.768Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 0,

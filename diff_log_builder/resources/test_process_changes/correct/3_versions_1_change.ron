@@ -2,8 +2,7 @@
     hash_state: {
         "foo": (
             package_name: "foo",
-            package_only_packument_hash: "04e718ed8c4343b7b1acf8c92be912e907621d9ff70f31f7e1430a61f22a322c",
-            deleted: false,
+            package_only_packument_hash: "e3bb7cac90bc2a3fd155e245f303bb7687fa5e50a7f9832454c0bc41f1ad669f",
             versions: [
                 (
                     v: (
@@ -51,6 +50,7 @@
                 created: "2021-01-21T00:31:48.154Z",
                 modified: "2021-01-22T10:46:59.761Z",
                 other_dist_tags: {},
+                extra_version_times: [],
             )),
         ),
         (
@@ -272,6 +272,7 @@
                 created: "2021-01-21T00:31:48.154Z",
                 modified: "2021-01-22T10:46:59.761Z",
                 other_dist_tags: {},
+                extra_version_times: [],
             )),
         ),
         (

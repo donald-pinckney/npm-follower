@@ -14,6 +14,8 @@ pub enum PackageOnlyPackument {
         created: DateTime<Utc>,
         modified: DateTime<Utc>,
         other_dist_tags: Map<String, Value>,
+        #[serde(with = "crate::serde_non_string_key_serialization")]
+        extra_version_times: BTreeMap<Semver, DateTime<Utc>>,
     },
     Unpublished {
         created: DateTime<Utc>,

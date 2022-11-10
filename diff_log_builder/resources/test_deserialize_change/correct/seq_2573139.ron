@@ -9,191 +9,8 @@ Some(("soupselect-update", Normal(
     created: "2017-02-18T05:23:25.485Z",
     modified: "2017-05-01T13:04:55.378Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
-    (
-        major: 0,
-        minor: 2,
-        bug: 3,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("htmlparser", (
-                raw: "^1.7.7",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 7,
-                            bug: 7,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        dev_dependencies: [
-            ("coveralls", (
-                raw: "^2.12.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 2,
-                            minor: 12,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 3,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("istanbul", (
-                raw: "^0.4.5",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 4,
-                            bug: 5,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 0,
-                            minor: 5,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("nodeunit", (
-                raw: "^0.11.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 11,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 0,
-                            minor: 12,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/soupselect-update/-/soupselect-update-0.2.3.tgz",
-            shasum: Some("fe7a94218033ad1d813356a16b019e3509df0f67"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: None,
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: Some((
-            raw: [
-                {
-                    "type": "git",
-                    "url": "git://github.com/m4l1c3/node-soupselect-update.git",
-                },
-            ],
-            info: (
-                cloneable_repo_url: "https://github.com/m4l1c3/node-soupselect-update",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "m4l1c3",
-                    repo: "node-soupselect-update",
-                ),
-            ),
-        )),
-        time: "2017-03-07T01:15:23.649Z",
-        extra_metadata: {
-            "_from": ".",
-            "_id": "soupselect-update@0.2.3",
-            "_nodeVersion": "4.3.0",
-            "_npmOperationalInternal": {
-                "host": "packages-18-east.internal.npmjs.com",
-                "tmp": "tmp/soupselect-update-0.2.3.tgz_1488849321883_0.5981535834725946",
-            },
-            "_npmUser": {
-                "email": "jon@jonsomnia.com",
-                "name": "m4l1c3",
-            },
-            "_npmVersion": "3.8.0",
-            "_shasum": "fe7a94218033ad1d813356a16b019e3509df0f67",
-            "author": {
-                "name": "m4l1c3",
-                "url": "http://m4l1ce.me",
-            },
-            "contributors": [
-                {
-                    "name": "Simon Willison https://github.com/simonw",
-                },
-                {
-                    "name": "Harry Fuecks https://github.com/harryf",
-                },
-                {
-                    "name": "Chris O\'Hara https://github.com/chriso",
-                },
-            ],
-            "description": "Adds CSS selector support to htmlparser for scraping activities - port of soupselect (python)",
-            "engines": {
-                "node": ">=0.2.0",
-            },
-            "gitHead": "17cf4413f13fa0e6232c4f9335e2830c2d5acd47",
-            "license": "MIT",
-            "main": "./lib/soupselect",
-            "maintainers": [
-                {
-                    "email": "jon@jonsomnia.com",
-                    "name": "m4l1c3",
-                },
-            ],
-            "name": "soupselect-update",
-            "scripts": {
-                "coverage": "instabul cover nodeunit tests",
-                "test": "nodeunit tests",
-            },
-            "url": "http://github.com/m4l1c3/node-soupselect-update",
-            "version": "0.2.3",
-        },
-    ),
     (
         major: 0,
         minor: 2,
@@ -376,6 +193,190 @@ Some(("soupselect-update", Normal(
             },
             "url": "http://github.com/m4l1c3/node-soupselect-update",
             "version": "0.2.0",
+        },
+    ),
+    (
+        major: 0,
+        minor: 2,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("htmlparser", (
+                raw: "^1.7.7",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 7,
+                            bug: 7,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [
+            ("coveralls", (
+                raw: "^2.12.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 12,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("istanbul", (
+                raw: "^0.4.5",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 4,
+                            bug: 5,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 5,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("nodeunit", (
+                raw: "^0.11.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 12,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/soupselect-update/-/soupselect-update-0.2.1.tgz",
+            shasum: Some("0c6cc2d86258d4462cb186172ceccb779329117a"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: None,
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: Some((
+            raw: [
+                {
+                    "type": "git",
+                    "url": "git://github.com/m4l1c3/node-soupselect-update.git",
+                },
+            ],
+            info: (
+                cloneable_repo_url: "https://github.com/m4l1c3/node-soupselect-update",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "m4l1c3",
+                    repo: "node-soupselect-update",
+                ),
+            ),
+        )),
+        time: "2017-03-07T00:53:33.743Z",
+        extra_metadata: {
+            "_from": ".",
+            "_id": "soupselect-update@0.2.1",
+            "_nodeVersion": "4.3.0",
+            "_npmOperationalInternal": {
+                "host": "packages-12-west.internal.npmjs.com",
+                "tmp": "tmp/soupselect-update-0.2.1.tgz_1488848013452_0.4955625985749066",
+            },
+            "_npmUser": {
+                "email": "jon@jonsomnia.com",
+                "name": "m4l1c3",
+            },
+            "_npmVersion": "3.8.0",
+            "_shasum": "0c6cc2d86258d4462cb186172ceccb779329117a",
+            "author": {
+                "name": "m4l1c3",
+                "url": "http://m4l1ce.me",
+            },
+            "contributors": [
+                {
+                    "name": "Simon Willison https://github.com/simonw",
+                },
+                {
+                    "name": "Harry Fuecks https://github.com/harryf",
+                },
+                {
+                    "name": "Chris O\'Hara https://github.com/chriso",
+                },
+            ],
+            "description": "Adds CSS selector support to htmlparser for scraping activities - port of soupselect (python)",
+            "engines": {
+                "node": ">=0.2.0",
+            },
+            "gitHead": "20ae29c8469b5f9a85872b670c420a560ce12906",
+            "license": "MIT",
+            "main": "./lib/soupselect",
+            "maintainers": [
+                {
+                    "email": "jon@jonsomnia.com",
+                    "name": "m4l1c3",
+                },
+            ],
+            "name": "soupselect-update",
+            "scripts": {
+                "coverage": "instabul cover nodeunit tests",
+                "test": "nodeunit tests",
+            },
+            "url": "http://github.com/m4l1c3/node-soupselect-update",
+            "version": "0.2.1",
         },
     ),
     (
@@ -565,6 +566,190 @@ Some(("soupselect-update", Normal(
     (
         major: 0,
         minor: 2,
+        bug: 3,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("htmlparser", (
+                raw: "^1.7.7",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 7,
+                            bug: 7,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [
+            ("coveralls", (
+                raw: "^2.12.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 12,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("istanbul", (
+                raw: "^0.4.5",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 4,
+                            bug: 5,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 5,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("nodeunit", (
+                raw: "^0.11.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 11,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 12,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/soupselect-update/-/soupselect-update-0.2.3.tgz",
+            shasum: Some("fe7a94218033ad1d813356a16b019e3509df0f67"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: None,
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: Some((
+            raw: [
+                {
+                    "type": "git",
+                    "url": "git://github.com/m4l1c3/node-soupselect-update.git",
+                },
+            ],
+            info: (
+                cloneable_repo_url: "https://github.com/m4l1c3/node-soupselect-update",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "m4l1c3",
+                    repo: "node-soupselect-update",
+                ),
+            ),
+        )),
+        time: "2017-03-07T01:15:23.649Z",
+        extra_metadata: {
+            "_from": ".",
+            "_id": "soupselect-update@0.2.3",
+            "_nodeVersion": "4.3.0",
+            "_npmOperationalInternal": {
+                "host": "packages-18-east.internal.npmjs.com",
+                "tmp": "tmp/soupselect-update-0.2.3.tgz_1488849321883_0.5981535834725946",
+            },
+            "_npmUser": {
+                "email": "jon@jonsomnia.com",
+                "name": "m4l1c3",
+            },
+            "_npmVersion": "3.8.0",
+            "_shasum": "fe7a94218033ad1d813356a16b019e3509df0f67",
+            "author": {
+                "name": "m4l1c3",
+                "url": "http://m4l1ce.me",
+            },
+            "contributors": [
+                {
+                    "name": "Simon Willison https://github.com/simonw",
+                },
+                {
+                    "name": "Harry Fuecks https://github.com/harryf",
+                },
+                {
+                    "name": "Chris O\'Hara https://github.com/chriso",
+                },
+            ],
+            "description": "Adds CSS selector support to htmlparser for scraping activities - port of soupselect (python)",
+            "engines": {
+                "node": ">=0.2.0",
+            },
+            "gitHead": "17cf4413f13fa0e6232c4f9335e2830c2d5acd47",
+            "license": "MIT",
+            "main": "./lib/soupselect",
+            "maintainers": [
+                {
+                    "email": "jon@jonsomnia.com",
+                    "name": "m4l1c3",
+                },
+            ],
+            "name": "soupselect-update",
+            "scripts": {
+                "coverage": "instabul cover nodeunit tests",
+                "test": "nodeunit tests",
+            },
+            "url": "http://github.com/m4l1c3/node-soupselect-update",
+            "version": "0.2.3",
+        },
+    ),
+    (
+        major: 0,
+        minor: 2,
         bug: 4,
         prerelease: [],
         build: [],
@@ -744,190 +929,6 @@ Some(("soupselect-update", Normal(
             },
             "url": "http://github.com/m4l1c3/node-soupselect-update",
             "version": "0.2.4",
-        },
-    ),
-    (
-        major: 0,
-        minor: 2,
-        bug: 1,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("htmlparser", (
-                raw: "^1.7.7",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 7,
-                            bug: 7,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        dev_dependencies: [
-            ("coveralls", (
-                raw: "^2.12.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 2,
-                            minor: 12,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 3,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("istanbul", (
-                raw: "^0.4.5",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 4,
-                            bug: 5,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 0,
-                            minor: 5,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("nodeunit", (
-                raw: "^0.11.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 11,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 0,
-                            minor: 12,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/soupselect-update/-/soupselect-update-0.2.1.tgz",
-            shasum: Some("0c6cc2d86258d4462cb186172ceccb779329117a"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: None,
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: Some((
-            raw: [
-                {
-                    "type": "git",
-                    "url": "git://github.com/m4l1c3/node-soupselect-update.git",
-                },
-            ],
-            info: (
-                cloneable_repo_url: "https://github.com/m4l1c3/node-soupselect-update",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "m4l1c3",
-                    repo: "node-soupselect-update",
-                ),
-            ),
-        )),
-        time: "2017-03-07T00:53:33.743Z",
-        extra_metadata: {
-            "_from": ".",
-            "_id": "soupselect-update@0.2.1",
-            "_nodeVersion": "4.3.0",
-            "_npmOperationalInternal": {
-                "host": "packages-12-west.internal.npmjs.com",
-                "tmp": "tmp/soupselect-update-0.2.1.tgz_1488848013452_0.4955625985749066",
-            },
-            "_npmUser": {
-                "email": "jon@jonsomnia.com",
-                "name": "m4l1c3",
-            },
-            "_npmVersion": "3.8.0",
-            "_shasum": "0c6cc2d86258d4462cb186172ceccb779329117a",
-            "author": {
-                "name": "m4l1c3",
-                "url": "http://m4l1ce.me",
-            },
-            "contributors": [
-                {
-                    "name": "Simon Willison https://github.com/simonw",
-                },
-                {
-                    "name": "Harry Fuecks https://github.com/harryf",
-                },
-                {
-                    "name": "Chris O\'Hara https://github.com/chriso",
-                },
-            ],
-            "description": "Adds CSS selector support to htmlparser for scraping activities - port of soupselect (python)",
-            "engines": {
-                "node": ">=0.2.0",
-            },
-            "gitHead": "20ae29c8469b5f9a85872b670c420a560ce12906",
-            "license": "MIT",
-            "main": "./lib/soupselect",
-            "maintainers": [
-                {
-                    "email": "jon@jonsomnia.com",
-                    "name": "m4l1c3",
-                },
-            ],
-            "name": "soupselect-update",
-            "scripts": {
-                "coverage": "instabul cover nodeunit tests",
-                "test": "nodeunit tests",
-            },
-            "url": "http://github.com/m4l1c3/node-soupselect-update",
-            "version": "0.2.1",
         },
     ),
     (

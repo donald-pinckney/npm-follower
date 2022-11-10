@@ -9,6 +9,29 @@ Some(("stabryla-mateusz-3id-nodeapi", Normal(
     created: "2017-01-18T06:51:18.599Z",
     modified: "2017-01-18T07:21:30.517Z",
     other_dist_tags: {},
+    extra_version_times: [
+        ((
+            major: 1,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ), "2017-01-18T06:51:18.599Z"),
+        ((
+            major: 2,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ), "2017-01-18T07:13:44.677Z"),
+        ((
+            major: 2,
+            minor: 0,
+            bug: 1,
+            prerelease: [],
+            build: [],
+        ), "2017-01-18T07:19:47.514Z"),
+    ],
 ), {
     (
         major: 2,

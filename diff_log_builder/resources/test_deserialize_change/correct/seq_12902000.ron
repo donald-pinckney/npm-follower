@@ -9,223 +9,511 @@ Some(("repeat", Normal(
     created: "2012-09-03T10:00:01.106Z",
     modified: "2022-06-07T07:10:08.674Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
-        major: 1,
-        minor: 1,
-        bug: 3,
+        major: 0,
+        minor: 0,
+        bug: 1,
         prerelease: [],
         build: [],
     ): (
         prod_dependencies: [
-            ("dormant", (
-                raw: "^3.0.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
+            ("dfrrd", (
+                raw: "latest",
+                parsed: Tag("latest"),
             )),
         ],
-        dev_dependencies: [],
+        dev_dependencies: [
+            ("coffee-script", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("expect.js", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jquery", (
+                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
+                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
+            )),
+            ("jsdom", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jshint", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("mocha", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("moment", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("node-minify", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("sinon", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+        ],
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.1.3.tgz",
-            shasum: Some("fea0c5cea8fe845813c538bc7a65fb1543652a6e"),
-            unpacked_size: Some(9209),
-            file_count: Some(16),
-            integrity: Some("sha512-Vo28LAfpVnFmwBPVJq8sSPROzYkCNStetZ0M3h91KaRv8s8p85vEw645Pndx3pG4q+SlAkc5IJE6JRT2vaCB1A=="),
-            signature0_sig: Some("MEUCIAx4Z4BHBGNCIbHlfuSfAANDyhWQcLDqbRLoqtOIEbKaAiEA2B28R+d/PtFzi2RaFyAp6xVpmkYR0Yf1QX/JmZ4wGSQ="),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcqI3ZCRA9TVsSAnZWagAACiYQAJQ3RlS/7bmEmhgyAiEa\nKrL5XRdUQL5KLc+XnnrBeeFi1u+ZTWjhx5we89F5BGKfxtgx06waf/xSWlOT\naFtXDsrTHE473qg3WQyLDOTwSiuTYuimxQGiAMqdOCor8lpF5DVnhXXVA1ry\nLeGUxMwO7DrPErqytrzZTFyUwYESYl6ijxIcRf9ze0IKUXxc4PwL9eDdwsyb\nhvuc5rmZiM9Kb3diSL1r81yzJAR0EM3gjsK7BbL8BOwGfdHYMLhAR4Do+XIm\ncKq3al6gBncwu6GmnfFyaNkzk8adFeU0C5lXXZvN+zlAd+6UbfbhHxJ2/7Pn\nvFTxFyGN7zorANxxfHcyfbyvenywy4R0bw43aTMQFY9Me3VUyZtQWd8piEwQ\nfSBR4dvX21yaz8ZoXKpu5ZLTFES+FcHET77PocLBgBJFo4ZUocenjxanhliv\nH7DaIUzmS4sInDLgHXWNCb4AKXrhL8eTfapHAf+1y9s05X/bUPlreKIJzpVH\nv2RP9Q9EJWs0chAr6DGm8fuUPIvpSusTsTsBjXmUmRdRtmpUuWxJokRL0hiR\n96XFfMrGJA2MGQAuftVfqpwyC/5cuaTUZvIlYnaSMV13/0ru15sghrBnnKPm\nJ0TdmiVp3+SsZWsFKZr7jC3ZSep2ZsCGRqrWw3HDSp/NYRzaIWAujiVhJpBU\nB5a5\r\n=Al+s\r\n-----END PGP SIGNATURE-----\r\n"),
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.1.tgz",
+            shasum: Some("924be0210356d6d76d3f69e7cc7a03080489c1be"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: Some("sha512-0W2Q0j4ezNDU8/NIkq59rHz76exD9eOLS8/MfgIbGPiPMCCS9JCsyIDtkfZ9lHc9t23Kj0JnmW0vycJ4s6OkGw=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
         ),
         repository: Some((
             raw: {
                 "type": "git",
-                "url": "git+https://github.com/xist/repeat.git",
+                "url": "https://github.com/bjoerge/repeat.js.git",
             },
             info: (
-                cloneable_repo_url: "https://github.com/xist/repeat",
+                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
                 cloneable_repo_dir: "",
                 vcs: Git,
                 host_info: Github(
-                    user: "xist",
-                    repo: "repeat",
+                    user: "bjoerge",
+                    repo: "repeat.js",
                 ),
             ),
         )),
-        time: "2019-04-06T11:30:32.839Z",
+        time: "2012-09-03T10:00:05.176Z",
         extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "repeat@1.1.3",
-            "_nodeVersion": "10.15.1",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_1.1.3_1554550232614_0.8387238046374561",
-            },
-            "_npmUser": {
-                "email": "hello@xist.dev",
-                "name": "xist",
-            },
-            "_npmVersion": "6.9.0",
+            "_id": "repeat@0.0.1",
             "author": {
-                "name": "xist",
+                "email": "bjoerge@gmail.com",
+                "name": "Bjørge Næss",
             },
             "bugs": {
-                "url": "https://github.com/xist/repeat/issues",
+                "url": "https://github.com/bjoerge/repeat.js/issues",
             },
-            "description": "create repeating task chains",
-            "directories": {},
-            "gitHead": "c1a286a3c5810e05f509d9981664621ab70c823f",
-            "homepage": "https://github.com/xist/repeat#readme",
-            "keywords": [
-                "task",
-                "repeating",
-                "chain",
-                "tasks",
-                "scheduler",
-                "loop",
-                "repeat",
+            "description": [
+                "Repeat.js is a javascript library that makes working with repeated actions pure joy by ",
+                "removing the need for setTimeout/setInterval and somewhat error prone timer references",
             ],
-            "license": "MIT",
-            "main": "dist/src",
+            "directories": {},
+            "homepage": "https://github.com/bjoerge/repeat.js",
+            "keywords": [
+                "Repetition",
+                "Repeat",
+                "Timed",
+                "Timer",
+                "setInterval",
+                "setTimeout",
+                "clearTimeout",
+                "asyncronous",
+                "promise",
+                "deferred",
+            ],
+            "licenses": [
+                {
+                    "type": "MIT",
+                },
+            ],
+            "main": "index.js",
             "maintainers": [
                 {
-                    "email": "hello@xist.dev",
-                    "name": "xist",
+                    "email": "bjoerge@gmail.com",
+                    "name": "bjoerge",
                 },
             ],
             "name": "repeat",
+            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It does not have any dependencies, but plays nicely with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
             "scripts": {
-                "build": "tsc",
-                "test": "ava dist/test --verbose",
+                "test": "make test",
+                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
             },
-            "version": "1.1.3",
+            "version": "0.0.1",
         },
     ),
     (
-        major: 1,
-        minor: 1,
+        major: 0,
+        minor: 0,
         bug: 2,
         prerelease: [],
         build: [],
     ): (
         prod_dependencies: [
-            ("dormant", (
-                raw: "^3.0.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
+            ("dfrrd", (
+                raw: "latest",
+                parsed: Tag("latest"),
             )),
         ],
-        dev_dependencies: [],
+        dev_dependencies: [
+            ("coffee-script", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("expect.js", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jquery", (
+                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
+                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
+            )),
+            ("jsdom", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jshint", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("mocha", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("moment", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("node-minify", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("sinon", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+        ],
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.1.2.tgz",
-            shasum: Some("9925c84270674623dbfac2e9a807358dcd34f9ef"),
-            unpacked_size: Some(9118),
-            file_count: Some(16),
-            integrity: Some("sha512-XdQm7jz/M/yb8mDgQvxIdB7pdOrL8oN09hMAPc/zgXk65ISCX4SOndE8BvfnopnVUJOSgm+agoFqKL+os2IMjg=="),
-            signature0_sig: Some("MEUCIQDKfKFr3zZEsDhLt1vnaG/rYkOE61qLIVdk0iTEZGn2/wIgb+k9IUoAIzsafFQAalCgR2QQVmmwnuS+6ZhIdxnjZgc="),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJckIaqCRA9TVsSAnZWagAA+EQP/0/7ll45FDrBevNESZYo\ngZBAYCBkBCb9UNuDKG+I0JvcAQhnXV/PJhijOFKO7iHBeknQdmNQ5EGQdaK7\nBk4JO27IZxQYzsz/ULgtiSqOWFxLMsswnFMu8it5fapvgjP6vD35PqSZW1AO\n+juXAujSrcPTNSFxX8HKIm3j9NZ3thTQYTqLyml4Gg7qdxNEmPQk84moMnXe\ninrOE5d/9fL2nBNzueZKLVdFL3UeAwK6kxEB5uvCj8Yq6DpAsUkCBwzMDG5R\nSAmKyVwa5RPUfIhR3VhbrNeJrAQCEVyhNRaZAbVrp7WSKqAdOwAvLLv7Qcf+\nQW5ti6zBRgQGmqSXnwCw7V1IajWFyq2W6IL62ZQudzAVfFy7QOZ2PmKxN5hp\nKfzo4i/FVSS5GP8E4whN48qkgS0FL4x5wLQt3cyeP6wBjDxRQGhAuJ+mF8oM\nS2KHxnk+8tX9adHLjp4FyE5fGHw0YbxBMbiKhhotoVdQWhDePGncLkK830oZ\nxBuYa5Af04c5e8VAj/s/83cIHEP2Re41Lid39GbgCy1kcvc8jTJ8AEnlm0d6\n+ViBXc3Avovxio12jbWVAJhcqXKn/D1RyOnHeJabREAgGzoFhv7oYCZIMzYI\nMi599sXVO4az4u4LCDXxQpyi+FVrhlA2qQs7658GnTENxaBckrfElyzLrJ7M\nshG8\r\n=/F2t\r\n-----END PGP SIGNATURE-----\r\n"),
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.2.tgz",
+            shasum: Some("273705cb79a9e6727d2b7ac8e55b119916563276"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: Some("sha512-QjjUpID+f5YeDe5KWammOc1LogUuIMgQERKkQ2CGRH4EB0CgskzkKT4C9G5kSNBoAHfYvZdwXQCCE3orLpETNg=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
         ),
         repository: Some((
             raw: {
                 "type": "git",
-                "url": "git+https://github.com/xist/repeat.git",
+                "url": "https://github.com/bjoerge/repeat.js.git",
             },
             info: (
-                cloneable_repo_url: "https://github.com/xist/repeat",
+                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
                 cloneable_repo_dir: "",
                 vcs: Git,
                 host_info: Github(
-                    user: "xist",
-                    repo: "repeat",
+                    user: "bjoerge",
+                    repo: "repeat.js",
                 ),
             ),
         )),
-        time: "2019-03-19T06:05:30.034Z",
+        time: "2012-09-03T11:12:30.397Z",
         extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "repeat@1.1.2",
-            "_nodeVersion": "10.15.1",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_1.1.2_1552975529816_0.07427621890705094",
-            },
-            "_npmUser": {
-                "email": "hello@xist.dev",
-                "name": "xist",
-            },
-            "_npmVersion": "6.9.0",
+            "_id": "repeat@0.0.2",
             "author": {
-                "name": "xist",
+                "email": "bjoerge@gmail.com",
+                "name": "Bjørge Næss",
             },
             "bugs": {
-                "url": "https://github.com/xist/repeat/issues",
+                "url": "https://github.com/bjoerge/repeat.js/issues",
             },
-            "description": "create repeating task chains",
-            "directories": {},
-            "gitHead": "86b33646e504abb71c91494f05537a2d6f1c7a32",
-            "homepage": "https://github.com/xist/repeat#readme",
-            "keywords": [
-                "task",
-                "repeating",
-                "chain",
-                "tasks",
-                "scheduler",
-                "loop",
-                "repeat",
+            "description": [
+                "Repeat.js is a javascript library that makes working with repeated actions pure joy by ",
+                "removing the need for setTimeout/setInterval and somewhat error prone timer references",
             ],
-            "license": "MIT",
-            "main": "dist/src",
+            "directories": {},
+            "homepage": "https://github.com/bjoerge/repeat.js",
+            "keywords": [
+                "Repetition",
+                "Repeat",
+                "Timed",
+                "Timer",
+                "setInterval",
+                "setTimeout",
+                "clearTimeout",
+                "asyncronous",
+                "promise",
+                "deferred",
+            ],
+            "licenses": [
+                {
+                    "type": "MIT",
+                },
+            ],
+            "main": "index.js",
             "maintainers": [
                 {
-                    "email": "hello@xist.dev",
-                    "name": "xist",
+                    "email": "bjoerge@gmail.com",
+                    "name": "bjoerge",
                 },
             ],
             "name": "repeat",
+            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It can be used standalone or with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
             "scripts": {
-                "build": "tsc",
-                "test": "ava dist/test --verbose",
+                "test": "make test",
+                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
             },
-            "version": "1.1.2",
+            "version": "0.0.2",
+        },
+    ),
+    (
+        major: 0,
+        minor: 0,
+        bug: 3,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("dfrrd", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+        ],
+        dev_dependencies: [
+            ("coffee-script", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("expect.js", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jquery", (
+                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
+                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
+            )),
+            ("jsdom", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jshint", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("mocha", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("moment", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("node-minify", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("sinon", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.3.tgz",
+            shasum: Some("de96851e060638369446cbdfe587cbd49d08aa45"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: Some("sha512-0LXoryMgr9o6RwhD0ronpkj1vYEYOqBACrdo/+bl3236NSj2qQHdYhI1V+x6VWR0yWJoHfqnIk77xy3VSbrbJA=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "https://github.com/bjoerge/repeat.js.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "bjoerge",
+                    repo: "repeat.js",
+                ),
+            ),
+        )),
+        time: "2012-09-03T13:55:19.417Z",
+        extra_metadata: {
+            "_id": "repeat@0.0.3",
+            "author": {
+                "email": "bjoerge@gmail.com",
+                "name": "Bjørge Næss",
+            },
+            "bugs": {
+                "url": "https://github.com/bjoerge/repeat.js/issues",
+            },
+            "description": [
+                "Repeat.js is a javascript library that makes working with repeated actions pure joy by ",
+                "removing the need for setTimeout/setInterval and somewhat error prone timer references",
+            ],
+            "directories": {},
+            "homepage": "https://github.com/bjoerge/repeat.js",
+            "keywords": [
+                "Repetition",
+                "Repeat",
+                "Timed",
+                "Timer",
+                "setInterval",
+                "setTimeout",
+                "clearTimeout",
+                "asyncronous",
+                "promise",
+                "deferred",
+            ],
+            "licenses": [
+                {
+                    "type": "MIT",
+                },
+            ],
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "bjoerge@gmail.com",
+                    "name": "bjoerge",
+                },
+            ],
+            "name": "repeat",
+            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It can be used standalone or with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+            "scripts": {
+                "test": "make test",
+                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
+            },
+            "version": "0.0.3",
+        },
+    ),
+    (
+        major: 0,
+        minor: 0,
+        bug: 4,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("dfrrd", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+        ],
+        dev_dependencies: [
+            ("coffee-script", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("expect.js", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jquery", (
+                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
+                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
+            )),
+            ("jsdom", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("jshint", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("mocha", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("moment", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("node-minify", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+            ("sinon", (
+                raw: "latest",
+                parsed: Tag("latest"),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.4.tgz",
+            shasum: Some("382685667ecb26a3bbaecae7aaffae1c2bb4bda3"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: Some("sha512-EXxoeoTTIb/BXm4UITMGGvzhPOruuC7zlxaCz2wJjM0C2QJwxy2MwsdALoId2J+jlX4FBWPXaalxUeQncqu3bA=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "https://github.com/bjoerge/repeat.js.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "bjoerge",
+                    repo: "repeat.js",
+                ),
+            ),
+        )),
+        time: "2012-09-04T11:25:54.623Z",
+        extra_metadata: {
+            "_id": "repeat@0.0.4",
+            "author": {
+                "email": "bjoerge@gmail.com",
+                "name": "Bjørge Næss",
+            },
+            "bugs": {
+                "url": "https://github.com/bjoerge/repeat.js/issues",
+            },
+            "description": "Repeat.js is a javascript library that makes working with repeated actions pure joy by removing the need for setTimeout/setInterval and somewhat error prone timer references",
+            "directories": {},
+            "homepage": "https://github.com/bjoerge/repeat.js",
+            "keywords": [
+                "Repetition",
+                "Repeat",
+                "Timed",
+                "Timer",
+                "setInterval",
+                "setTimeout",
+                "clearTimeout",
+                "asyncronous",
+                "promise",
+                "deferred",
+            ],
+            "licenses": [
+                {
+                    "type": "MIT",
+                },
+            ],
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "bjoerge@gmail.com",
+                    "name": "bjoerge",
+                },
+            ],
+            "name": "repeat",
+            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It can be used standalone or with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+            "scripts": {
+                "test": "make test",
+                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
+            },
+            "version": "0.0.4",
         },
     ),
     (
@@ -364,133 +652,6 @@ Some(("repeat", Normal(
     (
         major: 0,
         minor: 0,
-        bug: 1,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("dfrrd", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
-        dev_dependencies: [
-            ("coffee-script", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("expect.js", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jquery", (
-                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
-                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
-            )),
-            ("jsdom", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jshint", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("mocha", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("moment", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("node-minify", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("sinon", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.1.tgz",
-            shasum: Some("924be0210356d6d76d3f69e7cc7a03080489c1be"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: Some("sha512-0W2Q0j4ezNDU8/NIkq59rHz76exD9eOLS8/MfgIbGPiPMCCS9JCsyIDtkfZ9lHc9t23Kj0JnmW0vycJ4s6OkGw=="),
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "https://github.com/bjoerge/repeat.js.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "bjoerge",
-                    repo: "repeat.js",
-                ),
-            ),
-        )),
-        time: "2012-09-03T10:00:05.176Z",
-        extra_metadata: {
-            "_id": "repeat@0.0.1",
-            "author": {
-                "email": "bjoerge@gmail.com",
-                "name": "Bjørge Næss",
-            },
-            "bugs": {
-                "url": "https://github.com/bjoerge/repeat.js/issues",
-            },
-            "description": [
-                "Repeat.js is a javascript library that makes working with repeated actions pure joy by ",
-                "removing the need for setTimeout/setInterval and somewhat error prone timer references",
-            ],
-            "directories": {},
-            "homepage": "https://github.com/bjoerge/repeat.js",
-            "keywords": [
-                "Repetition",
-                "Repeat",
-                "Timed",
-                "Timer",
-                "setInterval",
-                "setTimeout",
-                "clearTimeout",
-                "asyncronous",
-                "promise",
-                "deferred",
-            ],
-            "licenses": [
-                {
-                    "type": "MIT",
-                },
-            ],
-            "main": "index.js",
-            "maintainers": [
-                {
-                    "email": "bjoerge@gmail.com",
-                    "name": "bjoerge",
-                },
-            ],
-            "name": "repeat",
-            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It does not have any dependencies, but plays nicely with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
-            "scripts": {
-                "test": "make test",
-                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
-            },
-            "version": "0.0.1",
-        },
-    ),
-    (
-        major: 0,
-        minor: 0,
         bug: 6,
         prerelease: [],
         build: [],
@@ -624,6 +785,91 @@ Some(("repeat", Normal(
     (
         major: 1,
         minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.0.0.tgz",
+            shasum: Some("526296270720543058ace1b6ad7ed8719de48133"),
+            unpacked_size: Some(8057),
+            file_count: Some(10),
+            integrity: Some("sha512-TPZwpWLg9oUhfIa/YPrHbnEswawScNeIbP2/fHOleCak7xh4s8BWqOfM2gzHcm8VHh0BKgotNAqGyWhfZJag2Q=="),
+            signature0_sig: Some("MEYCIQCQd20X/8of6oaCWQRB0iKCi5VGJ8tCKaJMCRiWCb56lQIhAKqAyz903fhzseOHVLhAuh08JYpeipTeqQUmn+/MUivS"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJciYv+CRA9TVsSAnZWagAAQJIQAIVZgWKnE5uiRTOXP0q8\n8Rmh+P2jgJ8HAOARmsARbT06wXELAJQV4ayuwQGvaKU/f1t44mJb+x8EJDbt\nfJcQWgQCFWMwbxC3MxcvT6jQgzEJ7yAOJ35tTidIDFjlVxaioMPWa24SIzE+\nNggbpuZcfET032fwdbwiZmottuEpKOcF4zPNTjZeMITuzVefLPtezns3f3Yp\nf0aiRYq8IQoPnf+6KFJ6/Q2Sp5DQWShepB78GH4iswR8ppy+NdnF7iGfKXca\neRMp2ncSosN9IejCVSxAs7M3KMaqBdd436Cr9SDYzqMevWZnQbjse+RjO25W\nxUU7ch3xJXWwP4ACnJD3v4RfnjxfSuEnXWZBDjVGNW7luFaWBDs711dkaBpz\nVblZIQxNSv8u1DMSk+MToSbFIkMIYp3klIsBs2okud2RR/adr+0oIZVXpTsE\ncndWzjLcRPogYsOWy+spPLZ40xssmlAUbuVRD9hV9Of9DDexVrs7GtP/8CZb\nrvTetdWN2eFjG6bAByqzxc9FyYibIkv6CDHcc85VwNRN9W5jAVCBOVQyZdnF\npo46fi2c4BQazaYBFdtzKJPo2L/qZGHYFjutpoyV9LyTnadOtrubWPgOKRsI\nRV+fybtLPPlggzwr0LwKfdGaxKnTtp1Us1LgwMG1LNc3+dUDiJP5QNK5YZHK\nDup8\r\n=77jV\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/117/repeat.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/117/repeat",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "117",
+                    repo: "repeat",
+                ),
+            ),
+        )),
+        time: "2019-03-13T23:02:22.441Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "repeat@1.0.0",
+            "_nodeVersion": "10.15.1",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/repeat_1.0.0_1552518141573_0.7847316605962926",
+            },
+            "_npmUser": {
+                "email": "infinite4457234@gmail.com",
+                "name": "detach",
+            },
+            "_npmVersion": "6.4.1",
+            "author": {
+                "name": "detach",
+            },
+            "bugs": {
+                "url": "https://github.com/117/repeat/issues",
+            },
+            "description": "create repeating task chains",
+            "directories": {},
+            "gitHead": "4e7b713f0486ca9e42eef49accd0023e30ac7e95",
+            "homepage": "https://github.com/117/repeat#readme",
+            "keywords": [
+                "task",
+                "repeating",
+                "chain",
+                "tasks",
+                "scheduler",
+                "loop",
+                "repeat",
+            ],
+            "license": "MIT",
+            "main": "dist/src",
+            "maintainers": [
+                {
+                    "email": "infinite4457234@gmail.com",
+                    "name": "detach",
+                },
+            ],
+            "name": "repeat",
+            "scripts": {
+                "build": "tsc",
+                "test": "ava dist/test --verbose",
+            },
+            "version": "1.0.0",
+        },
+    ),
+    (
+        major: 1,
+        minor: 0,
         bug: 1,
         prerelease: [],
         build: [],
@@ -707,130 +953,173 @@ Some(("repeat", Normal(
         },
     ),
     (
-        major: 0,
+        major: 1,
+        minor: 0,
+        bug: 2,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.0.2.tgz",
+            shasum: Some("c6b73ba5b5839cc5e8078d236ef06806501d0cb0"),
+            unpacked_size: Some(8035),
+            file_count: Some(10),
+            integrity: Some("sha512-vAbVyK3+a017v+HQYFuRwKABLuLiosdTVbNIfZNlR+holbMevcEqEsVm4hnxt+ureAVomecvVmaAEgxL10Ok9Q=="),
+            signature0_sig: Some("MEUCIQDx7gAwfN58TGqEgXvUZatGcSXZ+lCEDsqoKMhKhEooVwIgKRjhuz8nKceSn5BpHO2H6dg3dRXT3EMuP+x32mycX/k="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJciY0mCRA9TVsSAnZWagAASSUP/0UXC6qh/ZtFHa2MxkJC\nFZWBtc5MGnJZ50HV7/wx5O8+D4ZankhpJ3P5r04dPSxSez3ObZU6wbNJlOJb\nih85I1/F9K2zKhDHblInp4npAmIV068iWt6zS/DY610ws0x3dUIuQFC3QOYF\n6mcYaxTYig5Zw59T1vpXy2ZpxYUB9s+1l5AoHdGPNlHRMU7QxGStBE5Ak8Dw\nPsrCGqe+TRVUHSdMBTyIxrEJvbT+qmFKX09iojIEtycfwFt6kOaW31kc4HeN\nuZER0IDSmlNIH2K6kIXkkRMfxnoqcxpS0izsYaZ+TWSvQwOCfOMh1PeGywvZ\n1W7kQSD5L+9HS81VVURMamhgO/hn5LUUmOLEOfdWq0dsxDnDPsAnNBJ9lgPU\nAC55d5yZQrkT6H2ewyF+StEVcqFy3PuNE+l/xF/J8ZqgUJdfDKLdWmGA1Vp9\nmEPM7HkgwRtT6fh8WvvL/cdB/hSEvuyYOWQnZopu0wE5FVJgYralYmlUL646\nIzLJtbCK9kdZcqh8ceviRYae6ZDsAcI2eZfqkRiZbzW/Jnc2vs1ovaFwSzDk\noL34siWPR7Hnx6rNfzwUBLszWyy1bw/v/AKH7nec//fFM7t+QyQ6N2IY4zYp\nEeQADaPqCa5pq5z+w0h077fNuELHSr6LhNK0SzUDpDvoXt5EqzFIIDpXQ/XZ\nSmdC\r\n=IWOR\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/117/repeat.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/117/repeat",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "117",
+                    repo: "repeat",
+                ),
+            ),
+        )),
+        time: "2019-03-13T23:07:18.572Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "repeat@1.0.2",
+            "_nodeVersion": "10.15.1",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/repeat_1.0.2_1552518438458_0.18081981614414544",
+            },
+            "_npmUser": {
+                "email": "infinite4457234@gmail.com",
+                "name": "detach",
+            },
+            "_npmVersion": "6.4.1",
+            "author": {
+                "name": "detach",
+            },
+            "bugs": {
+                "url": "https://github.com/117/repeat/issues",
+            },
+            "description": "create repeating task chains",
+            "directories": {},
+            "gitHead": "a2bcac4792e250a947b4aee48c024a7803fd962f",
+            "homepage": "https://github.com/117/repeat#readme",
+            "keywords": [
+                "task",
+                "repeating",
+                "chain",
+                "tasks",
+                "scheduler",
+                "loop",
+                "repeat",
+            ],
+            "license": "MIT",
+            "main": "dist/src",
+            "maintainers": [
+                {
+                    "email": "infinite4457234@gmail.com",
+                    "name": "detach",
+                },
+            ],
+            "name": "repeat",
+            "scripts": {
+                "build": "tsc",
+                "test": "ava dist/test --verbose",
+            },
+            "version": "1.0.2",
+        },
+    ),
+    (
+        major: 1,
         minor: 0,
         bug: 3,
         prerelease: [],
         build: [],
     ): (
-        prod_dependencies: [
-            ("dfrrd", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
-        dev_dependencies: [
-            ("coffee-script", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("expect.js", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jquery", (
-                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
-                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
-            )),
-            ("jsdom", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jshint", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("mocha", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("moment", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("node-minify", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("sinon", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
+        prod_dependencies: [],
+        dev_dependencies: [],
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.3.tgz",
-            shasum: Some("de96851e060638369446cbdfe587cbd49d08aa45"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: Some("sha512-0LXoryMgr9o6RwhD0ronpkj1vYEYOqBACrdo/+bl3236NSj2qQHdYhI1V+x6VWR0yWJoHfqnIk77xy3VSbrbJA=="),
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.0.3.tgz",
+            shasum: Some("04b18b497d3ce0d2a0708063dbe89d623dc4f7e1"),
+            unpacked_size: Some(8167),
+            file_count: Some(10),
+            integrity: Some("sha512-GdTYl4IORt4dJUN2NHQkrJlHdiNNYtfmExbvjKsnWTqQCErmweL6fmlaBwDkmADyJqXJoattQUHURfV1gOwTJg=="),
+            signature0_sig: Some("MEYCIQDNka2Az/I555J5TnaFt1XWNvieijcGACrqEJHGl4s5qQIhAJaNWrKKhAymJaFnZgKdAEXu9ygNabdrI3wo2/iE8gV/"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJciY8NCRA9TVsSAnZWagAA9M8P/Al+NUD5JUnW4M1+beKE\nlTVV5PWhn06Jr4SvzRh8GCTIV+CdBs7lIfwQou8cNTLQw87mfI1M4tDg+OkX\ngUroAyAchEl/usTuv7bA2/l0KVjCP2aNNKiR5Pe1VJT5v9sce5aXI2XEfZLL\naovWeBxbqG5qWcg4Wfw8kk22i31S0JCv1CnAq/8MqlgZLtgW8exj+1d28+BU\nEsKDnG9V4d8AJUcQZVhXSjGyoWeVO2emj90mQiySAprLgqACHH8jxAfJEES6\nAPqMGSfssmNfrJDRkYU0cYoMLf8VSOJdnDLt8XmAn0e54xt92ouz1bVZbEru\nSXn0xIV63QsRAFUbe3fvlaRHLeDI/QuYv2abXMm88Le5u+T4mo5XlN1bPYSA\nEjM1BqD8zf50pXRI2cC0zyEH61CawC7BDYMJHqBGzUa90AR9VO0Ri5ujsoBD\nBDilTIZ9X/98DzclgeOXGKcpBP72WfV7Rs7oJS0AuQXwjeAf5IL/vvyeRLoZ\nIiV0QTkb7IRMovIXSGoHCTp82EhR3IimkAjJXFkLaIfFvGCu54VAslX2SNfy\n9f33qGnZPp1mpKib2pKYmH4Q9bRAyRT5YrnQqGQ4aBGdHI+ut24gDjjFFhEQ\noExSoUh+rY9lU6XpfPyuaRKYzjwNpGYKd/kvt9iTrg8GbsbwClvPVcl4C+ep\nL5LM\r\n=ZGyw\r\n-----END PGP SIGNATURE-----\r\n"),
         ),
         repository: Some((
             raw: {
                 "type": "git",
-                "url": "https://github.com/bjoerge/repeat.js.git",
+                "url": "git+https://github.com/117/repeat.git",
             },
             info: (
-                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
+                cloneable_repo_url: "https://github.com/117/repeat",
                 cloneable_repo_dir: "",
                 vcs: Git,
                 host_info: Github(
-                    user: "bjoerge",
-                    repo: "repeat.js",
+                    user: "117",
+                    repo: "repeat",
                 ),
             ),
         )),
-        time: "2012-09-03T13:55:19.417Z",
+        time: "2019-03-13T23:15:24.620Z",
         extra_metadata: {
-            "_id": "repeat@0.0.3",
+            "_hasShrinkwrap": false,
+            "_id": "repeat@1.0.3",
+            "_nodeVersion": "10.15.1",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/repeat_1.0.3_1552518924486_0.3706374520540494",
+            },
+            "_npmUser": {
+                "email": "infinite4457234@gmail.com",
+                "name": "detach",
+            },
+            "_npmVersion": "6.4.1",
             "author": {
-                "email": "bjoerge@gmail.com",
-                "name": "Bjørge Næss",
+                "name": "detach",
             },
             "bugs": {
-                "url": "https://github.com/bjoerge/repeat.js/issues",
+                "url": "https://github.com/117/repeat/issues",
             },
-            "description": [
-                "Repeat.js is a javascript library that makes working with repeated actions pure joy by ",
-                "removing the need for setTimeout/setInterval and somewhat error prone timer references",
-            ],
+            "description": "create repeating task chains",
             "directories": {},
-            "homepage": "https://github.com/bjoerge/repeat.js",
+            "gitHead": "e1792653a77f4c6308637b214e330fb07bfe646b",
+            "homepage": "https://github.com/117/repeat#readme",
             "keywords": [
-                "Repetition",
-                "Repeat",
-                "Timed",
-                "Timer",
-                "setInterval",
-                "setTimeout",
-                "clearTimeout",
-                "asyncronous",
-                "promise",
-                "deferred",
+                "task",
+                "repeating",
+                "chain",
+                "tasks",
+                "scheduler",
+                "loop",
+                "repeat",
             ],
-            "licenses": [
-                {
-                    "type": "MIT",
-                },
-            ],
-            "main": "index.js",
+            "license": "MIT",
+            "main": "dist/src",
             "maintainers": [
                 {
-                    "email": "bjoerge@gmail.com",
-                    "name": "bjoerge",
+                    "email": "infinite4457234@gmail.com",
+                    "name": "detach",
                 },
             ],
             "name": "repeat",
-            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It can be used standalone or with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
             "scripts": {
-                "test": "make test",
-                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
+                "build": "tsc",
+                "test": "ava dist/test --verbose",
             },
-            "version": "0.0.3",
+            "version": "1.0.3",
         },
     ),
     (
@@ -940,433 +1229,6 @@ Some(("repeat", Normal(
                 "test": "ava dist/test --verbose",
             },
             "version": "1.1.0",
-        },
-    ),
-    (
-        major: 1,
-        minor: 0,
-        bug: 2,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.0.2.tgz",
-            shasum: Some("c6b73ba5b5839cc5e8078d236ef06806501d0cb0"),
-            unpacked_size: Some(8035),
-            file_count: Some(10),
-            integrity: Some("sha512-vAbVyK3+a017v+HQYFuRwKABLuLiosdTVbNIfZNlR+holbMevcEqEsVm4hnxt+ureAVomecvVmaAEgxL10Ok9Q=="),
-            signature0_sig: Some("MEUCIQDx7gAwfN58TGqEgXvUZatGcSXZ+lCEDsqoKMhKhEooVwIgKRjhuz8nKceSn5BpHO2H6dg3dRXT3EMuP+x32mycX/k="),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJciY0mCRA9TVsSAnZWagAASSUP/0UXC6qh/ZtFHa2MxkJC\nFZWBtc5MGnJZ50HV7/wx5O8+D4ZankhpJ3P5r04dPSxSez3ObZU6wbNJlOJb\nih85I1/F9K2zKhDHblInp4npAmIV068iWt6zS/DY610ws0x3dUIuQFC3QOYF\n6mcYaxTYig5Zw59T1vpXy2ZpxYUB9s+1l5AoHdGPNlHRMU7QxGStBE5Ak8Dw\nPsrCGqe+TRVUHSdMBTyIxrEJvbT+qmFKX09iojIEtycfwFt6kOaW31kc4HeN\nuZER0IDSmlNIH2K6kIXkkRMfxnoqcxpS0izsYaZ+TWSvQwOCfOMh1PeGywvZ\n1W7kQSD5L+9HS81VVURMamhgO/hn5LUUmOLEOfdWq0dsxDnDPsAnNBJ9lgPU\nAC55d5yZQrkT6H2ewyF+StEVcqFy3PuNE+l/xF/J8ZqgUJdfDKLdWmGA1Vp9\nmEPM7HkgwRtT6fh8WvvL/cdB/hSEvuyYOWQnZopu0wE5FVJgYralYmlUL646\nIzLJtbCK9kdZcqh8ceviRYae6ZDsAcI2eZfqkRiZbzW/Jnc2vs1ovaFwSzDk\noL34siWPR7Hnx6rNfzwUBLszWyy1bw/v/AKH7nec//fFM7t+QyQ6N2IY4zYp\nEeQADaPqCa5pq5z+w0h077fNuELHSr6LhNK0SzUDpDvoXt5EqzFIIDpXQ/XZ\nSmdC\r\n=IWOR\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/117/repeat.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/117/repeat",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "117",
-                    repo: "repeat",
-                ),
-            ),
-        )),
-        time: "2019-03-13T23:07:18.572Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "repeat@1.0.2",
-            "_nodeVersion": "10.15.1",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_1.0.2_1552518438458_0.18081981614414544",
-            },
-            "_npmUser": {
-                "email": "infinite4457234@gmail.com",
-                "name": "detach",
-            },
-            "_npmVersion": "6.4.1",
-            "author": {
-                "name": "detach",
-            },
-            "bugs": {
-                "url": "https://github.com/117/repeat/issues",
-            },
-            "description": "create repeating task chains",
-            "directories": {},
-            "gitHead": "a2bcac4792e250a947b4aee48c024a7803fd962f",
-            "homepage": "https://github.com/117/repeat#readme",
-            "keywords": [
-                "task",
-                "repeating",
-                "chain",
-                "tasks",
-                "scheduler",
-                "loop",
-                "repeat",
-            ],
-            "license": "MIT",
-            "main": "dist/src",
-            "maintainers": [
-                {
-                    "email": "infinite4457234@gmail.com",
-                    "name": "detach",
-                },
-            ],
-            "name": "repeat",
-            "scripts": {
-                "build": "tsc",
-                "test": "ava dist/test --verbose",
-            },
-            "version": "1.0.2",
-        },
-    ),
-    (
-        major: 1,
-        minor: 2,
-        bug: 0,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.2.0.tgz",
-            shasum: Some("5dcec58c7affa8f6556223943c5107513fa8874a"),
-            unpacked_size: Some(8859),
-            file_count: Some(16),
-            integrity: Some("sha512-3LdEPMV84LJEAD7pv4Rjvpxqd3MKdCjokClYAUz9AlFLLzyWt8rafcAHpX5WvNF5Lw+IFbWXutbf3tQ4YomtRg=="),
-            signature0_sig: Some("MEYCIQCx9v9UjYwLOmrPmI+pIiatqWRWmdTMyeWheQ0cn9Pu2gIhAMoWDsxR75iLdRiFFAL3cxoz7ZHrdbezAJQzDy2TqQjt"),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJdJJiPCRA9TVsSAnZWagAAp6UP/2adip27GmluwuCe3Ugb\ndu7FqfmaM0+N3ZAP88193oicn8v9shB8QVdWR37tPZzHa0hiCXKrgaqbTBar\nDbhBO3gUDOKU+m7E+7W3t6rE5zRSW/tRn1+5htF/vr5rC+esVE1rWaJ0jtwQ\nsIK5KwSw62/+jGeE7+QD12NdbYg0owSYKzyRNHEuqFenwyVsc31OUtFicIiq\nABnVKmh/g+bBwr6ubV1tBHTWUAtbZc7HQfW6y1aw1CGPTkRnsTGV9PIncwBF\nE9i2FtaUmibM1HJ4gg2BbTWd/THnZHxgNOOeqNSCPP3D82jpRxpUMh1V3G++\nhRtEimcp3RibbVGoup6GylquHRXpETx7dX2yf2MbEyeM2xm9DZwYJyxPqV5O\nW0mA0L4hwUTqXKnWjIQf+8ZjEQC8OrPx4xeRHPj71o3qE8zYUT2kFkmTq1UO\nlKfN9v7oPQEGo6m4isNSccDr27dW5R1Dff/ppbEqad338Gqa5sl6QSxEq0Z+\n8LOpcuC37at7q5+YxCcg5AAM3Rz993CUA5NeL8L+gkwNdToDL12ZdX0bweId\n7/x2qdH3L5S1aMp/wOyxwCdiIXAYapwJvsfZ2RTMQ0CZea+5dQEs+j1Afack\nIPRez80fx5+jAdgc+RB+jdkK/2mATw/0OZi0UvlaS2NYKhnOAbn9rb+azkDJ\nmiwe\r\n=yM0t\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/117/repeat.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/117/repeat",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "117",
-                    repo: "repeat",
-                ),
-            ),
-        )),
-        time: "2019-07-09T13:37:18.862Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "repeat@1.2.0",
-            "_nodeVersion": "10.15.1",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_1.2.0_1562679438727_0.17201183766648276",
-            },
-            "_npmUser": {
-                "email": "hello@xist.dev",
-                "name": "xist",
-            },
-            "_npmVersion": "6.10.0",
-            "author": {
-                "name": "117",
-            },
-            "bugs": {
-                "url": "https://github.com/117/repeat/issues",
-            },
-            "description": "create repeating task chains",
-            "directories": {},
-            "gitHead": "5f67bfe9305e4d0a5f182eddaf6edc5a66d7f3d1",
-            "homepage": "https://github.com/117/repeat#readme",
-            "keywords": [
-                "task",
-                "repeating",
-                "chain",
-                "tasks",
-                "scheduler",
-                "loop",
-                "repeat",
-            ],
-            "license": "MIT",
-            "main": "dist/src",
-            "maintainers": [
-                {
-                    "email": "hello@xist.dev",
-                    "name": "xist",
-                },
-            ],
-            "name": "repeat",
-            "scripts": {
-                "build": "tsc",
-                "test": "ava dist/test --verbose",
-            },
-            "version": "1.2.0",
-        },
-    ),
-    (
-        major: 2,
-        minor: 0,
-        bug: 1,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [
-            ("ava", (
-                raw: "^3.13.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 13,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("rimraf", (
-                raw: "^3.0.2",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 0,
-                            bug: 2,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-2.0.1.tgz",
-            shasum: Some("a308fb786c7ca78511faa04ff2303e9a0dcb6420"),
-            unpacked_size: Some(11109),
-            file_count: Some(14),
-            integrity: Some("sha512-zI3sD0AwF64WyttKs/7ZfTmHUhzSBCItehPzid5uKxHvCsYhPRw1r1ljqKzqUhx0+AQ6SsAeZ2Yez9cFIJJw9A=="),
-            signature0_sig: Some("MEUCIQCN7bf/n3xc3dxmIgk4IRgfVmidCRFex+zCvb7LRPraDQIgBHRPyKneNNLLnEdaNMVLD2NQFjqJ6LMSwoaI/Y91y1c="),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfqy/TCRA9TVsSAnZWagAAD54P/j6fQ3QmHE+nth/TUitr\nJ1P+UVNQOXPaXz7Z8TOGfboA2sbn3rdV1giZe/mIl4kPT3SSDFc0PTDKf1wk\nWfHmKzL0oapKMuULkbS2RyN9zXnJXucAN4Gcd0goZbLTEt4fLlFtsomvqKGs\nm3Py/okjLJA3O5GGXxZ5RvNmUE5Fy/tD4/RMhCY3UctsgKZ+oJzz/9dv3zp2\nuUIAY6/nY3P0Ljk6kWO14NSZ+mo2aL9sAxq6IFQbIx0K97icxt4Qtpwud0F2\nMVFQxBgGt1qOxC1vISx9WDBE01AmcX/5DgCOOCY9hMMdkCY2i0Q+zXWu0z8S\nKV9j7SmMU3LzwO9pjR4WOpYL0lyq9xzxIixA8LJV2IyGAcOTfKZnqoUHyciY\n722KnV1vz1aF0tEoST57DvO4ufDovdcr4wBFtFH1SedwmOOXHDBfw4SNoj9+\nDwO3sWAF1e36ByyUhqLSDQhwZNEqoqO0FpnunDFMcEC9a0l8nR6TJSdHBs2D\noN2PB1dZvRN5hKPzY1CU32FMop9qQeQIANTwMiskgKEV3zxG7ypKSpdsXSzF\nBUes6hDg0Xbb9u7tNHriDoLR5Dh2mz9JYgvKfHXwRGluMJAdLQzqszWB41Xo\nlAwCxjR0OmN0Fgce8OYDulveY8ybW1XrtUAObsFx1bascPclLaoq/LrhXurm\nzDNP\r\n=iP1Q\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/117/repeat.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/117/repeat",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "117",
-                    repo: "repeat",
-                ),
-            ),
-        )),
-        time: "2020-11-11T00:26:58.815Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "repeat@2.0.1",
-            "_nodeVersion": "14.7.0",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_2.0.1_1605054418664_0.7518200850717007",
-            },
-            "_npmUser": {
-                "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
-                "name": "master-chief",
-            },
-            "_npmVersion": "6.14.8",
-            "author": {
-                "name": "117",
-            },
-            "bugs": {
-                "url": "https://github.com/117/repeat/issues",
-            },
-            "description": "create repeating task chains",
-            "directories": {},
-            "gitHead": "05634a23cabf493e3237feeb98d29ade05670760",
-            "homepage": "https://github.com/117/repeat#readme",
-            "keywords": [
-                "task",
-                "repeating",
-                "chain",
-                "tasks",
-                "scheduler",
-                "loop",
-                "repeat",
-            ],
-            "license": "ISC",
-            "main": "dist/src/index.js",
-            "maintainers": [
-                {
-                    "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
-                    "name": "master-chief",
-                },
-            ],
-            "name": "repeat",
-            "scripts": {
-                "build": "rimraf dist types && tsc && npm run test",
-                "test": "ava dist/test/** --verbose",
-            },
-            "types": "dist/src/index.d.ts",
-            "version": "2.0.1",
-        },
-    ),
-    (
-        major: 0,
-        minor: 0,
-        bug: 4,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("dfrrd", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
-        dev_dependencies: [
-            ("coffee-script", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("expect.js", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jquery", (
-                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
-                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
-            )),
-            ("jsdom", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jshint", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("mocha", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("moment", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("node-minify", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("sinon", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.4.tgz",
-            shasum: Some("382685667ecb26a3bbaecae7aaffae1c2bb4bda3"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: Some("sha512-EXxoeoTTIb/BXm4UITMGGvzhPOruuC7zlxaCz2wJjM0C2QJwxy2MwsdALoId2J+jlX4FBWPXaalxUeQncqu3bA=="),
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "https://github.com/bjoerge/repeat.js.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "bjoerge",
-                    repo: "repeat.js",
-                ),
-            ),
-        )),
-        time: "2012-09-04T11:25:54.623Z",
-        extra_metadata: {
-            "_id": "repeat@0.0.4",
-            "author": {
-                "email": "bjoerge@gmail.com",
-                "name": "Bjørge Næss",
-            },
-            "bugs": {
-                "url": "https://github.com/bjoerge/repeat.js/issues",
-            },
-            "description": "Repeat.js is a javascript library that makes working with repeated actions pure joy by removing the need for setTimeout/setInterval and somewhat error prone timer references",
-            "directories": {},
-            "homepage": "https://github.com/bjoerge/repeat.js",
-            "keywords": [
-                "Repetition",
-                "Repeat",
-                "Timed",
-                "Timer",
-                "setInterval",
-                "setTimeout",
-                "clearTimeout",
-                "asyncronous",
-                "promise",
-                "deferred",
-            ],
-            "licenses": [
-                {
-                    "type": "MIT",
-                },
-            ],
-            "main": "index.js",
-            "maintainers": [
-                {
-                    "email": "bjoerge@gmail.com",
-                    "name": "bjoerge",
-                },
-            ],
-            "name": "repeat",
-            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It can be used standalone or with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
-            "scripts": {
-                "test": "make test",
-                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
-            },
-            "version": "0.0.4",
         },
     ),
     (
@@ -1481,6 +1343,224 @@ Some(("repeat", Normal(
     (
         major: 1,
         minor: 1,
+        bug: 2,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("dormant", (
+                raw: "^3.0.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.1.2.tgz",
+            shasum: Some("9925c84270674623dbfac2e9a807358dcd34f9ef"),
+            unpacked_size: Some(9118),
+            file_count: Some(16),
+            integrity: Some("sha512-XdQm7jz/M/yb8mDgQvxIdB7pdOrL8oN09hMAPc/zgXk65ISCX4SOndE8BvfnopnVUJOSgm+agoFqKL+os2IMjg=="),
+            signature0_sig: Some("MEUCIQDKfKFr3zZEsDhLt1vnaG/rYkOE61qLIVdk0iTEZGn2/wIgb+k9IUoAIzsafFQAalCgR2QQVmmwnuS+6ZhIdxnjZgc="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJckIaqCRA9TVsSAnZWagAA+EQP/0/7ll45FDrBevNESZYo\ngZBAYCBkBCb9UNuDKG+I0JvcAQhnXV/PJhijOFKO7iHBeknQdmNQ5EGQdaK7\nBk4JO27IZxQYzsz/ULgtiSqOWFxLMsswnFMu8it5fapvgjP6vD35PqSZW1AO\n+juXAujSrcPTNSFxX8HKIm3j9NZ3thTQYTqLyml4Gg7qdxNEmPQk84moMnXe\ninrOE5d/9fL2nBNzueZKLVdFL3UeAwK6kxEB5uvCj8Yq6DpAsUkCBwzMDG5R\nSAmKyVwa5RPUfIhR3VhbrNeJrAQCEVyhNRaZAbVrp7WSKqAdOwAvLLv7Qcf+\nQW5ti6zBRgQGmqSXnwCw7V1IajWFyq2W6IL62ZQudzAVfFy7QOZ2PmKxN5hp\nKfzo4i/FVSS5GP8E4whN48qkgS0FL4x5wLQt3cyeP6wBjDxRQGhAuJ+mF8oM\nS2KHxnk+8tX9adHLjp4FyE5fGHw0YbxBMbiKhhotoVdQWhDePGncLkK830oZ\nxBuYa5Af04c5e8VAj/s/83cIHEP2Re41Lid39GbgCy1kcvc8jTJ8AEnlm0d6\n+ViBXc3Avovxio12jbWVAJhcqXKn/D1RyOnHeJabREAgGzoFhv7oYCZIMzYI\nMi599sXVO4az4u4LCDXxQpyi+FVrhlA2qQs7658GnTENxaBckrfElyzLrJ7M\nshG8\r\n=/F2t\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/xist/repeat.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/xist/repeat",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "xist",
+                    repo: "repeat",
+                ),
+            ),
+        )),
+        time: "2019-03-19T06:05:30.034Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "repeat@1.1.2",
+            "_nodeVersion": "10.15.1",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/repeat_1.1.2_1552975529816_0.07427621890705094",
+            },
+            "_npmUser": {
+                "email": "hello@xist.dev",
+                "name": "xist",
+            },
+            "_npmVersion": "6.9.0",
+            "author": {
+                "name": "xist",
+            },
+            "bugs": {
+                "url": "https://github.com/xist/repeat/issues",
+            },
+            "description": "create repeating task chains",
+            "directories": {},
+            "gitHead": "86b33646e504abb71c91494f05537a2d6f1c7a32",
+            "homepage": "https://github.com/xist/repeat#readme",
+            "keywords": [
+                "task",
+                "repeating",
+                "chain",
+                "tasks",
+                "scheduler",
+                "loop",
+                "repeat",
+            ],
+            "license": "MIT",
+            "main": "dist/src",
+            "maintainers": [
+                {
+                    "email": "hello@xist.dev",
+                    "name": "xist",
+                },
+            ],
+            "name": "repeat",
+            "scripts": {
+                "build": "tsc",
+                "test": "ava dist/test --verbose",
+            },
+            "version": "1.1.2",
+        },
+    ),
+    (
+        major: 1,
+        minor: 1,
+        bug: 3,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("dormant", (
+                raw: "^3.0.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.1.3.tgz",
+            shasum: Some("fea0c5cea8fe845813c538bc7a65fb1543652a6e"),
+            unpacked_size: Some(9209),
+            file_count: Some(16),
+            integrity: Some("sha512-Vo28LAfpVnFmwBPVJq8sSPROzYkCNStetZ0M3h91KaRv8s8p85vEw645Pndx3pG4q+SlAkc5IJE6JRT2vaCB1A=="),
+            signature0_sig: Some("MEUCIAx4Z4BHBGNCIbHlfuSfAANDyhWQcLDqbRLoqtOIEbKaAiEA2B28R+d/PtFzi2RaFyAp6xVpmkYR0Yf1QX/JmZ4wGSQ="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcqI3ZCRA9TVsSAnZWagAACiYQAJQ3RlS/7bmEmhgyAiEa\nKrL5XRdUQL5KLc+XnnrBeeFi1u+ZTWjhx5we89F5BGKfxtgx06waf/xSWlOT\naFtXDsrTHE473qg3WQyLDOTwSiuTYuimxQGiAMqdOCor8lpF5DVnhXXVA1ry\nLeGUxMwO7DrPErqytrzZTFyUwYESYl6ijxIcRf9ze0IKUXxc4PwL9eDdwsyb\nhvuc5rmZiM9Kb3diSL1r81yzJAR0EM3gjsK7BbL8BOwGfdHYMLhAR4Do+XIm\ncKq3al6gBncwu6GmnfFyaNkzk8adFeU0C5lXXZvN+zlAd+6UbfbhHxJ2/7Pn\nvFTxFyGN7zorANxxfHcyfbyvenywy4R0bw43aTMQFY9Me3VUyZtQWd8piEwQ\nfSBR4dvX21yaz8ZoXKpu5ZLTFES+FcHET77PocLBgBJFo4ZUocenjxanhliv\nH7DaIUzmS4sInDLgHXWNCb4AKXrhL8eTfapHAf+1y9s05X/bUPlreKIJzpVH\nv2RP9Q9EJWs0chAr6DGm8fuUPIvpSusTsTsBjXmUmRdRtmpUuWxJokRL0hiR\n96XFfMrGJA2MGQAuftVfqpwyC/5cuaTUZvIlYnaSMV13/0ru15sghrBnnKPm\nJ0TdmiVp3+SsZWsFKZr7jC3ZSep2ZsCGRqrWw3HDSp/NYRzaIWAujiVhJpBU\nB5a5\r\n=Al+s\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/xist/repeat.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/xist/repeat",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "xist",
+                    repo: "repeat",
+                ),
+            ),
+        )),
+        time: "2019-04-06T11:30:32.839Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "repeat@1.1.3",
+            "_nodeVersion": "10.15.1",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/repeat_1.1.3_1554550232614_0.8387238046374561",
+            },
+            "_npmUser": {
+                "email": "hello@xist.dev",
+                "name": "xist",
+            },
+            "_npmVersion": "6.9.0",
+            "author": {
+                "name": "xist",
+            },
+            "bugs": {
+                "url": "https://github.com/xist/repeat/issues",
+            },
+            "description": "create repeating task chains",
+            "directories": {},
+            "gitHead": "c1a286a3c5810e05f509d9981664621ab70c823f",
+            "homepage": "https://github.com/xist/repeat#readme",
+            "keywords": [
+                "task",
+                "repeating",
+                "chain",
+                "tasks",
+                "scheduler",
+                "loop",
+                "repeat",
+            ],
+            "license": "MIT",
+            "main": "dist/src",
+            "maintainers": [
+                {
+                    "email": "hello@xist.dev",
+                    "name": "xist",
+                },
+            ],
+            "name": "repeat",
+            "scripts": {
+                "build": "tsc",
+                "test": "ava dist/test --verbose",
+            },
+            "version": "1.1.3",
+        },
+    ),
+    (
+        major: 1,
+        minor: 1,
         bug: 4,
         prerelease: [],
         build: [],
@@ -1588,268 +1668,8 @@ Some(("repeat", Normal(
         },
     ),
     (
-        major: 2,
-        minor: 0,
-        bug: 2,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [
-            ("ava", (
-                raw: "^3.13.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 13,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("rimraf", (
-                raw: "^3.0.2",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 0,
-                            bug: 2,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-2.0.2.tgz",
-            shasum: Some("824559c510a2e30dada3d1502edc2107c29eba68"),
-            unpacked_size: Some(11086),
-            file_count: Some(14),
-            integrity: Some("sha512-x2ssBu8B85Mglokqoj5ROLVC/mG+engPig9FimZdClpcNtrYD942NCTLHX7cNc0v/okC/ZkTEnwTQ0JCtajfTQ=="),
-            signature0_sig: Some("MEUCIQDjJJDdAnEtF+Gkh8w5EktdSfKHSl8RVp2FRpcl2x2pXAIgVrkEYjjTPIRYCRDbbzbAUjn/82gKBF8Arsbo7vkD+6g="),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfqzAhCRA9TVsSAnZWagAAZJAQAJ9GFequDLTve2Cm4YV2\nzk9gxqBehgKEqaQxns5Z9gj9KWLSYtPw3T6eC1ZBOT4pXeX/hqZjsUZs8N2m\nQ8xD60JfbiRkhZ7eUP/OHmapvSyG2YHik0xK98H5mFuZ9w++B2syxXnGqaN4\n0cdZH7U4pIGaGEg2k6kNOVu8I24iekzeBRfC8FG5FwpbCC9S+BEh18K4j2xQ\nm3Hn7xd9BUWpYWU4OfQdwMM2so1tuiZs6VwJ34+Stly5W6C2LRGtZu/RfBXj\nqloWQj/qX++et/IX6H1yqrludc2bdcZO3CHIx/207+DYhf6T+PXmZ7VPLWxi\n4nHqT4FkJ4zKegE3xWRlb496Jw4Vmh44IUW/MkCMwmhwAS2icsRDdvhKizfB\nsFVR6VojqQQsdO2CSPkqNES0QklW1nlLJH8F9OCwM1K7Q1pRlJyPIsf4RqtH\nY67Dcfv5wRNKCrrqaYJDjVh5gzpUBuqYGtKBrxpv46021RuagRi1aGQ901CB\nHbyEEJVqz1utOr5juQvXq31gpgEf37xeFKR5WTH236Nseh5EYqBv7JmJH32L\nhTEPZHrTnh2ypo0OmePjowxuuyNSQmzvCmaNx7NiCh2gb7FfJ9KVgMCgwlYw\nhBgxmrcSK+1Og2hf5E4RmBgbQ4tsUcctKtjrTIpOylI8sSy6FcKcV6zZxQwu\nduDz\r\n=W+gM\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/117/repeat.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/117/repeat",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "117",
-                    repo: "repeat",
-                ),
-            ),
-        )),
-        time: "2020-11-11T00:28:16.722Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "repeat@2.0.2",
-            "_nodeVersion": "14.7.0",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_2.0.2_1605054496564_0.19145395522849862",
-            },
-            "_npmUser": {
-                "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
-                "name": "master-chief",
-            },
-            "_npmVersion": "6.14.8",
-            "author": {
-                "name": "117",
-            },
-            "bugs": {
-                "url": "https://github.com/117/repeat/issues",
-            },
-            "description": "create repeating task chains",
-            "directories": {},
-            "gitHead": "53975907b45db99ba1335e660e3d0921cdd831dc",
-            "homepage": "https://github.com/117/repeat#readme",
-            "keywords": [
-                "task",
-                "repeating",
-                "chain",
-                "tasks",
-                "scheduler",
-                "loop",
-                "repeat",
-            ],
-            "license": "ISC",
-            "main": "dist/src/index.js",
-            "maintainers": [
-                {
-                    "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
-                    "name": "master-chief",
-                },
-            ],
-            "name": "repeat",
-            "scripts": {
-                "build": "rimraf dist types && tsc && npm run test",
-                "test": "ava dist/test/** --verbose",
-            },
-            "types": "dist/src/index.d.ts",
-            "version": "2.0.2",
-        },
-    ),
-    (
-        major: 0,
-        minor: 0,
-        bug: 2,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("dfrrd", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
-        dev_dependencies: [
-            ("coffee-script", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("expect.js", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jquery", (
-                raw: "git://github.com/bjoerge/jquery-node.git#v1.8.0",
-                parsed: Git("git://github.com/bjoerge/jquery-node.git#v1.8.0"),
-            )),
-            ("jsdom", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("jshint", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("mocha", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("moment", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("node-minify", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-            ("sinon", (
-                raw: "latest",
-                parsed: Tag("latest"),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-0.0.2.tgz",
-            shasum: Some("273705cb79a9e6727d2b7ac8e55b119916563276"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: Some("sha512-QjjUpID+f5YeDe5KWammOc1LogUuIMgQERKkQ2CGRH4EB0CgskzkKT4C9G5kSNBoAHfYvZdwXQCCE3orLpETNg=="),
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "https://github.com/bjoerge/repeat.js.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/bjoerge/repeat.js",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "bjoerge",
-                    repo: "repeat.js",
-                ),
-            ),
-        )),
-        time: "2012-09-03T11:12:30.397Z",
-        extra_metadata: {
-            "_id": "repeat@0.0.2",
-            "author": {
-                "email": "bjoerge@gmail.com",
-                "name": "Bjørge Næss",
-            },
-            "bugs": {
-                "url": "https://github.com/bjoerge/repeat.js/issues",
-            },
-            "description": [
-                "Repeat.js is a javascript library that makes working with repeated actions pure joy by ",
-                "removing the need for setTimeout/setInterval and somewhat error prone timer references",
-            ],
-            "directories": {},
-            "homepage": "https://github.com/bjoerge/repeat.js",
-            "keywords": [
-                "Repetition",
-                "Repeat",
-                "Timed",
-                "Timer",
-                "setInterval",
-                "setTimeout",
-                "clearTimeout",
-                "asyncronous",
-                "promise",
-                "deferred",
-            ],
-            "licenses": [
-                {
-                    "type": "MIT",
-                },
-            ],
-            "main": "index.js",
-            "maintainers": [
-                {
-                    "email": "bjoerge@gmail.com",
-                    "name": "bjoerge",
-                },
-            ],
-            "name": "repeat",
-            "readme": "<pre>\n ____                                     __\n/\\  _`\\                                  /\\ \\__       __\n\\ \\ \\L\\ \\     __   _____      __     __  \\ \\ ,_\\     /\\_\\    ____\n \\ \\ ,  /   /\'__`\\/\\ \'__`\\  /\'__`\\ /\'__`\\ \\ \\ \\/     \\/\\ \\  /\',__\\\n  \\ \\ \\\\ \\ /\\  __/\\ \\ \\L\\ \\/\\  __//\\ \\L\\.\\_\\ \\ \\_  __ \\ \\ \\/\\__, `\\\n   \\ \\_\\ \\_\\ \\____\\\\ \\ ,__/\\ \\____\\ \\__/.\\_\\\\ \\__\\/\\_\\_\\ \\ \\/\\____/\n    \\/_/\\/ /\\/____/ \\ \\ \\/  \\/____/\\/__/\\/_/ \\/__/\\/_/\\ \\_\\ \\/___/\n                     \\ \\_\\                           \\ \\____/\n                      \\/_/                            \\/___/\n\nTimed actions in JavaScript simplified\n</pre>\n\n# Summary\nRepeat.js is a tiny (< 2kb minified and gzipped) javascript library for timing function calls.\n\n- It abstracts away the need for dealing with setTimeout and setInterval, and the somewhat error prone timer and interval IDs\n\n- It provides an simple, intuitive and flexible chained api.\n\n- It is ideal for polling, performing asynchronous updates, doing timed UI updates or executing expensive tasks asynchronously .\n\n- It can be used standalone or with jQuery.\n\n- It is built on top of a Deferred/promise implemetation for even greater flexibility\n\n- It is tested in IE 7-9, Firefox 10, Chrome 16, Safari 5.1 and Opera 11.61.\n\n## Examples\n\n### Basic example\n```javascript\nfunction sayHello() {\n  console.log(\"Hello world!\");\n};\n\nRepeat(sayHello).every(500, \'ms\').for(2, \'minutes\').start.in(5, \'sec\');\n// -> Now wait for 5 seconds and keep a watchful eye on the javascript console\n```\n\n### Live display of relative time with jQuery and moment.js\n\n```javascript\njQuery(function() {\n  (function mockDOM() { // This is just for creating some example DOM elements\n    var ul = jQuery(\"<ul></ul>\"), now = (new Date().getTime()), elem_count = 100;\n    while (elem_count--) {;\n      ul.append(jQuery(\'<li class=\"live-time\" data-timestamp=\"\'+\n         (now+(Math.random()*100000)*(Math.random() > 0.5 ? -1 : 1)) +\n        \'\"></li>\'))\n    }\n    ul.appendTo(jQuery(\"body\")); \n  }());\n\n  var elems = jQuery(\".live-time\");\n  Repeat(function() {\n    elems.each(function(i, elem) {\n      elem = jQuery(elem);\n      var time = moment(elem.data(\"timestamp\"));\n      elem.html(\'Displaying \'+ time.format(\"dddd, MMMM Do YYYY, h:mm:ss a\") +\' as \"<b>\'+ time.fromNow()+\'</b>\"\');\n    });\n  }).every(1000, \'ms\').start.now();\n});\n```\n\n### Asynchronous polling with jQuery \n\nPolling a server every second, but wait for the request to complete before proceeding\n\n```javascript\n\nRepeat(function(done) {\n         jQuery.ajax({\n           url: \'http://www.example.com\',\n           success: function(data) {console.log(data);},\n           complete: function() {\n             done(); // will wait for this to be called before continuing\n           }\n         });\n       })\n       .every(1000, \'ms\')\n       .for(2, \'minutes\')\n       .start.in(3, \'secs\');\n```\n\n### Monitoring changes in an objects\' state with console.monitor\n\nAdd a function to the console object, that allows for monitoring a property of any object.\n\n```javascript\nconsole.monitor = function(object, property) {\n  var last_value = object[property];\n  return Repeat(function() {\n    var current_value = object[property];\n    if (last_value !== current_value) {\n      console.log(\'Property changed from \"\'+last_value+\'\" to \"\'+current_value+\'\"!\');\n      last_value = current_value;\n    }\n    else {\n      console.log(\"No change\");\n    }\n  });\n};\n\nvar myObject = {someProperty: \"Something\"};\nconsole.monitor(myObject, \'someProperty\').every(500, \'ms\').for(10, \'seconds\').start();\nsetTimeout(function() {myObject.someProperty = \"Changed value\"}, 3000);\n```\n\n### Execute expensive operations asynchronously\nA common trick in order to keep the UI responsive while executing expensive operations\nis to split up the parts of the operation into smaller subtasks that can be executed asynchronously using timers.\n\nThe illustrating example from Nicholas C. Zakas\' High Performance Javascript (loc. 3215) could be rewritten like this:\n\n```javascript\nfunction saveDocument(id) {\n  var tasks = [openDocument, writeText, closeDocument, updateUI]; // these are the expensive functions\n  return Repeat(function() {\n      var task = tasks.shift();\n      task(id);\n    })\n    .async().until(function() {\n      return tasks.length == 0;\n    }).start.now();        \n}\n```\n\n# Promise support\nThe functions `start()` `now()` `in()` and `wait()` will all return a read-only [Promise](http://en.wikipedia.org/wiki/Futures_and_promises) instance.\n\n- If used with jQuery, it will return an instance of jQuery\'s [Promise](http://api.jquery.com/Types/#Promise).\n- If used standalone, a [minimalistic](https://github.com/bjoerge/dfrrd.js) implementation of the CommonJS [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) spec will be used.\n\nBasic example:\n\n```javascript\nRepeat(function() { console.log(\"W00t\"); })\n  .every(1, \'s\')\n  .for(20, \'s\')\n  .start.now()\n  .then(function() {\n    console.log(\"I\'m done w00t\'n\");\n  });\n```\n\n## Error handling and promise callbacks\n\n- Any errors thrown in the task function will cause the promise to be rejected with the error object as value\n- The promise\'s progress listeners be notified after each task invocation with the returned value as parameter\n- When done, the promise will be resolved with an array of the tasks return value for each invocation\n\nThe following example illustrates use of success/progress/error listeners:\n\n```javascript\nvar onSuccess = function(results) {\n  console.log(\"All good\", results);\n};\nvar onFailure = function(exception) {\n  console.error(\"Error\", exception);\n};\nvar onProgress = function(result) {\n  console.log(\"Progress: \", result);\n};\nRepeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(10, \'s\')\n  .start()\n  .then(onSuccess, onFailure, onProgress);\n```\n\nIf used standalone or with jQuery, the promise object also provides more convenient `progress` and `fail` functions for adding callbacks in separate steps.\nAdditionaly, there\'s also an `always` method to add callback functions for whenever the promise is either resolved or rejected.\n\nThe above example using the jQuery or standalone version could be written like this:\n\n```javascript\nvar repeat = Repeat(function() {\n        var v = Math.random();\n        if (v > 0.8) throw new Error(\"Ouch!\");\n        return v;\n    })\n  .every(1, \'s\')\n  .for(5, \'s\')\n  .start();\n\nrepeat.then(function() { console.log(\'Resolved!\'); });\nrepeat.fail(function() { console.log(\'Rejected!\'); });\nrepeat.always(function() { console.log(\'Done! (either resolved or rejected)\'); });\n```\n\n## Compatibility notes\n\n- If you are targeting older browsers, you probably want to use any of the ECMAScript 5 polyfill libraries\nlisted here: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills (in particular\n [ddr-ecma5](http://code.google.com/p/ddr-ecma5/), [augmentjs](http://augmentjs.com/) or\n  [es5-shim](https://github.com/kriskowal/es5-shim/))\n\n- Some older browsers and environments (IE 6 - 8) doesn\'t support using reserved words\nas property names (and may throw an error when referencing functions like \"for\", \"while\" and \"in\"),\nRepeat.js offers alternative function names for code targeted for such environments:\n\n  - `for`   => `lasting`\n  - `while` => `during`\n  - `in`    => `wait`\n  - `if`    => `provided`\n\nExample:\n\n```javascript\nRepeat(function() {\n  console.log(\"I\'m safe\");\n })\n .every(2, \'sec\')\n .lasting(2, \'min\')                                   // lasting instead of for\n .during(function() { return Math.random() > .5; })   // during instead of while\n .provided(function() { return Math.random() > .5; }) // provided instead of if\n .wait(5, \'sec\');                                     // wait instead of in\n```\n\nAnother less readable (and not recommended) workaround would be to reference these methods using bracket notation:\n\n```javascript\nRepeat(function() { console.log(\"Hello\"); })\n.every(2, \'s\')\n[\'for\'](2, \'m\')\n[\'if\'](function() { return Math.random() > .5; })\n[\'while\'](function() {  return Math.random() > .5; })\n[\'in\'](5, \'s\');\n```\n\n# License\nCopyright (C) 2012 Bjørge Næss\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
-            "scripts": {
-                "test": "make test",
-                "test-browser": "./node_modules/.bin/browserify -r expect.js -o tmp/browser.js -e extra/browser.coffee;coffee -o ./tmp -c ./test;open test/browser.html",
-            },
-            "version": "0.0.2",
-        },
-    ),
-    (
         major: 1,
-        minor: 0,
+        minor: 2,
         bug: 0,
         prerelease: [],
         build: [],
@@ -1859,14 +1679,14 @@ Some(("repeat", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.0.0.tgz",
-            shasum: Some("526296270720543058ace1b6ad7ed8719de48133"),
-            unpacked_size: Some(8057),
-            file_count: Some(10),
-            integrity: Some("sha512-TPZwpWLg9oUhfIa/YPrHbnEswawScNeIbP2/fHOleCak7xh4s8BWqOfM2gzHcm8VHh0BKgotNAqGyWhfZJag2Q=="),
-            signature0_sig: Some("MEYCIQCQd20X/8of6oaCWQRB0iKCi5VGJ8tCKaJMCRiWCb56lQIhAKqAyz903fhzseOHVLhAuh08JYpeipTeqQUmn+/MUivS"),
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.2.0.tgz",
+            shasum: Some("5dcec58c7affa8f6556223943c5107513fa8874a"),
+            unpacked_size: Some(8859),
+            file_count: Some(16),
+            integrity: Some("sha512-3LdEPMV84LJEAD7pv4Rjvpxqd3MKdCjokClYAUz9AlFLLzyWt8rafcAHpX5WvNF5Lw+IFbWXutbf3tQ4YomtRg=="),
+            signature0_sig: Some("MEYCIQCx9v9UjYwLOmrPmI+pIiatqWRWmdTMyeWheQ0cn9Pu2gIhAMoWDsxR75iLdRiFFAL3cxoz7ZHrdbezAJQzDy2TqQjt"),
             signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJciYv+CRA9TVsSAnZWagAAQJIQAIVZgWKnE5uiRTOXP0q8\n8Rmh+P2jgJ8HAOARmsARbT06wXELAJQV4ayuwQGvaKU/f1t44mJb+x8EJDbt\nfJcQWgQCFWMwbxC3MxcvT6jQgzEJ7yAOJ35tTidIDFjlVxaioMPWa24SIzE+\nNggbpuZcfET032fwdbwiZmottuEpKOcF4zPNTjZeMITuzVefLPtezns3f3Yp\nf0aiRYq8IQoPnf+6KFJ6/Q2Sp5DQWShepB78GH4iswR8ppy+NdnF7iGfKXca\neRMp2ncSosN9IejCVSxAs7M3KMaqBdd436Cr9SDYzqMevWZnQbjse+RjO25W\nxUU7ch3xJXWwP4ACnJD3v4RfnjxfSuEnXWZBDjVGNW7luFaWBDs711dkaBpz\nVblZIQxNSv8u1DMSk+MToSbFIkMIYp3klIsBs2okud2RR/adr+0oIZVXpTsE\ncndWzjLcRPogYsOWy+spPLZ40xssmlAUbuVRD9hV9Of9DDexVrs7GtP/8CZb\nrvTetdWN2eFjG6bAByqzxc9FyYibIkv6CDHcc85VwNRN9W5jAVCBOVQyZdnF\npo46fi2c4BQazaYBFdtzKJPo2L/qZGHYFjutpoyV9LyTnadOtrubWPgOKRsI\nRV+fybtLPPlggzwr0LwKfdGaxKnTtp1Us1LgwMG1LNc3+dUDiJP5QNK5YZHK\nDup8\r\n=77jV\r\n-----END PGP SIGNATURE-----\r\n"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJdJJiPCRA9TVsSAnZWagAAp6UP/2adip27GmluwuCe3Ugb\ndu7FqfmaM0+N3ZAP88193oicn8v9shB8QVdWR37tPZzHa0hiCXKrgaqbTBar\nDbhBO3gUDOKU+m7E+7W3t6rE5zRSW/tRn1+5htF/vr5rC+esVE1rWaJ0jtwQ\nsIK5KwSw62/+jGeE7+QD12NdbYg0owSYKzyRNHEuqFenwyVsc31OUtFicIiq\nABnVKmh/g+bBwr6ubV1tBHTWUAtbZc7HQfW6y1aw1CGPTkRnsTGV9PIncwBF\nE9i2FtaUmibM1HJ4gg2BbTWd/THnZHxgNOOeqNSCPP3D82jpRxpUMh1V3G++\nhRtEimcp3RibbVGoup6GylquHRXpETx7dX2yf2MbEyeM2xm9DZwYJyxPqV5O\nW0mA0L4hwUTqXKnWjIQf+8ZjEQC8OrPx4xeRHPj71o3qE8zYUT2kFkmTq1UO\nlKfN9v7oPQEGo6m4isNSccDr27dW5R1Dff/ppbEqad338Gqa5sl6QSxEq0Z+\n8LOpcuC37at7q5+YxCcg5AAM3Rz993CUA5NeL8L+gkwNdToDL12ZdX0bweId\n7/x2qdH3L5S1aMp/wOyxwCdiIXAYapwJvsfZ2RTMQ0CZea+5dQEs+j1Afack\nIPRez80fx5+jAdgc+RB+jdkK/2mATw/0OZi0UvlaS2NYKhnOAbn9rb+azkDJ\nmiwe\r\n=yM0t\r\n-----END PGP SIGNATURE-----\r\n"),
         ),
         repository: Some((
             raw: {
@@ -1883,29 +1703,29 @@ Some(("repeat", Normal(
                 ),
             ),
         )),
-        time: "2019-03-13T23:02:22.441Z",
+        time: "2019-07-09T13:37:18.862Z",
         extra_metadata: {
             "_hasShrinkwrap": false,
-            "_id": "repeat@1.0.0",
+            "_id": "repeat@1.2.0",
             "_nodeVersion": "10.15.1",
             "_npmOperationalInternal": {
                 "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_1.0.0_1552518141573_0.7847316605962926",
+                "tmp": "tmp/repeat_1.2.0_1562679438727_0.17201183766648276",
             },
             "_npmUser": {
-                "email": "infinite4457234@gmail.com",
-                "name": "detach",
+                "email": "hello@xist.dev",
+                "name": "xist",
             },
-            "_npmVersion": "6.4.1",
+            "_npmVersion": "6.10.0",
             "author": {
-                "name": "detach",
+                "name": "117",
             },
             "bugs": {
                 "url": "https://github.com/117/repeat/issues",
             },
             "description": "create repeating task chains",
             "directories": {},
-            "gitHead": "4e7b713f0486ca9e42eef49accd0023e30ac7e95",
+            "gitHead": "5f67bfe9305e4d0a5f182eddaf6edc5a66d7f3d1",
             "homepage": "https://github.com/117/repeat#readme",
             "keywords": [
                 "task",
@@ -1920,8 +1740,8 @@ Some(("repeat", Normal(
             "main": "dist/src",
             "maintainers": [
                 {
-                    "email": "infinite4457234@gmail.com",
-                    "name": "detach",
+                    "email": "hello@xist.dev",
+                    "name": "xist",
                 },
             ],
             "name": "repeat",
@@ -1929,140 +1749,7 @@ Some(("repeat", Normal(
                 "build": "tsc",
                 "test": "ava dist/test --verbose",
             },
-            "version": "1.0.0",
-        },
-    ),
-    (
-        major: 2,
-        minor: 0,
-        bug: 4,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [
-            ("ava", (
-                raw: "^3.13.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 13,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("rimraf", (
-                raw: "^3.0.2",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 3,
-                            minor: 0,
-                            bug: 2,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 4,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-2.0.4.tgz",
-            shasum: Some("d194213299f869b582f4883c5f78176e590dd52c"),
-            unpacked_size: Some(11079),
-            file_count: Some(14),
-            integrity: Some("sha512-e7fgntk2YVZHnyht3VVA1RH5JwaSG3m/99uuPyvX6KFkj6+ojrCkGO6mdgm4gbUGTmsCAyAlcngfKp/vfogMCg=="),
-            signature0_sig: Some("MEYCIQDtiSjZtZS3gfBDI6YirAKWPHfDENyUwRNjI3cQAnFV1wIhANubJc4JCAQGjLD3ky9/5cEHUvSjHHWczGUpr9QYbH1U"),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJg2WLQCRA9TVsSAnZWagAAXwgQAJsXM5XCWUvcqfLgSku9\n47nY5AAc8WWaE5Cgigv+gD768v9znPwTAs8pMDkGPi6ryZuClEkdUeG6o3vt\n+OmG0JP4LPdxScrCiqUFsCf9V4dAxpBJsEPg6eViLAv1DTO68rPEVkorBITT\nbdC7kT5BXF9gZMMmhvdWSGedJWkXFtnyb8UskqhN0KlmjQzCOac7hET/NKFb\nBwdj9cMCewtTIiy7kku/DkAoIZO90ia805Q8wKeM562kaqecvMeR99qSgogX\nz6sigUuRxS/48/Du3OtC/wdX4KpxUZgXtm61W3BVb4OaDloOkPMfNmkA72oG\n0GUsdVwII887dJQ23YkMEeCd9RTBwj51l+yLFYfpH8JtT4r8U9mUeBjGOUO7\n5zBfKSBa833e/8FQKj/HWkGlCuT2N7yRZejBSBU1b2FZfqu0W0YlSHhcr3Qp\nE1FaWksJ3vQruC9YQ04T+FohD0JnBaJ81f1Q1AJR5ZRl8F+4tAoEFFdcOhVk\nk8MZA8WCkQOH8gxJv+Kh2Pt5CnvTruwEb7IPY4LlauA3TUhu+vGSyHOHsTrf\nNznQslFAoI8wyLHpFrC5q5oHfzpWsaJVdWUq+zJ4SdtHmcrkpw0IzxBGAx/v\nqGnf9Iq7GGKuzAebN+62VjW4sjkevE3HTE6Npthr7rDiXoO8Y3D49OUgfA3D\nV/B/\r\n=tOd0\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/117/repeat.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/117/repeat",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "117",
-                    repo: "repeat",
-                ),
-            ),
-        )),
-        time: "2021-06-28T05:49:03.540Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "repeat@2.0.4",
-            "_nodeVersion": "14.17.0",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_2.0.4_1624859343399_0.3448235197942615",
-            },
-            "_npmUser": {
-                "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
-                "name": "master-chief",
-            },
-            "_npmVersion": "7.16.0",
-            "author": {
-                "name": "117",
-            },
-            "bugs": {
-                "url": "https://github.com/117/repeat/issues",
-            },
-            "description": "create repeating task chains",
-            "directories": {},
-            "gitHead": "cefcd86159534f9bef1cb3d962b1d4009d4794b7",
-            "homepage": "https://github.com/117/repeat#readme",
-            "keywords": [
-                "task",
-                "repeating",
-                "chain",
-                "tasks",
-                "scheduler",
-                "loop",
-                "repeat",
-            ],
-            "license": "ISC",
-            "main": "dist/index.js",
-            "maintainers": [
-                {
-                    "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
-                    "name": "master-chief",
-                },
-            ],
-            "name": "repeat",
-            "scripts": {
-                "build": "rimraf dist types && tsc && npm run test",
-                "test": "ava dist/test/** --verbose",
-            },
-            "types": "types/index.d.ts",
-            "version": "2.0.4",
+            "version": "1.2.0",
         },
     ),
     (
@@ -2199,25 +1886,72 @@ Some(("repeat", Normal(
         },
     ),
     (
-        major: 1,
+        major: 2,
         minor: 0,
-        bug: 3,
+        bug: 1,
         prerelease: [],
         build: [],
     ): (
         prod_dependencies: [],
-        dev_dependencies: [],
+        dev_dependencies: [
+            ("ava", (
+                raw: "^3.13.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 13,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("rimraf", (
+                raw: "^3.0.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-1.0.3.tgz",
-            shasum: Some("04b18b497d3ce0d2a0708063dbe89d623dc4f7e1"),
-            unpacked_size: Some(8167),
-            file_count: Some(10),
-            integrity: Some("sha512-GdTYl4IORt4dJUN2NHQkrJlHdiNNYtfmExbvjKsnWTqQCErmweL6fmlaBwDkmADyJqXJoattQUHURfV1gOwTJg=="),
-            signature0_sig: Some("MEYCIQDNka2Az/I555J5TnaFt1XWNvieijcGACrqEJHGl4s5qQIhAJaNWrKKhAymJaFnZgKdAEXu9ygNabdrI3wo2/iE8gV/"),
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-2.0.1.tgz",
+            shasum: Some("a308fb786c7ca78511faa04ff2303e9a0dcb6420"),
+            unpacked_size: Some(11109),
+            file_count: Some(14),
+            integrity: Some("sha512-zI3sD0AwF64WyttKs/7ZfTmHUhzSBCItehPzid5uKxHvCsYhPRw1r1ljqKzqUhx0+AQ6SsAeZ2Yez9cFIJJw9A=="),
+            signature0_sig: Some("MEUCIQCN7bf/n3xc3dxmIgk4IRgfVmidCRFex+zCvb7LRPraDQIgBHRPyKneNNLLnEdaNMVLD2NQFjqJ6LMSwoaI/Y91y1c="),
             signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJciY8NCRA9TVsSAnZWagAA9M8P/Al+NUD5JUnW4M1+beKE\nlTVV5PWhn06Jr4SvzRh8GCTIV+CdBs7lIfwQou8cNTLQw87mfI1M4tDg+OkX\ngUroAyAchEl/usTuv7bA2/l0KVjCP2aNNKiR5Pe1VJT5v9sce5aXI2XEfZLL\naovWeBxbqG5qWcg4Wfw8kk22i31S0JCv1CnAq/8MqlgZLtgW8exj+1d28+BU\nEsKDnG9V4d8AJUcQZVhXSjGyoWeVO2emj90mQiySAprLgqACHH8jxAfJEES6\nAPqMGSfssmNfrJDRkYU0cYoMLf8VSOJdnDLt8XmAn0e54xt92ouz1bVZbEru\nSXn0xIV63QsRAFUbe3fvlaRHLeDI/QuYv2abXMm88Le5u+T4mo5XlN1bPYSA\nEjM1BqD8zf50pXRI2cC0zyEH61CawC7BDYMJHqBGzUa90AR9VO0Ri5ujsoBD\nBDilTIZ9X/98DzclgeOXGKcpBP72WfV7Rs7oJS0AuQXwjeAf5IL/vvyeRLoZ\nIiV0QTkb7IRMovIXSGoHCTp82EhR3IimkAjJXFkLaIfFvGCu54VAslX2SNfy\n9f33qGnZPp1mpKib2pKYmH4Q9bRAyRT5YrnQqGQ4aBGdHI+ut24gDjjFFhEQ\noExSoUh+rY9lU6XpfPyuaRKYzjwNpGYKd/kvt9iTrg8GbsbwClvPVcl4C+ep\nL5LM\r\n=ZGyw\r\n-----END PGP SIGNATURE-----\r\n"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfqy/TCRA9TVsSAnZWagAAD54P/j6fQ3QmHE+nth/TUitr\nJ1P+UVNQOXPaXz7Z8TOGfboA2sbn3rdV1giZe/mIl4kPT3SSDFc0PTDKf1wk\nWfHmKzL0oapKMuULkbS2RyN9zXnJXucAN4Gcd0goZbLTEt4fLlFtsomvqKGs\nm3Py/okjLJA3O5GGXxZ5RvNmUE5Fy/tD4/RMhCY3UctsgKZ+oJzz/9dv3zp2\nuUIAY6/nY3P0Ljk6kWO14NSZ+mo2aL9sAxq6IFQbIx0K97icxt4Qtpwud0F2\nMVFQxBgGt1qOxC1vISx9WDBE01AmcX/5DgCOOCY9hMMdkCY2i0Q+zXWu0z8S\nKV9j7SmMU3LzwO9pjR4WOpYL0lyq9xzxIixA8LJV2IyGAcOTfKZnqoUHyciY\n722KnV1vz1aF0tEoST57DvO4ufDovdcr4wBFtFH1SedwmOOXHDBfw4SNoj9+\nDwO3sWAF1e36ByyUhqLSDQhwZNEqoqO0FpnunDFMcEC9a0l8nR6TJSdHBs2D\noN2PB1dZvRN5hKPzY1CU32FMop9qQeQIANTwMiskgKEV3zxG7ypKSpdsXSzF\nBUes6hDg0Xbb9u7tNHriDoLR5Dh2mz9JYgvKfHXwRGluMJAdLQzqszWB41Xo\nlAwCxjR0OmN0Fgce8OYDulveY8ybW1XrtUAObsFx1bascPclLaoq/LrhXurm\nzDNP\r\n=iP1Q\r\n-----END PGP SIGNATURE-----\r\n"),
         ),
         repository: Some((
             raw: {
@@ -2234,29 +1968,29 @@ Some(("repeat", Normal(
                 ),
             ),
         )),
-        time: "2019-03-13T23:15:24.620Z",
+        time: "2020-11-11T00:26:58.815Z",
         extra_metadata: {
             "_hasShrinkwrap": false,
-            "_id": "repeat@1.0.3",
-            "_nodeVersion": "10.15.1",
+            "_id": "repeat@2.0.1",
+            "_nodeVersion": "14.7.0",
             "_npmOperationalInternal": {
                 "host": "s3://npm-registry-packages",
-                "tmp": "tmp/repeat_1.0.3_1552518924486_0.3706374520540494",
+                "tmp": "tmp/repeat_2.0.1_1605054418664_0.7518200850717007",
             },
             "_npmUser": {
-                "email": "infinite4457234@gmail.com",
-                "name": "detach",
+                "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
+                "name": "master-chief",
             },
-            "_npmVersion": "6.4.1",
+            "_npmVersion": "6.14.8",
             "author": {
-                "name": "detach",
+                "name": "117",
             },
             "bugs": {
                 "url": "https://github.com/117/repeat/issues",
             },
             "description": "create repeating task chains",
             "directories": {},
-            "gitHead": "e1792653a77f4c6308637b214e330fb07bfe646b",
+            "gitHead": "05634a23cabf493e3237feeb98d29ade05670760",
             "homepage": "https://github.com/117/repeat#readme",
             "keywords": [
                 "task",
@@ -2267,20 +2001,154 @@ Some(("repeat", Normal(
                 "loop",
                 "repeat",
             ],
-            "license": "MIT",
-            "main": "dist/src",
+            "license": "ISC",
+            "main": "dist/src/index.js",
             "maintainers": [
                 {
-                    "email": "infinite4457234@gmail.com",
-                    "name": "detach",
+                    "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
+                    "name": "master-chief",
                 },
             ],
             "name": "repeat",
             "scripts": {
-                "build": "tsc",
-                "test": "ava dist/test --verbose",
+                "build": "rimraf dist types && tsc && npm run test",
+                "test": "ava dist/test/** --verbose",
             },
-            "version": "1.0.3",
+            "types": "dist/src/index.d.ts",
+            "version": "2.0.1",
+        },
+    ),
+    (
+        major: 2,
+        minor: 0,
+        bug: 2,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [
+            ("ava", (
+                raw: "^3.13.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 13,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("rimraf", (
+                raw: "^3.0.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-2.0.2.tgz",
+            shasum: Some("824559c510a2e30dada3d1502edc2107c29eba68"),
+            unpacked_size: Some(11086),
+            file_count: Some(14),
+            integrity: Some("sha512-x2ssBu8B85Mglokqoj5ROLVC/mG+engPig9FimZdClpcNtrYD942NCTLHX7cNc0v/okC/ZkTEnwTQ0JCtajfTQ=="),
+            signature0_sig: Some("MEUCIQDjJJDdAnEtF+Gkh8w5EktdSfKHSl8RVp2FRpcl2x2pXAIgVrkEYjjTPIRYCRDbbzbAUjn/82gKBF8Arsbo7vkD+6g="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfqzAhCRA9TVsSAnZWagAAZJAQAJ9GFequDLTve2Cm4YV2\nzk9gxqBehgKEqaQxns5Z9gj9KWLSYtPw3T6eC1ZBOT4pXeX/hqZjsUZs8N2m\nQ8xD60JfbiRkhZ7eUP/OHmapvSyG2YHik0xK98H5mFuZ9w++B2syxXnGqaN4\n0cdZH7U4pIGaGEg2k6kNOVu8I24iekzeBRfC8FG5FwpbCC9S+BEh18K4j2xQ\nm3Hn7xd9BUWpYWU4OfQdwMM2so1tuiZs6VwJ34+Stly5W6C2LRGtZu/RfBXj\nqloWQj/qX++et/IX6H1yqrludc2bdcZO3CHIx/207+DYhf6T+PXmZ7VPLWxi\n4nHqT4FkJ4zKegE3xWRlb496Jw4Vmh44IUW/MkCMwmhwAS2icsRDdvhKizfB\nsFVR6VojqQQsdO2CSPkqNES0QklW1nlLJH8F9OCwM1K7Q1pRlJyPIsf4RqtH\nY67Dcfv5wRNKCrrqaYJDjVh5gzpUBuqYGtKBrxpv46021RuagRi1aGQ901CB\nHbyEEJVqz1utOr5juQvXq31gpgEf37xeFKR5WTH236Nseh5EYqBv7JmJH32L\nhTEPZHrTnh2ypo0OmePjowxuuyNSQmzvCmaNx7NiCh2gb7FfJ9KVgMCgwlYw\nhBgxmrcSK+1Og2hf5E4RmBgbQ4tsUcctKtjrTIpOylI8sSy6FcKcV6zZxQwu\nduDz\r\n=W+gM\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/117/repeat.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/117/repeat",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "117",
+                    repo: "repeat",
+                ),
+            ),
+        )),
+        time: "2020-11-11T00:28:16.722Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "repeat@2.0.2",
+            "_nodeVersion": "14.7.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/repeat_2.0.2_1605054496564_0.19145395522849862",
+            },
+            "_npmUser": {
+                "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
+                "name": "master-chief",
+            },
+            "_npmVersion": "6.14.8",
+            "author": {
+                "name": "117",
+            },
+            "bugs": {
+                "url": "https://github.com/117/repeat/issues",
+            },
+            "description": "create repeating task chains",
+            "directories": {},
+            "gitHead": "53975907b45db99ba1335e660e3d0921cdd831dc",
+            "homepage": "https://github.com/117/repeat#readme",
+            "keywords": [
+                "task",
+                "repeating",
+                "chain",
+                "tasks",
+                "scheduler",
+                "loop",
+                "repeat",
+            ],
+            "license": "ISC",
+            "main": "dist/src/index.js",
+            "maintainers": [
+                {
+                    "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
+                    "name": "master-chief",
+                },
+            ],
+            "name": "repeat",
+            "scripts": {
+                "build": "rimraf dist types && tsc && npm run test",
+                "test": "ava dist/test/** --verbose",
+            },
+            "types": "dist/src/index.d.ts",
+            "version": "2.0.2",
         },
     ),
     (
@@ -2414,6 +2282,139 @@ Some(("repeat", Normal(
             },
             "types": "dist/src/index.d.ts",
             "version": "2.0.3",
+        },
+    ),
+    (
+        major: 2,
+        minor: 0,
+        bug: 4,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [
+            ("ava", (
+                raw: "^3.13.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 13,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("rimraf", (
+                raw: "^3.0.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 3,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 4,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/repeat/-/repeat-2.0.4.tgz",
+            shasum: Some("d194213299f869b582f4883c5f78176e590dd52c"),
+            unpacked_size: Some(11079),
+            file_count: Some(14),
+            integrity: Some("sha512-e7fgntk2YVZHnyht3VVA1RH5JwaSG3m/99uuPyvX6KFkj6+ojrCkGO6mdgm4gbUGTmsCAyAlcngfKp/vfogMCg=="),
+            signature0_sig: Some("MEYCIQDtiSjZtZS3gfBDI6YirAKWPHfDENyUwRNjI3cQAnFV1wIhANubJc4JCAQGjLD3ky9/5cEHUvSjHHWczGUpr9QYbH1U"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJg2WLQCRA9TVsSAnZWagAAXwgQAJsXM5XCWUvcqfLgSku9\n47nY5AAc8WWaE5Cgigv+gD768v9znPwTAs8pMDkGPi6ryZuClEkdUeG6o3vt\n+OmG0JP4LPdxScrCiqUFsCf9V4dAxpBJsEPg6eViLAv1DTO68rPEVkorBITT\nbdC7kT5BXF9gZMMmhvdWSGedJWkXFtnyb8UskqhN0KlmjQzCOac7hET/NKFb\nBwdj9cMCewtTIiy7kku/DkAoIZO90ia805Q8wKeM562kaqecvMeR99qSgogX\nz6sigUuRxS/48/Du3OtC/wdX4KpxUZgXtm61W3BVb4OaDloOkPMfNmkA72oG\n0GUsdVwII887dJQ23YkMEeCd9RTBwj51l+yLFYfpH8JtT4r8U9mUeBjGOUO7\n5zBfKSBa833e/8FQKj/HWkGlCuT2N7yRZejBSBU1b2FZfqu0W0YlSHhcr3Qp\nE1FaWksJ3vQruC9YQ04T+FohD0JnBaJ81f1Q1AJR5ZRl8F+4tAoEFFdcOhVk\nk8MZA8WCkQOH8gxJv+Kh2Pt5CnvTruwEb7IPY4LlauA3TUhu+vGSyHOHsTrf\nNznQslFAoI8wyLHpFrC5q5oHfzpWsaJVdWUq+zJ4SdtHmcrkpw0IzxBGAx/v\nqGnf9Iq7GGKuzAebN+62VjW4sjkevE3HTE6Npthr7rDiXoO8Y3D49OUgfA3D\nV/B/\r\n=tOd0\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/117/repeat.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/117/repeat",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "117",
+                    repo: "repeat",
+                ),
+            ),
+        )),
+        time: "2021-06-28T05:49:03.540Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "repeat@2.0.4",
+            "_nodeVersion": "14.17.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/repeat_2.0.4_1624859343399_0.3448235197942615",
+            },
+            "_npmUser": {
+                "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
+                "name": "master-chief",
+            },
+            "_npmVersion": "7.16.0",
+            "author": {
+                "name": "117",
+            },
+            "bugs": {
+                "url": "https://github.com/117/repeat/issues",
+            },
+            "description": "create repeating task chains",
+            "directories": {},
+            "gitHead": "cefcd86159534f9bef1cb3d962b1d4009d4794b7",
+            "homepage": "https://github.com/117/repeat#readme",
+            "keywords": [
+                "task",
+                "repeating",
+                "chain",
+                "tasks",
+                "scheduler",
+                "loop",
+                "repeat",
+            ],
+            "license": "ISC",
+            "main": "dist/index.js",
+            "maintainers": [
+                {
+                    "email": "7c6fcedd3e8c1b6e7f52391ed9aaa4@gmail.com",
+                    "name": "master-chief",
+                },
+            ],
+            "name": "repeat",
+            "scripts": {
+                "build": "rimraf dist types && tsc && npm run test",
+                "test": "ava dist/test/** --verbose",
+            },
+            "types": "types/index.d.ts",
+            "version": "2.0.4",
         },
     ),
 }))

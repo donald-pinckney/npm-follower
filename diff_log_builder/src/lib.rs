@@ -291,12 +291,14 @@ fn pack_data_set_latest_to_none(pack_data: &PackageOnlyPackument) -> (PackageOnl
             created,
             modified,
             other_dist_tags,
+            extra_version_times,
         } => (
             PackageOnlyPackument::Normal {
                 latest: None,
                 created: *created,
                 modified: *modified,
                 other_dist_tags: other_dist_tags.clone(),
+                extra_version_times: extra_version_times.clone(),
             },
             true,
         ),

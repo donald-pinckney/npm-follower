@@ -11,6 +11,7 @@ Some(("auta", Normal(
     created: "2020-03-03T11:58:27.209Z",
     modified: "2020-03-03T12:33:24.532Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 2,

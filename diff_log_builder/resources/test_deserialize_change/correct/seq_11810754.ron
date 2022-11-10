@@ -9,6 +9,15 @@ Some(("angular-noconflict", Normal(
     created: "2017-01-03T19:44:56.059Z",
     modified: "2022-05-16T02:39:09.244Z",
     other_dist_tags: {},
+    extra_version_times: [
+        ((
+            major: 1,
+            minor: 0,
+            bug: 0,
+            prerelease: [],
+            build: [],
+        ), "2017-01-03T19:44:56.059Z"),
+    ],
 ), {
     (
         major: 1,

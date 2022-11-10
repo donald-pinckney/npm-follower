@@ -5,6 +5,7 @@ Some(("hownpm", Normal(
     other_dist_tags: {
         "latest": "1.01",
     },
+    extra_version_times: [],
 ), {
     (
         major: 1,

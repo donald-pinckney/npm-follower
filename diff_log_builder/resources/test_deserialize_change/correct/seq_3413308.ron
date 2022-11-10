@@ -9,6 +9,7 @@ Some(("@y3ticorp/vue-cli-plugin-commons", Normal(
     created: "2019-03-29T11:08:32.753Z",
     modified: "2019-03-29T11:08:36.205Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 1,

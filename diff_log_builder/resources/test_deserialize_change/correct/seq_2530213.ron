@@ -9,6 +9,7 @@ Some(("swagger-editor-xl", Normal(
     created: "2017-01-13T06:05:46.509Z",
     modified: "2017-01-13T06:05:46.509Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 2,

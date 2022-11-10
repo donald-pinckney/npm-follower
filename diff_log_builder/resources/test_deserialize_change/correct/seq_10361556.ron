@@ -9,11 +9,12 @@ Some(("atomizify", Normal(
     created: "2021-01-21T00:31:48.154Z",
     modified: "2022-04-11T15:43:10.718Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 1,
         minor: 0,
-        bug: 3,
+        bug: 0,
         prerelease: [],
         build: [],
     ): (
@@ -22,14 +23,14 @@ Some(("atomizify", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.3.tgz",
-            shasum: Some("ec5b3a817cdd67164dfc0818d7e4bd1e5db4a49a"),
-            unpacked_size: Some(5650551),
-            file_count: Some(34),
-            integrity: Some("sha512-agx3JOh3JqOQhyV+k1APIiPoxyuFFn5Sd00tEq8klGLi2DRbGdCBj1t1NgZNkPsR2uBN3Frg33sYx4d/X45OGQ=="),
-            signature0_sig: Some("MEUCIDwyua1/n7+2CvyrkgHghiNIU0A7QHXLi+UyhBHOEE4tAiEAqfLcFucoyjKGc0aOVg1eT+wGoq9n/P03/SoEAuYfEqY="),
+            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.0.tgz",
+            shasum: Some("7c417bd689ff186ac8e07eca256429c4147e7203"),
+            unpacked_size: Some(43757),
+            file_count: Some(31),
+            integrity: Some("sha512-CLCUCik+4jweNYj31Z20uEThnm6SDpr8H57fYafJBX3UFnC6fnIAChxxIk9Wn1KHH3iIwZ1NJN9DioveUwfpDQ=="),
+            signature0_sig: Some("MEYCIQCaRbrtckm8zi5DmL3bW6S/KwThEovW6cXKDAyz77X4bQIhAKWTgGohkfeJfkoaVFmdc4xIfPufe+AatXjWraY9dI++"),
             signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgCy5PCRA9TVsSAnZWagAAx90P/2y/KYrwXAlJRW8d2nJD\nBPlxxbfPQh4e1HvTLuc9NLuQJbDu7MS7Va+0SB96HopER90Sf0urw1CHI022\n7TVAXB62vGkBR1WW1/XZYsVdLSkrD0jyjxLG2quBe4ntThhqckZxtABncU6U\n7BamAdHew24XdZC/3nt7OAyTFfDVL93ilZ4PT5LWxX0Bb3zGlOLCTj2UcEtk\nzMHSpnNWQSv8sgIEy9md0goTJ0KR0TcWtZdPXzOlJO9G4kjsCvG9S52A33M3\n7Vz6n4YIhQ7ouV7C1Y+gCwqHHfkLd20mMlqIIVpPeq2vio/ptgqJFx7ishcF\nZY27eo8FLsEAOM2/EyfHBac+303gThCBQhs2CB2ww0DxzjUU0I+oJk8a7xTz\nitjQIbbYI15saefj4p+lF9AdOtc6FCY3c938iKh/2v7jHx4rVk91VFqqcWER\np0EX09gJGYRBc/qOeJ2UsBY/OAW1UCjLU7SqKUsgqcmc5wy3rTF5YxeFGElP\nKq6BZQO8ZIvWxYEBt1FzWMSduvODcEWTuBBIit2Yj3DRApbTYJzc12EdExhV\ngeI+V94eeGrf5sGeNRdq9xfPg9ybdQU4Rujf3LfnMY4k8vWMWTFXqBoAA0wi\nZYnX9jC/ir79GVeNKYImsQt6lJ88UH/xqTNw91I5+TNS8UMgHFIGbBW7rRwj\nUhfg\r\n=x674\r\n-----END PGP SIGNATURE-----\r\n"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgCMt0CRA9TVsSAnZWagAAx+0QAJyh3rNRFfmOPCOAnV32\n9vi7+OWUu3mUHD+A2bx7jpu2jWiOtOwbZfYEEJxqXHMlIeYXAzQrLNm9rB/k\ncMy/ukxmycUIeXQCnFLsW5hSIBfHVZARzUQC2ROU4p9vokKRbOLqVs5z7XEw\n6tBDeiAo4PihuIHzfRHGAlO3+xWT1aFu/rOXJIZZvqw++6Cim7XOx7CrLF+S\nsutb217IwVoSxR6fWQLpmIfybGiiUADcy/M9aV/2O0vS94rdSa24oYIY3W9J\n8ilRtBNi4t+g6Wnwk8YDHvYqMyZm/1fm33mH92qMCeWl7qmjjEv2UEVA42Zi\n4/sjgK/loAAUYM9lF1eAB52wrwZo7QxRpnRKPoV+5yBiei7P7PVLKxh3DJwv\nuULCdCqq2NgrqZmirNQAKguvazumXtOwxrZm3qENfM1samkTlXArZVHN22e8\nKQ0hf/dMs1XgiRngWEZoqBLtGU6q74vkegfgVt1q470sf5ZJbCRy1F5TXMZO\nDgzIgSoeWwffb7QW9WF7uxZ5w6ZEg71rYpcimQmxWMCUV18Aucwi0ptOvWjC\nO8UjUw3IuGQGw+4p5kkgut/g+E5IJupVSagcoQIh/OJkRVANlEUZIXb+c6gc\nI2pgkqalnMQTqBQyRv+EMU+jQzYpQCSs7kuDChj/CZQPOSx17BpczbGlq9Xa\nBv32\r\n=HP/5\r\n-----END PGP SIGNATURE-----\r\n"),
         ),
         repository: Some((
             raw: {
@@ -46,14 +47,14 @@ Some(("atomizify", Normal(
                 ),
             ),
         )),
-        time: "2021-01-22T19:58:06.987Z",
+        time: "2021-01-21T00:31:48.316Z",
         extra_metadata: {
             "_hasShrinkwrap": false,
-            "_id": "atomizify@1.0.3",
+            "_id": "atomizify@1.0.0",
             "_nodeVersion": "12.18.0",
             "_npmOperationalInternal": {
                 "host": "s3://npm-registry-packages",
-                "tmp": "tmp/atomizify_1.0.3_1611345474246_0.8428893629155563",
+                "tmp": "tmp/atomizify_1.0.0_1611189108154_0.13227782340688665",
             },
             "_npmUser": {
                 "email": "malarmemarie@gmail.com",
@@ -69,7 +70,7 @@ Some(("atomizify", Normal(
             },
             "description": "A JavaScript library generating atomic CSS classes and variables",
             "directories": {},
-            "gitHead": "d72c9140a141744238c171f06e36cbbeed6e3b2b",
+            "gitHead": "cb65137f3cc7f7579e27878bd582161203262a1b",
             "homepage": "https://github.com/MarieMalarme/atomizify#readme",
             "keywords": [
                 "javascript",
@@ -92,7 +93,7 @@ Some(("atomizify", Normal(
             "peerDependencies": [
                 "dallas",
             ],
-            "version": "1.0.3",
+            "version": "1.0.0",
         },
     ),
     (
@@ -183,6 +184,261 @@ Some(("atomizify", Normal(
     (
         major: 1,
         minor: 0,
+        bug: 2,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.2.tgz",
+            shasum: Some("1555d7d08d8702919fabec12aef8c1ed79139558"),
+            unpacked_size: Some(5650644),
+            file_count: Some(33),
+            integrity: Some("sha512-C9dNy27NN6iGgTEhqLg4M6qbrPyYyXai+xca6Eowb6I4hbUsA5AI8IzNo0kO9HvHuM13SyUVTJbBD1VbnOrCEA=="),
+            signature0_sig: Some("MEYCIQD5ga+JvTCFjAgdh53WS5S16QRIOvMhotxVzbsyQAfIIgIhAL45G4fE13c4EZKtt4lBcPLSNx/pze27ndwKMARIJsCP"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgCq0kCRA9TVsSAnZWagAAR3oP/AgarXFSqpD2yepbbqM+\nWuP3efEf+M5i7AEaov6wrNm8nJq18HryKEDSZIuySCIrtPbl/2yA6gEcSuF2\n+FSXrgVcCND63zTM6xxOujHoTm5i0qHOJwEPkmJXRL8KNm+2g0Ssf+bcZ3L9\nQUjwHkhUDS1kGmk2Q+RYROOsdd3OeAFiRUzTYArdzF/GFtsm6tJHLqMVkxb1\njs8xQEwC9InElzdcSGufcTVS0J7U3+NyPCxZEmzVxgDLqw2E9Xku4Cc6LYEq\nEvgL/1nLtgu1lRllElPSp/lW7xu1uT/lNHPFRd4t9KFdbrn/CipIPqZ5Y1oV\ntkhhOLnCH0FMnKdExhrZb+Hmz1Sl19frxN3HnOC+6of8IysULm4PGR7v/9oe\nkMFjOYhVGAYm0oHiJeVmiVMT/qIEO24DoiaigKY59CjOiaRWsnAVwrQOOYNL\nQZTonPRWbKhWZPL9IcpNdR4/JZJ2IoLecKpkdf5/5HsYXe1OgB5TOI3lpGvE\nLx+79F5zK6HSn1a2gerkWp7DkaTsloBpXNqpabFZ5Ww9w+rwNz9lCoiMO6Mc\nP29lzjs8ANqrx/BEAnlishg1wWku+ooUcX8br/nT5Kw+iTjbTnOUVlE3J0z1\nlAQEKSUmfbNPutcdQaYFK0mbeSfagYi3D/VIzuoF9vIPDM6dhym9Ygd/GqhX\nUsec\r\n=kwh+\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/MarieMalarme/atomizify.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "MarieMalarme",
+                    repo: "atomizify",
+                ),
+            ),
+        )),
+        time: "2021-01-22T10:46:59.761Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "atomizify@1.0.2",
+            "_nodeVersion": "12.18.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/atomizify_1.0.2_1611312419506_0.6154504524049935",
+            },
+            "_npmUser": {
+                "email": "malarmemarie@gmail.com",
+                "name": "marie_malarme",
+            },
+            "_npmVersion": "6.14.4",
+            "author": {
+                "email": "malarmemarie@gmail.com",
+                "name": "MarieMalarme",
+            },
+            "bugs": {
+                "url": "https://github.com/MarieMalarme/atomizify/issues",
+            },
+            "description": "A JavaScript library generating atomic CSS classes and variables",
+            "directories": {},
+            "gitHead": "01cdbfafb9cd75deda926f35703ae3d50cae1d3f",
+            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
+            "keywords": [
+                "javascript",
+                "react",
+                "classes",
+                "css",
+                "atomic",
+                "flags",
+            ],
+            "license": "MIT",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "malarmemarie@gmail.com",
+                    "name": "marie_malarme",
+                },
+            ],
+            "module": "index.js",
+            "name": "atomizify",
+            "peerDependencies": [
+                "dallas",
+            ],
+            "version": "1.0.2",
+        },
+    ),
+    (
+        major: 1,
+        minor: 0,
+        bug: 3,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.3.tgz",
+            shasum: Some("ec5b3a817cdd67164dfc0818d7e4bd1e5db4a49a"),
+            unpacked_size: Some(5650551),
+            file_count: Some(34),
+            integrity: Some("sha512-agx3JOh3JqOQhyV+k1APIiPoxyuFFn5Sd00tEq8klGLi2DRbGdCBj1t1NgZNkPsR2uBN3Frg33sYx4d/X45OGQ=="),
+            signature0_sig: Some("MEUCIDwyua1/n7+2CvyrkgHghiNIU0A7QHXLi+UyhBHOEE4tAiEAqfLcFucoyjKGc0aOVg1eT+wGoq9n/P03/SoEAuYfEqY="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgCy5PCRA9TVsSAnZWagAAx90P/2y/KYrwXAlJRW8d2nJD\nBPlxxbfPQh4e1HvTLuc9NLuQJbDu7MS7Va+0SB96HopER90Sf0urw1CHI022\n7TVAXB62vGkBR1WW1/XZYsVdLSkrD0jyjxLG2quBe4ntThhqckZxtABncU6U\n7BamAdHew24XdZC/3nt7OAyTFfDVL93ilZ4PT5LWxX0Bb3zGlOLCTj2UcEtk\nzMHSpnNWQSv8sgIEy9md0goTJ0KR0TcWtZdPXzOlJO9G4kjsCvG9S52A33M3\n7Vz6n4YIhQ7ouV7C1Y+gCwqHHfkLd20mMlqIIVpPeq2vio/ptgqJFx7ishcF\nZY27eo8FLsEAOM2/EyfHBac+303gThCBQhs2CB2ww0DxzjUU0I+oJk8a7xTz\nitjQIbbYI15saefj4p+lF9AdOtc6FCY3c938iKh/2v7jHx4rVk91VFqqcWER\np0EX09gJGYRBc/qOeJ2UsBY/OAW1UCjLU7SqKUsgqcmc5wy3rTF5YxeFGElP\nKq6BZQO8ZIvWxYEBt1FzWMSduvODcEWTuBBIit2Yj3DRApbTYJzc12EdExhV\ngeI+V94eeGrf5sGeNRdq9xfPg9ybdQU4Rujf3LfnMY4k8vWMWTFXqBoAA0wi\nZYnX9jC/ir79GVeNKYImsQt6lJ88UH/xqTNw91I5+TNS8UMgHFIGbBW7rRwj\nUhfg\r\n=x674\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/MarieMalarme/atomizify.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "MarieMalarme",
+                    repo: "atomizify",
+                ),
+            ),
+        )),
+        time: "2021-01-22T19:58:06.987Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "atomizify@1.0.3",
+            "_nodeVersion": "12.18.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/atomizify_1.0.3_1611345474246_0.8428893629155563",
+            },
+            "_npmUser": {
+                "email": "malarmemarie@gmail.com",
+                "name": "marie_malarme",
+            },
+            "_npmVersion": "6.14.4",
+            "author": {
+                "email": "malarmemarie@gmail.com",
+                "name": "MarieMalarme",
+            },
+            "bugs": {
+                "url": "https://github.com/MarieMalarme/atomizify/issues",
+            },
+            "description": "A JavaScript library generating atomic CSS classes and variables",
+            "directories": {},
+            "gitHead": "d72c9140a141744238c171f06e36cbbeed6e3b2b",
+            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
+            "keywords": [
+                "javascript",
+                "react",
+                "classes",
+                "css",
+                "atomic",
+                "flags",
+            ],
+            "license": "MIT",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "malarmemarie@gmail.com",
+                    "name": "marie_malarme",
+                },
+            ],
+            "module": "index.js",
+            "name": "atomizify",
+            "peerDependencies": [
+                "dallas",
+            ],
+            "version": "1.0.3",
+        },
+    ),
+    (
+        major: 1,
+        minor: 0,
+        bug: 4,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.4.tgz",
+            shasum: Some("7704275afb3f4ebf7ec2665bdce8305175a58915"),
+            unpacked_size: Some(44098),
+            file_count: Some(32),
+            integrity: Some("sha512-8J9p/radiRiHMaJGii1vd/z+Lrc61Pp0uyHXJOkwlZC5CD6mjbyhplRWIAL3xqazFTAZJgebFLkUaIp3tMPHKw=="),
+            signature0_sig: Some("MEUCIQD1YzepBW6ChvvUfcOBM/UxXS0NulM27O4hHMmEBtU2nAIgKmnEkKob6LxM3s/yOo/FegXRyPwO6vhSUTPB9Wccz/M="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgEweFCRA9TVsSAnZWagAA+osQAI1kKI/xN8fs21k+i7Pk\nFKWg8W8BfWYApk7mckDG2Bq62m3QOfHcqP6wx8omoAYCdd178wP999O5P1Kx\n4PNb08pT7TqmoRpNgyIxynh1tMgv9qRCvowqp94jiTPjLzvYMxwNYk7ZOsDF\n9N8C4TsnhuR1vS8ZicSKJ3OXG5LikYjfHtvczso+8Xkq15585RWASTl4tiFb\nafKRmvMH1uAxs0SMdOn3l9WISHVELblovGzi1ONtXHdQ0Sx5xXh+ReArvEF6\nchO2HJkvB0pOy1ibDBtZAvxEe+B5Dxi2iRCE8jYt6v3auh1uiD67u3zM/TwJ\ndDuHEzy47sFpCo7KLf2m0Cb49HwO9+NgKniDQqXG9mECXYHdDRUNdv0UUTbW\nlLQLavFwlqMYnSz/VI7fSW6sEdVRRIWKGv+jVNrzc/gwfRfNMkLCEML/2q3P\nh2k1OSsgAKG8AW0MDPePwI3PBy4Sp9S+GaLTcDco/SnCnTaRo3FRg0KJgPXx\nTWQ49GPkCEpebfarDH2gqDQRKaK1pkon+ruGl8D4CcnndUSQR9jddkRV4MRh\nPaYQi+t8laA5DZNacLGbql3AIl2Xkp0ztzkhMss3tAV9+bvB2+E4s72BPF1q\nX5vjxHWE8giSglzyG1IlBzWQEzs5SyZZxEfzU789OnZKwKd4AGRuka2W3fia\nHAfB\r\n=DAUj\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/MarieMalarme/atomizify.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "MarieMalarme",
+                    repo: "atomizify",
+                ),
+            ),
+        )),
+        time: "2021-01-28T18:50:45.299Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "atomizify@1.0.4",
+            "_nodeVersion": "12.18.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/atomizify_1.0.4_1611859845134_0.08716304188688939",
+            },
+            "_npmUser": {
+                "email": "malarmemarie@gmail.com",
+                "name": "marie_malarme",
+            },
+            "_npmVersion": "6.14.4",
+            "author": {
+                "email": "malarmemarie@gmail.com",
+                "name": "MarieMalarme",
+            },
+            "bugs": {
+                "url": "https://github.com/MarieMalarme/atomizify/issues",
+            },
+            "description": "A JavaScript library generating atomic CSS classes and variables",
+            "directories": {},
+            "gitHead": "977714b40f70090828da92dab1b165c02a30596b",
+            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
+            "keywords": [
+                "javascript",
+                "react",
+                "classes",
+                "css",
+                "atomic",
+                "flags",
+            ],
+            "license": "MIT",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "malarmemarie@gmail.com",
+                    "name": "marie_malarme",
+                },
+            ],
+            "module": "index.js",
+            "name": "atomizify",
+            "peerDependencies": [
+                "dallas",
+            ],
+            "version": "1.0.4",
+        },
+    ),
+    (
+        major: 1,
+        minor: 0,
         bug: 5,
         prerelease: [],
         build: [],
@@ -268,7 +524,7 @@ Some(("atomizify", Normal(
     (
         major: 1,
         minor: 0,
-        bug: 0,
+        bug: 6,
         prerelease: [],
         build: [],
     ): (
@@ -277,14 +533,14 @@ Some(("atomizify", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.0.tgz",
-            shasum: Some("7c417bd689ff186ac8e07eca256429c4147e7203"),
-            unpacked_size: Some(43757),
-            file_count: Some(31),
-            integrity: Some("sha512-CLCUCik+4jweNYj31Z20uEThnm6SDpr8H57fYafJBX3UFnC6fnIAChxxIk9Wn1KHH3iIwZ1NJN9DioveUwfpDQ=="),
-            signature0_sig: Some("MEYCIQCaRbrtckm8zi5DmL3bW6S/KwThEovW6cXKDAyz77X4bQIhAKWTgGohkfeJfkoaVFmdc4xIfPufe+AatXjWraY9dI++"),
+            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.6.tgz",
+            shasum: Some("b4ec25827b126c286907c5ca46b21d421afd8810"),
+            unpacked_size: Some(44352),
+            file_count: Some(32),
+            integrity: Some("sha512-n2VkdzQNKzE7hEO0GIm8bHmmzjoq97GZ7AqVikp5Uxv3kIgqNmkscmRCTXppkW4n12md2WLdyY9nnJ5z58iF2A=="),
+            signature0_sig: Some("MEYCIQCNFH9v3rVbIDJcXqzVqSB2hNwXzmshfXzEg4G0l8TvgQIhAOpM+sJhn+i/LTwwsI6TYjmG4pZm+cCqV5oqPjKEazMY"),
             signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgCMt0CRA9TVsSAnZWagAAx+0QAJyh3rNRFfmOPCOAnV32\n9vi7+OWUu3mUHD+A2bx7jpu2jWiOtOwbZfYEEJxqXHMlIeYXAzQrLNm9rB/k\ncMy/ukxmycUIeXQCnFLsW5hSIBfHVZARzUQC2ROU4p9vokKRbOLqVs5z7XEw\n6tBDeiAo4PihuIHzfRHGAlO3+xWT1aFu/rOXJIZZvqw++6Cim7XOx7CrLF+S\nsutb217IwVoSxR6fWQLpmIfybGiiUADcy/M9aV/2O0vS94rdSa24oYIY3W9J\n8ilRtBNi4t+g6Wnwk8YDHvYqMyZm/1fm33mH92qMCeWl7qmjjEv2UEVA42Zi\n4/sjgK/loAAUYM9lF1eAB52wrwZo7QxRpnRKPoV+5yBiei7P7PVLKxh3DJwv\nuULCdCqq2NgrqZmirNQAKguvazumXtOwxrZm3qENfM1samkTlXArZVHN22e8\nKQ0hf/dMs1XgiRngWEZoqBLtGU6q74vkegfgVt1q470sf5ZJbCRy1F5TXMZO\nDgzIgSoeWwffb7QW9WF7uxZ5w6ZEg71rYpcimQmxWMCUV18Aucwi0ptOvWjC\nO8UjUw3IuGQGw+4p5kkgut/g+E5IJupVSagcoQIh/OJkRVANlEUZIXb+c6gc\nI2pgkqalnMQTqBQyRv+EMU+jQzYpQCSs7kuDChj/CZQPOSx17BpczbGlq9Xa\nBv32\r\n=HP/5\r\n-----END PGP SIGNATURE-----\r\n"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgKRTICRA9TVsSAnZWagAA1b8P/2OYzNgS+0T86yyylJPa\nGWE/waxx5C1wLkyrVAe9msRUdub1pUjcMNS1NWEjPQJkStOJI784JrP0CzI6\n2N+Z/rS2gDm3AYXmO1sQeb0H21rGTbSZuqY+Ld9F+t5nQXotv+Eusd333hK0\nEedeY13IeJoTFRLu5rf+BWwVDZ//RsTMXUuHc76fSm6S8PS3zlqL2100HIiY\n/80tMyU2mo9bsdwDAt33+vRV+tuhSSkRCFDO61fMCLdNFbk+fQ1ZXm9YPffN\nrAuWCTIrtTk25h8+8uQF/YVua9gMbyiKm8YlLnLWe4J0gagpgKPyVUDO/3iw\nCooT+Qk6cuwfaUdwTypVuWg+KOX9fJ8X1LeOZ+CkLWtG4MIZM+8htBor97TC\nTODfcVziWDgCPTVzR6vacZsfoO1GZhjFrBR5GAYj36WmS9l8H032hX87Aiyh\npp8aWmRXYCFvQO6S3uTSYKPQdSzkbTn2x7xTdLmOL6IKKkx4uPL+oEVFudKC\nMdtZzO+7vs3ET7w4OwwLQuSkwGITWUokFDy2HPZoPGPWtAR0/XVLQSbp/1P5\nRmLhokDZPXcOvjYKHOuHzPmsf7D/4SsoTqvXQ0BfF6xaZqShR41D09BGAhEh\np7Vd+TDhkveQw1rPpOHhbROzqG1fJwt5dNpo+lk9aSyMz9VRl5I2USErPZLs\nIMlU\r\n=5HaO\r\n-----END PGP SIGNATURE-----\r\n"),
         ),
         repository: Some((
             raw: {
@@ -301,14 +557,14 @@ Some(("atomizify", Normal(
                 ),
             ),
         )),
-        time: "2021-01-21T00:31:48.316Z",
+        time: "2021-02-14T12:17:12.564Z",
         extra_metadata: {
             "_hasShrinkwrap": false,
-            "_id": "atomizify@1.0.0",
+            "_id": "atomizify@1.0.6",
             "_nodeVersion": "12.18.0",
             "_npmOperationalInternal": {
                 "host": "s3://npm-registry-packages",
-                "tmp": "tmp/atomizify_1.0.0_1611189108154_0.13227782340688665",
+                "tmp": "tmp/atomizify_1.0.6_1613305032308_0.6390305440948416",
             },
             "_npmUser": {
                 "email": "malarmemarie@gmail.com",
@@ -324,7 +580,7 @@ Some(("atomizify", Normal(
             },
             "description": "A JavaScript library generating atomic CSS classes and variables",
             "directories": {},
-            "gitHead": "cb65137f3cc7f7579e27878bd582161203262a1b",
+            "gitHead": "b4847991d6f211cf144da1410134fb89604c141d",
             "homepage": "https://github.com/MarieMalarme/atomizify#readme",
             "keywords": [
                 "javascript",
@@ -347,7 +603,7 @@ Some(("atomizify", Normal(
             "peerDependencies": [
                 "dallas",
             ],
-            "version": "1.0.0",
+            "version": "1.0.6",
         },
     ),
     (
@@ -438,261 +694,6 @@ Some(("atomizify", Normal(
     (
         major: 1,
         minor: 0,
-        bug: 6,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.6.tgz",
-            shasum: Some("b4ec25827b126c286907c5ca46b21d421afd8810"),
-            unpacked_size: Some(44352),
-            file_count: Some(32),
-            integrity: Some("sha512-n2VkdzQNKzE7hEO0GIm8bHmmzjoq97GZ7AqVikp5Uxv3kIgqNmkscmRCTXppkW4n12md2WLdyY9nnJ5z58iF2A=="),
-            signature0_sig: Some("MEYCIQCNFH9v3rVbIDJcXqzVqSB2hNwXzmshfXzEg4G0l8TvgQIhAOpM+sJhn+i/LTwwsI6TYjmG4pZm+cCqV5oqPjKEazMY"),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgKRTICRA9TVsSAnZWagAA1b8P/2OYzNgS+0T86yyylJPa\nGWE/waxx5C1wLkyrVAe9msRUdub1pUjcMNS1NWEjPQJkStOJI784JrP0CzI6\n2N+Z/rS2gDm3AYXmO1sQeb0H21rGTbSZuqY+Ld9F+t5nQXotv+Eusd333hK0\nEedeY13IeJoTFRLu5rf+BWwVDZ//RsTMXUuHc76fSm6S8PS3zlqL2100HIiY\n/80tMyU2mo9bsdwDAt33+vRV+tuhSSkRCFDO61fMCLdNFbk+fQ1ZXm9YPffN\nrAuWCTIrtTk25h8+8uQF/YVua9gMbyiKm8YlLnLWe4J0gagpgKPyVUDO/3iw\nCooT+Qk6cuwfaUdwTypVuWg+KOX9fJ8X1LeOZ+CkLWtG4MIZM+8htBor97TC\nTODfcVziWDgCPTVzR6vacZsfoO1GZhjFrBR5GAYj36WmS9l8H032hX87Aiyh\npp8aWmRXYCFvQO6S3uTSYKPQdSzkbTn2x7xTdLmOL6IKKkx4uPL+oEVFudKC\nMdtZzO+7vs3ET7w4OwwLQuSkwGITWUokFDy2HPZoPGPWtAR0/XVLQSbp/1P5\nRmLhokDZPXcOvjYKHOuHzPmsf7D/4SsoTqvXQ0BfF6xaZqShR41D09BGAhEh\np7Vd+TDhkveQw1rPpOHhbROzqG1fJwt5dNpo+lk9aSyMz9VRl5I2USErPZLs\nIMlU\r\n=5HaO\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/MarieMalarme/atomizify.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "MarieMalarme",
-                    repo: "atomizify",
-                ),
-            ),
-        )),
-        time: "2021-02-14T12:17:12.564Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "atomizify@1.0.6",
-            "_nodeVersion": "12.18.0",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/atomizify_1.0.6_1613305032308_0.6390305440948416",
-            },
-            "_npmUser": {
-                "email": "malarmemarie@gmail.com",
-                "name": "marie_malarme",
-            },
-            "_npmVersion": "6.14.4",
-            "author": {
-                "email": "malarmemarie@gmail.com",
-                "name": "MarieMalarme",
-            },
-            "bugs": {
-                "url": "https://github.com/MarieMalarme/atomizify/issues",
-            },
-            "description": "A JavaScript library generating atomic CSS classes and variables",
-            "directories": {},
-            "gitHead": "b4847991d6f211cf144da1410134fb89604c141d",
-            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
-            "keywords": [
-                "javascript",
-                "react",
-                "classes",
-                "css",
-                "atomic",
-                "flags",
-            ],
-            "license": "MIT",
-            "main": "index.js",
-            "maintainers": [
-                {
-                    "email": "malarmemarie@gmail.com",
-                    "name": "marie_malarme",
-                },
-            ],
-            "module": "index.js",
-            "name": "atomizify",
-            "peerDependencies": [
-                "dallas",
-            ],
-            "version": "1.0.6",
-        },
-    ),
-    (
-        major: 1,
-        minor: 1,
-        bug: 1,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.1.1.tgz",
-            shasum: Some("1d767e2cc71981e4355a31ca04cd53e5ca4ce754"),
-            unpacked_size: Some(46214),
-            file_count: Some(33),
-            integrity: Some("sha512-XMdLAooEMxeCkLKfdN4dyjkMAHV2iDi1m5Z/aFqRXAKSFafIGqEqW2+OR99gu5jvjwGrEVgqBi0B7u2jYGMssQ=="),
-            signature0_sig: Some("MEYCIQDBfo4kBFQBKc3oakE5bjM0+7Ngc9potvdHEhgkvyxVtgIhAKnnTf1ctAbZ7SiYezE044dxTdSgDXkiljxC7AKGoWSf"),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJhAbFHCRA9TVsSAnZWagAAqVQQAJxrlBE3wzbz4rdEbMlh\n+k9hiIZ+R0P4ThrTouqAWefjuGJDlpz2Rtsn2kv1Hk0KfFQU2ZLXJAEyN/qd\n+XkSdwE2FPIKrOEcwTjS21ziaT+sDUe6hC/swxTqiNyLNsfvWxZXH2RoxyJO\nAJGmUgWkvpmU1pVefg/29Nw/PUhUgJuEdI99p/FQxLqlGpW3/S4OJBuFN3YU\ng/i/jy2lm3QPY82v7HDEr+pNNzW4a6EF0MuTVoMD83KdNBiuhcBmDU7tmcGq\n+fCG/ZSpG7H+f4moG+xeD/ma6cxI4XpxfxbxH2fa/YEkVNZ1TbZeiDlvzzF1\n4oBwd+vEXIk916af39gEUoCQVOQmqNnbWLRohryY2Nz7NTkKAgK21N99VEGf\ng8mXosWcb1Guqoh9YrssV5/4To9Lu6dfgeIUHoVTbdHaGMdI6e0oXCDdYCXY\nU2GRkRpDyY9Fa15SSKCJRL6uiNg/OzsfN/sR17Btvlf7p+3YB+XHhivFBZ0v\nkvv4Z+DFSOadJQzQbQLhgZNFMrofVqP1bYmehs+iTG54KpZrFEKt+3DXc4R7\n0gp1AcZRk4kIE57o859/C1tm/qQ6VElVI2schhn2NcqQdq5po32jZZXZKe4e\naPjMMMJ/cEo4gomW8reGeBEqhwQ9/xUOj3mtfTrUEM3LWO3jYPzFaJUwhfbm\nBMyk\r\n=Svrr\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/MarieMalarme/atomizify.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "MarieMalarme",
-                    repo: "atomizify",
-                ),
-            ),
-        )),
-        time: "2021-07-28T19:34:31.793Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "atomizify@1.1.1",
-            "_nodeVersion": "14.16.0",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/atomizify_1.1.1_1627500871598_0.7630941052775448",
-            },
-            "_npmUser": {
-                "email": "malarmemarie@gmail.com",
-                "name": "marie_malarme",
-            },
-            "_npmVersion": "6.14.11",
-            "author": {
-                "email": "malarmemarie@gmail.com",
-                "name": "MarieMalarme",
-            },
-            "bugs": {
-                "url": "https://github.com/MarieMalarme/atomizify/issues",
-            },
-            "description": "A JavaScript library generating atomic CSS classes and variables",
-            "directories": {},
-            "gitHead": "74507903af61b1f0ba17c077c54d06d8e65bc386",
-            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
-            "keywords": [
-                "javascript",
-                "react",
-                "classes",
-                "css",
-                "atomic",
-                "flags",
-            ],
-            "license": "MIT",
-            "main": "index.js",
-            "maintainers": [
-                {
-                    "email": "malarmemarie@gmail.com",
-                    "name": "marie_malarme",
-                },
-            ],
-            "module": "index.js",
-            "name": "atomizify",
-            "peerDependencies": [
-                "dallas",
-            ],
-            "version": "1.1.1",
-        },
-    ),
-    (
-        major: 1,
-        minor: 0,
-        bug: 2,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.2.tgz",
-            shasum: Some("1555d7d08d8702919fabec12aef8c1ed79139558"),
-            unpacked_size: Some(5650644),
-            file_count: Some(33),
-            integrity: Some("sha512-C9dNy27NN6iGgTEhqLg4M6qbrPyYyXai+xca6Eowb6I4hbUsA5AI8IzNo0kO9HvHuM13SyUVTJbBD1VbnOrCEA=="),
-            signature0_sig: Some("MEYCIQD5ga+JvTCFjAgdh53WS5S16QRIOvMhotxVzbsyQAfIIgIhAL45G4fE13c4EZKtt4lBcPLSNx/pze27ndwKMARIJsCP"),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgCq0kCRA9TVsSAnZWagAAR3oP/AgarXFSqpD2yepbbqM+\nWuP3efEf+M5i7AEaov6wrNm8nJq18HryKEDSZIuySCIrtPbl/2yA6gEcSuF2\n+FSXrgVcCND63zTM6xxOujHoTm5i0qHOJwEPkmJXRL8KNm+2g0Ssf+bcZ3L9\nQUjwHkhUDS1kGmk2Q+RYROOsdd3OeAFiRUzTYArdzF/GFtsm6tJHLqMVkxb1\njs8xQEwC9InElzdcSGufcTVS0J7U3+NyPCxZEmzVxgDLqw2E9Xku4Cc6LYEq\nEvgL/1nLtgu1lRllElPSp/lW7xu1uT/lNHPFRd4t9KFdbrn/CipIPqZ5Y1oV\ntkhhOLnCH0FMnKdExhrZb+Hmz1Sl19frxN3HnOC+6of8IysULm4PGR7v/9oe\nkMFjOYhVGAYm0oHiJeVmiVMT/qIEO24DoiaigKY59CjOiaRWsnAVwrQOOYNL\nQZTonPRWbKhWZPL9IcpNdR4/JZJ2IoLecKpkdf5/5HsYXe1OgB5TOI3lpGvE\nLx+79F5zK6HSn1a2gerkWp7DkaTsloBpXNqpabFZ5Ww9w+rwNz9lCoiMO6Mc\nP29lzjs8ANqrx/BEAnlishg1wWku+ooUcX8br/nT5Kw+iTjbTnOUVlE3J0z1\nlAQEKSUmfbNPutcdQaYFK0mbeSfagYi3D/VIzuoF9vIPDM6dhym9Ygd/GqhX\nUsec\r\n=kwh+\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/MarieMalarme/atomizify.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "MarieMalarme",
-                    repo: "atomizify",
-                ),
-            ),
-        )),
-        time: "2021-01-22T10:46:59.761Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "atomizify@1.0.2",
-            "_nodeVersion": "12.18.0",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/atomizify_1.0.2_1611312419506_0.6154504524049935",
-            },
-            "_npmUser": {
-                "email": "malarmemarie@gmail.com",
-                "name": "marie_malarme",
-            },
-            "_npmVersion": "6.14.4",
-            "author": {
-                "email": "malarmemarie@gmail.com",
-                "name": "MarieMalarme",
-            },
-            "bugs": {
-                "url": "https://github.com/MarieMalarme/atomizify/issues",
-            },
-            "description": "A JavaScript library generating atomic CSS classes and variables",
-            "directories": {},
-            "gitHead": "01cdbfafb9cd75deda926f35703ae3d50cae1d3f",
-            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
-            "keywords": [
-                "javascript",
-                "react",
-                "classes",
-                "css",
-                "atomic",
-                "flags",
-            ],
-            "license": "MIT",
-            "main": "index.js",
-            "maintainers": [
-                {
-                    "email": "malarmemarie@gmail.com",
-                    "name": "marie_malarme",
-                },
-            ],
-            "module": "index.js",
-            "name": "atomizify",
-            "peerDependencies": [
-                "dallas",
-            ],
-            "version": "1.0.2",
-        },
-    ),
-    (
-        major: 1,
-        minor: 0,
         bug: 8,
         prerelease: [],
         build: [],
@@ -773,91 +774,6 @@ Some(("atomizify", Normal(
                 "dallas",
             ],
             "version": "1.0.8",
-        },
-    ),
-    (
-        major: 1,
-        minor: 0,
-        bug: 4,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [],
-        dev_dependencies: [],
-        peer_dependencies: [],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.0.4.tgz",
-            shasum: Some("7704275afb3f4ebf7ec2665bdce8305175a58915"),
-            unpacked_size: Some(44098),
-            file_count: Some(32),
-            integrity: Some("sha512-8J9p/radiRiHMaJGii1vd/z+Lrc61Pp0uyHXJOkwlZC5CD6mjbyhplRWIAL3xqazFTAZJgebFLkUaIp3tMPHKw=="),
-            signature0_sig: Some("MEUCIQD1YzepBW6ChvvUfcOBM/UxXS0NulM27O4hHMmEBtU2nAIgKmnEkKob6LxM3s/yOo/FegXRyPwO6vhSUTPB9Wccz/M="),
-            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
-            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgEweFCRA9TVsSAnZWagAA+osQAI1kKI/xN8fs21k+i7Pk\nFKWg8W8BfWYApk7mckDG2Bq62m3QOfHcqP6wx8omoAYCdd178wP999O5P1Kx\n4PNb08pT7TqmoRpNgyIxynh1tMgv9qRCvowqp94jiTPjLzvYMxwNYk7ZOsDF\n9N8C4TsnhuR1vS8ZicSKJ3OXG5LikYjfHtvczso+8Xkq15585RWASTl4tiFb\nafKRmvMH1uAxs0SMdOn3l9WISHVELblovGzi1ONtXHdQ0Sx5xXh+ReArvEF6\nchO2HJkvB0pOy1ibDBtZAvxEe+B5Dxi2iRCE8jYt6v3auh1uiD67u3zM/TwJ\ndDuHEzy47sFpCo7KLf2m0Cb49HwO9+NgKniDQqXG9mECXYHdDRUNdv0UUTbW\nlLQLavFwlqMYnSz/VI7fSW6sEdVRRIWKGv+jVNrzc/gwfRfNMkLCEML/2q3P\nh2k1OSsgAKG8AW0MDPePwI3PBy4Sp9S+GaLTcDco/SnCnTaRo3FRg0KJgPXx\nTWQ49GPkCEpebfarDH2gqDQRKaK1pkon+ruGl8D4CcnndUSQR9jddkRV4MRh\nPaYQi+t8laA5DZNacLGbql3AIl2Xkp0ztzkhMss3tAV9+bvB2+E4s72BPF1q\nX5vjxHWE8giSglzyG1IlBzWQEzs5SyZZxEfzU789OnZKwKd4AGRuka2W3fia\nHAfB\r\n=DAUj\r\n-----END PGP SIGNATURE-----\r\n"),
-        ),
-        repository: Some((
-            raw: {
-                "type": "git",
-                "url": "git+https://github.com/MarieMalarme/atomizify.git",
-            },
-            info: (
-                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
-                cloneable_repo_dir: "",
-                vcs: Git,
-                host_info: Github(
-                    user: "MarieMalarme",
-                    repo: "atomizify",
-                ),
-            ),
-        )),
-        time: "2021-01-28T18:50:45.299Z",
-        extra_metadata: {
-            "_hasShrinkwrap": false,
-            "_id": "atomizify@1.0.4",
-            "_nodeVersion": "12.18.0",
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/atomizify_1.0.4_1611859845134_0.08716304188688939",
-            },
-            "_npmUser": {
-                "email": "malarmemarie@gmail.com",
-                "name": "marie_malarme",
-            },
-            "_npmVersion": "6.14.4",
-            "author": {
-                "email": "malarmemarie@gmail.com",
-                "name": "MarieMalarme",
-            },
-            "bugs": {
-                "url": "https://github.com/MarieMalarme/atomizify/issues",
-            },
-            "description": "A JavaScript library generating atomic CSS classes and variables",
-            "directories": {},
-            "gitHead": "977714b40f70090828da92dab1b165c02a30596b",
-            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
-            "keywords": [
-                "javascript",
-                "react",
-                "classes",
-                "css",
-                "atomic",
-                "flags",
-            ],
-            "license": "MIT",
-            "main": "index.js",
-            "maintainers": [
-                {
-                    "email": "malarmemarie@gmail.com",
-                    "name": "marie_malarme",
-                },
-            ],
-            "module": "index.js",
-            "name": "atomizify",
-            "peerDependencies": [
-                "dallas",
-            ],
-            "version": "1.0.4",
         },
     ),
     (
@@ -943,6 +859,91 @@ Some(("atomizify", Normal(
                 "dallas",
             ],
             "version": "1.1.0",
+        },
+    ),
+    (
+        major: 1,
+        minor: 1,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/atomizify/-/atomizify-1.1.1.tgz",
+            shasum: Some("1d767e2cc71981e4355a31ca04cd53e5ca4ce754"),
+            unpacked_size: Some(46214),
+            file_count: Some(33),
+            integrity: Some("sha512-XMdLAooEMxeCkLKfdN4dyjkMAHV2iDi1m5Z/aFqRXAKSFafIGqEqW2+OR99gu5jvjwGrEVgqBi0B7u2jYGMssQ=="),
+            signature0_sig: Some("MEYCIQDBfo4kBFQBKc3oakE5bjM0+7Ngc9potvdHEhgkvyxVtgIhAKnnTf1ctAbZ7SiYezE044dxTdSgDXkiljxC7AKGoWSf"),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJhAbFHCRA9TVsSAnZWagAAqVQQAJxrlBE3wzbz4rdEbMlh\n+k9hiIZ+R0P4ThrTouqAWefjuGJDlpz2Rtsn2kv1Hk0KfFQU2ZLXJAEyN/qd\n+XkSdwE2FPIKrOEcwTjS21ziaT+sDUe6hC/swxTqiNyLNsfvWxZXH2RoxyJO\nAJGmUgWkvpmU1pVefg/29Nw/PUhUgJuEdI99p/FQxLqlGpW3/S4OJBuFN3YU\ng/i/jy2lm3QPY82v7HDEr+pNNzW4a6EF0MuTVoMD83KdNBiuhcBmDU7tmcGq\n+fCG/ZSpG7H+f4moG+xeD/ma6cxI4XpxfxbxH2fa/YEkVNZ1TbZeiDlvzzF1\n4oBwd+vEXIk916af39gEUoCQVOQmqNnbWLRohryY2Nz7NTkKAgK21N99VEGf\ng8mXosWcb1Guqoh9YrssV5/4To9Lu6dfgeIUHoVTbdHaGMdI6e0oXCDdYCXY\nU2GRkRpDyY9Fa15SSKCJRL6uiNg/OzsfN/sR17Btvlf7p+3YB+XHhivFBZ0v\nkvv4Z+DFSOadJQzQbQLhgZNFMrofVqP1bYmehs+iTG54KpZrFEKt+3DXc4R7\n0gp1AcZRk4kIE57o859/C1tm/qQ6VElVI2schhn2NcqQdq5po32jZZXZKe4e\naPjMMMJ/cEo4gomW8reGeBEqhwQ9/xUOj3mtfTrUEM3LWO3jYPzFaJUwhfbm\nBMyk\r\n=Svrr\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git+https://github.com/MarieMalarme/atomizify.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/MarieMalarme/atomizify",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "MarieMalarme",
+                    repo: "atomizify",
+                ),
+            ),
+        )),
+        time: "2021-07-28T19:34:31.793Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "atomizify@1.1.1",
+            "_nodeVersion": "14.16.0",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/atomizify_1.1.1_1627500871598_0.7630941052775448",
+            },
+            "_npmUser": {
+                "email": "malarmemarie@gmail.com",
+                "name": "marie_malarme",
+            },
+            "_npmVersion": "6.14.11",
+            "author": {
+                "email": "malarmemarie@gmail.com",
+                "name": "MarieMalarme",
+            },
+            "bugs": {
+                "url": "https://github.com/MarieMalarme/atomizify/issues",
+            },
+            "description": "A JavaScript library generating atomic CSS classes and variables",
+            "directories": {},
+            "gitHead": "74507903af61b1f0ba17c077c54d06d8e65bc386",
+            "homepage": "https://github.com/MarieMalarme/atomizify#readme",
+            "keywords": [
+                "javascript",
+                "react",
+                "classes",
+                "css",
+                "atomic",
+                "flags",
+            ],
+            "license": "MIT",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "malarmemarie@gmail.com",
+                    "name": "marie_malarme",
+                },
+            ],
+            "module": "index.js",
+            "name": "atomizify",
+            "peerDependencies": [
+                "dallas",
+            ],
+            "version": "1.1.1",
         },
     ),
     (

@@ -9,6 +9,7 @@ Some(("@dennisvanhomoet/npmpackage", Normal(
     created: "2019-04-16T15:14:48.485Z",
     modified: "2019-04-17T07:50:40.258Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 2,

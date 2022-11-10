@@ -323,7 +323,7 @@ pub fn deserialize_packument_blob_normal(
         modified,
         version_times,
     } = deserialize_times(&mut j);
-    let version_times = only_keep_ok_version_times(version_times);
+    let mut version_times = only_keep_ok_version_times(version_times);
 
     // We have to have versions, and it must be a dictionary
     let version_packuments_map = j
@@ -347,6 +347,10 @@ pub fn deserialize_packument_blob_normal(
         })
         .collect();
 
+    version_packuments.keys().for_each(|v_to_remove| {
+        version_times.remove(v_to_remove);
+    });
+
     let latest_semver = {
         match latest_semver {
             Some(l) => {
@@ -367,6 +371,7 @@ pub fn deserialize_packument_blob_normal(
             created,
             modified,
             other_dist_tags: dist_tags,
+            extra_version_times: version_times,
         },
         version_packuments,
     )

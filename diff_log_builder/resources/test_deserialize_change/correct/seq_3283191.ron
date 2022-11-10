@@ -9,6 +9,7 @@ Some(("stack-component", Normal(
     created: "2014-02-28T00:27:38.610Z",
     modified: "2014-02-28T00:36:08.002Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 0,

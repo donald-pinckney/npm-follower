@@ -12,7 +12,566 @@ Some(("sealious-www-server", Normal(
         "beta": "0.6.5",
         "next": "0.6",
     },
+    extra_version_times: [],
 ), {
+    (
+        major: 0,
+        minor: 4,
+        bug: 3,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("bluebird", (
+                raw: "^2.9.9",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 9,
+                            bug: 9,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("clone", (
+                raw: "^1.0.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("color", (
+                raw: "^0.8.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 8,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 9,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("hapi", (
+                raw: "^8.4.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 8,
+                            minor: 4,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 9,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("sha1", (
+                raw: "^1.1.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 1,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [],
+        peer_dependencies: [
+            ("sealious", (
+                raw: ">=0.4.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 4,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.4.3.tgz",
+            shasum: Some("fa47876d6699b28c0302766ef4f7323ff00a6014"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: None,
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: None,
+        time: "2015-07-21T14:52:26.329Z",
+        extra_metadata: {
+            "_from": ".",
+            "_id": "sealious-www-server@0.4.3",
+            "_nodeVersion": "0.12.2",
+            "_npmUser": {
+                "email": "groovy354@gmail.com",
+                "name": "groovy354",
+            },
+            "_npmVersion": "2.7.4",
+            "_shasum": "fa47876d6699b28c0302766ef4f7323ff00a6014",
+            "author": "",
+            "description": "",
+            "gitHead": "43493796d650416052ca3703aa3efceaf78ee014",
+            "keywords": [
+                "sealious-plugin",
+            ],
+            "license": "BSD-2-Clause",
+            "main": "sealious-www-server.js",
+            "maintainers": [
+                {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354",
+                },
+            ],
+            "name": "sealious-www-server",
+            "scripts": {
+                "test": "echo \"Error: no test specified\" && exit 1",
+            },
+            "tag": "beta",
+            "version": "0.4.3",
+        },
+    ),
+    (
+        major: 0,
+        minor: 5,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("bluebird", (
+                raw: "^2.9.9",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 9,
+                            bug: 9,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("clone", (
+                raw: "^1.0.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("color", (
+                raw: "^0.8.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 8,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 9,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("hapi", (
+                raw: "^8.4.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 8,
+                            minor: 4,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 9,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("sha1", (
+                raw: "^1.1.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 1,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [],
+        peer_dependencies: [
+            ("sealious", (
+                raw: ">=0.4.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 4,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.0.tgz",
+            shasum: Some("d37dbfeca89f94ba41825b33e79dd0cee71b4eb2"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: None,
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: None,
+        time: "2015-08-19T07:59:38.319Z",
+        extra_metadata: {
+            "_from": ".",
+            "_id": "sealious-www-server@0.5.0",
+            "_nodeVersion": "0.12.2",
+            "_npmUser": {
+                "email": "groovy354@gmail.com",
+                "name": "groovy354",
+            },
+            "_npmVersion": "2.13.1",
+            "_shasum": "d37dbfeca89f94ba41825b33e79dd0cee71b4eb2",
+            "author": "",
+            "description": "",
+            "gitHead": "09b138de7cf5857b5636f5c27a0fee61e347b6c5",
+            "keywords": [
+                "sealious-plugin",
+            ],
+            "license": "BSD-2-Clause",
+            "main": "sealious-www-server.js",
+            "maintainers": [
+                {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354",
+                },
+            ],
+            "name": "sealious-www-server",
+            "scripts": {
+                "test": "echo \"Error: no test specified\" && exit 1",
+            },
+            "tag": "beta",
+            "version": "0.5.0",
+        },
+    ),
+    (
+        major: 0,
+        minor: 5,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("bluebird", (
+                raw: "^2.9.9",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 2,
+                            minor: 9,
+                            bug: 9,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 3,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("clone", (
+                raw: "^1.0.2",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 0,
+                            bug: 2,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("color", (
+                raw: "^0.8.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 8,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 0,
+                            minor: 9,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("hapi", (
+                raw: "^8.4.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 8,
+                            minor: 4,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 9,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+            ("sha1", (
+                raw: "^1.1.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 1,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [],
+        peer_dependencies: [
+            ("sealious", (
+                raw: ">=0.4.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 0,
+                            minor: 4,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.1.tgz",
+            shasum: Some("7d993728c00a959e643c0866bed9fa0397af6b5c"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: None,
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: None,
+        time: "2015-08-28T07:26:23.768Z",
+        extra_metadata: {
+            "_from": ".",
+            "_id": "sealious-www-server@0.5.1",
+            "_nodeVersion": "0.12.2",
+            "_npmUser": {
+                "email": "groovy354@gmail.com",
+                "name": "groovy354",
+            },
+            "_npmVersion": "2.13.1",
+            "_shasum": "7d993728c00a959e643c0866bed9fa0397af6b5c",
+            "author": "",
+            "description": "",
+            "gitHead": "5e98bb1bd93d93e3213427052b57638013b125d3",
+            "keywords": [
+                "sealious-plugin",
+            ],
+            "license": "BSD-2-Clause",
+            "main": "sealious-www-server.js",
+            "maintainers": [
+                {
+                    "email": "groovy354@gmail.com",
+                    "name": "groovy354",
+                },
+            ],
+            "name": "sealious-www-server",
+            "scripts": {
+                "test": "echo \"Error: no test specified\" && exit 1",
+            },
+            "tag": "beta",
+            "version": "0.5.1",
+        },
+    ),
     (
         major: 0,
         minor: 5,
@@ -365,194 +924,8 @@ Some(("sealious-www-server", Normal(
     ),
     (
         major: 0,
-        minor: 4,
-        bug: 3,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("bluebird", (
-                raw: "^2.9.9",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 2,
-                            minor: 9,
-                            bug: 9,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 3,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("clone", (
-                raw: "^1.0.2",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 0,
-                            bug: 2,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("color", (
-                raw: "^0.8.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 8,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 0,
-                            minor: 9,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("hapi", (
-                raw: "^8.4.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 8,
-                            minor: 4,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 9,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("sha1", (
-                raw: "^1.1.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 1,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        dev_dependencies: [],
-        peer_dependencies: [
-            ("sealious", (
-                raw: ">=0.4.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 4,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.4.3.tgz",
-            shasum: Some("fa47876d6699b28c0302766ef4f7323ff00a6014"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: None,
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: None,
-        time: "2015-07-21T14:52:26.329Z",
-        extra_metadata: {
-            "_from": ".",
-            "_id": "sealious-www-server@0.4.3",
-            "_nodeVersion": "0.12.2",
-            "_npmUser": {
-                "email": "groovy354@gmail.com",
-                "name": "groovy354",
-            },
-            "_npmVersion": "2.7.4",
-            "_shasum": "fa47876d6699b28c0302766ef4f7323ff00a6014",
-            "author": "",
-            "description": "",
-            "gitHead": "43493796d650416052ca3703aa3efceaf78ee014",
-            "keywords": [
-                "sealious-plugin",
-            ],
-            "license": "BSD-2-Clause",
-            "main": "sealious-www-server.js",
-            "maintainers": [
-                {
-                    "email": "groovy354@gmail.com",
-                    "name": "groovy354",
-                },
-            ],
-            "name": "sealious-www-server",
-            "scripts": {
-                "test": "echo \"Error: no test specified\" && exit 1",
-            },
-            "tag": "beta",
-            "version": "0.4.3",
-        },
-    ),
-    (
-        major: 0,
         minor: 6,
-        bug: 2,
+        bug: 0,
         prerelease: [],
         build: [],
     ): (
@@ -677,8 +1050,8 @@ Some(("sealious-www-server", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.2.tgz",
-            shasum: Some("b046ceb5ce7351ec9d2f0e3dc7e3935b60006a93"),
+            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.0.tgz",
+            shasum: Some("551237b192801067616d8592cc58ff4eb061087f"),
             unpacked_size: None,
             file_count: None,
             integrity: None,
@@ -687,20 +1060,20 @@ Some(("sealious-www-server", Normal(
             npm_signature: None,
         ),
         repository: None,
-        time: "2015-10-23T18:53:13.044Z",
+        time: "2015-09-26T11:15:29.027Z",
         extra_metadata: {
             "_from": ".",
-            "_id": "sealious-www-server@0.6.2",
+            "_id": "sealious-www-server@0.6.0",
             "_nodeVersion": "0.12.2",
             "_npmUser": {
                 "email": "groovy354@gmail.com",
                 "name": "groovy354",
             },
             "_npmVersion": "2.13.1",
-            "_shasum": "b046ceb5ce7351ec9d2f0e3dc7e3935b60006a93",
+            "_shasum": "551237b192801067616d8592cc58ff4eb061087f",
             "author": "",
             "description": "",
-            "gitHead": "8d1aa865a34fb51db122c6a49678fd2baec749fb",
+            "gitHead": "8a4a702904726e04f5f57aadb5ae028d1d04761b",
             "keywords": [
                 "sealious-plugin",
             ],
@@ -721,193 +1094,7 @@ Some(("sealious-www-server", Normal(
                 "test": "echo \"Error: no test specified\" && exit 1",
             },
             "tag": "beta",
-            "version": "0.6.2",
-        },
-    ),
-    (
-        major: 0,
-        minor: 5,
-        bug: 0,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("bluebird", (
-                raw: "^2.9.9",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 2,
-                            minor: 9,
-                            bug: 9,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 3,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("clone", (
-                raw: "^1.0.2",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 0,
-                            bug: 2,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("color", (
-                raw: "^0.8.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 8,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 0,
-                            minor: 9,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("hapi", (
-                raw: "^8.4.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 8,
-                            minor: 4,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 9,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("sha1", (
-                raw: "^1.1.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 1,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        dev_dependencies: [],
-        peer_dependencies: [
-            ("sealious", (
-                raw: ">=0.4.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 4,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.0.tgz",
-            shasum: Some("d37dbfeca89f94ba41825b33e79dd0cee71b4eb2"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: None,
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: None,
-        time: "2015-08-19T07:59:38.319Z",
-        extra_metadata: {
-            "_from": ".",
-            "_id": "sealious-www-server@0.5.0",
-            "_nodeVersion": "0.12.2",
-            "_npmUser": {
-                "email": "groovy354@gmail.com",
-                "name": "groovy354",
-            },
-            "_npmVersion": "2.13.1",
-            "_shasum": "d37dbfeca89f94ba41825b33e79dd0cee71b4eb2",
-            "author": "",
-            "description": "",
-            "gitHead": "09b138de7cf5857b5636f5c27a0fee61e347b6c5",
-            "keywords": [
-                "sealious-plugin",
-            ],
-            "license": "BSD-2-Clause",
-            "main": "sealious-www-server.js",
-            "maintainers": [
-                {
-                    "email": "groovy354@gmail.com",
-                    "name": "groovy354",
-                },
-            ],
-            "name": "sealious-www-server",
-            "scripts": {
-                "test": "echo \"Error: no test specified\" && exit 1",
-            },
-            "tag": "beta",
-            "version": "0.5.0",
+            "version": "0.6.0",
         },
     ),
     (
@@ -1087,194 +1274,8 @@ Some(("sealious-www-server", Normal(
     ),
     (
         major: 0,
-        minor: 5,
-        bug: 1,
-        prerelease: [],
-        build: [],
-    ): (
-        prod_dependencies: [
-            ("bluebird", (
-                raw: "^2.9.9",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 2,
-                            minor: 9,
-                            bug: 9,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 3,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("clone", (
-                raw: "^1.0.2",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 0,
-                            bug: 2,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("color", (
-                raw: "^0.8.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 8,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 0,
-                            minor: 9,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("hapi", (
-                raw: "^8.4.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 8,
-                            minor: 4,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 9,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-            ("sha1", (
-                raw: "^1.1.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 1,
-                            minor: 1,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                        Lt((
-                            major: 2,
-                            minor: 0,
-                            bug: 0,
-                            prerelease: [
-                                Int(0),
-                            ],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        dev_dependencies: [],
-        peer_dependencies: [
-            ("sealious", (
-                raw: ">=0.4.0",
-                parsed: Range(([
-                    [
-                        Gte((
-                            major: 0,
-                            minor: 4,
-                            bug: 0,
-                            prerelease: [],
-                            build: [],
-                        )),
-                    ],
-                ])),
-            )),
-        ],
-        optional_dependencies: [],
-        dist: (
-            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.5.1.tgz",
-            shasum: Some("7d993728c00a959e643c0866bed9fa0397af6b5c"),
-            unpacked_size: None,
-            file_count: None,
-            integrity: None,
-            signature0_sig: None,
-            signature0_keyid: None,
-            npm_signature: None,
-        ),
-        repository: None,
-        time: "2015-08-28T07:26:23.768Z",
-        extra_metadata: {
-            "_from": ".",
-            "_id": "sealious-www-server@0.5.1",
-            "_nodeVersion": "0.12.2",
-            "_npmUser": {
-                "email": "groovy354@gmail.com",
-                "name": "groovy354",
-            },
-            "_npmVersion": "2.13.1",
-            "_shasum": "7d993728c00a959e643c0866bed9fa0397af6b5c",
-            "author": "",
-            "description": "",
-            "gitHead": "5e98bb1bd93d93e3213427052b57638013b125d3",
-            "keywords": [
-                "sealious-plugin",
-            ],
-            "license": "BSD-2-Clause",
-            "main": "sealious-www-server.js",
-            "maintainers": [
-                {
-                    "email": "groovy354@gmail.com",
-                    "name": "groovy354",
-                },
-            ],
-            "name": "sealious-www-server",
-            "scripts": {
-                "test": "echo \"Error: no test specified\" && exit 1",
-            },
-            "tag": "beta",
-            "version": "0.5.1",
-        },
-    ),
-    (
-        major: 0,
-        minor: 7,
-        bug: 0,
+        minor: 6,
+        bug: 2,
         prerelease: [],
         build: [],
     ): (
@@ -1399,8 +1400,8 @@ Some(("sealious-www-server", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.7.0.tgz",
-            shasum: Some("82d519ed18c4f3353edbe86e617c53263fb5156c"),
+            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.2.tgz",
+            shasum: Some("b046ceb5ce7351ec9d2f0e3dc7e3935b60006a93"),
             unpacked_size: None,
             file_count: None,
             integrity: None,
@@ -1409,20 +1410,20 @@ Some(("sealious-www-server", Normal(
             npm_signature: None,
         ),
         repository: None,
-        time: "2015-12-12T15:07:08.924Z",
+        time: "2015-10-23T18:53:13.044Z",
         extra_metadata: {
             "_from": ".",
-            "_id": "sealious-www-server@0.7.0",
-            "_nodeVersion": "5.2.0",
+            "_id": "sealious-www-server@0.6.2",
+            "_nodeVersion": "0.12.2",
             "_npmUser": {
-                "email": "kontakt@jakub-orlik.pl",
+                "email": "groovy354@gmail.com",
                 "name": "groovy354",
             },
-            "_npmVersion": "3.3.12",
-            "_shasum": "82d519ed18c4f3353edbe86e617c53263fb5156c",
+            "_npmVersion": "2.13.1",
+            "_shasum": "b046ceb5ce7351ec9d2f0e3dc7e3935b60006a93",
             "author": "",
             "description": "",
-            "gitHead": "cf3ad2b866095d6fb839556bbf43302c0a3ba486",
+            "gitHead": "8d1aa865a34fb51db122c6a49678fd2baec749fb",
             "keywords": [
                 "sealious-plugin",
             ],
@@ -1443,7 +1444,7 @@ Some(("sealious-www-server", Normal(
                 "test": "echo \"Error: no test specified\" && exit 1",
             },
             "tag": "beta",
-            "version": "0.7.0",
+            "version": "0.6.2",
         },
     ),
     (
@@ -1798,7 +1799,7 @@ Some(("sealious-www-server", Normal(
     ),
     (
         major: 0,
-        minor: 6,
+        minor: 7,
         bug: 0,
         prerelease: [],
         build: [],
@@ -1924,8 +1925,8 @@ Some(("sealious-www-server", Normal(
         peer_dependencies: [],
         optional_dependencies: [],
         dist: (
-            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.6.0.tgz",
-            shasum: Some("551237b192801067616d8592cc58ff4eb061087f"),
+            tarball_url: "https://registry.npmjs.org/sealious-www-server/-/sealious-www-server-0.7.0.tgz",
+            shasum: Some("82d519ed18c4f3353edbe86e617c53263fb5156c"),
             unpacked_size: None,
             file_count: None,
             integrity: None,
@@ -1934,20 +1935,20 @@ Some(("sealious-www-server", Normal(
             npm_signature: None,
         ),
         repository: None,
-        time: "2015-09-26T11:15:29.027Z",
+        time: "2015-12-12T15:07:08.924Z",
         extra_metadata: {
             "_from": ".",
-            "_id": "sealious-www-server@0.6.0",
-            "_nodeVersion": "0.12.2",
+            "_id": "sealious-www-server@0.7.0",
+            "_nodeVersion": "5.2.0",
             "_npmUser": {
-                "email": "groovy354@gmail.com",
+                "email": "kontakt@jakub-orlik.pl",
                 "name": "groovy354",
             },
-            "_npmVersion": "2.13.1",
-            "_shasum": "551237b192801067616d8592cc58ff4eb061087f",
+            "_npmVersion": "3.3.12",
+            "_shasum": "82d519ed18c4f3353edbe86e617c53263fb5156c",
             "author": "",
             "description": "",
-            "gitHead": "8a4a702904726e04f5f57aadb5ae028d1d04761b",
+            "gitHead": "cf3ad2b866095d6fb839556bbf43302c0a3ba486",
             "keywords": [
                 "sealious-plugin",
             ],
@@ -1968,7 +1969,7 @@ Some(("sealious-www-server", Normal(
                 "test": "echo \"Error: no test specified\" && exit 1",
             },
             "tag": "beta",
-            "version": "0.6.0",
+            "version": "0.7.0",
         },
     ),
 }))

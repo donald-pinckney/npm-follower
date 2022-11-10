@@ -11,6 +11,7 @@ Some(("Sheet", Normal(
     created: "2010-11-09T23:35:16Z",
     modified: "2010-11-09T23:35:16Z",
     other_dist_tags: {},
+    extra_version_times: [],
 ), {
     (
         major: 1,
