@@ -16,6 +16,7 @@ use crate::{
 pub(crate) struct InfluxDbLogger {
     write_thread: Option<JoinHandle<()>>,
     write_sender: Option<Sender<DataPoint>>,
+    initial_write_count: i64,
 }
 
 use futures::stream;
@@ -74,10 +75,18 @@ impl InfluxDbLogger {
         InfluxDbLogger {
             write_thread: Some(write_thread),
             write_sender: Some(write_sender),
+            initial_write_count: 0,
         }
     }
 
-    fn write_data_point(&self, point: DataPoint) {
+    fn write_data_point(&mut self, point: DataPoint) {
+        if self.initial_write_count < 5 {
+            println!("Sending to InfluxDB: {:?}", point);
+            self.initial_write_count += 1;
+        }
+        if self.initial_write_count == 5 {
+            println!("\ngoing silent now, will now only write to InfluxDB...");
+        }
         self.write_sender.as_ref().unwrap().send(point).unwrap()
     }
 }
