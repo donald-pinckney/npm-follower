@@ -1,4 +1,4 @@
-use chrono::Utc;
+use chrono::{Local, Utc};
 use influxdb2::{models::DataPoint, Client};
 use tokio::runtime::Runtime;
 
@@ -25,6 +25,18 @@ impl InfluxDbLogger {
                 .enable_all()
                 .build()
                 .unwrap(),
+        }
+    }
+
+    fn write_data_point(&self, point: DataPoint) {
+        let to_write = stream::iter(std::iter::once(point));
+        let result = self.rt.block_on(self.conn.write(&self.bucket, to_write));
+        if let Err(req_err) = result {
+            eprintln!(
+                "[{}] Dropping metrics due to error writing to InfluxDB:\n{}",
+                Local::now(),
+                req_err
+            );
         }
     }
 }
@@ -80,7 +92,7 @@ impl MetricsLoggerTrait for InfluxDbLogger {
             session_start_time: metrics_tmp.session_start_time.to_string(),
         };
 
-        let p = vec![DataPoint::builder("diff_log_builder_metrics")
+        let p = DataPoint::builder("diff_log_builder_metrics")
             .tag("event_type", "batch_complete")
             .field("batch_start_time", metrics.batch_start_time)
             .field("batch_end_time", metrics.batch_end_time)
@@ -112,15 +124,13 @@ impl MetricsLoggerTrait for InfluxDbLogger {
             .field("session_start_time", metrics.session_start_time)
             .timestamp(time_now.timestamp_nanos())
             .build()
-            .unwrap()];
+            .unwrap();
 
-        self.rt
-            .block_on(self.conn.write(&self.bucket, stream::iter(p)))
-            .unwrap()
+        self.write_data_point(p);
     }
 
     fn log_diff_log_builder_start_session(&mut self, metrics: DiffLogStartSessionMetrics) {
-        let p = vec![DataPoint::builder("diff_log_builder_metrics")
+        let p = DataPoint::builder("diff_log_builder_metrics")
             .tag("event_type", "start_session")
             .field("session_start_time", metrics.session_start_time.to_string())
             .field(
@@ -130,15 +140,13 @@ impl MetricsLoggerTrait for InfluxDbLogger {
             .field("session_num_seqs", metrics.session_num_seqs)
             .timestamp(metrics.session_start_time.timestamp_nanos())
             .build()
-            .unwrap()];
+            .unwrap();
 
-        self.rt
-            .block_on(self.conn.write(&self.bucket, stream::iter(p)))
-            .unwrap()
+        self.write_data_point(p);
     }
 
     fn log_diff_log_builder_end_session(&mut self, metrics: DiffLogEndSessionMetrics) {
-        let p = vec![DataPoint::builder("diff_log_builder_metrics")
+        let p = DataPoint::builder("diff_log_builder_metrics")
             .tag("event_type", "start_session")
             .field("session_start_time", metrics.session_start_time.to_string())
             .field(
@@ -161,26 +169,22 @@ impl MetricsLoggerTrait for InfluxDbLogger {
             )
             .timestamp(metrics.session_end_time.timestamp_nanos())
             .build()
-            .unwrap()];
+            .unwrap();
 
-        self.rt
-            .block_on(self.conn.write(&self.bucket, stream::iter(p)))
-            .unwrap()
+        self.write_data_point(p);
     }
 
     fn log_diff_log_builder_panic(&mut self, metrics: DiffLogPanicMetrics) {
-        let p = vec![DataPoint::builder("diff_log_builder_metrics")
+        let p = DataPoint::builder("diff_log_builder_metrics")
             .tag("event_type", "panic")
             .field("panic_time", metrics.panic_time.to_string())
             .field("panic_on_seq_id", metrics.panic_on_seq_id)
             .field("panic_message", metrics.panic_message)
             .timestamp(metrics.panic_time.timestamp_nanos())
             .build()
-            .unwrap()];
+            .unwrap();
 
-        self.rt
-            .block_on(self.conn.write(&self.bucket, stream::iter(p)))
-            .unwrap()
+        self.write_data_point(p);
     }
 
     fn log_relational_db_builder_batch_complete_metrics(
