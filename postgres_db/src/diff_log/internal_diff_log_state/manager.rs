@@ -198,6 +198,7 @@ mod tests {
             created: Utc::now(),
             modified: Utc::now(),
             other_dist_tags: Map::new(),
+            extra_version_times: BTreeMap::new(),
         };
         let (_, hash1, _) = pack1_pack.serialize_and_hash();
         let diff1 = DiffLogInstruction::CreatePackage(pack1_pack.clone());
@@ -280,12 +281,14 @@ mod tests {
             created: created_time,
             modified: modified_time,
             other_dist_tags: Map::new(),
+            extra_version_times: BTreeMap::new(),
         };
         let pack1_pack_with_latest = PackageOnlyPackument::Normal {
             latest: Some(v0.clone()),
             created: created_time,
             modified: modified_time,
             other_dist_tags: Map::new(),
+            extra_version_times: BTreeMap::new(),
         };
         let (_, hash1_with_latest, _) = pack1_pack_with_latest.serialize_and_hash();
         let diff1 = DiffLogInstruction::CreatePackage(pack1_pack);
@@ -435,6 +438,7 @@ mod tests {
             created: Utc::now(),
             modified: Utc::now(),
             other_dist_tags: Map::new(),
+            extra_version_times: BTreeMap::new(),
         };
         let (_, hash1, _) = pack1_pack.serialize_and_hash();
 

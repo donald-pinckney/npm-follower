@@ -275,6 +275,7 @@ mod tests {
             created: Utc::now(),
             modified: Utc::now(),
             other_dist_tags: Map::new(),
+            extra_version_times: BTreeMap::new(),
         };
 
         let garbage_version_pack_data = VersionOnlyPackument {
@@ -345,7 +346,7 @@ mod tests {
                 instr: DiffLogInstruction::UpdatePackage(garbage_pack_data),
             },
             DiffLogEntry {
-                id: 4,
+                id: 3,
                 seq: 103,
                 package_name: "react".into(),
                 instr: DiffLogInstruction::CreateVersion(
@@ -354,13 +355,13 @@ mod tests {
                 ),
             },
             DiffLogEntry {
-                id: 5,
+                id: 4,
                 seq: 104,
                 package_name: "react".into(),
                 instr: DiffLogInstruction::UpdateVersion(v.clone(), garbage_version_pack_data),
             },
             DiffLogEntry {
-                id: 6,
+                id: 5,
                 seq: 105,
                 package_name: "react".into(),
                 instr: DiffLogInstruction::DeleteVersion(v),
