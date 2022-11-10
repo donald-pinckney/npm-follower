@@ -1,3 +1,8 @@
+use std::{
+    sync::mpsc::{self, Sender},
+    thread::JoinHandle,
+};
+
 use chrono::{Local, Utc};
 use influxdb2::{models::DataPoint, Client};
 use tokio::runtime::Runtime;
@@ -9,38 +14,83 @@ use crate::{
 };
 
 pub(crate) struct InfluxDbLogger {
-    conn: Client,
-    bucket: String,
-    rt: Runtime,
+    write_thread: Option<JoinHandle<()>>,
+    write_sender: Option<Sender<DataPoint>>,
 }
 
 use futures::stream;
 
+fn sync_write_queue(
+    bucket: &str,
+    points: Vec<DataPoint>,
+    rt: &Runtime,
+    conn: &Client,
+) -> Vec<DataPoint> {
+    let to_write = stream::iter(points.clone());
+    match rt.block_on(conn.write(bucket, to_write)) {
+        Ok(_) => vec![],
+        Err(_) => points,
+    }
+}
+
 impl InfluxDbLogger {
     pub(crate) fn new(host: String, org: String, token: String, bucket: String) -> InfluxDbLogger {
-        InfluxDbLogger {
-            conn: Client::new(host, org, token),
-            bucket,
-            rt: tokio::runtime::Builder::new_current_thread()
+        let (write_sender, write_receiver) = mpsc::channel();
+
+        let write_thread = std::thread::spawn(move || {
+            let conn = Client::new(host, org, token);
+
+            let rt = tokio::runtime::Builder::new_current_thread()
                 .enable_all()
                 .build()
-                .unwrap(),
+                .unwrap();
+
+            let mut write_queue: Vec<DataPoint> = Vec::new();
+
+            loop {
+                let msg = write_receiver.recv();
+                match msg {
+                    Err(_) => {
+                        sync_write_queue(&bucket, write_queue, &rt, &conn);
+                        break;
+                    }
+                    Ok(to_write) => {
+                        write_queue.push(to_write);
+
+                        if write_queue.len() > 1024 {
+                            eprintln!(
+                                "[{}] Dropping {} metrics due to error writing to InfluxDB.",
+                                write_queue.len() - 1024,
+                                Local::now()
+                            );
+                            write_queue.drain(0..(write_queue.len() - 1024));
+                        }
+                        write_queue = sync_write_queue(&bucket, write_queue, &rt, &conn);
+                    }
+                }
+            }
+        });
+
+        InfluxDbLogger {
+            write_thread: Some(write_thread),
+            write_sender: Some(write_sender),
         }
     }
 
     fn write_data_point(&self, point: DataPoint) {
-        let to_write = stream::iter(std::iter::once(point));
-        let result = self.rt.block_on(self.conn.write(&self.bucket, to_write));
-        if let Err(req_err) = result {
-            eprintln!(
-                "[{}] Dropping metrics due to error writing to InfluxDB:\n{}",
-                Local::now(),
-                req_err
-            );
-        }
+        self.write_sender.as_ref().unwrap().send(point).unwrap()
     }
 }
 
+impl Drop for InfluxDbLogger {
+    fn drop(&mut self) {
+        drop(self.write_sender.take());
+
+        if let Some(thread) = self.write_thread.take() {
+            thread.join().unwrap();
+        }
+    }
+}
 struct DiffLogBatchCompleteMetricsInflux {
     batch_start_time: String,
     batch_end_time: String,

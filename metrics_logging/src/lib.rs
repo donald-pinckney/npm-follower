@@ -102,7 +102,7 @@ pub trait MetricsLoggerTrait {
     fn log_relational_db_builder_panic(&mut self, metrics: RelationalDbPanicMetrics);
 }
 
-pub struct MetricsLogger(Box<dyn MetricsLoggerTrait + Send + Sync>);
+pub struct MetricsLogger(Box<dyn MetricsLoggerTrait + Send>);
 
 impl MetricsLoggerTrait for MetricsLogger {
     fn log_diff_log_builder_batch_complete_metrics(
