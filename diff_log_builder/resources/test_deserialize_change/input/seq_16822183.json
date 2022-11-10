@@ -1,0 +1,15 @@
+{
+    "changes": [
+        {
+            "rev": "12-8337ba31794db70d4d515cd0ea93751e"
+        }
+    ],
+    "deleted": true,
+    "doc": {
+        "_deleted": true,
+        "_id": "tappr-web-sdk",
+        "_rev": "12-8337ba31794db70d4d515cd0ea93751e"
+    },
+    "id": "tappr-web-sdk",
+    "seq": 16822183
+}

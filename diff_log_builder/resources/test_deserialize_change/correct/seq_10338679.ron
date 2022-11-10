@@ -1,0 +1,71 @@
+Some(("angieslist-visitor-app-common", Normal(
+    latest: Some((
+        major: 2,
+        minor: 0,
+        bug: 772,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2021-11-16T07:15:06.236Z",
+    modified: "2022-04-11T13:51:04.920Z",
+    other_dist_tags: {},
+    extra_version_times: [],
+), {
+    (
+        major: 2,
+        minor: 0,
+        bug: 772,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/angieslist-visitor-app-common/-/angieslist-visitor-app-common-2.0.772.tgz",
+            shasum: Some("803355866aff17e4df1f2a408da61f2fa112aa09"),
+            unpacked_size: Some(1281),
+            file_count: Some(2),
+            integrity: Some("sha512-KSMp+iDrcBnuV2nigs/UBw6140ekDyoz2pjFsKtzvBEhQ6qZgXF79htgQrx/Y8dZqO/hsh7skxDve9jM2UavSw=="),
+            signature0_sig: Some("MEQCIFYWW6UXgfE75hDbu3RtIZWnGl/k6V5xvL2Bi3/JUEOSAiBk65Zbt6lywqZusN2f5gw0zaMizeMBdnwuLnV4XeJ1uw=="),
+            signature0_keyid: Some("SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"),
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJhk1p6CRA9TVsSAnZWagAAUmUP/1b4lLk/qwrlxvjyHhLq\nMCh38vSMCRYhVOqIAaD4V1JGiBwA21WE5ekjQenwgQLrpgTc7HxGKvFqBLaU\nRU2/deLqtaUJaJYpE9VpprFi9hMhLBkWnLn+sbYzzHPC0mXhTNEqNSNM80M1\nr4HLzVweA5kujg1hcspTvK8c0NWzutU5FWAReENYq6rt17B07Yc6RD4uNSJQ\noCFDWlwJwui7laZQwk/nqDLKX63PlATSn/aytVQhMNLXuOydfJGdAmepz6hm\nB++uqflByZdx49UXAmjOnPcCJ9ljIPiD8HNCMkvb4yy/WsgThpaq+aUZfu/m\nWHbSFMsJv4CbcEPOaqsGHnlpJnkDLrtKgMU2u0y0heCv9dF6Z0Y9vmz3YBEW\nYLEQ/t3voIFjj/4RtlQVYTc2of2pa/QyJte1UVbd6QYPRJzJN59rIpAUzHxV\n5fOGiTgufPBYS0VJwJefZMRC+C00hH4GQ81PPS+PcvNVHjGxBz/mMzRUJRtb\n3Aq54+6ADL9eD2NkLurD5WoGUFWY9+7GEw7l5yQCq4AeOe5tONGKQ9tCp+6u\nbsWrBSNS36HhZZ4xzkdmdFILA3s67zFsT0rlin5XvczExB7ju+eUXbXMZxXT\nmnquGrYO4cJ6lXTF/LeeOzifBEQE9AqRtOSrUZ3d8RCNsrYyEzURQyj1QXad\n1LZ/\r\n=to88\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2021-11-16T07:15:06.362Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "angieslist-visitor-app-common@2.0.772",
+            "_nodeVersion": "12.22.7",
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/angieslist-visitor-app-common_2.0.772_1637046906236_0.014993511604155962",
+            },
+            "_npmUser": {
+                "email": "saydaazanero94@gmail.com",
+                "name": "angx12",
+            },
+            "_npmVersion": "7.24.2",
+            "author": {
+                "name": "AngiListX",
+            },
+            "description": "angilist",
+            "directories": {},
+            "license": "ISC",
+            "main": "node index.js",
+            "maintainers": [
+                {
+                    "email": "saydaazanero94@gmail.com",
+                    "name": "angx12",
+                },
+            ],
+            "name": "angieslist-visitor-app-common",
+            "scripts": {
+                "preinstall": "node index.js",
+                "test": "echo \"Error: no test specified\" && exit 1",
+            },
+            "version": "2.0.772",
+        },
+    ),
+}))
