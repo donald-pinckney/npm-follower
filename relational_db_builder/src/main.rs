@@ -137,7 +137,13 @@ pub fn process_entries(
     conn: &mut DbConnectionInTransaction,
     entries: Vec<DiffLogEntry>,
 ) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError> {
-    todo!()
+    Ok(ProcessEntrySuccessMetrics {
+        num_changes: 0,
+        read_bytes: 0,
+        write_bytes: 0,
+        write_duration: Duration::from_secs(0),
+    })
+    // todo!()
 
     // let mut state_manager = DiffStateManager::new();
     // let mut new_diff_entries: Vec<NewDiffLogEntryWithHash> = Vec::new();
