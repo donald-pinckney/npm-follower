@@ -1,5 +1,7 @@
 # NPM Scraping Scripts
 
+[![Rust](https://github.com/donald-pinckney/npm-follower/actions/workflows/rust.yml/badge.svg)](https://github.com/donald-pinckney/npm-follower/actions/workflows/rust.yml)
+
 [DASHBOARD](https://dashboard-influx.apps.in.ripley.cloud/orgs/a93b78e20fbf138a/dashboards/0a448da5a7ed4000)
 
 ## Prerequisites
