@@ -1,6 +1,6 @@
 # NPM Scraping Scripts
 
-[DASHBOARD](https://dashboard-influx.apps.in.ripley.cloud/orgs/a93b78e20fbf138a/dashboards/0a448da5a7ed4000)
+[DASHBOARD](https://grafana.apps.in.ripley.cloud/d/uwm1nEv4z/supply-chain-monitoring?orgId=1&refresh=1m)
 
 ## Prerequisites
 
