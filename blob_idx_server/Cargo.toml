@@ -13,7 +13,7 @@ dotenvy = "0.15.6"
 futures = "0.3.25"
 hyper = { version = "0.14.20", features = ["full"] }
 lazy_static = "1.4.0"
-openssh = "0.9.7"
+openssh = { version = "0.9.8", features = ["native-mux"] }
 rand = "0.8.5"
 redis = "0.21.6"
 reqwest = "0.11.12"

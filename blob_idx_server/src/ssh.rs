@@ -11,6 +11,32 @@ pub trait Ssh {
     async fn run_command(&self, cmd: &str) -> Result<String, JobError>;
 }
 
+pub trait SshFactory {
+    fn spawn(&self) -> tokio::task::JoinHandle<Box<dyn Ssh + Send + Sync>>;
+}
+
+pub struct SshSessionFactory {
+    ssh_user_host: String,
+}
+
+impl SshSessionFactory {
+    pub fn new(ssh_user_host: &str) -> Self {
+        Self {
+            ssh_user_host: ssh_user_host.to_string(),
+        }
+    }
+}
+
+impl SshFactory for SshSessionFactory {
+    fn spawn(&self) -> tokio::task::JoinHandle<Box<dyn Ssh + Send + Sync>> {
+        let ssh_user_host = self.ssh_user_host.clone();
+        tokio::spawn(async move {
+            let ssh = SshSession::connect(&ssh_user_host).await.unwrap();
+            Box::new(ssh) as Box<dyn Ssh + Send + Sync>
+        })
+    }
+}
+
 pub struct SshSession {
     session: Mutex<openssh::Session>,
     ssh_user_host: String,
@@ -19,7 +45,8 @@ pub struct SshSession {
 #[async_trait::async_trait]
 impl Ssh for SshSession {
     async fn connect(ssh_user_host: &str) -> Result<Self, JobError> {
-        let session = openssh::Session::connect(ssh_user_host, openssh::KnownHosts::Accept).await?;
+        let session =
+            openssh::Session::connect_mux(ssh_user_host, openssh::KnownHosts::Accept).await?;
         Ok(Self {
             session: Mutex::new(session),
             ssh_user_host: ssh_user_host.to_string(),

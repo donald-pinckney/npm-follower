@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use chrono::TimeZone;
 use dashmap::DashMap;
 use tokio::sync::{
     mpsc::{Receiver, Sender},
@@ -11,24 +10,8 @@ use tokio::task::spawn;
 use crate::{
     debug,
     errors::JobError,
-    ssh::{Ssh, SshSession},
+    ssh::{Ssh, SshFactory, SshSession, SshSessionFactory},
 };
-
-/// Configuration to initialize a job manager.
-#[derive(Debug, Clone)]
-pub struct JobManagerConfig {
-    /// The user and host for the ssh connection.
-    pub ssh_user_host: String,
-    /// The maximum amount of worker jobs that can be running at the same time.
-    pub max_worker_jobs: usize,
-}
-
-pub struct JobManager {
-    config: JobManagerConfig,
-    /// ssh session for managing jobs
-    ssh_session: Box<dyn Ssh>,
-    worker_pool: WorkerPool,
-}
 
 struct WorkerPool {
     /// map of [discovery's job_id] -> [worker]
@@ -41,20 +24,23 @@ struct WorkerPool {
     max_worker_jobs: usize,
     /// ssh session for managing workers.
     ssh_session: Box<dyn Ssh>,
+    /// ssh factory, for creating new ssh sessions.
+    ssh_factory: Box<dyn SshFactory>,
     /// The cleanup tasks for each worker.
     cleanup_tasks: Arc<DashMap<u64, tokio::task::JoinHandle<()>>>,
 }
 
 impl WorkerPool {
     /// Initializes the worker pool with the given maximum number of workers and the given ssh session.
-    async fn init(max_worker_jobs: usize, ssh: Box<dyn Ssh>) -> Self {
+    async fn init(max_worker_jobs: usize, ssh_factory: Box<dyn SshFactory>) -> Self {
         let (tx, rx): (Sender<u64>, Receiver<u64>) = tokio::sync::mpsc::channel(max_worker_jobs);
         Self {
             pool: Arc::new(DashMap::new()),
             avail_tx: tx,
             avail_rx: rx,
             max_worker_jobs,
-            ssh_session: ssh,
+            ssh_session: ssh_factory.spawn().await.unwrap(),
+            ssh_factory,
             cleanup_tasks: Arc::new(DashMap::new()),
         }
     }
@@ -144,17 +130,20 @@ impl WorkerPool {
                     if status == "R" {
                         WorkerStatus::Running {
                             started_at: job_time,
+                            ssh_session: self.ssh_factory.spawn().await.unwrap(),
                             node_id: node_id.to_string(),
                         }
                     } else {
-                        WorkerStatus::Queued
+                        WorkerStatus::Queued {
+                            ssh_handle: Mutex::new(Some(self.ssh_factory.spawn())),
+                        }
                     }
                 };
                 self.pool.insert(
                     job_id,
                     Worker {
                         job_id,
-                        status: worker_status,
+                        status: Arc::new(worker_status),
                         avail_tx: self.avail_tx.clone(),
                     },
                 );
@@ -191,7 +180,9 @@ impl WorkerPool {
         let worker = Worker {
             job_id,
             avail_tx: self.avail_tx.clone(),
-            status: WorkerStatus::Queued,
+            status: Arc::new(WorkerStatus::Queued {
+                ssh_handle: Mutex::new(Some(self.ssh_factory.spawn())),
+            }),
         };
 
         self.pool.insert(job_id, worker);
@@ -209,16 +200,26 @@ impl WorkerPool {
         while !worker.is_running(&*self.ssh_session).await? {
             tokio::time::sleep(std::time::Duration::from_millis(500)).await;
         }
+        // get status, assume it's Queued
+        let status = match &*worker.status {
+            WorkerStatus::Queued { ssh_handle } => {
+                let ssh_session = ssh_handle.lock().await.take().unwrap().await.unwrap();
+                let node_id = worker.get_node_id(&*ssh_session).await?;
+                WorkerStatus::Running {
+                    started_at: chrono::Utc::now(),
+                    ssh_session,
+                    node_id,
+                }
+            }
+            _ => panic!("Worker should be queued"),
+        };
         // now that the worker is running, we can update the status.
         let new_worker = Worker {
-            status: WorkerStatus::Running {
-                started_at: chrono::Utc::now(),
-                node_id: worker.get_node_id(&*self.ssh_session).await?,
-            },
+            status: Arc::new(status),
             ..worker
         };
 
-        debug!("Worker {:?} is running", new_worker);
+        debug!("Worker {} is running", new_worker.job_id);
 
         self.pool.insert(new_worker.job_id, new_worker.clone());
 
@@ -235,18 +236,19 @@ impl WorkerPool {
     async fn get_worker(&mut self) -> Result<Worker, JobError> {
         let job_id = self.avail_rx.recv().await.unwrap();
         let worker = self.pool.get(&job_id).unwrap().value().clone();
-        match worker.status {
-            WorkerStatus::Queued => {
+        match &*worker.status {
+            WorkerStatus::Queued { ssh_handle: _ } => {
                 // check/wait until worker is running, update status to running
                 self.wait_running(worker).await
             }
             WorkerStatus::Running {
                 started_at,
                 node_id: _,
+                ssh_session: _,
             } => {
                 // check if worker is expired
                 let now = chrono::Utc::now();
-                let worker_age = now - started_at;
+                let worker_age = now - *started_at;
                 if worker_age > chrono::Duration::hours(23) {
                     // expired, remove from pool and add a new worker
                     self.pool.remove(&job_id);
@@ -261,12 +263,12 @@ impl WorkerPool {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 struct Worker {
     /// the discovery job id
     job_id: u64,
     /// the status of the worker
-    status: WorkerStatus,
+    status: Arc<WorkerStatus>,
     avail_tx: Sender<u64>, // where u64 is the job_id
 }
 
@@ -294,53 +296,73 @@ impl Worker {
     }
 }
 
-#[derive(Debug, Clone)]
 enum WorkerStatus {
-    Queued,
+    Queued {
+        // yeah... this is to squeeze a few extra seconds out of the worker startup time.
+        ssh_handle: Mutex<Option<tokio::task::JoinHandle<Box<dyn Ssh + Send + Sync>>>>,
+    },
     Running {
         started_at: chrono::DateTime<chrono::Utc>,
+        ssh_session: Box<dyn Ssh + Send + Sync>,
         node_id: String,
     },
+}
+
+/// Configuration to initialize a job manager.
+#[derive(Debug, Clone)]
+pub struct JobManagerConfig {
+    /// The user and host for the ssh connection.
+    pub ssh_user_host: String,
+    /// The maximum amount of worker jobs that can be running at the same time.
+    pub max_worker_jobs: usize,
+}
+
+pub struct JobManager {
+    config: JobManagerConfig,
+    worker_pool: WorkerPool,
 }
 
 impl JobManager {
     pub(crate) async fn init_with_ssh(
         config: JobManagerConfig,
-        ssh_for_manager: Box<dyn Ssh>,
-        ssh_for_pool: Box<dyn Ssh>,
+        ssh_factory: Box<dyn SshFactory>,
     ) -> Self {
-        let mut worker_pool = WorkerPool::init(config.max_worker_jobs, ssh_for_pool).await;
+        let mut worker_pool = WorkerPool::init(config.max_worker_jobs, ssh_factory).await;
         worker_pool
             .populate()
             .await
             .expect("populate worker pool failed");
+
         // print if on debug
         #[cfg(debug_assertions)]
         {
             for worker in worker_pool.pool.iter() {
-                debug!("Worker {:?} is running", worker.value());
+                debug!("Worker {} is running", worker.value().job_id);
             }
         }
+
         Self {
             config,
-            ssh_session: ssh_for_manager,
             worker_pool,
         }
     }
+
     pub async fn init(config: JobManagerConfig) -> Self {
-        let creds = config.ssh_user_host.clone();
-        let ssh_session =
-            spawn(async move { SshSession::connect(&creds).await.expect("ssh connect") });
+        let factory = Box::new(SshSessionFactory::new(&config.ssh_user_host));
 
-        let creds = config.ssh_user_host.clone();
-        let ssh_session_for_pool =
-            spawn(async move { SshSession::connect(&creds).await.expect("ssh connect") });
-
-        Self::init_with_ssh(
-            config,
-            Box::new(ssh_session.await.unwrap()),
-            Box::new(ssh_session_for_pool.await.unwrap()),
-        )
-        .await
+        Self::init_with_ssh(config, factory).await
     }
+
+    /*
+        /// Submits a download and write job to the discovery cluster.
+        pub async fn submit_download_job(&self, urls: Vec<String>) -> Result<(), JobError> {
+            let worker = self.worker_pool.get_worker().await?;
+            let job_id = worker.job_id;
+            let node_id = match worker.status {
+                WorkerStatus::Running { node_id, .. } => node_id,
+                _ => unreachable!(),
+            };
+
+            let urls = urls.join(" ");
+    */
 }
