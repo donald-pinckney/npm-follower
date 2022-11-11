@@ -39,7 +39,7 @@ impl WorkerPool {
             avail_tx: tx,
             avail_rx: rx,
             max_worker_jobs,
-            ssh_session: ssh_factory.spawn().await.unwrap(),
+            ssh_session: ssh_factory.spawn().await,
             ssh_factory,
             cleanup_tasks: Arc::new(DashMap::new()),
         }
@@ -130,13 +130,11 @@ impl WorkerPool {
                     if status == "R" {
                         WorkerStatus::Running {
                             started_at: job_time,
-                            ssh_session: self.ssh_factory.spawn().await.unwrap(),
+                            ssh_session: self.ssh_factory.spawn().await,
                             node_id: node_id.to_string(),
                         }
                     } else {
-                        WorkerStatus::Queued {
-                            ssh_handle: Mutex::new(Some(self.ssh_factory.spawn())),
-                        }
+                        WorkerStatus::Queued
                     }
                 };
                 self.pool.insert(
@@ -180,9 +178,7 @@ impl WorkerPool {
         let worker = Worker {
             job_id,
             avail_tx: self.avail_tx.clone(),
-            status: Arc::new(WorkerStatus::Queued {
-                ssh_handle: Mutex::new(Some(self.ssh_factory.spawn())),
-            }),
+            status: Arc::new(WorkerStatus::Queued),
         };
 
         self.pool.insert(job_id, worker);
@@ -202,8 +198,8 @@ impl WorkerPool {
         }
         // get status, assume it's Queued
         let status = match &*worker.status {
-            WorkerStatus::Queued { ssh_handle } => {
-                let ssh_session = ssh_handle.lock().await.take().unwrap().await.unwrap();
+            WorkerStatus::Queued => {
+                let ssh_session = self.ssh_factory.spawn().await;
                 let node_id = worker.get_node_id(&*ssh_session).await?;
                 WorkerStatus::Running {
                     started_at: chrono::Utc::now(),
@@ -237,7 +233,7 @@ impl WorkerPool {
         let job_id = self.avail_rx.recv().await.unwrap();
         let worker = self.pool.get(&job_id).unwrap().value().clone();
         match &*worker.status {
-            WorkerStatus::Queued { ssh_handle: _ } => {
+            WorkerStatus::Queued => {
                 // check/wait until worker is running, update status to running
                 self.wait_running(worker).await
             }
@@ -297,10 +293,7 @@ impl Worker {
 }
 
 enum WorkerStatus {
-    Queued {
-        // yeah... this is to squeeze a few extra seconds out of the worker startup time.
-        ssh_handle: Mutex<Option<tokio::task::JoinHandle<Box<dyn Ssh + Send + Sync>>>>,
-    },
+    Queued,
     Running {
         started_at: chrono::DateTime<chrono::Utc>,
         ssh_session: Box<dyn Ssh + Send + Sync>,

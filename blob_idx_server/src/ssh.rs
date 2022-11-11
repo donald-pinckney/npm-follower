@@ -11,8 +11,9 @@ pub trait Ssh {
     async fn run_command(&self, cmd: &str) -> Result<String, JobError>;
 }
 
+#[async_trait::async_trait]
 pub trait SshFactory {
-    fn spawn(&self) -> tokio::task::JoinHandle<Box<dyn Ssh + Send + Sync>>;
+   async fn spawn(&self) -> Box<dyn Ssh + Send + Sync>;
 }
 
 pub struct SshSessionFactory {
@@ -27,13 +28,12 @@ impl SshSessionFactory {
     }
 }
 
+#[async_trait::async_trait]
 impl SshFactory for SshSessionFactory {
-    fn spawn(&self) -> tokio::task::JoinHandle<Box<dyn Ssh + Send + Sync>> {
+    async fn spawn(&self) -> Box<dyn Ssh + Send + Sync> {
         let ssh_user_host = self.ssh_user_host.clone();
-        tokio::spawn(async move {
-            let ssh = SshSession::connect(&ssh_user_host).await.unwrap();
-            Box::new(ssh) as Box<dyn Ssh + Send + Sync>
-        })
+        let ssh = SshSession::connect(&ssh_user_host).await.unwrap();
+        Box::new(ssh) as Box<dyn Ssh + Send + Sync>
     }
 }
 
