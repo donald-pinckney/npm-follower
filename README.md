@@ -1,5 +1,7 @@
 # NPM Scraping Scripts
 
+[![Rust](https://github.com/donald-pinckney/npm-follower/actions/workflows/rust.yml/badge.svg)](https://github.com/donald-pinckney/npm-follower/actions/workflows/rust.yml)
+
 [DASHBOARD](https://grafana.apps.in.ripley.cloud/d/uwm1nEv4z/supply-chain-monitoring?orgId=1&refresh=1m)
 
 ## Prerequisites
