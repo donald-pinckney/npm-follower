@@ -130,7 +130,7 @@ impl WorkerPool {
                     if status == "R" {
                         WorkerStatus::Running {
                             started_at: job_time,
-                            ssh_session: self.ssh_factory.spawn().await,
+                            ssh_session: self.ssh_factory.spawn_jumped(node_id).await,
                             node_id: node_id.to_string(),
                         }
                     } else {
@@ -199,8 +199,8 @@ impl WorkerPool {
         // get status, assume it's Queued
         let status = match &*worker.status {
             WorkerStatus::Queued => {
-                let ssh_session = self.ssh_factory.spawn().await;
-                let node_id = worker.get_node_id(&*ssh_session).await?;
+                let node_id = worker.get_node_id(&*self.ssh_session).await?;
+                let ssh_session = self.ssh_factory.spawn_jumped(&node_id).await;
                 WorkerStatus::Running {
                     started_at: chrono::Utc::now(),
                     ssh_session,

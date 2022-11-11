@@ -8,12 +8,18 @@ pub trait Ssh {
     where
         Self: Sized;
 
+    async fn connect_jumped(ssh_user_host: &str, jump_to: &str) -> Result<Self, JobError>
+    where
+        Self: Sized;
+
     async fn run_command(&self, cmd: &str) -> Result<String, JobError>;
 }
 
 #[async_trait::async_trait]
 pub trait SshFactory {
-   async fn spawn(&self) -> Box<dyn Ssh + Send + Sync>;
+    async fn spawn(&self) -> Box<dyn Ssh + Send + Sync>;
+
+    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh + Send + Sync>;
 }
 
 pub struct SshSessionFactory {
@@ -35,6 +41,14 @@ impl SshFactory for SshSessionFactory {
         let ssh = SshSession::connect(&ssh_user_host).await.unwrap();
         Box::new(ssh) as Box<dyn Ssh + Send + Sync>
     }
+
+    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh + Send + Sync> {
+        let ssh_user_host = self.ssh_user_host.clone();
+        let ssh = SshSession::connect_jumped(&ssh_user_host, jump_to)
+            .await
+            .unwrap();
+        Box::new(ssh) as Box<dyn Ssh + Send + Sync>
+    }
 }
 
 pub struct SshSession {
@@ -45,8 +59,30 @@ pub struct SshSession {
 #[async_trait::async_trait]
 impl Ssh for SshSession {
     async fn connect(ssh_user_host: &str) -> Result<Self, JobError> {
-        let session =
-            openssh::Session::connect_mux(ssh_user_host, openssh::KnownHosts::Accept).await?;
+        let session = openssh::SessionBuilder::default()
+            .known_hosts_check(openssh::KnownHosts::Accept)
+            .server_alive_interval(std::time::Duration::from_secs(10))
+            .connect_mux(ssh_user_host)
+            .await?;
+        Ok(Self {
+            session: Mutex::new(session),
+            ssh_user_host: ssh_user_host.to_string(),
+        })
+    }
+
+    async fn connect_jumped(ssh_user_host: &str, jump_to: &str) -> Result<Self, JobError> {
+        let split: Vec<&str> = ssh_user_host.split('@').collect();
+        let jump_to = if jump_to.contains('@') {
+            jump_to.to_string()
+        } else {
+            format!("{}@{}", split[0], jump_to)
+        };
+        let session = openssh::SessionBuilder::default()
+            .known_hosts_check(openssh::KnownHosts::Accept)
+            .server_alive_interval(std::time::Duration::from_secs(10))
+            .jump_hosts(vec![ssh_user_host])
+            .connect_mux(jump_to)
+            .await?;
         Ok(Self {
             session: Mutex::new(session),
             ssh_user_host: ssh_user_host.to_string(),
