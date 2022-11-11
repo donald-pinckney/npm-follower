@@ -24,10 +24,14 @@ fn main() {
     let mut processed_up_to_seq =
         internal_state::query_relational_processed_seq(&mut conn).unwrap_or(0);
 
+    println!("Initial queries:");
+    println!("query_num_changes_after_seq");
     let num_changes_total =
         postgres_db::change_log::query_num_changes_after_seq(processed_up_to_seq, &mut conn);
+    println!("query_num_diff_entries_after_seq");
     let num_entries_total =
         diff_log::query_num_diff_entries_after_seq(processed_up_to_seq, &mut conn);
+    println!("Initial queries DONE!");
 
     let mut num_changes_so_far = 0;
     let mut num_entries_so_far = 0;
