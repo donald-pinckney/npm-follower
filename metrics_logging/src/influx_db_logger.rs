@@ -83,9 +83,10 @@ impl InfluxDbLogger {
         if self.initial_write_count < 5 {
             println!("Sending to InfluxDB: {:?}", point);
             self.initial_write_count += 1;
-        }
-        if self.initial_write_count == 5 {
-            println!("\ngoing silent now, will now only write to InfluxDB...");
+
+            if self.initial_write_count == 5 {
+                println!("\ngoing silent now, will now only write to InfluxDB...");
+            }
         }
         self.write_sender.as_ref().unwrap().send(point).unwrap()
     }
