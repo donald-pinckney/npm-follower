@@ -83,6 +83,7 @@ async fn download_and_write(args: Vec<String>) {
             let filename = url.split('/').last().unwrap();
 
             let _permit = sem.acquire().await.unwrap();
+            eprintln!("Downloading {}", url);
             let mut resp = reqwest::get(&url).await.unwrap();
             drop(_permit);
             // check if the response is not an error

@@ -10,7 +10,7 @@ use tokio::task::spawn;
 use crate::{
     debug,
     errors::JobError,
-    ssh::{Ssh, SshFactory, SshSession, SshSessionFactory},
+    ssh::{Ssh, SshFactory, SshSessionFactory},
 };
 
 struct WorkerPool {
@@ -353,8 +353,8 @@ impl JobManager {
 
     /// Submits a download and write job to the discovery cluster.
     pub async fn submit_download_job(&self, urls: Vec<String>) -> Result<(), JobError> {
+        debug!("Submitting download job with {} urls", urls.len());
         let worker = self.worker_pool.get_worker().await?;
-        let job_id = worker.job_id;
         let (node_id, ssh) = match &*worker.status {
             WorkerStatus::Running {
                 node_id,
@@ -367,7 +367,7 @@ impl JobManager {
         let urls = urls.join(" ");
 
         let cmd = format!(
-            "cd $HOME/npm-follower && cargo run --release --bin blob_idx_client {} \"{}\"",
+            "cd $HOME/npm-follower && cargo run --release --bin blob_idx_client write {} \"{}\"",
             node_id, urls
         );
 
