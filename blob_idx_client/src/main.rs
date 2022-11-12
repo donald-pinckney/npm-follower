@@ -80,8 +80,6 @@ async fn download_and_write(args: Vec<String>) {
         let sem = Arc::clone(&sem);
         let url = url.clone();
         handles.push(tokio::task::spawn(async move {
-            let filename = url.split('/').last().unwrap();
-
             let _permit = sem.acquire().await.unwrap();
             eprintln!("Downloading {}", url);
             let mut resp = reqwest::get(&url).await.unwrap();
@@ -104,7 +102,7 @@ async fn download_and_write(args: Vec<String>) {
                 bytes.extend_from_slice(&chunk);
             }
 
-            Ok((filename.to_string(), bytes))
+            Ok((url, bytes))
         }));
     }
 
@@ -113,9 +111,9 @@ async fn download_and_write(args: Vec<String>) {
     let mut blob_bytes = vec![];
     for handle in handles {
         match handle.await.unwrap() {
-            Ok((filename, bytes)) => {
+            Ok((url, bytes)) => {
                 let blob_entry = BlobEntry {
-                    key: filename.clone(),
+                    key: url.clone(),
                     num_bytes: bytes.len() as u64,
                 };
                 blob_entries.push(blob_entry);
