@@ -2,9 +2,13 @@ use std::sync::Arc;
 
 use blob_idx_server::{
     blob::BlobOffset,
-    http::{BlobEntry, CreateAndLockRequest},
+    http::{BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest},
 };
-use tokio::{io::AsyncWriteExt, sync::Semaphore, task::JoinHandle};
+use tokio::{
+    io::{AsyncSeekExt, AsyncWriteExt},
+    sync::Semaphore,
+    task::JoinHandle,
+};
 
 #[tokio::main]
 async fn main() {
@@ -23,6 +27,30 @@ async fn main() {
             std::process::exit(1);
         }
     };
+}
+
+fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
+    tokio::task::spawn(async move {
+        let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
+        let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
+        let req = KeepAliveLockRequest { file_id };
+        let client = reqwest::Client::new();
+        loop {
+            tokio::time::sleep(std::time::Duration::from_secs(300)).await;
+            println!("Sending keep-alive request");
+
+            let res = client
+                .post(format!("{}/blob/keep_alive_lock", blob_api_url))
+                .header("Authorization", blob_api_key.clone())
+                .json(&req)
+                .send()
+                .await;
+
+            if res.is_err() {
+                break;
+            }
+        }
+    })
 }
 
 async fn download_and_write(args: Vec<String>) {
@@ -52,10 +80,11 @@ async fn download_and_write(args: Vec<String>) {
         let sem = Arc::clone(&sem);
         let url = url.clone();
         handles.push(tokio::task::spawn(async move {
-            let _permit = sem.acquire().await.unwrap();
             let filename = url.split('/').last().unwrap();
 
+            let _permit = sem.acquire().await.unwrap();
             let mut resp = reqwest::get(&url).await.unwrap();
+            drop(_permit);
             // check if the response is not an error
             if !resp.status().is_success() {
                 return Err(url);
@@ -106,13 +135,12 @@ async fn download_and_write(args: Vec<String>) {
     // ask the blob api to lock
     let req = CreateAndLockRequest {
         entries: blob_entries,
-        node_id,
+        node_id: node_id.clone(),
     };
     let client = reqwest::Client::new();
-    // TODO: implement keep-alive mechanism
     let resp = client
         .post(format!("{}/blob/create_and_lock", blob_api_url))
-        .header("Authorization", blob_api_key)
+        .header("Authorization", blob_api_key.clone())
         .json(&req)
         .send()
         .await
@@ -127,6 +155,8 @@ async fn download_and_write(args: Vec<String>) {
     // parse the response
     let blob: BlobOffset = resp.json().await.unwrap();
 
+    let keep_alive = spawn_keep_alive_loop(blob.file_id);
+
     // if blob.needs_creation is true, we need to create the blob file
     let mut file = if blob.needs_creation {
         let path = std::path::Path::new(&blob_storage_dir).join(&blob.file_name);
@@ -137,16 +167,44 @@ async fn download_and_write(args: Vec<String>) {
         tokio::fs::File::create(&path).await.unwrap()
     } else {
         let path = std::path::Path::new(&blob_storage_dir).join(&blob.file_name);
-        // open in append mode
+        // open in write mode.
         tokio::fs::OpenOptions::new()
-            .append(true)
+            .write(true)
             .open(&path)
             .await
             .unwrap()
     };
+    // fseek to the offset given by the blob api
+    file.seek(std::io::SeekFrom::Start(blob.byte_offset))
+        .await
+        .unwrap();
 
     // write files in order of the blob entries
     for bytes in blob_bytes {
         file.write_all(&bytes).await.unwrap();
     }
+
+    // unlock the blob
+    let req = CreateUnlockRequest {
+        file_id: blob.file_id,
+        node_id,
+    };
+
+    let resp = client
+        .post(format!("{}/blob/create_unlock", blob_api_url))
+        .header("Authorization", blob_api_key)
+        .json(&req)
+        .send()
+        .await
+        .unwrap();
+
+    // if we get a 200, we can continue
+    if !resp.status().is_success() {
+        // TODO: do somethign here
+        return;
+    }
+
+    // TODO: print out the failed urls in json
+
+    keep_alive.abort();
 }

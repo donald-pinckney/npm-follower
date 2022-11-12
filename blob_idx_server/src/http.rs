@@ -11,8 +11,14 @@ use hyper::{service::Service, Body, Request, Response, Server};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::blob::{BlobStorage, BlobStorageConfig};
-use crate::errors::{BlobError, JobError};
+use crate::{
+    blob::{BlobStorage, BlobStorageConfig},
+    job::JobManagerConfig,
+};
+use crate::{
+    errors::{BlobError, JobError},
+    job::JobManager,
+};
 
 pub struct HTTP {
     // the host and port for a http server
@@ -33,12 +39,14 @@ impl HTTP {
     pub async fn start(
         self,
         blob_config: BlobStorageConfig,
+        job_config: JobManagerConfig,
         shutdown_signal: impl Future<Output = ()>,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let addr = SocketAddr::from_str(&format!("{}:{}", self.host, self.port))?;
 
         let server = Server::bind(&addr).serve(MakeSvc {
-            session: Arc::new(BlobStorage::init(blob_config).await),
+            blob: Arc::new(BlobStorage::init(blob_config).await),
+            job_manager: Arc::new(JobManager::init(job_config).await),
             api_key: self.api_key,
         });
 
@@ -52,6 +60,7 @@ impl HTTP {
 /// Represents a service for the hyper http server
 struct Svc {
     blob_store: Arc<BlobStorage>,
+    job_manager: Arc<JobManager>,
     api_key: String,
 }
 
@@ -90,6 +99,17 @@ pub struct LookupRequest {
     pub key: String,
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+pub struct SubmitJobRequest {
+    pub job_type: JobType,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum JobType {
+    DownloadURLs { urls: Vec<String> },
+}
+
 fn try_from_str<'a, T>(s: &'a str) -> Result<T, HTTPError>
 where
     T: Deserialize<'a>,
@@ -118,6 +138,7 @@ impl Service<Request<Body>> for Svc {
         }
 
         let blob_store = self.blob_store.clone();
+        let job_manager = self.job_manager.clone();
         let api_key = self.api_key.clone();
         // routes:
         //  - POST:
@@ -130,6 +151,9 @@ impl Service<Request<Body>> for Svc {
         //     - /blob/keep_alive_lock
         //       - body: {"file_id": 100}
         //       - returns: empty or error
+        //     - /job/submit
+        //       - body: { "job_type": { "type": "download_urls", "urls": ["url1", "url2"] } }
+        //       - returns: IDK TODO!
         //  - GET:
         //     - /blob/lookup
         //       - body: { "key": "some_key" }
@@ -169,6 +193,9 @@ impl Service<Request<Body>> for Svc {
                                 routes::blob::keep_alive_lock(blob_store, try_from_str(&body)?)
                                     .await
                             }
+                            "/job/submit" => {
+                                routes::job::submit_job(job_manager, try_from_str(&body)?).await
+                            }
                             p => Err(HTTPError::InvalidPath(p.to_string())),
                         }
                     }
@@ -198,6 +225,21 @@ mod routes {
     use crate::blob::BlobStorage;
 
     use super::*;
+
+    pub(super) mod job {
+        use super::*;
+        pub(crate) async fn submit_job(
+            job_manager: Arc<JobManager>,
+            req: SubmitJobRequest,
+        ) -> Result<String, HTTPError> {
+            match req.job_type {
+                JobType::DownloadURLs { urls } => {
+                    job_manager.submit_download_job(urls).await?;
+                    Ok("".to_string())
+                }
+            }
+        }
+    }
 
     pub(super) mod blob {
         use super::*;
@@ -247,14 +289,16 @@ mod routes {
 
 #[derive(Clone)]
 struct MakeSvc {
-    session: Arc<BlobStorage>,
+    blob: Arc<BlobStorage>,
+    job_manager: Arc<JobManager>,
     api_key: String,
 }
 
 impl From<MakeSvc> for Svc {
     fn from(m: MakeSvc) -> Self {
         Svc {
-            blob_store: m.session,
+            blob_store: m.blob,
+            job_manager: m.job_manager,
             api_key: m.api_key,
         }
     }
@@ -281,6 +325,7 @@ pub enum HTTPError {
     Hyper(hyper::Error),
     Io(std::io::Error),
     Blob(BlobError),
+    Job(JobError),
     Serde(serde_json::Error),
     InvalidBody(String), // missing a field in the body
     InvalidMethod(String),
@@ -306,6 +351,12 @@ impl From<BlobError> for HTTPError {
     }
 }
 
+impl From<JobError> for HTTPError {
+    fn from(e: JobError) -> Self {
+        HTTPError::Job(e)
+    }
+}
+
 impl From<serde_json::Error> for HTTPError {
     fn from(e: serde_json::Error) -> Self {
         HTTPError::Serde(e)
@@ -318,6 +369,7 @@ impl std::fmt::Display for HTTPError {
             HTTPError::Hyper(e) => write!(f, "Hyper error: {}", e),
             HTTPError::Io(e) => write!(f, "IO error: {}", e),
             HTTPError::Blob(e) => write!(f, "Blob error: {}", e),
+            HTTPError::Job(e) => write!(f, "Job error: {}", e),
             HTTPError::InvalidBody(e) => write!(f, "Invalid body: {}", e),
             HTTPError::InvalidMethod(e) => write!(f, "Invalid method: {}", e),
             HTTPError::InvalidPath(e) => write!(f, "Invalid path: {}", e),

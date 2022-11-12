@@ -17,7 +17,7 @@ struct WorkerPool {
     /// map of [discovery's job_id] -> [worker]
     pool: Arc<DashMap<u64, Worker>>,
     /// channel that notifies that a worker is available.
-    avail_rx: Receiver<u64>,
+    avail_rx: Mutex<Receiver<u64>>,
     /// done channel, this will be cloned and sent to the workers.
     avail_tx: Sender<u64>,
     /// The maximum amount of worker jobs that can be running at the same time.
@@ -37,7 +37,7 @@ impl WorkerPool {
         Self {
             pool: Arc::new(DashMap::new()),
             avail_tx: tx,
-            avail_rx: rx,
+            avail_rx: Mutex::new(rx),
             max_worker_jobs,
             ssh_session: ssh_factory.spawn().await,
             ssh_factory,
@@ -229,8 +229,8 @@ impl WorkerPool {
     ///   Therefore, this function will also check for expired workers and remove them from the pool,
     ///   adding a new worker to the pool.
     /// - Workers processed may still be queued, in that case we will wait until they are running.
-    async fn get_worker(&mut self) -> Result<Worker, JobError> {
-        let job_id = self.avail_rx.recv().await.unwrap();
+    async fn get_worker(&self) -> Result<Worker, JobError> {
+        let job_id = self.avail_rx.lock().await.recv().await.unwrap();
         let worker = self.pool.get(&job_id).unwrap().value().clone();
         match &*worker.status {
             WorkerStatus::Queued => {
@@ -290,13 +290,18 @@ impl Worker {
             .await?;
         Ok(out)
     }
+
+    /// Releases the worker, making it available for other jobs.
+    async fn release(&self) {
+        self.avail_tx.send(self.job_id).await.unwrap();
+    }
 }
 
 enum WorkerStatus {
     Queued,
     Running {
         started_at: chrono::DateTime<chrono::Utc>,
-        ssh_session: Box<dyn Ssh + Send + Sync>,
+        ssh_session: Box<dyn Ssh>,
         node_id: String,
     },
 }
@@ -346,16 +351,33 @@ impl JobManager {
         Self::init_with_ssh(config, factory).await
     }
 
-    /*
-        /// Submits a download and write job to the discovery cluster.
-        pub async fn submit_download_job(&self, urls: Vec<String>) -> Result<(), JobError> {
-            let worker = self.worker_pool.get_worker().await?;
-            let job_id = worker.job_id;
-            let node_id = match worker.status {
-                WorkerStatus::Running { node_id, .. } => node_id,
-                _ => unreachable!(),
-            };
+    /// Submits a download and write job to the discovery cluster.
+    pub async fn submit_download_job(&self, urls: Vec<String>) -> Result<(), JobError> {
+        let worker = self.worker_pool.get_worker().await?;
+        let job_id = worker.job_id;
+        let (node_id, ssh) = match &*worker.status {
+            WorkerStatus::Running {
+                node_id,
+                ssh_session,
+                ..
+            } => (node_id, ssh_session),
+            _ => panic!("Worker should be running"),
+        };
 
-            let urls = urls.join(" ");
-    */
+        let urls = urls.join(" ");
+
+        let cmd = format!(
+            "cd $HOME/npm-follower && cargo run --release --bin blob_idx_client {} \"{}\"",
+            node_id, urls
+        );
+
+        debug!("Running command:\n{}", cmd);
+
+        let out = ssh.run_command(&cmd).await?;
+        debug!("Output:\n{}", out);
+
+        worker.release().await;
+
+        Ok(())
+    }
 }

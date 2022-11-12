@@ -3,7 +3,7 @@ use tokio::sync::Mutex;
 use crate::{debug, errors::JobError};
 
 #[async_trait::async_trait]
-pub trait Ssh {
+pub trait Ssh: Send + Sync {
     async fn connect(ssh_user_host: &str) -> Result<Self, JobError>
     where
         Self: Sized;
@@ -16,12 +16,13 @@ pub trait Ssh {
 }
 
 #[async_trait::async_trait]
-pub trait SshFactory {
-    async fn spawn(&self) -> Box<dyn Ssh + Send + Sync>;
+pub trait SshFactory: Send + Sync {
+    async fn spawn(&self) -> Box<dyn Ssh>;
 
-    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh + Send + Sync>;
+    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh>;
 }
 
+#[derive(Clone)]
 pub struct SshSessionFactory {
     ssh_user_host: String,
 }
@@ -36,18 +37,18 @@ impl SshSessionFactory {
 
 #[async_trait::async_trait]
 impl SshFactory for SshSessionFactory {
-    async fn spawn(&self) -> Box<dyn Ssh + Send + Sync> {
+    async fn spawn(&self) -> Box<dyn Ssh> {
         let ssh_user_host = self.ssh_user_host.clone();
         let ssh = SshSession::connect(&ssh_user_host).await.unwrap();
-        Box::new(ssh) as Box<dyn Ssh + Send + Sync>
+        Box::new(ssh) as Box<dyn Ssh>
     }
 
-    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh + Send + Sync> {
+    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh> {
         let ssh_user_host = self.ssh_user_host.clone();
         let ssh = SshSession::connect_jumped(&ssh_user_host, jump_to)
             .await
             .unwrap();
-        Box::new(ssh) as Box<dyn Ssh + Send + Sync>
+        Box::new(ssh) as Box<dyn Ssh>
     }
 }
 
