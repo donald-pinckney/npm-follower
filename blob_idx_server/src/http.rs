@@ -181,6 +181,7 @@ impl Service<Request<Body>> for Svc {
                     "POST" => {
                         // get the path
                         let path = req.uri().path().to_string();
+                        let path = path.trim_start_matches('/').to_string();
                         match path.as_str() {
                             "/blob/create_and_lock" => {
                                 routes::blob::create_and_lock(blob_store, try_from_str(&body)?)
