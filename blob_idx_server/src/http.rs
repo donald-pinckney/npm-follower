@@ -183,25 +183,25 @@ impl Service<Request<Body>> for Svc {
                         let path = req.uri().path().to_string();
                         let path = path.trim_start_matches('/').to_string();
                         match path.as_str() {
-                            "/blob/create_and_lock" => {
+                            "blob/create_and_lock" => {
                                 routes::blob::create_and_lock(blob_store, try_from_str(&body)?)
                                     .await
                             }
-                            "/blob/create_unlock" => {
+                            "blob/create_unlock" => {
                                 routes::blob::create_unlock(blob_store, try_from_str(&body)?).await
                             }
-                            "/blob/keep_alive_lock" => {
+                            "blob/keep_alive_lock" => {
                                 routes::blob::keep_alive_lock(blob_store, try_from_str(&body)?)
                                     .await
                             }
-                            "/job/submit" => {
+                            "job/submit" => {
                                 routes::job::submit_job(job_manager, try_from_str(&body)?).await
                             }
                             p => Err(HTTPError::InvalidPath(p.to_string())),
                         }
                     }
                     "GET" => match req.uri().path().to_string().as_str() {
-                        "/blob/lookup" => {
+                        "blob/lookup" => {
                             routes::blob::lookup(blob_store, try_from_str(&body)?).await
                         }
                         p => Err(HTTPError::InvalidPath(p.to_string())),
