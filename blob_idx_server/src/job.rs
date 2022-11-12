@@ -367,7 +367,7 @@ impl JobManager {
         let urls = urls.join(" ");
 
         let cmd = format!(
-            "cd $HOME/npm-follower && cargo run --release --bin blob_idx_client write {} \"{}\"",
+            "cd $HOME/npm-follower/blob_idx_client && ./run.sh write {} \"{}\"",
             node_id, urls
         );
 
