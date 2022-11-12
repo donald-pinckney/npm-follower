@@ -1,4 +1,5 @@
 use std::any::Any;
+use std::collections::HashSet;
 use std::time::{Duration, Instant};
 
 use chrono::Utc;
@@ -53,6 +54,8 @@ fn main() {
 
         let entries =
             diff_log::query_diff_entries_after_seq(processed_up_to_seq, PAGE_SIZE, &mut conn);
+        let unique_seqs: HashSet<_> = entries.iter().map(|entry| entry.seq).collect();
+        let num_changes = unique_seqs.len() as i64;
 
         let read_duration = batch_start.elapsed();
 
@@ -69,10 +72,10 @@ fn main() {
             .run_psql_transaction(|mut trans_conn| {
                 match process_entries(&mut trans_conn, entries) {
                     Ok(res) => {
-                        internal_state::set_relational_processed_seq(
-                            last_seq_in_page,
-                            &mut trans_conn,
-                        );
+                        // internal_state::set_relational_processed_seq(
+                        //     last_seq_in_page,
+                        //     &mut trans_conn,
+                        // );
                         Ok(res)
                     }
                     Err(err) => {
@@ -88,7 +91,6 @@ fn main() {
             })
             .unwrap();
 
-        let num_changes = process_entries_metrics.num_changes;
         num_changes_so_far += num_changes;
 
         processed_up_to_seq = last_seq_in_page;
@@ -117,10 +119,6 @@ fn main() {
                 session_start_time,
             },
         );
-
-        if num_changes < PAGE_SIZE {
-            break;
-        }
     }
 
     let session_end_time = Utc::now();
@@ -141,12 +139,19 @@ pub fn process_entries(
     conn: &mut DbConnectionInTransaction,
     entries: Vec<DiffLogEntry>,
 ) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError> {
-    Ok(ProcessEntrySuccessMetrics {
-        num_changes: 0,
-        read_bytes: 0,
-        write_bytes: 0,
-        write_duration: Duration::from_secs(0),
+    // Ok(ProcessEntrySuccessMetrics {
+    //     read_bytes: 0,
+    //     write_bytes: 0,
+    //     write_duration: Duration::from_secs(0),
+    // })
+
+    Err(ProcessEntryError {
+        seq: 1234,
+        entry_id: 4543344,
+        message: "bad stuff happened".to_owned(),
+        err: Box::new("the err"),
     })
+
     // todo!()
 
     // let mut state_manager = DiffStateManager::new();
@@ -204,7 +209,6 @@ pub struct ProcessEntryError {
 }
 
 pub struct ProcessEntrySuccessMetrics {
-    pub num_changes: i64,
     pub read_bytes: usize,
     pub write_bytes: usize,
     pub write_duration: Duration,
