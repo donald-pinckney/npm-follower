@@ -156,31 +156,49 @@ async fn download_and_write(args: Vec<String>) {
 
     let keep_alive = spawn_keep_alive_loop(blob.file_id);
 
+    let path = std::path::Path::new(&blob_storage_dir).join(&blob.file_name);
+    let offset_path = path.with_extension("offset");
     // if blob.needs_creation is true, we need to create the blob file
-    let mut file = if blob.needs_creation {
-        let path = std::path::Path::new(&blob_storage_dir).join(&blob.file_name);
+    let (mut blob_file, mut offset_file) = if blob.needs_creation {
         // check if the file exists already, if so panic
-        if path.exists() {
+        if path.exists() || offset_path.exists() {
             panic!("Blob file already exists... this should never happen");
         }
-        tokio::fs::File::create(&path).await.unwrap()
+        (
+            tokio::fs::File::create(&path).await.unwrap(),
+            tokio::fs::File::create(&offset_path).await.unwrap(),
+        )
     } else {
-        let path = std::path::Path::new(&blob_storage_dir).join(&blob.file_name);
         // open in write mode.
-        tokio::fs::OpenOptions::new()
-            .write(true)
-            .open(&path)
-            .await
-            .unwrap()
+        (
+            tokio::fs::OpenOptions::new()
+                .write(true)
+                .open(&path)
+                .await
+                .unwrap(),
+            // open in append mode
+            tokio::fs::OpenOptions::new()
+                .append(true)
+                .open(&path.with_extension("offset"))
+                .await
+                .unwrap(),
+        )
     };
     // fseek to the offset given by the blob api
-    file.seek(std::io::SeekFrom::Start(blob.byte_offset))
+    blob_file
+        .seek(std::io::SeekFrom::Start(blob.byte_offset))
+        .await
+        .unwrap();
+
+    // write offset to the offset file
+    offset_file
+        .write_all(format!("\"{}\": {}\n", args[3], blob.byte_offset).as_bytes())
         .await
         .unwrap();
 
     // write files in order of the blob entries
     for bytes in blob_bytes {
-        file.write_all(&bytes).await.unwrap();
+        blob_file.write_all(&bytes).await.unwrap();
     }
 
     // unlock the blob
