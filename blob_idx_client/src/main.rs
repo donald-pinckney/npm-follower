@@ -66,8 +66,8 @@ async fn download_and_write(args: Vec<String>) {
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
     let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
 
-    let node_id: String = args[1].clone();
-    let urls: Vec<String> = args[2].split(' ').map(|s| s.to_string()).collect();
+    let node_id: String = args[2].clone();
+    let urls: Vec<String> = args[3].split(' ').map(|s| s.to_string()).collect();
 
     // download all tarballs
     let sem = Arc::new(Semaphore::new(10)); // max 10 concurrent downloads
