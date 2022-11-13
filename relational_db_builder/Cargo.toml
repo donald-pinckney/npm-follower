@@ -20,7 +20,6 @@ postgres_db = { path = "../postgres_db" }
 utils = { path = "../utils" }
 metrics_logging = { path = "../metrics_logging" }
 
-
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
 indicatif = "0.16.2"

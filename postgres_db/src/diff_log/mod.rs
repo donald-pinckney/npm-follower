@@ -9,7 +9,6 @@ use crate::packument::VersionOnlyPackument;
 
 use super::schema;
 use super::schema::diff_log;
-use diesel::pg::Pg;
 use diesel::Insertable;
 use diesel::Queryable;
 use serde::Deserialize;

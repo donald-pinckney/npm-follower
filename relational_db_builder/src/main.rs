@@ -1,5 +1,6 @@
 use std::any::Any;
 use std::collections::HashSet;
+use std::panic::{self, AssertUnwindSafe};
 use std::time::{Duration, Instant};
 
 use chrono::Utc;
@@ -8,8 +9,8 @@ use metrics_logging::{
     RelationalDbPanicMetrics, RelationalDbStartSessionMetrics,
 };
 use postgres_db::connection::{DbConnection, DbConnectionInTransaction};
-use postgres_db::diff_log;
 use postgres_db::diff_log::DiffLogEntry;
+use postgres_db::diff_log::{self, DiffLogInstruction};
 use postgres_db::internal_state;
 
 use utils::check_no_concurrent_processes;
@@ -139,65 +140,51 @@ pub fn process_entries(
     conn: &mut DbConnectionInTransaction,
     entries: Vec<DiffLogEntry>,
 ) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError> {
-    // Ok(ProcessEntrySuccessMetrics {
-    //     read_bytes: 0,
-    //     write_bytes: 0,
-    //     write_duration: Duration::from_secs(0),
-    // })
+    let mut read_bytes = 0;
 
-    Err(ProcessEntryError {
-        seq: 1234,
-        entry_id: 4543344,
-        message: "bad stuff happened".to_owned(),
-        err: Box::new("the err"),
+    for e in entries {
+        read_bytes += entry_num_bytes(&e);
+        let seq = e.seq;
+        let entry_id = e.id;
+        let package = e.package_name;
+        let instr = e.instr;
+        panic::catch_unwind(AssertUnwindSafe(|| process_entry(conn, package, instr))).map_err(
+            |err| ProcessEntryError {
+                seq,
+                entry_id,
+                message: format!("{:?}", err),
+                err,
+            },
+        )?;
+    }
+
+    Ok(ProcessEntrySuccessMetrics {
+        read_bytes,
+        write_bytes: 0,
+        write_duration: Duration::from_secs(0),
     })
+}
 
-    // todo!()
+fn process_entry(conn: &mut DbConnectionInTransaction, package: String, instr: DiffLogInstruction) {
+    match instr {
+        DiffLogInstruction::CreatePackage(data) => todo!(),
+        DiffLogInstruction::UpdatePackage(data) => todo!(),
+        DiffLogInstruction::PatchPackageReferences => todo!(),
+        DiffLogInstruction::CreateVersion(v, data) => todo!(),
+        DiffLogInstruction::UpdateVersion(v, data) => todo!(),
+        DiffLogInstruction::DeleteVersion(v) => todo!(),
+    }
+}
 
-    // let mut state_manager = DiffStateManager::new();
-    // let mut new_diff_entries: Vec<NewDiffLogEntryWithHash> = Vec::new();
-
-    // let mut read_bytes = 0;
-    // let mut write_bytes = 0;
-
-    // for c in changes {
-    //     let seq = c.seq;
-
-    //     let result = panic::catch_unwind(AssertUnwindSafe(|| {
-    //         process_change(conn, c, &mut state_manager, &mut new_diff_entries)
-    //     }));
-
-    //     let (rb, wb) = match result {
-    //         Err(err) => {
-    //             let err_message = format!("Failed on seq: {}.\n:{:?}", seq, err);
-    //             return Result::Err(ProcessChangeError {
-    //                 seq,
-    //                 message: err_message,
-    //                 err,
-    //             });
-    //         }
-    //         Ok(r) => r,
-    //     };
-
-    //     read_bytes += rb;
-    //     write_bytes += wb;
-    // }
-
-    // let write_start = Instant::now();
-
-    // state_manager.flush_to_db(conn);
-    // diff_log::insert_diff_log_entries(
-    //     new_diff_entries.into_iter().map(|x| x.entry).collect(),
-    //     conn,
-    // );
-
-    // let write_duration = write_start.elapsed();
-
-    // Ok(ProcessChangeSuccessMetrics {
-    //     read_bytes,
-    //     write_bytes,
-    //     write_duration,
-    // })
+fn entry_num_bytes(e: &DiffLogEntry) -> usize {
+    match &e.instr {
+        DiffLogInstruction::CreatePackage(pack) | DiffLogInstruction::UpdatePackage(pack) => {
+            serde_json::to_vec(pack).unwrap().len()
+        }
+        DiffLogInstruction::CreateVersion(_, vpack)
+        | DiffLogInstruction::UpdateVersion(_, vpack) => serde_json::to_vec(vpack).unwrap().len(),
+        _ => 0,
+    }
 }
 
 #[derive(Debug)]
