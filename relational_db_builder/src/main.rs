@@ -148,14 +148,15 @@ pub fn process_entries(
         let entry_id = e.id;
         let package = e.package_name;
         let instr = e.instr;
-        panic::catch_unwind(AssertUnwindSafe(|| process_entry(conn, package, instr))).map_err(
-            |err| ProcessEntryError {
-                seq,
-                entry_id,
-                message: format!("{:?}", err),
-                err,
-            },
-        )?;
+        panic::catch_unwind(AssertUnwindSafe(|| {
+            relational_db_builder::process_entry(conn, package, instr)
+        }))
+        .map_err(|err| ProcessEntryError {
+            seq,
+            entry_id,
+            message: format!("{:?}", err),
+            err,
+        })?;
     }
 
     Ok(ProcessEntrySuccessMetrics {
@@ -163,17 +164,6 @@ pub fn process_entries(
         write_bytes: 0,
         write_duration: Duration::from_secs(0),
     })
-}
-
-fn process_entry(conn: &mut DbConnectionInTransaction, package: String, instr: DiffLogInstruction) {
-    match instr {
-        DiffLogInstruction::CreatePackage(data) => todo!(),
-        DiffLogInstruction::UpdatePackage(data) => todo!(),
-        DiffLogInstruction::PatchPackageReferences => todo!(),
-        DiffLogInstruction::CreateVersion(v, data) => todo!(),
-        DiffLogInstruction::UpdateVersion(v, data) => todo!(),
-        DiffLogInstruction::DeleteVersion(v) => todo!(),
-    }
 }
 
 fn entry_num_bytes(e: &DiffLogEntry) -> usize {
