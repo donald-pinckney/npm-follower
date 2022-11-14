@@ -129,11 +129,16 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
     let mut buf = vec![0; slice.num_bytes as usize];
     file.read_exact(&mut buf).await?;
 
-    // write to temp file
-    let temp_dir = std::env::temp_dir();
+    // write to temp file, the dir is "/scratch/$USER/blob_slices/"
+    // it may need to be created
+    let temp_dir = format!("/scratch/{}/blob_slices", std::env::var("USER").unwrap());
+    let temp_dir_path = std::path::Path::new(&temp_dir);
+    if !temp_dir_path.exists() {
+        std::fs::create_dir_all(temp_dir_path)?;
+    }
     // get pid of process, use that as a unique identifier
     let pid = std::process::id();
-    let temp_file_path = temp_dir.join(format!("blob-file-{}-{}", pid, slice.file_id));
+    let temp_file_path = temp_dir_path.join(format!("blob-file-{}-{}", pid, slice.file_id));
 
     // write to temp file
     let mut file = tokio::fs::File::create(&temp_file_path).await?;
