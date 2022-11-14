@@ -88,6 +88,7 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
     let client = reqwest::ClientBuilder::new()
         .connect_timeout(std::time::Duration::from_secs(10))
         .timeout(std::time::Duration::from_secs(600))
+        .user_agent("Wget/1.20.3 (linux-gnu)") 
         .build()?;
 
     for url in urls {
