@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use dashmap::DashMap;
+use serde::{Deserialize, Serialize};
 use tokio::sync::{
     mpsc::{Receiver, Sender},
     Mutex,
@@ -9,10 +10,19 @@ use tokio::task::spawn;
 
 use crate::{
     debug,
-    errors::JobError,
+    errors::{ClientError, JobError},
     ssh::{Ssh, SshFactory, SshSessionFactory},
 };
 
+/// The response that the worker client sends to the server.
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum ClientResponse {
+    Failure(ClientError),
+    Success,
+}
+
+/// A resource pool data structure that is used to query available worker jobs.
 struct WorkerPool {
     /// map of [discovery's job_id] -> [worker]
     pool: Arc<DashMap<u64, Worker>>,
@@ -39,7 +49,10 @@ impl WorkerPool {
             avail_tx: tx,
             avail_rx: Mutex::new(rx),
             max_worker_jobs,
-            ssh_session: ssh_factory.spawn().await,
+            ssh_session: ssh_factory
+                .spawn()
+                .await
+                .expect("failed to create ssh session"),
             ssh_factory,
             cleanup_tasks: Arc::new(DashMap::new()),
         }
@@ -130,7 +143,7 @@ impl WorkerPool {
                     if status == "R" {
                         WorkerStatus::Running {
                             started_at: job_time,
-                            ssh_session: self.ssh_factory.spawn_jumped(node_id).await,
+                            ssh_session: self.ssh_factory.spawn_jumped(node_id).await?,
                             node_id: node_id.to_string(),
                         }
                     } else {
@@ -200,7 +213,7 @@ impl WorkerPool {
         let status = match &*worker.status {
             WorkerStatus::Queued => {
                 let node_id = worker.get_node_id(&*self.ssh_session).await?;
-                let ssh_session = self.ssh_factory.spawn_jumped(&node_id).await;
+                let ssh_session = self.ssh_factory.spawn_jumped(&node_id).await?;
                 WorkerStatus::Running {
                     started_at: chrono::Utc::now(),
                     ssh_session,
@@ -332,11 +345,8 @@ impl JobManager {
             .expect("populate worker pool failed");
 
         // print if on debug
-        #[cfg(debug_assertions)]
-        {
-            for worker in worker_pool.pool.iter() {
-                debug!("Worker {} is running", worker.value().job_id);
-            }
+        for worker in worker_pool.pool.iter() {
+            debug!("Worker {} is running", worker.value().job_id);
         }
 
         Self {
@@ -376,8 +386,15 @@ impl JobManager {
         let out = ssh.run_command(&cmd).await?;
         debug!("Output:\n{}", out);
 
+        // parse into a ClientResponse
+        let response: ClientResponse =
+            serde_json::from_str(&out).map_err(|_| JobError::ClientOutputNotParsable(out))?;
+
         worker.release().await;
 
-        Ok(())
+        match response {
+            ClientResponse::Success => Ok(()),
+            ClientResponse::Failure(e) => Err(JobError::ClientError(e)),
+        }
     }
 }

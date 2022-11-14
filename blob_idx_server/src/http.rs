@@ -214,6 +214,9 @@ impl Service<Request<Body>> for Svc {
                 Err(HTTPError::Blob(e)) => {
                     mk_error(json!({"error": e.to_string()}).to_string(), 400)
                 }
+                Err(HTTPError::Job(e)) => {
+                    mk_error(json!({"error": e.to_string()}).to_string(), 400)
+                }
                 Err(e) => mk_error(json!({"error": e.to_string()}).to_string(), 500),
             }
         })

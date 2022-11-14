@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 #[derive(Debug)]
 pub enum BlobError {
     AlreadyExists,
@@ -20,6 +22,26 @@ pub enum JobError {
     CommandFailed { cmd: String, output: String },
     /// The command returned a non-zero exit code.
     CommandNonZero { cmd: String, output: String },
+    /// Error from the client of a job.
+    ClientError(ClientError),
+    /// The output of the client wasn't parsable.
+    ClientOutputNotParsable(String),
+}
+
+/// Errors that the client can return. This enum is serialized to JSON and sent to the server.
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum ClientError {
+    /// Some download urls failed. The vector contains the urls that failed.
+    DownloadFailed { urls: Vec<String> },
+    /// Some IO error occurred.
+    IoError,
+    /// Some reqwest error occurred.
+    ReqwestError,
+    /// Some blob error occurred while create lock a blob.
+    BlobCreateLockError,
+    /// Some blob error occurred while unlocking a blob.
+    BlobUnlockError,
 }
 
 impl std::fmt::Display for BlobError {
@@ -52,7 +74,18 @@ impl std::fmt::Display for JobError {
                     cmd, output
                 )
             }
+            JobError::ClientError(e) => write!(f, "Client error: {}", e),
+            JobError::ClientOutputNotParsable(s) => {
+                write!(f, "Client output not parsable: {}", s)
+            }
         }
+    }
+}
+
+/// Display is implemented here using Serialize, so that the error can be sent to the server.
+impl std::fmt::Display for ClientError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", serde_json::to_string(self).unwrap())
     }
 }
 
@@ -62,5 +95,18 @@ impl From<openssh::Error> for JobError {
     }
 }
 
+impl From<std::io::Error> for ClientError {
+    fn from(_: std::io::Error) -> Self {
+        ClientError::IoError
+    }
+}
+
+impl From<reqwest::Error> for ClientError {
+    fn from(_: reqwest::Error) -> Self {
+        ClientError::ReqwestError
+    }
+}
+
 impl std::error::Error for JobError {}
 impl std::error::Error for BlobError {}
+impl std::error::Error for ClientError {}

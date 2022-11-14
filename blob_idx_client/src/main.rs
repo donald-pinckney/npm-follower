@@ -2,13 +2,18 @@ use std::sync::Arc;
 
 use blob_idx_server::{
     blob::BlobOffset,
+    errors::ClientError,
     http::{BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest},
+    job::ClientResponse,
 };
 use tokio::{
     io::{AsyncSeekExt, AsyncWriteExt},
     sync::Semaphore,
     task::JoinHandle,
 };
+
+// NOTE: we can print to stderr for debugging purposes, but we should not print to stdout
+// because we rely on the output of the client to be JSON.
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +24,7 @@ async fn main() {
         eprintln!("Usage: {} [write|read] ...", args[0]);
         std::process::exit(1);
     }
-    match args[1].as_str() {
+    let res = match args[1].as_str() {
         "write" => download_and_write(args).await,
         "read" => todo!(),
         _ => {
@@ -27,6 +32,11 @@ async fn main() {
             std::process::exit(1);
         }
     };
+    let resp = match res {
+        Ok(_) => ClientResponse::Success,
+        Err(e) => ClientResponse::Failure(e),
+    };
+    println!("{}", serde_json::to_string(&resp).unwrap());
 }
 
 fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
@@ -37,7 +47,7 @@ fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
         let client = reqwest::Client::new();
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(300)).await;
-            println!("Sending keep-alive request");
+            eprintln!("Sending keep-alive request");
 
             let res = client
                 .post(format!("{}/blob/keep_alive_lock", blob_api_url))
@@ -53,7 +63,7 @@ fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
     })
 }
 
-async fn download_and_write(args: Vec<String>) {
+async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
     if args.len() != 4 {
         eprintln!(
             "Usage: {} write <discovery node id> <tarball urls, separated by spaces>",
@@ -82,7 +92,10 @@ async fn download_and_write(args: Vec<String>) {
         handles.push(tokio::task::spawn(async move {
             let _permit = sem.acquire().await.unwrap();
             eprintln!("Downloading {}", url);
-            let mut resp = reqwest::get(&url).await.unwrap();
+            let mut resp = match reqwest::get(&url).await {
+                Ok(r) => r,
+                Err(_) => return Err(url),
+            };
             drop(_permit);
             // check if the response is not an error
             if !resp.status().is_success() {
@@ -98,7 +111,10 @@ async fn download_and_write(args: Vec<String>) {
                     Vec::new()
                 }
             };
-            while let Some(chunk) = resp.chunk().await.unwrap() {
+            while let Some(chunk) = match resp.chunk().await {
+                Ok(c) => c,
+                Err(_) => return Err(url), // presumably an io error
+            } {
                 bytes.extend_from_slice(&chunk);
             }
 
@@ -127,8 +143,7 @@ async fn download_and_write(args: Vec<String>) {
 
     // if we have 0 successes, we can't continue
     if blob_bytes.is_empty() {
-        // TODO: print out the failed urls in json
-        return;
+        return Err(ClientError::DownloadFailed { urls: failures });
     }
 
     // ask the blob api to lock
@@ -142,17 +157,18 @@ async fn download_and_write(args: Vec<String>) {
         .header("Authorization", blob_api_key.clone())
         .json(&req)
         .send()
-        .await
-        .unwrap();
+        .await?;
 
     // if we get a 200, we can continue
     if !resp.status().is_success() {
-        // TODO: idk what to do here... maybe differentiate errors and print them out
-        return;
+        return Err(ClientError::BlobCreateLockError);
     }
 
     // parse the response
-    let blob: BlobOffset = resp.json().await.unwrap();
+    let blob: BlobOffset = resp
+        .json()
+        .await
+        .map_err(|_| ClientError::BlobCreateLockError)?;
 
     let keep_alive = spawn_keep_alive_loop(blob.file_id);
 
@@ -165,40 +181,36 @@ async fn download_and_write(args: Vec<String>) {
             panic!("Blob file already exists... this should never happen");
         }
         (
-            tokio::fs::File::create(&path).await.unwrap(),
-            tokio::fs::File::create(&offset_path).await.unwrap(),
+            tokio::fs::File::create(&path).await?,
+            tokio::fs::File::create(&offset_path).await?,
         )
     } else {
-        // open in write mode.
         (
+            // open in write mode.
             tokio::fs::OpenOptions::new()
                 .write(true)
                 .open(&path)
-                .await
-                .unwrap(),
+                .await?,
             // open in append mode
             tokio::fs::OpenOptions::new()
                 .append(true)
                 .open(&path.with_extension("offset"))
-                .await
-                .unwrap(),
+                .await?,
         )
     };
     // fseek to the offset given by the blob api
     blob_file
         .seek(std::io::SeekFrom::Start(blob.byte_offset))
-        .await
-        .unwrap();
+        .await?;
 
     // write offset to the offset file
     offset_file
         .write_all(format!("\"{}\": {}\n", args[3], blob.byte_offset).as_bytes())
-        .await
-        .unwrap();
+        .await?;
 
     // write files in order of the blob entries
     for bytes in blob_bytes {
-        blob_file.write_all(&bytes).await.unwrap();
+        blob_file.write_all(&bytes).await?;
     }
 
     // unlock the blob
@@ -212,16 +224,17 @@ async fn download_and_write(args: Vec<String>) {
         .header("Authorization", blob_api_key)
         .json(&req)
         .send()
-        .await
-        .unwrap();
+        .await?;
 
     // if we get a 200, we can continue
     if !resp.status().is_success() {
-        // TODO: do somethign here
-        return;
+        return Err(ClientError::BlobUnlockError);
     }
 
-    // TODO: print out the failed urls in json
+    if !failures.is_empty() {
+        return Err(ClientError::DownloadFailed { urls: failures });
+    }
 
     keep_alive.abort();
+    Ok(())
 }

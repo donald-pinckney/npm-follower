@@ -17,9 +17,9 @@ pub trait Ssh: Send + Sync {
 
 #[async_trait::async_trait]
 pub trait SshFactory: Send + Sync {
-    async fn spawn(&self) -> Box<dyn Ssh>;
+    async fn spawn(&self) -> Result<Box<dyn Ssh>, JobError>;
 
-    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh>;
+    async fn spawn_jumped(&self, jump_to: &str) -> Result<Box<dyn Ssh>, JobError>;
 }
 
 #[derive(Clone)]
@@ -37,18 +37,16 @@ impl SshSessionFactory {
 
 #[async_trait::async_trait]
 impl SshFactory for SshSessionFactory {
-    async fn spawn(&self) -> Box<dyn Ssh> {
+    async fn spawn(&self) -> Result<Box<dyn Ssh>, JobError> {
         let ssh_user_host = self.ssh_user_host.clone();
-        let ssh = SshSession::connect(&ssh_user_host).await.unwrap();
-        Box::new(ssh) as Box<dyn Ssh>
+        let ssh = SshSession::connect(&ssh_user_host).await?;
+        Ok(Box::new(ssh) as Box<dyn Ssh>)
     }
 
-    async fn spawn_jumped(&self, jump_to: &str) -> Box<dyn Ssh> {
+    async fn spawn_jumped(&self, jump_to: &str) -> Result<Box<dyn Ssh>, JobError> {
         let ssh_user_host = self.ssh_user_host.clone();
-        let ssh = SshSession::connect_jumped(&ssh_user_host, jump_to)
-            .await
-            .unwrap();
-        Box::new(ssh) as Box<dyn Ssh>
+        let ssh = SshSession::connect_jumped(&ssh_user_host, jump_to).await?;
+        Ok(Box::new(ssh) as Box<dyn Ssh>)
     }
 }
 
