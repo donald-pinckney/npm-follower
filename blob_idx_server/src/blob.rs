@@ -145,10 +145,12 @@ pub struct BlobStorageConfig {
 impl Default for BlobStorageConfig {
     fn default() -> Self {
         dotenvy::dotenv().ok();
+        // max files is 10 on debug, and 1000 on release
+        let max_files = if cfg!(debug_assertions) { 10 } else { 1000 };
         let redis_url = std::env::var("BLOB_REDIS_URL").expect("BLOB_REDIS_URL");
         Self {
             redis_url,
-            max_files: 1000,
+            max_files,
             lock_timeout: 10 * 60,
         }
     }
@@ -175,7 +177,7 @@ pub struct BlobStorage {
 impl BlobStorage {
     /// NOTE: with redis, on new we fully load the file pools.
     /// meanwhile for the k/v map, we lazily load it on first access.
-    pub async fn init(config: BlobStorageConfig) -> BlobStorage {
+    pub async fn init(mut config: BlobStorageConfig) -> BlobStorage {
         let redis = redis::Client::open(config.redis_url.as_str()).expect("redis client");
         let mut con = redis.get_connection().unwrap();
         // load file pool from redis
@@ -192,6 +194,12 @@ impl BlobStorage {
                         file_pool.insert(file_info.file_id, file_info);
                     }
                 }
+
+                // adjust max_files if the file pool is bigger than max_files
+                if file_pool.len() > config.max_files as usize {
+                    config.max_files = file_pool.len() as u32;
+                }
+
                 file_pool
             } else {
                 DashMap::new()

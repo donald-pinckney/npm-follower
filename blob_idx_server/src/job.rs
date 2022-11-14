@@ -220,7 +220,8 @@ impl WorkerPool {
         // now that the worker is running, we can update the status.
         let new_worker = Worker {
             status: Arc::new(status),
-            ..worker
+            job_id: worker.job_id,
+            avail_tx: worker.avail_tx.clone(),
         };
 
         debug!("Worker {} is running", new_worker.job_id);
@@ -353,10 +354,16 @@ impl Worker {
             _ => panic!("Worker should be running"),
         }
     }
+}
 
-    /// Releases the worker, making it available for other jobs.
-    async fn release(&self) {
-        self.avail_tx.send(self.job_id).await.unwrap();
+impl Drop for Worker {
+    fn drop(&mut self) {
+        let tx = self.avail_tx.clone();
+        let job_id = self.job_id;
+        tokio::spawn(async move {
+            debug!("Releasing worker {}", job_id);
+            tx.send(job_id).await.unwrap();
+        });
     }
 }
 
@@ -435,8 +442,7 @@ impl JobManager {
         debug!("Running command:\n{}", cmd);
 
         let out_res = ssh.run_command(&cmd).await;
-        debug!("Releasing worker {}", worker.job_id);
-        worker.release().await;
+        drop(worker);
         let out = out_res?;
         debug!("Output:\n{}", out);
 
@@ -448,5 +454,15 @@ impl JobManager {
             Some(e) => Err(JobError::ClientError(e)),
             None => Ok(()),
         }
+    }
+
+    /// Submits a read job to the discovery cluster. Returns the data in base64 format.
+    /// This should not be used for computation, just for situational retrieval
+    /// of data.
+    pub async fn submit_read_job(&self, key: String) -> Result<String, JobError> {
+        debug!("Submitting read job with key {}", key);
+        let worker = self.worker_pool.get_worker().await?;
+
+        todo!()
     }
 }

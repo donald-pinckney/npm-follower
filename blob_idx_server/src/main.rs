@@ -11,6 +11,7 @@ async fn main() {
     let http = HTTP::new("127.0.0.1".to_string(), "8080".to_string(), api_key);
     let discovery_ssh = std::env::var("DISCOVERY_SSH").expect("DISCOVERY_SSH must be set");
     let (tx, mut shutdown_signal) = tokio::sync::mpsc::channel::<()>(1);
+
     http.start(
         blob::BlobStorageConfig::default(),
         JobManagerConfig {
