@@ -344,7 +344,7 @@ impl Worker {
                 node_id: _,
                 ssh_session,
             } => {
-                let out = ssh_session.run_command("ping -w 3 -c 1 1.1.1.1");
+                let out = ssh_session.run_command("curl -m 3 https://ip.me");
                 match out.await {
                     Ok(_) => Ok(true),
                     Err(_) => Ok(false),
