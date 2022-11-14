@@ -16,10 +16,8 @@ use crate::{
 
 /// The response that the worker client sends to the server.
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum ClientResponse {
-    Failure(ClientError),
-    Success,
+pub struct ClientResponse {
+    pub error: Option<ClientError>,
 }
 
 /// A resource pool data structure that is used to query available worker jobs.
@@ -396,11 +394,12 @@ impl JobManager {
         let response: ClientResponse =
             serde_json::from_str(&out).map_err(|_| JobError::ClientOutputNotParsable(out))?;
 
+        debug!("Releasing worker {}", worker.job_id);
         worker.release().await;
 
-        match response {
-            ClientResponse::Success => Ok(()),
-            ClientResponse::Failure(e) => Err(JobError::ClientError(e)),
+        match response.error {
+            Some(e) => Err(JobError::ClientError(e)),
+            None => Ok(()),
         }
     }
 }

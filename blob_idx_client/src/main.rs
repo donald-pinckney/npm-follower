@@ -33,8 +33,8 @@ async fn main() {
         }
     };
     let resp = match res {
-        Ok(_) => ClientResponse::Success,
-        Err(e) => ClientResponse::Failure(e),
+        Ok(_) => ClientResponse{ error: None },
+        Err(e) => ClientResponse{ error: Some(e) },
     };
     println!("{}", serde_json::to_string(&resp).unwrap());
 }
