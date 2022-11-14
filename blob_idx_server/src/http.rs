@@ -373,6 +373,7 @@ impl std::fmt::Display for HTTPError {
             HTTPError::Hyper(e) => write!(f, "Hyper error: {}", e),
             HTTPError::Io(e) => write!(f, "IO error: {}", e),
             HTTPError::Blob(e) => write!(f, "Blob error: {}", e),
+            HTTPError::Job(JobError::ClientError(e)) => write!(f, "{}", e),
             HTTPError::Job(e) => write!(f, "Job error: {}", e),
             HTTPError::InvalidBody(e) => write!(f, "Invalid body: {}", e),
             HTTPError::InvalidMethod(e) => write!(f, "Invalid method: {}", e),
