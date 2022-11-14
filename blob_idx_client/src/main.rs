@@ -104,7 +104,7 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
     // lookup request
     eprintln!("Sending lookup request for {}", tarball_url_key);
     let resp = client
-        .post(format!("{}/blob/create_and_lock", blob_api_url))
+        .get(format!("{}/blob/lookup", blob_api_url))
         .header("Authorization", blob_api_key.clone())
         .json(&LookupRequest {
             key: tarball_url_key.clone(),
@@ -113,6 +113,7 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
         .await?;
 
     if !resp.status().is_success() {
+        eprintln!("Lookup request failed. Got: {}", resp.text().await?);
         return Err(ClientError::BlobLookupError);
     }
 
