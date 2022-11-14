@@ -15,6 +15,7 @@ pub(super) mod worker;
 /// The response that the worker client sends to the server.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ClientResponse {
+    pub message: Option<String>,
     pub error: Option<ClientError>,
 }
 
@@ -64,9 +65,7 @@ impl JobManager {
 
         debug!("Running command:\n{}", cmd);
 
-        let out_res = ssh.run_command(&cmd).await;
-        drop(worker);
-        let out = out_res?;
+        let out = ssh.run_command(&cmd).await?;
         debug!("Output:\n{}", out);
 
         // parse into a ClientResponse
@@ -84,8 +83,27 @@ impl JobManager {
     /// of data.
     pub async fn submit_read_job(&self, key: String) -> Result<String, JobError> {
         debug!("Submitting read job with key {}", key);
-        let _worker = self.worker_pool.get_worker().await?;
+        let worker = self.worker_pool.get_worker().await?;
+        let ssh = worker.get_ssh_session();
 
-        todo!()
+        let cmd = format!(
+            "cd $HOME/npm-follower/blob_idx_client && ./run.sh read {}",
+            key
+        );
+
+        debug!("Running command:\n{}", cmd);
+
+        let out = ssh.run_command(&cmd).await?;
+        debug!("Output:\n{}", out);
+
+        // parse into a ClientResponse
+        let response: ClientResponse = serde_json::from_str(&out)
+            .map_err(|_| JobError::ClientOutputNotParsable(out.clone()))?;
+
+        match (response.message, response.error) {
+            (Some(filepath), None) => Ok(filepath),
+            (_, Some(e)) => Err(JobError::ClientError(e)),
+            _ => Err(JobError::ClientOutputNotParsable(out)),
+        }
     }
 }

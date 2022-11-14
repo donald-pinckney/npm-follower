@@ -105,6 +105,12 @@ pub struct SubmitJobRequest {
 #[serde(tag = "type")]
 pub enum JobType {
     DownloadURLs { urls: Vec<String> },
+    ReadKey { key: String },
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct SubmitJobReadKeyResponse {
+    pub filepath: String,
 }
 
 fn try_from_str<'a, T>(s: &'a str) -> Result<T, HTTPError>
@@ -233,6 +239,12 @@ mod routes {
                 JobType::DownloadURLs { urls } => {
                     job_manager.submit_download_job(urls).await?;
                     Ok("".to_string())
+                }
+                JobType::ReadKey { key } => {
+                    let fp = job_manager.submit_read_job(key).await?;
+                    Ok(serde_json::to_string(&SubmitJobReadKeyResponse {
+                        filepath: fp,
+                    })?)
                 }
             }
         }

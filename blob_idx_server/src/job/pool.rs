@@ -32,8 +32,6 @@ pub(super) struct WorkerPool {
     ssh_session: Box<dyn Ssh>,
     /// ssh factory, for creating new ssh sessions.
     ssh_factory: Box<dyn SshFactory>,
-    /// The cleanup tasks for each worker.
-    cleanup_tasks: Arc<DashMap<u64, tokio::task::JoinHandle<()>>>,
 }
 
 impl WorkerPool {
@@ -50,34 +48,7 @@ impl WorkerPool {
                 .await
                 .expect("failed to create ssh session"),
             ssh_factory,
-            cleanup_tasks: Arc::new(DashMap::new()),
         }
-    }
-
-    /// Spawns a cleanup task that will remove the worker from the pool after a given amount of time.
-    pub(crate) fn spawn_cleanup(&self, job_id: u64, when: chrono::DateTime<chrono::Utc>) {
-        let pool = self.pool.clone();
-        let cleanup_tasks = self.cleanup_tasks.clone();
-        debug!(
-            "Spawning cleanup task for job {}. cleaning at {}",
-            job_id, when
-        );
-        self.cleanup_tasks.insert(
-            job_id,
-            spawn(async move {
-                let now = chrono::Utc::now();
-                if now < when {
-                    let dur = when - now;
-                    tokio::time::sleep(std::time::Duration::from_millis(
-                        dur.num_milliseconds() as u64
-                    ))
-                    .await;
-                }
-                pool.remove(&job_id);
-                cleanup_tasks.remove(&job_id);
-                debug!("Cleaned up job {} from pool", job_id);
-            }),
-        );
     }
 
     /// Populates the worker pool with workers.
@@ -155,7 +126,6 @@ impl WorkerPool {
                     },
                 );
                 let cleanup_time = time_now + (chrono::Duration::hours(24) - (time_now - job_time));
-                self.spawn_cleanup(job_id, cleanup_time);
                 self.avail_tx.send(job_id).await.unwrap();
                 worker_count += 1;
             }
@@ -192,7 +162,6 @@ impl WorkerPool {
 
         self.pool.insert(job_id, worker);
         self.avail_tx.send(job_id).await.unwrap();
-        self.spawn_cleanup(job_id, chrono::Utc::now() + chrono::Duration::hours(24));
 
         Ok(job_id)
     }

@@ -42,6 +42,8 @@ pub enum ClientError {
     BlobCreateLockError,
     /// Some blob error occurred while unlocking a blob.
     BlobUnlockError,
+    /// Some blob error occurred while looking up a blob slice.
+    BlobLookupError,
 }
 
 #[derive(Debug)]

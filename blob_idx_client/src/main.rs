@@ -1,13 +1,15 @@
 use std::sync::Arc;
 
 use blob_idx_server::{
-    blob::BlobOffset,
+    blob::{BlobOffset, BlobStorageSlice},
     errors::ClientError,
-    http::{BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest},
+    http::{
+        BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest, LookupRequest,
+    },
     job::ClientResponse,
 };
 use tokio::{
-    io::{AsyncSeekExt, AsyncWriteExt},
+    io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
     sync::Semaphore,
     task::JoinHandle,
 };
@@ -24,17 +26,31 @@ async fn main() {
         eprintln!("Usage: {} [write|read] ...", args[0]);
         std::process::exit(1);
     }
-    let res = match args[1].as_str() {
-        "write" => download_and_write(args).await,
-        "read" => todo!(),
+    let resp = match args[1].as_str() {
+        "write" => match download_and_write(args).await {
+            Ok(_) => ClientResponse {
+                error: None,
+                message: None,
+            },
+            Err(e) => ClientResponse {
+                error: Some(e),
+                message: None,
+            },
+        },
+        "read" => match read_and_send(args).await {
+            Ok(o) => ClientResponse {
+                error: None,
+                message: Some(o),
+            },
+            Err(e) => ClientResponse {
+                error: Some(e),
+                message: None,
+            },
+        },
         _ => {
             eprintln!("Usage: {} [write|read] ...", args[0]);
             std::process::exit(1);
         }
-    };
-    let resp = match res {
-        Ok(_) => ClientResponse { error: None },
-        Err(e) => ClientResponse { error: Some(e) },
     };
     println!("{}", serde_json::to_string(&resp).unwrap());
 }
@@ -63,6 +79,68 @@ fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
     })
 }
 
+fn make_client() -> Result<reqwest::Client, ClientError> {
+    Ok(reqwest::ClientBuilder::new()
+        .connect_timeout(std::time::Duration::from_secs(10))
+        .timeout(std::time::Duration::from_secs(600))
+        .user_agent("Wget/1.20.3 (linux-gnu)")
+        .build()?)
+}
+
+async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
+    if args.len() != 3 {
+        eprintln!("Usage: {} read <tarball url key>", args[0]);
+        std::process::exit(1);
+    }
+
+    let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
+    let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
+    let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
+
+    let tarball_url_key = &args[2];
+
+    let client = make_client()?;
+
+    // lookup request
+    eprintln!("Sending lookup request for {}", tarball_url_key);
+    let resp = client
+        .post(format!("{}/blob/create_and_lock", blob_api_url))
+        .header("Authorization", blob_api_key.clone())
+        .json(&LookupRequest {
+            key: tarball_url_key.clone(),
+        })
+        .send()
+        .await?;
+
+    if !resp.status().is_success() {
+        return Err(ClientError::BlobLookupError);
+    }
+
+    let slice: BlobStorageSlice = resp.json().await?;
+
+    let mut file =
+        tokio::fs::File::open(format!("{}/{}", blob_storage_dir, slice.file_name)).await?;
+    // seek to the offset
+    file.seek(std::io::SeekFrom::Start(slice.byte_offset))
+        .await?;
+
+    // read slice.num_bytes from file. make into base64.
+    let mut buf = vec![0; slice.num_bytes as usize];
+    file.read_exact(&mut buf).await?;
+
+    // write to temp file
+    let temp_dir = std::env::temp_dir();
+    // get pid of process, use that as a unique identifier
+    let pid = std::process::id();
+    let temp_file_path = temp_dir.join(format!("blob-file-{}-{}", pid, slice.file_id));
+
+    // write to temp file
+    let mut file = tokio::fs::File::create(&temp_file_path).await?;
+    file.write_all(&buf).await?;
+
+    Ok(temp_file_path.to_str().unwrap().to_string())
+}
+
 async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
     if args.len() != 4 {
         eprintln!(
@@ -85,11 +163,7 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
     // the join handles will hold the name of the file and it's contents
     // the result, if failed, will return the url that failed
     let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), String>>> = vec![];
-    let client = reqwest::ClientBuilder::new()
-        .connect_timeout(std::time::Duration::from_secs(10))
-        .timeout(std::time::Duration::from_secs(600))
-        .user_agent("Wget/1.20.3 (linux-gnu)") 
-        .build()?;
+    let client = make_client()?;
 
     for url in urls {
         let sem = Arc::clone(&sem);

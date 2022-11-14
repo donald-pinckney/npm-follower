@@ -1,17 +1,8 @@
 use std::sync::Arc;
 
+use tokio::sync::mpsc::Sender;
 
-
-
-use tokio::sync::{
-    mpsc::{Sender},
-};
-
-
-use crate::{
-    errors::{JobError},
-    ssh::{Ssh},
-};
+use crate::{errors::JobError, ssh::Ssh};
 
 #[derive(Clone)]
 pub(super) struct Worker {
@@ -54,7 +45,10 @@ impl Worker {
     }
 
     /// Checks if the worker is able to ping `1.1.1.1`, if it can't, the network is down on
-    /// the worker. Assumes the given worker is running.
+    /// the worker.
+    ///
+    /// # Panics
+    /// If the worker is not running.
     pub(crate) async fn is_network_up(&self) -> Result<bool, JobError> {
         match &*self.status {
             WorkerStatus::Running {
@@ -68,6 +62,21 @@ impl Worker {
                     Err(_) => Ok(false),
                 }
             }
+            _ => panic!("Worker should be running"),
+        }
+    }
+
+    /// Gets a reference to the ssh session of the worker.
+    ///
+    /// # Panics
+    /// If the worker is not running.
+    pub(crate) fn get_ssh_session(&self) -> &dyn Ssh {
+        match &*self.status {
+            WorkerStatus::Running {
+                started_at: _,
+                node_id: _,
+                ssh_session,
+            } => ssh_session.as_ref(),
             _ => panic!("Worker should be running"),
         }
     }
