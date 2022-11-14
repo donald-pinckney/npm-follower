@@ -15,10 +15,7 @@ use crate::{
     blob::{BlobStorage, BlobStorageConfig},
     job::JobManagerConfig,
 };
-use crate::{
-    errors::{BlobError, JobError},
-    job::JobManager,
-};
+use crate::{errors::HTTPError, job::JobManager};
 
 pub struct HTTP {
     // the host and port for a http server
@@ -246,6 +243,7 @@ mod routes {
     }
 
     pub(super) mod blob {
+
         use super::*;
         pub(crate) async fn lookup(
             blob: Arc<BlobStorage>,
@@ -321,65 +319,5 @@ impl<T> Service<T> for MakeSvc {
         let svc = self.clone();
         let fut = async move { Ok(svc.into()) };
         Box::pin(fut)
-    }
-}
-
-#[derive(Debug)]
-pub enum HTTPError {
-    Hyper(hyper::Error),
-    Io(std::io::Error),
-    Blob(BlobError),
-    Job(JobError),
-    Serde(serde_json::Error),
-    InvalidBody(String), // missing a field in the body
-    InvalidMethod(String),
-    InvalidKey,
-    InvalidPath(String),
-}
-
-impl From<hyper::Error> for HTTPError {
-    fn from(e: hyper::Error) -> Self {
-        HTTPError::Hyper(e)
-    }
-}
-
-impl From<std::io::Error> for HTTPError {
-    fn from(e: std::io::Error) -> Self {
-        HTTPError::Io(e)
-    }
-}
-
-impl From<BlobError> for HTTPError {
-    fn from(e: BlobError) -> Self {
-        HTTPError::Blob(e)
-    }
-}
-
-impl From<JobError> for HTTPError {
-    fn from(e: JobError) -> Self {
-        HTTPError::Job(e)
-    }
-}
-
-impl From<serde_json::Error> for HTTPError {
-    fn from(e: serde_json::Error) -> Self {
-        HTTPError::Serde(e)
-    }
-}
-
-impl std::fmt::Display for HTTPError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            HTTPError::Hyper(e) => write!(f, "Hyper error: {}", e),
-            HTTPError::Io(e) => write!(f, "IO error: {}", e),
-            HTTPError::Blob(e) => write!(f, "Blob error: {}", e),
-            HTTPError::Job(JobError::ClientError(e)) => write!(f, "{}", e),
-            HTTPError::Job(e) => write!(f, "Job error: {}", e),
-            HTTPError::InvalidBody(e) => write!(f, "Invalid body: {}", e),
-            HTTPError::InvalidMethod(e) => write!(f, "Invalid method: {}", e),
-            HTTPError::InvalidPath(e) => write!(f, "Invalid path: {}", e),
-            HTTPError::Serde(e) => write!(f, "Serde error: {}", e),
-            HTTPError::InvalidKey => write!(f, "Invalid api key"),
-        }
     }
 }

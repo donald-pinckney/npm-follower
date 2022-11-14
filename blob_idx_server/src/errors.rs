@@ -44,6 +44,19 @@ pub enum ClientError {
     BlobUnlockError,
 }
 
+#[derive(Debug)]
+pub enum HTTPError {
+    Hyper(hyper::Error),
+    Io(std::io::Error),
+    Blob(BlobError),
+    Job(JobError),
+    Serde(serde_json::Error),
+    InvalidBody(String), // missing a field in the body
+    InvalidMethod(String),
+    InvalidKey,
+    InvalidPath(String),
+}
+
 impl std::fmt::Display for BlobError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -74,7 +87,7 @@ impl std::fmt::Display for JobError {
                     cmd, output
                 )
             }
-            JobError::ClientError(e) => write!(f, "Client error: {}", e),
+            JobError::ClientError(e) => write!(f, "{}", e),
             JobError::ClientOutputNotParsable(s) => {
                 write!(f, "Client output not parsable: {}", s)
             }
@@ -86,6 +99,23 @@ impl std::fmt::Display for JobError {
 impl std::fmt::Display for ClientError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", serde_json::to_string(self).unwrap())
+    }
+}
+
+impl std::fmt::Display for HTTPError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            HTTPError::Hyper(e) => write!(f, "Hyper error: {}", e),
+            HTTPError::Io(e) => write!(f, "IO error: {}", e),
+            HTTPError::Blob(e) => write!(f, "Blob error: {}", e),
+            HTTPError::Job(JobError::ClientError(e)) => write!(f, "{}", e),
+            HTTPError::Job(e) => write!(f, "Job error: {}", e),
+            HTTPError::InvalidBody(e) => write!(f, "Invalid body: {}", e),
+            HTTPError::InvalidMethod(e) => write!(f, "Invalid method: {}", e),
+            HTTPError::InvalidPath(e) => write!(f, "Invalid path: {}", e),
+            HTTPError::Serde(e) => write!(f, "Serde error: {}", e),
+            HTTPError::InvalidKey => write!(f, "Invalid api key"),
+        }
     }
 }
 
@@ -104,6 +134,36 @@ impl From<std::io::Error> for ClientError {
 impl From<reqwest::Error> for ClientError {
     fn from(_: reqwest::Error) -> Self {
         ClientError::ReqwestError
+    }
+}
+
+impl From<hyper::Error> for HTTPError {
+    fn from(e: hyper::Error) -> Self {
+        HTTPError::Hyper(e)
+    }
+}
+
+impl From<std::io::Error> for HTTPError {
+    fn from(e: std::io::Error) -> Self {
+        HTTPError::Io(e)
+    }
+}
+
+impl From<BlobError> for HTTPError {
+    fn from(e: BlobError) -> Self {
+        HTTPError::Blob(e)
+    }
+}
+
+impl From<JobError> for HTTPError {
+    fn from(e: JobError) -> Self {
+        HTTPError::Job(e)
+    }
+}
+
+impl From<serde_json::Error> for HTTPError {
+    fn from(e: serde_json::Error) -> Self {
+        HTTPError::Serde(e)
     }
 }
 
