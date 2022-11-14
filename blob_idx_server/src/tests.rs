@@ -5,12 +5,17 @@ use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 
 use crate::{
-    blob::{self, BlobOffset, BlobStorageConfig, BlobStorageSlice},
+    blob::{BlobOffset, BlobStorageConfig, BlobStorageSlice},
+    errors::JobError,
     http::{
         BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest, LookupRequest,
         HTTP,
     },
+    job::JobManagerConfig,
+    ssh::{Ssh, SshFactory},
 };
+
+// TODO: fix tests
 
 lazy_static! {
     static ref GLOBAL_LOCK: Mutex<()> = Mutex::new(());
@@ -58,6 +63,38 @@ struct TestServer {
     handle: JoinHandle<()>,
 }
 
+#[derive(Debug, Clone)]
+struct FakeSshFactory {}
+
+#[derive(Debug, Clone)]
+struct FakeSsh {}
+
+#[async_trait::async_trait]
+impl SshFactory for FakeSshFactory {
+    async fn spawn(&self) -> Result<Box<dyn Ssh>, JobError> {
+        Ok(Box::new(FakeSsh {}) as Box<dyn Ssh>)
+    }
+
+    async fn spawn_jumped(&self, _jump_to: &str) -> Result<Box<dyn Ssh>, JobError> {
+        Ok(Box::new(FakeSsh {}) as Box<dyn Ssh>)
+    }
+}
+
+#[async_trait::async_trait]
+impl Ssh for FakeSsh {
+    async fn connect(_ssh_user_host: &str) -> Result<Self, JobError> {
+        Ok(FakeSsh {})
+    }
+
+    async fn connect_jumped(_ssh_user_host: &str, _jump_to: &str) -> Result<Self, JobError> {
+        Ok(FakeSsh {})
+    }
+
+    async fn run_command(&self, _cmd: &str) -> Result<String, JobError> {
+        Ok("".to_string())
+    }
+}
+
 impl TestServer {
     async fn shutdown(self) {
         self.shutdown_signal.try_send(()).unwrap();
@@ -74,9 +111,16 @@ async fn run_test_server(cfg: BlobStorageConfig) -> TestServer {
     let (tx, mut rx) = tokio::sync::mpsc::channel::<()>(1);
 
     let task = tokio::spawn(async move {
-        http.start(cfg.clone(), async move {
-            rx.recv().await;
-        })
+        http.start(
+            cfg.clone(),
+            JobManagerConfig {
+                ssh_factory: Box::new(FakeSshFactory {}),
+                max_worker_jobs: 1,
+            },
+            async move {
+                rx.recv().await;
+            },
+        )
         .await
         .unwrap()
     });
@@ -1138,4 +1182,3 @@ async fn test_rewrite_cleaned() {
         cfg
     );
 }
-

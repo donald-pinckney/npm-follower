@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use dashmap::DashMap;
 use lazy_static::__Deref;
-use serde::{Deserialize, Serialize};
+
 use tokio::sync::{
     mpsc::{Receiver, Sender},
     Mutex,
@@ -11,9 +11,9 @@ use tokio::task::spawn;
 
 use crate::{
     debug,
-    errors::{ClientError, JobError},
+    errors::JobError,
     job::worker::WorkerStatus,
-    ssh::{Ssh, SshFactory, SshSessionFactory},
+    ssh::{Ssh, SshFactory},
 };
 
 use super::worker::Worker;
