@@ -33,8 +33,8 @@ async fn main() {
         }
     };
     let resp = match res {
-        Ok(_) => ClientResponse{ error: None },
-        Err(e) => ClientResponse{ error: Some(e) },
+        Ok(_) => ClientResponse { error: None },
+        Err(e) => ClientResponse { error: Some(e) },
     };
     println!("{}", serde_json::to_string(&resp).unwrap());
 }
@@ -85,14 +85,19 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
     // the join handles will hold the name of the file and it's contents
     // the result, if failed, will return the url that failed
     let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), String>>> = vec![];
+    let client = reqwest::ClientBuilder::new()
+        .connect_timeout(std::time::Duration::from_secs(10))
+        .timeout(std::time::Duration::from_secs(600))
+        .build()?;
 
     for url in urls {
         let sem = Arc::clone(&sem);
         let url = url.clone();
+        let client = client.clone();
         handles.push(tokio::task::spawn(async move {
             let _permit = sem.acquire().await.unwrap();
             eprintln!("Downloading {}", url);
-            let mut resp = match reqwest::get(&url).await {
+            let mut resp = match client.get(&url).send().await {
                 Ok(r) => r,
                 Err(_) => return Err(url),
             };
