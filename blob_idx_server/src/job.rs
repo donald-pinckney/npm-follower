@@ -243,11 +243,14 @@ impl WorkerPool {
     ///   adding a new worker to the pool.
     /// - Workers processed may still be queued, in that case we will wait until they are running.
     async fn get_worker(&self) -> Result<Worker, JobError> {
+        debug!("Waiting for jobs to be available");
         let job_id = self.avail_rx.lock().await.recv().await.unwrap();
+        debug!("Got job {}", job_id);
         let worker = self.pool.get(&job_id).unwrap().value().clone();
         match &*worker.status {
             WorkerStatus::Queued => {
                 // check/wait until worker is running, update status to running
+                debug!("Found queued worker {}, waiting for it to run", job_id);
                 self.wait_running(worker).await
             }
             WorkerStatus::Running {
@@ -260,11 +263,14 @@ impl WorkerPool {
                 let worker_age = now - *started_at;
                 if worker_age > chrono::Duration::hours(23) {
                     // expired, remove from pool and add a new worker
+                    debug!("Found expired worker {}, removing", job_id);
                     self.pool.remove(&job_id);
                     let new_worker = self.spawn_worker(false).await?;
+                    debug!("Added new worker {}", new_worker);
                     self.wait_running(self.pool.get(&new_worker).unwrap().value().clone())
                         .await
                 } else {
+                    debug!("Found running worker {}", job_id);
                     Ok(worker)
                 }
             }
