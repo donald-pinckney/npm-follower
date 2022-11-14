@@ -166,7 +166,7 @@ impl WorkerPool {
         // adding new workers if needed
         for i in worker_count..self.max_worker_jobs {
             debug!("Adding worker {}", i);
-            self.spawn_worker(true).await?;
+            self.spawn_worker().await?;
         }
 
         Ok(())
@@ -175,7 +175,7 @@ impl WorkerPool {
     /// Spawns a new worker and adds it to the pool. This worker will be queued on discovery,
     /// so it won't be available for work until discovery is done.
     /// `do_send` determines whether we should notify the channel that a worker is available.
-    async fn spawn_worker(&self, do_send: bool) -> Result<u64, JobError> {
+    async fn spawn_worker(&self) -> Result<u64, JobError> {
         if self.pool.len() >= self.max_worker_jobs {
             return Err(JobError::MaxWorkerJobsReached);
         }
@@ -193,10 +193,7 @@ impl WorkerPool {
         };
 
         self.pool.insert(job_id, worker);
-
-        if do_send {
-            self.avail_tx.send(job_id).await.unwrap();
-        }
+        self.avail_tx.send(job_id).await.unwrap();
         self.spawn_cleanup(job_id, chrono::Utc::now() + chrono::Duration::hours(24));
 
         Ok(job_id)
@@ -244,50 +241,55 @@ impl WorkerPool {
     /// - Workers processed may still be queued, in that case we will wait until they are running.
     /// - Some workers may have network issues, in that case, we will trash them and add a new one.
     async fn get_worker(&self) -> Result<Worker, JobError> {
-        debug!("Waiting for jobs to be available");
-        let job_id = self.avail_rx.lock().await.recv().await.unwrap();
-        debug!("Got job {}", job_id);
-        let worker = self.pool.get(&job_id).unwrap().value().clone();
-        match &*worker.status {
-            WorkerStatus::Queued => {
-                // check/wait until worker is running, update status to running
-                debug!("Found queued worker {}, waiting for it to run", job_id);
-                self.wait_running(worker).await
-            }
-            WorkerStatus::Running {
-                started_at,
-                node_id: _,
-                ssh_session: _,
-            } => {
-                // check if worker is expired
-                let now = chrono::Utc::now();
-                let worker_age = now - *started_at;
-                if worker_age > chrono::Duration::hours(23) {
-                    // expired, remove from pool and add a new worker
-                    debug!("Found expired worker {}, removing", job_id);
-                    self.pool.remove(&job_id);
-                    worker.cancel(&*self.ssh_session).await?;
-                    let new_worker = self.spawn_worker(false).await?;
-                    debug!("Added new worker {}", new_worker);
-                    self.wait_running(self.pool.get(&new_worker).unwrap().value().clone())
-                        .await
-                } else {
-                    debug!("Found running worker {}", job_id);
-                    // check if network is ok
-                    if worker.is_network_up().await? {
-                        debug!("Network is up for worker {}", job_id);
-                        Ok(worker)
+        async fn helper(wp: &WorkerPool) -> Result<Option<Worker>, JobError> {
+            debug!("Waiting for jobs to be available");
+            let job_id = wp.avail_rx.lock().await.recv().await.unwrap();
+            debug!("Got job {}", job_id);
+            let worker = wp.pool.get(&job_id).unwrap().value().clone();
+            match &*worker.status {
+                WorkerStatus::Queued => {
+                    // check/wait until worker is running, update status to running
+                    debug!("Found queued worker {}, waiting for it to run", job_id);
+                    Ok(Some(wp.wait_running(worker).await?))
+                }
+                WorkerStatus::Running {
+                    started_at,
+                    node_id: _,
+                    ssh_session: _,
+                } => {
+                    // check if worker is expired
+                    let now = chrono::Utc::now();
+                    let worker_age = now - *started_at;
+                    if worker_age > chrono::Duration::hours(23) {
+                        // expired, remove from pool and add a new worker
+                        debug!("Found expired worker {}, removing", job_id);
+                        wp.pool.remove(&job_id);
+                        worker.cancel(&*wp.ssh_session).await?;
+                        wp.spawn_worker().await?;
+                        Ok(None)
                     } else {
-                        // network is down, remove from pool and add a new worker
-                        debug!("Network is down for worker {}, removing", job_id);
-                        self.pool.remove(&job_id);
-                        worker.cancel(&*self.ssh_session).await?;
-                        let new_worker = self.spawn_worker(false).await?;
-                        debug!("Added new worker {}, waiting for running...", new_worker);
-                        self.wait_running(self.pool.get(&new_worker).unwrap().value().clone())
-                            .await
+                        debug!("Found running worker {}", job_id);
+                        // check if network is ok
+                        if worker.is_network_up().await? {
+                            debug!("Network is up for worker {}", job_id);
+                            Ok(Some(worker))
+                        } else {
+                            // network is down, remove from pool and add a new worker
+                            debug!("Network is down for worker {}, removing", job_id);
+                            wp.pool.remove(&job_id);
+                            worker.cancel(&*wp.ssh_session).await?;
+                            wp.spawn_worker().await?;
+                            Ok(None)
+                        }
                     }
                 }
+            }
+        }
+
+        loop {
+            match helper(self).await? {
+                Some(worker) => return Ok(worker),
+                None => continue,
             }
         }
     }
@@ -413,6 +415,7 @@ impl JobManager {
     pub async fn submit_download_job(&self, urls: Vec<String>) -> Result<(), JobError> {
         debug!("Submitting download job with {} urls", urls.len());
         let worker = self.worker_pool.get_worker().await?;
+
         let (node_id, ssh) = match &*worker.status {
             WorkerStatus::Running {
                 node_id,
