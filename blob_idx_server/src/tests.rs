@@ -91,7 +91,11 @@ impl Ssh for FakeSsh {
     }
 
     async fn run_command(&self, _cmd: &str) -> Result<String, JobError> {
-        Ok("".to_string())
+        if _cmd.contains("sbatch") {
+            Ok("123".to_string())
+        } else {
+            Ok("".to_string())
+        }
     }
 }
 
@@ -124,6 +128,7 @@ async fn run_test_server(cfg: BlobStorageConfig) -> TestServer {
         .await
         .unwrap()
     });
+
 
     // wait for the server to start
     while (reqwest::get("http://127.0.0.1:1337/").await).is_err() {
