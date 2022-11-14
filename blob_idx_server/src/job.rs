@@ -230,6 +230,8 @@ impl WorkerPool {
 
         self.pool.insert(new_worker.job_id, new_worker.clone());
 
+        debug!("Inserted running worker {} into pool", new_worker.job_id);
+
         Ok(new_worker)
     }
 
