@@ -240,6 +240,7 @@ impl WorkerPool {
     ///   Therefore, this function will also check for expired workers and remove them from the pool,
     ///   adding a new worker to the pool.
     /// - Workers processed may still be queued, in that case we will wait until they are running.
+    /// - Some workers may have network issues, in that case, we will trash them and add a new one.
     async fn get_worker(&self) -> Result<Worker, JobError> {
         debug!("Waiting for jobs to be available");
         let job_id = self.avail_rx.lock().await.recv().await.unwrap();
@@ -269,7 +270,18 @@ impl WorkerPool {
                         .await
                 } else {
                     debug!("Found running worker {}", job_id);
-                    Ok(worker)
+                    // check if network is ok
+                    if worker.is_network_up().await? {
+                        Ok(worker)
+                    } else {
+                        // network is down, remove from pool and add a new worker
+                        debug!("Network is down for worker {}, removing", job_id);
+                        self.pool.remove(&job_id);
+                        let new_worker = self.spawn_worker(false).await?;
+                        debug!("Added new worker {}, waiting for running...", new_worker);
+                        self.wait_running(self.pool.get(&new_worker).unwrap().value().clone())
+                            .await
+                    }
                 }
             }
         }
@@ -306,6 +318,22 @@ impl Worker {
             ))
             .await?;
         Ok(out)
+    }
+
+    /// Checks if the worker is able to ping `1.1.1.1`, if it can't, the network is down on
+    /// the worker. Assumes the given worker is running.
+    async fn is_network_up(&self) -> Result<bool, JobError> {
+        match &*self.status {
+            WorkerStatus::Running {
+                started_at: _,
+                node_id: _,
+                ssh_session,
+            } => {
+                let out = ssh_session.run_command("ping -w 3 -c 1 1.1.1.1").await?;
+                Ok(!out.contains("100% packet loss"))
+            }
+            _ => panic!("Worker should be running"),
+        }
     }
 
     /// Releases the worker, making it available for other jobs.
