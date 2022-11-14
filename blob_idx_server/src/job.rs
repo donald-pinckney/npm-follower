@@ -273,6 +273,7 @@ impl WorkerPool {
                     debug!("Found running worker {}", job_id);
                     // check if network is ok
                     if worker.is_network_up().await? {
+                        debug!("Network is up for worker {}", job_id);
                         Ok(worker)
                     } else {
                         // network is down, remove from pool and add a new worker
@@ -339,12 +340,11 @@ impl Worker {
                 node_id: _,
                 ssh_session,
             } => {
-                let out = match ssh_session.run_command("ping -w 3 -c 1 1.1.1.1").await {
-                    Ok(out) => out,
-                    Err(JobError::CommandNonZero { cmd: _, output }) => output,
-                    Err(e) => return Err(e),
-                };
-                Ok(!out.contains("100% packet loss"))
+                let out = ssh_session.run_command("ping -w 3 -c 1 1.1.1.1");
+                match out.await {
+                    Ok(_) => Ok(true),
+                    Err(_) => Ok(false),
+                }
             }
             _ => panic!("Worker should be running"),
         }
@@ -429,15 +429,15 @@ impl JobManager {
 
         debug!("Running command:\n{}", cmd);
 
-        let out = ssh.run_command(&cmd).await?;
+        let out_res = ssh.run_command(&cmd).await;
+        debug!("Releasing worker {}", worker.job_id);
+        worker.release().await;
+        let out = out_res?;
         debug!("Output:\n{}", out);
 
         // parse into a ClientResponse
         let response: ClientResponse =
             serde_json::from_str(&out).map_err(|_| JobError::ClientOutputNotParsable(out))?;
-
-        debug!("Releasing worker {}", worker.job_id);
-        worker.release().await;
 
         match response.error {
             Some(e) => Err(JobError::ClientError(e)),
