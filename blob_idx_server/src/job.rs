@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use dashmap::DashMap;
+use lazy_static::__Deref;
 use serde::{Deserialize, Serialize};
 use tokio::sync::{
     mpsc::{Receiver, Sender},
@@ -241,7 +242,7 @@ impl WorkerPool {
     ///   adding a new worker to the pool.
     /// - Workers processed may still be queued, in that case we will wait until they are running.
     /// - Some workers may have network issues, in that case, we will trash them and add a new one.
-    async fn get_worker(&self) -> Result<Worker, JobError> {
+    async fn get_worker(&self) -> Result<WorkerGuard, JobError> {
         async fn helper(wp: &WorkerPool) -> Result<Option<Worker>, JobError> {
             debug!("Waiting for jobs to be available");
             let job_id = wp.avail_rx.lock().await.recv().await.unwrap();
@@ -289,7 +290,7 @@ impl WorkerPool {
 
         loop {
             match helper(self).await? {
-                Some(worker) => return Ok(worker),
+                Some(worker) => return Ok(WorkerGuard { worker }),
                 None => continue,
             }
         }
@@ -356,14 +357,26 @@ impl Worker {
     }
 }
 
-impl Drop for Worker {
+struct WorkerGuard {
+    worker: Worker,
+}
+
+impl Drop for WorkerGuard {
     fn drop(&mut self) {
-        let tx = self.avail_tx.clone();
-        let job_id = self.job_id;
+        let tx = self.worker.avail_tx.clone();
+        let job_id = self.worker.job_id;
         tokio::spawn(async move {
             debug!("Releasing worker {}", job_id);
             tx.send(job_id).await.unwrap();
         });
+    }
+}
+
+impl __Deref for WorkerGuard {
+    type Target = Worker;
+
+    fn deref(&self) -> &Self::Target {
+        &self.worker
     }
 }
 
