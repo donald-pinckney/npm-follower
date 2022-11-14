@@ -264,6 +264,7 @@ impl WorkerPool {
                     // expired, remove from pool and add a new worker
                     debug!("Found expired worker {}, removing", job_id);
                     self.pool.remove(&job_id);
+                    worker.cancel(&*self.ssh_session).await?;
                     let new_worker = self.spawn_worker(false).await?;
                     debug!("Added new worker {}", new_worker);
                     self.wait_running(self.pool.get(&new_worker).unwrap().value().clone())
@@ -277,6 +278,7 @@ impl WorkerPool {
                         // network is down, remove from pool and add a new worker
                         debug!("Network is down for worker {}, removing", job_id);
                         self.pool.remove(&job_id);
+                        worker.cancel(&*self.ssh_session).await?;
                         let new_worker = self.spawn_worker(false).await?;
                         debug!("Added new worker {}, waiting for running...", new_worker);
                         self.wait_running(self.pool.get(&new_worker).unwrap().value().clone())
@@ -318,6 +320,14 @@ impl Worker {
             ))
             .await?;
         Ok(out)
+    }
+
+    /// Cancels the job of the worker on discovery.
+    async fn cancel(&self, session: &dyn Ssh) -> Result<(), JobError> {
+        session
+            .run_command(&format!("scancel {}", self.job_id))
+            .await?;
+        Ok(())
     }
 
     /// Checks if the worker is able to ping `1.1.1.1`, if it can't, the network is down on
