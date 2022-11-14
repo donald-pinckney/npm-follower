@@ -90,6 +90,7 @@ impl Ssh for SshSession {
 
     /// Runs the given command on the remote host. If the command fails due to a connection error,
     /// it will try to reconnect and run the command again.
+    /// This will return JobError::CommandNonZero if the command exits with a non-zero exit code.
     async fn run_command(&self, cmd: &str) -> Result<String, JobError> {
         let mut session = self.session.lock().await;
         let mut tries = 0;
@@ -105,7 +106,10 @@ impl Ssh for SshSession {
                     } else {
                         return Err(JobError::CommandNonZero {
                             cmd: cmd.to_string(),
-                            output: String::from_utf8(output.stderr).expect("invalid utf8"),
+                            output: String::from_utf8(output.stderr)
+                                .expect("invalid utf8")
+                                .trim_end_matches('\n')
+                                .to_string(),
                         });
                     }
                 }

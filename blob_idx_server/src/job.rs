@@ -329,7 +329,11 @@ impl Worker {
                 node_id: _,
                 ssh_session,
             } => {
-                let out = ssh_session.run_command("ping -w 3 -c 1 1.1.1.1").await?;
+                let out = match ssh_session.run_command("ping -w 3 -c 1 1.1.1.1").await {
+                    Ok(out) => out,
+                    Err(JobError::CommandNonZero { cmd: _, output }) => output,
+                    Err(e) => return Err(e),
+                };
                 Ok(!out.contains("100% packet loss"))
             }
             _ => panic!("Worker should be running"),
