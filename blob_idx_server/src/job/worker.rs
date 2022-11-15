@@ -4,6 +4,30 @@ use tokio::sync::mpsc::Sender;
 
 use crate::{errors::JobError, ssh::Ssh};
 
+/// parse time from "hour:min:sec", but could just be "min:sec"
+pub(super) fn parse_time(time: &str) -> Option<chrono::DateTime<chrono::Utc>> {
+    let time_now = chrono::Utc::now();
+    // parse time from "hour:min:sec", but could just be "min:sec"
+    let job_time = if time.matches(':').count() == 3 {
+        let mut parts = time.split(':');
+        let hour = parts.next().unwrap().parse::<i64>().ok()?;
+        let min = parts.next().unwrap().parse::<i64>().ok()?;
+        let sec = parts.next().unwrap().parse::<i64>().ok()?;
+        // get current time and subtract the time from the job
+        time_now
+            - chrono::Duration::hours(hour)
+            - chrono::Duration::minutes(min)
+            - chrono::Duration::seconds(sec)
+    } else {
+        let mut parts = time.split(':');
+        let min = parts.next().unwrap().parse::<i64>().ok()?;
+        let sec = parts.next().unwrap().parse::<i64>().ok()?;
+        // get current time and subtract the time from the job
+        time_now - chrono::Duration::minutes(min) - chrono::Duration::seconds(sec)
+    };
+    Some(job_time)
+}
+
 #[derive(Clone)]
 pub(super) struct Worker {
     /// the discovery job id
@@ -14,15 +38,34 @@ pub(super) struct Worker {
 }
 
 impl Worker {
-    /// Checks if the worker is out of the queue or not.
-    pub(crate) async fn is_running(&self, session: &dyn Ssh) -> Result<bool, JobError> {
+    /// Checks if the worker is out of the queue or not. Returns the time the worker was
+    /// started at if it is running.
+    pub(crate) async fn started_running_at(
+        &self,
+        session: &dyn Ssh,
+    ) -> Result<Option<chrono::DateTime<chrono::Utc>>, JobError> {
         let out = session
             .run_command(&format!(
-                "squeue -u $USER | grep {} | awk -F ' +' '{{print $6}}'",
+                "squeue -u $USER | grep {} | awk -F ' +' '{{print $6, $7}}'",
                 self.job_id
             ))
             .await?;
-        Ok(out == "R")
+        if out.is_empty() || out.matches(' ').count() != 1 {
+            Ok(None)
+        } else {
+            let mut parts = out.split(' ');
+            let status = parts.next().unwrap();
+            let time = parts.next().unwrap();
+            let job_time = match parse_time(time) {
+                Some(j) => j,
+                None => return Ok(None),
+            };
+            if status == "R" {
+                Ok(Some(job_time))
+            } else {
+                Ok(None)
+            }
+        }
     }
 
     /// Gets the node id of the worker.

@@ -80,27 +80,7 @@ impl WorkerPool {
                     .expect("Failed to parse job_id");
                 let status = parts.next().unwrap();
                 let time = parts.next().unwrap();
-
-                let time_now = chrono::Utc::now();
-                // parse time from "hour:min:sec", but could just be "min:sec"
-                let job_time = if time.matches(':').count() == 3 {
-                    let mut parts = time.split(':');
-                    let hour = parts.next().unwrap().parse::<i64>().unwrap();
-                    let min = parts.next().unwrap().parse::<i64>().unwrap();
-                    let sec = parts.next().unwrap().parse::<i64>().unwrap();
-                    // get current time and subtract the time from the job
-                    time_now
-                        - chrono::Duration::hours(hour)
-                        - chrono::Duration::minutes(min)
-                        - chrono::Duration::seconds(sec)
-                } else {
-                    let mut parts = time.split(':');
-                    let min = parts.next().unwrap().parse::<i64>().unwrap();
-                    let sec = parts.next().unwrap().parse::<i64>().unwrap();
-                    // get current time and subtract the time from the job
-                    time_now - chrono::Duration::minutes(min) - chrono::Duration::seconds(sec)
-                };
-
+                let job_time = crate::job::worker::parse_time(time).expect("Failed to parse time");
                 let node_id = parts.next().unwrap();
                 debug!(
                     "Found worker: {}, {}, {}, {}",
@@ -167,8 +147,10 @@ impl WorkerPool {
 
     /// Waits that the given worker shows up as running on discovery and updates the worker's status.
     pub(crate) async fn wait_running(&self, worker: Worker) -> Result<Worker, JobError> {
-        while !worker.is_running(&*self.ssh_session).await? {
+        let mut run_time = worker.started_running_at(&*self.ssh_session).await?;
+        while run_time.is_none() {
             tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+            run_time = worker.started_running_at(&*self.ssh_session).await?;
         }
         // get status, assume it's Queued
         let status = match &*worker.status {
@@ -176,7 +158,7 @@ impl WorkerPool {
                 let node_id = worker.get_node_id(&*self.ssh_session).await?;
                 let ssh_session = self.ssh_factory.spawn_jumped(&node_id).await?;
                 WorkerStatus::Running {
-                    started_at: chrono::Utc::now(),
+                    started_at: run_time.unwrap(),
                     ssh_session,
                     node_id,
                 }
@@ -212,7 +194,10 @@ impl WorkerPool {
             debug!("Waiting for jobs to be available");
             let job_id = wp.avail_rx.lock().await.recv().await.unwrap();
             debug!("Got job {}", job_id);
-            let worker = wp.pool.get(&job_id).unwrap().value().clone();
+            let worker = match wp.pool.get(&job_id) {
+                Some(j) => j.value().clone(),
+                None => return Ok(None),
+            };
             match &*worker.status {
                 WorkerStatus::Queued => {
                     // check/wait until worker is running, update status to running
@@ -238,7 +223,7 @@ impl WorkerPool {
                         debug!("Found expired worker {}, removing", job_id);
                         wp.pool.remove(&job_id);
                         worker.cancel(&*wp.ssh_session).await?;
-                        wp.spawn_worker().await?;
+                        wp.spawn_worker().await.ok();
                         Ok(None)
                     } else {
                         debug!("Found running worker {}", job_id);
@@ -251,7 +236,7 @@ impl WorkerPool {
                             debug!("Network is down for worker {}, removing", job_id);
                             wp.pool.remove(&job_id);
                             worker.cancel(&*wp.ssh_session).await?;
-                            wp.spawn_worker().await?;
+                            wp.spawn_worker().await.ok();
                             Ok(None)
                         }
                     }
