@@ -125,7 +125,6 @@ impl WorkerPool {
                         avail_tx: self.avail_tx.clone(),
                     },
                 );
-                let cleanup_time = time_now + (chrono::Duration::hours(24) - (time_now - job_time));
                 self.avail_tx.send(job_id).await.unwrap();
                 worker_count += 1;
             }
@@ -228,6 +227,7 @@ impl WorkerPool {
                     // check if worker is expired
                     let now = chrono::Utc::now();
                     let worker_age = now - *started_at;
+                    debug!("Found running worker {}, age: {}", job_id, worker_age);
                     if worker_age > chrono::Duration::hours(23) {
                         // expired, remove from pool and add a new worker
                         debug!("Found expired worker {}, removing", job_id);
