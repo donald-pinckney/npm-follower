@@ -227,7 +227,12 @@ impl WorkerPool {
                     // check if worker is expired
                     let now = chrono::Utc::now();
                     let worker_age = now - *started_at;
-                    debug!("Found running worker {}, age: {}", job_id, worker_age);
+                    debug!(
+                        "Found running worker {}, age: {}m ({}h)",
+                        job_id,
+                        worker_age.num_minutes(),
+                        worker_age.num_hours()
+                    );
                     if worker_age > chrono::Duration::hours(23) {
                         // expired, remove from pool and add a new worker
                         debug!("Found expired worker {}, removing", job_id);
