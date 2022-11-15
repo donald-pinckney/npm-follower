@@ -28,6 +28,8 @@ pub(super) struct WorkerPool {
     avail_tx: Sender<u64>,
     /// The maximum amount of worker jobs that can be running at the same time.
     max_worker_jobs: usize,
+    /// A lock for spawning new workers.
+    spawn_lock: Mutex<()>,
     /// ssh session for managing workers.
     ssh_session: Box<dyn Ssh>,
     /// ssh factory, for creating new ssh sessions.
@@ -43,6 +45,7 @@ impl WorkerPool {
             avail_tx: tx,
             avail_rx: Mutex::new(rx),
             max_worker_jobs,
+            spawn_lock: Mutex::new(()),
             ssh_session: ssh_factory
                 .spawn()
                 .await
@@ -123,7 +126,8 @@ impl WorkerPool {
     /// so it won't be available for work until discovery is done.
     /// `do_send` determines whether we should notify the channel that a worker is available.
     pub(crate) async fn spawn_worker(&self) -> Result<u64, JobError> {
-        if self.pool.len() >= self.max_worker_jobs - 1 {
+        let _lock = self.spawn_lock.lock().await;
+        if self.pool.len() >= self.max_worker_jobs {
             return Err(JobError::MaxWorkerJobsReached);
         }
 
