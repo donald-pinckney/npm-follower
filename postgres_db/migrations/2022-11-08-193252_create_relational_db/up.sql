@@ -364,7 +364,7 @@ CREATE TABLE versions (
   peer_dependencies       BIGINT[] NOT NULL,
   optional_dependencies   BIGINT[] NOT NULL,
 
-  FOREIGN KEY(package_id) REFERENCES packages(id),
+  FOREIGN KEY(package_id) REFERENCES packages(id), -- move this, not working with diesel?
   UNIQUE(package_id, semver),
 
   CONSTRAINT check_current_version_state_matches CHECK (
