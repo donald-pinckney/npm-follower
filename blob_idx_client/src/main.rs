@@ -83,7 +83,7 @@ fn make_client() -> Result<reqwest::Client, ClientError> {
     Ok(reqwest::ClientBuilder::new()
         .connect_timeout(std::time::Duration::from_secs(10))
         .timeout(std::time::Duration::from_secs(600))
-        .user_agent("Wget/1.20.3 (linux-gnu)")
+        .user_agent("Wget/1.21.3")
         .build()?)
 }
 
@@ -138,7 +138,8 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
     }
     // get pid of process, use that as a unique identifier
     let pid = std::process::id();
-    let temp_file_path = temp_dir_path.join(format!("blob-file-{}-{}", pid, slice.file_id));
+    let slurm_job_id = std::env::var("SLURM_JOB_ID").unwrap_or_else(|_| slice.file_id.to_string());
+    let temp_file_path = temp_dir_path.join(format!("blob-file-{}-{}", pid, slurm_job_id));
 
     // write to temp file
     let mut file = tokio::fs::File::create(&temp_file_path).await?;

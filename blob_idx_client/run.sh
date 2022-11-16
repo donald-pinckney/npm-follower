@@ -15,4 +15,4 @@ if [ ! -f target/release/blob_idx_client ]; then
 fi
 
 # run (use all the arguments passed to this script)
-target/release/blob_idx_client $@
+target/release/blob_idx_client "$@"
