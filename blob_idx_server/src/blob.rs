@@ -576,7 +576,11 @@ impl BlobStorage {
         // remove the file lock
         self.locked_files.remove(&file_id);
         // remove the cleanup task
-        self.cleanup_tasks.remove(&file_id);
+        {
+            if let Some((_, i)) = self.cleanup_tasks.remove(&file_id) {
+                i.task.abort();
+            }
+        }
 
         // notify all the keys that are waiting for this file to be unlocked
         // that they
