@@ -151,7 +151,7 @@ impl Default for BlobStorageConfig {
         Self {
             redis_url,
             max_files,
-            lock_timeout: 10 * 60,
+            lock_timeout: 30,
         }
     }
 }

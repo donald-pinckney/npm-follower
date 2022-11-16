@@ -62,7 +62,7 @@ fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
         let req = KeepAliveLockRequest { file_id };
         let client = reqwest::Client::new();
         loop {
-            tokio::time::sleep(std::time::Duration::from_secs(300)).await;
+            tokio::time::sleep(std::time::Duration::from_secs(10)).await;
             eprintln!("Sending keep-alive request");
 
             let res = client
@@ -248,6 +248,7 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
 
     // if we get a 200, we can continue
     if !resp.status().is_success() {
+        eprintln!("Create and lock request failed. Got: {}", resp.text().await?);
         return Err(ClientError::BlobCreateLockError);
     }
 
@@ -315,6 +316,7 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
 
     // if we get a 200, we can continue
     if !resp.status().is_success() {
+        eprintln!("Create and unlock request failed. Got: {}", resp.text().await?);
         return Err(ClientError::BlobUnlockError);
     }
 
