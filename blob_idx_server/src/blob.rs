@@ -489,8 +489,8 @@ impl BlobStorage {
 
         if needs_creation {
             // add to redis file pool
-            self.add_to_redis_filepool(self.file_pool.get(&file_id).unwrap().value())
-                .await;
+            let val = self.file_pool.get(&file_id).unwrap().value().clone();
+            self.add_to_redis_filepool(&val).await;
         }
 
         let file_name = self
@@ -509,14 +509,15 @@ impl BlobStorage {
                 file_info.size += entry.num_bytes;
             }
             // set new file into __file_pool__ at idx file_id
-            self.add_to_redis_filepool(file_info.value()).await;
+            let val = file_info.value().clone();
+            self.add_to_redis_filepool(&val).await;
 
             prev_size
         };
 
         {
-            let mut redis = self.redis.get().await.unwrap();
             let mut offset = byte_offset;
+            let mut to_set_in_redis = vec![];
             for entry in entries {
                 let slice = BlobStorageSlice {
                     file_id,
@@ -530,13 +531,15 @@ impl BlobStorage {
                     lock: Some(node_id.clone()),
                 };
                 // insert into the map
-                let _: () = redis
-                    .set(&entry.key, serde_json::to_string(&lock_wrapper).unwrap())
-                    .await
-                    .unwrap();
+                to_set_in_redis.push((
+                    entry.key.clone(),
+                    serde_json::to_string(&lock_wrapper).unwrap(),
+                ));
                 self.map.insert(entry.key, lock_wrapper);
                 offset += entry.num_bytes;
             }
+            let mut redis = self.redis.get().await.unwrap();
+            let _: () = redis.set_multiple(&to_set_in_redis).await.unwrap();
         }
 
         let blob_offset = BlobOffset {
