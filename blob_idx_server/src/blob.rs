@@ -493,27 +493,18 @@ impl BlobStorage {
             self.add_to_redis_filepool(&val).await;
         }
 
-        let file_name = self
-            .file_pool
-            .get(&file_id)
-            .unwrap()
-            .value()
-            .file_name
-            .clone();
-
         // get mut the file info
-        let byte_offset = {
+        let (byte_offset, f_info) = {
             let mut file_info = self.file_pool.get_mut(&file_id).unwrap();
             let prev_size = file_info.size;
             for entry in entries.iter() {
                 file_info.size += entry.num_bytes;
             }
-            // set new file into __file_pool__ at idx file_id
-            let val = file_info.value().clone();
-            self.add_to_redis_filepool(&val).await;
 
-            prev_size
+            (prev_size, file_info.value().clone())
         };
+        // set new file into __file_pool__ at idx file_id
+        self.add_to_redis_filepool(&f_info).await;
 
         {
             let mut offset = byte_offset;
@@ -521,7 +512,7 @@ impl BlobStorage {
             for entry in entries {
                 let slice = BlobStorageSlice {
                     file_id,
-                    file_name: file_name.clone(),
+                    file_name: f_info.file_name.clone(),
                     byte_offset: offset,
                     num_bytes: entry.num_bytes,
                 };
@@ -543,7 +534,7 @@ impl BlobStorage {
         }
 
         let blob_offset = BlobOffset {
-            file_name,
+            file_name: f_info.file_name,
             file_id,
             needs_creation,
             byte_offset,
