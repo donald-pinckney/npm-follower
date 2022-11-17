@@ -17,7 +17,7 @@ async fn main() {
         blob::BlobStorageConfig::default(),
         JobManagerConfig {
             ssh_factory: Box::new(SshSessionFactory::new(&discovery_ssh)),
-            max_worker_jobs: 10,
+            max_worker_jobs: 20,
         },
         async move {
             shutdown_signal.recv().await;
