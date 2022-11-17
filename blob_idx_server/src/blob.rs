@@ -1,4 +1,7 @@
-use std::{collections::HashSet, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use bb8_redis::redis::AsyncCommands;
 use dashmap::DashMap;
@@ -569,19 +572,18 @@ impl BlobStorage {
             if lock.node_id != node_id {
                 return Err(BlobError::WrongNode);
             }
-            let mut redis = self.redis.get().await.unwrap();
             // unlock the keys and mark as written
+            let mut to_set_in_redis = vec![];
             for key in lock.keys.iter() {
                 let mut entry = self.map_lookup_mut(key).await.unwrap();
                 let value = entry.value_mut();
                 value.lock = None;
                 value.written = true;
-                // set into redis
-                let _: () = redis
-                    .set(key, serde_json::to_string(&value).unwrap())
-                    .await
-                    .unwrap();
+                to_set_in_redis.push((key.clone(), serde_json::to_string(value).unwrap()));
             }
+            // set into redis
+            let mut redis = self.redis.get().await.unwrap();
+            let _: () = redis.set_multiple(&to_set_in_redis).await.unwrap();
         }
 
         // remove the cleanup task
