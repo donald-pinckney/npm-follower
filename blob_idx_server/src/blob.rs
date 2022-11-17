@@ -1,8 +1,8 @@
 use std::{collections::HashSet, sync::Arc};
 
+use bb8_redis::redis::AsyncCommands;
 use dashmap::DashMap;
 use rand::{seq::SliceRandom, Rng};
-use redis::Commands;
 use serde::{ser::SerializeStruct, Deserialize, Serialize};
 use tokio::sync::{mpsc::Sender, Mutex, Notify};
 
@@ -160,7 +160,7 @@ impl Default for BlobStorageConfig {
 pub struct BlobStorage {
     /// The configuration of the blob storage.
     config: BlobStorageConfig,
-    redis: Mutex<redis::Connection>,
+    redis: bb8_redis::bb8::Pool<bb8_redis::RedisConnectionManager>,
     map: DashMap<String, LockWrapper>, // map [key] -> [slice + lock]
     /// pool of all the files (locked or not)
     file_pool: DashMap<u32, FileInfo>, // TODO: could do an array but i'm lazy now
@@ -178,13 +178,19 @@ impl BlobStorage {
     /// NOTE: with redis, on new we fully load the file pools.
     /// meanwhile for the k/v map, we lazily load it on first access.
     pub async fn init(mut config: BlobStorageConfig) -> BlobStorage {
-        let redis = redis::Client::open(config.redis_url.as_str()).expect("redis client");
-        let mut con = redis.get_connection().unwrap();
+        let redis_bb8_manager =
+            bb8_redis::RedisConnectionManager::new(config.redis_url.as_str()).unwrap();
+        let pool = bb8_redis::bb8::Pool::builder()
+            .build(redis_bb8_manager)
+            .await
+            .expect("Failed to create pool.");
+        let mut con = pool.get().await.expect("Failed to get redis connection");
         // load file pool from redis
         let file_pool = {
-            if con.hlen("__file_pool__") != Ok(0) {
+            if con.hlen("__file_pool__").await != Ok(0) {
                 let set = con
                     .hgetall::<String, Vec<String>>("__file_pool__".to_string())
+                    .await
                     .unwrap();
                 let file_pool = DashMap::new();
                 for (i, v) in set.iter().enumerate() {
@@ -205,10 +211,11 @@ impl BlobStorage {
                 DashMap::new()
             }
         };
+        drop(con); // need to drop for ownership reasons
 
         BlobStorage {
             config,
-            redis: Mutex::new(con),
+            redis: pool,
             map: DashMap::new(),
             file_pool,
             locked_files: Arc::new(DashMap::new()),
@@ -316,8 +323,8 @@ impl BlobStorage {
         }
 
         // if not found, check the redis map, and load it into the in-memory map
-        let mut redis = self.redis.lock().await;
-        let v: Option<String> = redis.get(key).unwrap();
+        let mut redis = self.redis.get().await.unwrap();
+        let v: Option<String> = redis.get(key).await.unwrap();
         if let Some(v) = v {
             // serialize the string into a LockWrapper
             let v: LockWrapper = serde_json::from_str(&v).unwrap();
@@ -343,8 +350,8 @@ impl BlobStorage {
 
         // if not found, check the redis map, and load it into the in-memory map
         let v: Option<String> = {
-            let mut redis = self.redis.lock().await;
-            redis.get(key).unwrap()
+            let mut redis = self.redis.get().await.unwrap();
+            redis.get(key).await.unwrap()
         };
         if let Some(v) = v {
             // serialize the string into a LockWrapper
@@ -360,13 +367,15 @@ impl BlobStorage {
     async fn add_to_redis_filepool(&self, file_info: &FileInfo) {
         let _: () = self
             .redis
-            .lock()
+            .get()
             .await
+            .unwrap()
             .hset(
                 "__file_pool__",
                 file_info.file_id,
                 serde_json::to_string(file_info).unwrap(),
             )
+            .await
             .unwrap();
     }
 
@@ -503,7 +512,7 @@ impl BlobStorage {
         };
 
         {
-            let mut redis = self.redis.lock().await;
+            let mut redis = self.redis.get().await.unwrap();
             let mut offset = byte_offset;
             for entry in entries {
                 let slice = BlobStorageSlice {
@@ -520,6 +529,7 @@ impl BlobStorage {
                 // insert into the map
                 let _: () = redis
                     .set(&entry.key, serde_json::to_string(&lock_wrapper).unwrap())
+                    .await
                     .unwrap();
                 self.map.insert(entry.key, lock_wrapper);
                 offset += entry.num_bytes;
@@ -555,11 +565,11 @@ impl BlobStorage {
             return Err(BlobError::CreateNotLocked);
         }
         {
-            let lock = self.locked_files.get_mut(&file_id).unwrap();
+            let lock = self.locked_files.remove(&file_id).unwrap().1;
             if lock.node_id != node_id {
                 return Err(BlobError::WrongNode);
             }
-            let mut redis = self.redis.lock().await;
+            let mut redis = self.redis.get().await.unwrap();
             // unlock the keys and mark as written
             for key in lock.keys.iter() {
                 let mut entry = self.map_lookup_mut(key).await.unwrap();
@@ -569,12 +579,11 @@ impl BlobStorage {
                 // set into redis
                 let _: () = redis
                     .set(key, serde_json::to_string(&value).unwrap())
+                    .await
                     .unwrap();
             }
         }
 
-        // remove the file lock
-        self.locked_files.remove(&file_id);
         // remove the cleanup task
         {
             if let Some((_, i)) = self.cleanup_tasks.remove(&file_id) {

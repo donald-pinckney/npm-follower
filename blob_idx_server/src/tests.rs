@@ -15,8 +15,6 @@ use crate::{
     ssh::{Ssh, SshFactory},
 };
 
-// TODO: fix tests
-
 lazy_static! {
     static ref GLOBAL_LOCK: Mutex<()> = Mutex::new(());
     // NOTE: we use db 5 for testing. make sure you don't have anything important there.
@@ -53,9 +51,9 @@ fn simple_config() -> BlobStorageConfig {
 }
 
 fn redis_cleanup() {
-    let client = redis::Client::open(REDIS_TEST_DB.to_string()).unwrap();
+    let client = bb8_redis::redis::Client::open(REDIS_TEST_DB.to_string()).unwrap();
     let mut con = client.get_connection().unwrap();
-    redis::cmd("FLUSHDB").query::<()>(&mut con).unwrap();
+    bb8_redis::redis::cmd("FLUSHDB").query::<()>(&mut con).unwrap();
 }
 
 struct TestServer {
