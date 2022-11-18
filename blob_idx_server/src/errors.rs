@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum BlobError {
     AlreadyExists,
     CreateNotLocked,
@@ -38,6 +38,7 @@ pub enum ClientError {
     IoError,
     /// Some reqwest error occurred.
     ReqwestError,
+    // TODO: get rid of these, and use the blob error ADT instead.
     /// Some blob error occurred while create lock a blob.
     BlobCreateLockError,
     /// Some blob error occurred while unlocking a blob.
@@ -50,7 +51,7 @@ pub enum ClientError {
 pub enum HTTPError {
     Hyper(hyper::Error),
     Io(std::io::Error),
-    Blob(BlobError),
+    Blob(BlobError), // TODO: make this serializable and deal with client
     Job(JobError),
     Serde(serde_json::Error),
     InvalidBody(String), // missing a field in the body

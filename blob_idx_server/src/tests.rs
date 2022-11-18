@@ -319,6 +319,7 @@ async fn test_lock_wait() {
         let client2 = client.clone();
         let handle2 = tokio::task::spawn(async move {
             let now = std::time::Instant::now();
+            tokio::time::sleep(tokio::time::Duration::from_millis(1000)).await;
             let res = send_create_and_lock_request(
                 &client2,
                 CreateAndLockRequest {
@@ -334,6 +335,7 @@ async fn test_lock_wait() {
         let client3 = client.clone();
         let handle3 = tokio::task::spawn(async move {
             let now = std::time::Instant::now();
+            tokio::time::sleep(tokio::time::Duration::from_millis(2000)).await;
             let res = send_create_and_lock_request(
                 &client3,
                 CreateAndLockRequest {
@@ -436,6 +438,7 @@ async fn test_lock_wait() {
         // n2 waits for lock
         let client2 = client.clone();
         let handle2 = tokio::task::spawn(async move {
+            tokio::time::sleep(tokio::time::Duration::from_millis(1000)).await;
             send_create_and_lock_request(
                 &client2,
                 CreateAndLockRequest {
@@ -449,6 +452,7 @@ async fn test_lock_wait() {
         // n3 waits for lock
         let client3 = client.clone();
         let handle3 = tokio::task::spawn(async move {
+            tokio::time::sleep(tokio::time::Duration::from_millis(2000)).await;
             send_create_and_lock_request(
                 &client3,
                 CreateAndLockRequest {
@@ -711,10 +715,8 @@ async fn test_cleaner_keepalive_race() {
     blob_test!(
         {
             let mut handles = vec![];
-            let order_ids: Arc<Mutex<Vec<u32>>> = Arc::new(Mutex::new(vec![]));
             for i in 0..epochs {
                 let client = client.clone();
-                let order_ids = order_ids.clone();
                 handles.push(tokio::task::spawn(async move {
                     // lock
                     let resp = send_create_and_lock_request(
@@ -727,9 +729,6 @@ async fn test_cleaner_keepalive_race() {
                     .await
                     .unwrap();
 
-                    {
-                        order_ids.lock().await.push(i);
-                    }
 
                     // send keepalive, unlock
 
@@ -760,16 +759,6 @@ async fn test_cleaner_keepalive_race() {
 
             for h in handles {
                 h.await.unwrap();
-            }
-
-            // now check that all the files are written in order
-            let order_ids = order_ids.lock().await;
-            let mut prev = -1;
-            for o in order_ids.iter() {
-                if (*o as i64) < prev {
-                    panic!("not in order");
-                }
-                prev = *o as i64;
             }
         },
         cfg
