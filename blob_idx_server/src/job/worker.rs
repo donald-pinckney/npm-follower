@@ -8,7 +8,7 @@ use crate::{errors::JobError, ssh::Ssh};
 pub(super) fn parse_time(time: &str) -> Option<chrono::DateTime<chrono::Utc>> {
     let time_now = chrono::Utc::now();
     // parse time from "hour:min:sec", but could just be "min:sec"
-    let job_time = if time.matches(':').count() == 3 {
+    let job_time = if time.matches(':').count() == 2 {
         let mut parts = time.split(':');
         let hour = parts.next().unwrap().parse::<i64>().ok()?;
         let min = parts.next().unwrap().parse::<i64>().ok()?;
@@ -132,4 +132,28 @@ pub(super) enum WorkerStatus {
         ssh_session: Box<dyn Ssh>,
         node_id: String,
     },
+}
+
+#[cfg(test)]
+mod parse_time_tests {
+    #[test]
+    fn parse_time_mins_secs() {
+        let time = "1:30";
+        let time = super::parse_time(time).unwrap();
+        let time_now = chrono::Utc::now();
+        let time_diff = time_now - time;
+        assert_eq!(time_diff.num_minutes(), 1);
+        assert_eq!(time_diff.num_seconds(), 90);
+    }
+
+    #[test]
+    fn parse_time_hours() {
+        let time = "1:30:30";
+        let time = super::parse_time(time).unwrap();
+        let time_now = chrono::Utc::now();
+        let time_diff = time_now - time;
+        assert_eq!(time_diff.num_hours(), 1);
+        assert_eq!(time_diff.num_minutes(), 90);
+        assert_eq!(time_diff.num_seconds(), 5430);
+    }
 }
