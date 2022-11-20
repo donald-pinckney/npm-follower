@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq)]
-#[serde(tag = "blob_type", content = "blob_data")]
+#[serde(tag = "type", content = "data")]
 pub enum BlobError {
     AlreadyExists(String),
     CreateNotLocked,
