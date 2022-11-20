@@ -31,7 +31,8 @@ pub enum JobError {
 
 /// Errors that the client can return. This enum is serialized to JSON and sent to the server.
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
+// make it inner so that we can add fields to the enum without breaking the API
+#[serde(tag = "type", content = "data")]
 pub enum ClientError {
     /// Some download urls failed. The vector contains the urls that failed.
     DownloadFailed {
