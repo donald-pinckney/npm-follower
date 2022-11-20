@@ -6,7 +6,7 @@ use tokio::task::JoinHandle;
 
 use crate::{
     blob::{BlobOffset, BlobStorageConfig, BlobStorageSlice},
-    errors::JobError,
+    errors::{BlobError, JobError},
     http::{
         BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest, LookupRequest,
         HTTP,
@@ -53,7 +53,9 @@ fn simple_config() -> BlobStorageConfig {
 fn redis_cleanup() {
     let client = bb8_redis::redis::Client::open(REDIS_TEST_DB.to_string()).unwrap();
     let mut con = client.get_connection().unwrap();
-    bb8_redis::redis::cmd("FLUSHDB").query::<()>(&mut con).unwrap();
+    bb8_redis::redis::cmd("FLUSHDB")
+        .query::<()>(&mut con)
+        .unwrap();
 }
 
 struct TestServer {
@@ -127,7 +129,6 @@ async fn run_test_server(cfg: BlobStorageConfig) -> TestServer {
         .unwrap()
     });
 
-
     // wait for the server to start
     while (reqwest::get("http://127.0.0.1:1337/").await).is_err() {
         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
@@ -142,7 +143,7 @@ async fn run_test_server(cfg: BlobStorageConfig) -> TestServer {
 async fn send_create_and_lock_request(
     client: &reqwest::Client,
     req: CreateAndLockRequest,
-) -> Result<BlobOffset, String> {
+) -> Result<BlobOffset, BlobError> {
     let resp = client
         .post("http://127.0.0.1:1337/blob/create_and_lock")
         .body(serde_json::to_string(&req).unwrap())
@@ -154,13 +155,18 @@ async fn send_create_and_lock_request(
         .await
         .unwrap();
 
-    serde_json::from_str::<BlobOffset>(&resp).map_err(|_| resp)
+    serde_json::from_str::<BlobOffset>(&resp).map_err(|_| {
+        let json_map =
+            serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(&resp).unwrap();
+        let err = json_map.get("error").unwrap();
+        serde_json::from_value::<BlobError>(err.clone()).unwrap()
+    })
 }
 
 async fn send_create_unlock_request(
     client: &reqwest::Client,
     req: CreateUnlockRequest,
-) -> (reqwest::StatusCode, String) {
+) -> (reqwest::StatusCode, Option<BlobError>) {
     let resp = client
         .post("http://127.0.0.1:1337/blob/create_unlock")
         .body(serde_json::to_string(&req).unwrap())
@@ -169,13 +175,25 @@ async fn send_create_unlock_request(
         .await
         .unwrap();
 
-    (resp.status(), resp.text().await.unwrap())
+    let status = resp.status();
+    let body = resp.text().await.unwrap();
+
+    let err = if status.is_success() {
+        None
+    } else {
+        let json_map =
+            serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(&body).unwrap();
+        let err = json_map.get("error").unwrap();
+        Some(serde_json::from_value::<BlobError>(err.clone()).unwrap())
+    };
+
+    (status, err)
 }
 
 async fn send_keepalive_request(
     client: &reqwest::Client,
     req: KeepAliveLockRequest,
-) -> (reqwest::StatusCode, String) {
+) -> (reqwest::StatusCode, Option<BlobError>) {
     let resp = client
         .post("http://127.0.0.1:1337/blob/keep_alive_lock")
         .body(serde_json::to_string(&req).unwrap())
@@ -184,13 +202,25 @@ async fn send_keepalive_request(
         .await
         .unwrap();
 
-    (resp.status(), resp.text().await.unwrap())
+    let status = resp.status();
+    let body = resp.text().await.unwrap();
+
+    let err = if status.is_success() {
+        None
+    } else {
+        let json_map =
+            serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(&body).unwrap();
+        let err = json_map.get("error").unwrap();
+        Some(serde_json::from_value::<BlobError>(err.clone()).unwrap())
+    };
+
+    (status, err)
 }
 
 async fn send_lookup_request(
     client: &reqwest::Client,
     req: LookupRequest,
-) -> Result<BlobStorageSlice, String> {
+) -> Result<BlobStorageSlice, BlobError> {
     let resp = client
         .get("http://127.0.0.1:1337/blob/lookup")
         .body(serde_json::to_string(&req).unwrap())
@@ -202,7 +232,12 @@ async fn send_lookup_request(
         .await
         .unwrap();
 
-    serde_json::from_str::<BlobStorageSlice>(&resp).map_err(|_| resp)
+    serde_json::from_str::<BlobStorageSlice>(&resp).map_err(|_| {
+        let json_map =
+            serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(&resp).unwrap();
+        let err = json_map.get("error").unwrap();
+        serde_json::from_value::<BlobError>(err.clone()).unwrap()
+    })
 }
 
 #[tokio::test]
@@ -234,7 +269,6 @@ async fn test_simple_get_slice_unlock_lookup() {
             },
         )
         .await;
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // lookup
@@ -276,7 +310,6 @@ async fn test_simple_get_slice_unlock_lookup() {
             },
         )
         .await;
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // lookup
@@ -361,7 +394,6 @@ async fn test_lock_wait() {
         )
         .await;
 
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // wait for second
@@ -378,7 +410,6 @@ async fn test_lock_wait() {
         )
         .await;
 
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // wait for third
@@ -402,7 +433,6 @@ async fn test_lock_wait() {
         println!("time2: {:?}", time2);
         println!("time3: {:?}", time3);
 
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // check offsets (needs creation)
@@ -476,7 +506,6 @@ async fn test_lock_wait() {
         )
         .await;
 
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // wait for second
@@ -492,7 +521,6 @@ async fn test_lock_wait() {
         )
         .await;
 
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // wait for third
@@ -508,7 +536,6 @@ async fn test_lock_wait() {
         )
         .await;
 
-        println!("resp: {}", resp.1);
         assert_eq!(resp.0, 200);
 
         // check offsets (now doesn't need creation)
@@ -571,7 +598,6 @@ async fn test_cleaner_basic() {
             )
             .await;
 
-            println!("resp: {}", resp.1);
             assert_eq!(resp.0, 200);
 
             // ok now let's test for keepalive (at least 3)
@@ -640,7 +666,6 @@ async fn test_cleaner_basic() {
             )
             .await;
 
-            println!("resp: {}", u.1);
             assert_eq!(u.0, 200);
 
             // now lets keepalive, but not unlock
@@ -668,7 +693,6 @@ async fn test_cleaner_basic() {
             )
             .await;
 
-            println!("keep1: {}", keep1.1);
             assert_eq!(keep1.0, 200);
 
             // wait two seconds
@@ -686,7 +710,6 @@ async fn test_cleaner_basic() {
             )
             .await;
 
-            println!("resp: {}", u.1);
             assert_eq!(u.0, 400);
 
             // check k4 not written
@@ -699,7 +722,7 @@ async fn test_cleaner_basic() {
             .await;
 
             assert!(resp.is_err());
-            assert!(resp.unwrap_err().contains("Blob is not written"));
+            assert_eq!(resp.unwrap_err(), BlobError::NotWritten);
         },
         cfg
     );
@@ -729,7 +752,6 @@ async fn test_cleaner_keepalive_race() {
                     .await
                     .unwrap();
 
-
                     // send keepalive, unlock
 
                     let keep = send_keepalive_request(
@@ -740,7 +762,6 @@ async fn test_cleaner_keepalive_race() {
                     )
                     .await;
 
-                    println!("keep: {}", keep.1);
                     assert_eq!(keep.0, 200);
 
                     let u = send_create_unlock_request(
@@ -752,7 +773,6 @@ async fn test_cleaner_keepalive_race() {
                     )
                     .await;
 
-                    println!("resp: {}", u.1);
                     assert_eq!(u.0, 200);
                 }));
             }
@@ -820,7 +840,6 @@ async fn more_than_one_file() {
             )
             .await;
 
-            println!("resp: {}", u.1);
             assert_eq!(u.0, 200);
 
             // try to lock another one, should be the same as resp.file_id
@@ -848,7 +867,6 @@ async fn more_than_one_file() {
             )
             .await;
 
-            println!("resp: {}", u.1);
             assert_eq!(u.0, 200);
 
             let resp = h3.await.unwrap().unwrap();
@@ -861,7 +879,6 @@ async fn more_than_one_file() {
             )
             .await;
 
-            println!("resp: {}", u.1);
             assert_eq!(u.0, 200);
         },
         cfg
@@ -895,7 +912,7 @@ async fn test_not_written() {
         .await;
 
         assert!(resp.is_err());
-        assert!(resp.unwrap_err().contains("Blob is not written"));
+        assert_eq!(resp.unwrap_err(), BlobError::NotWritten);
     });
 }
 
@@ -927,7 +944,7 @@ async fn test_wrong_node_id() {
         .await;
 
         assert_eq!(resp.0, 400);
-        assert!(resp.1.contains("Blob is locked by another node"));
+        assert_eq!(resp.1.unwrap(), BlobError::WrongNode);
     });
 }
 
@@ -945,7 +962,7 @@ async fn test_slice_doesnt_exist() {
         .await;
 
         assert!(resp.is_err());
-        assert!(resp.unwrap_err().contains("Blob does not exist"));
+        assert_eq!(resp.unwrap_err(), BlobError::DoesNotExist);
     });
 }
 
@@ -989,7 +1006,7 @@ async fn test_unlock_twice() {
         .await;
 
         assert_eq!(u.0, 400);
-        assert!(u.1.contains("Blob create not locked"));
+        assert_eq!(u.1.unwrap(), BlobError::CreateNotLocked);
     });
 }
 
@@ -1011,7 +1028,7 @@ async fn test_duplicate_keys() {
         .await;
 
         assert!(resp.is_err());
-        assert!(resp.unwrap_err().contains("Blob duplicate keys"));
+        assert_eq!(resp.unwrap_err(), BlobError::DuplicateKeys);
     });
 }
 
@@ -1055,7 +1072,10 @@ async fn test_already_created_key() {
         .await;
 
         assert!(resp.is_err());
-        assert!(resp.unwrap_err().contains("Blob already exists"));
+        assert_eq!(
+            resp.unwrap_err(),
+            BlobError::AlreadyExists("k1".to_string())
+        );
     });
 }
 
@@ -1087,7 +1107,10 @@ async fn test_lock_twice() {
         .await;
 
         assert!(resp.is_err());
-        assert!(resp.unwrap_err().contains("Blob already exists"));
+        assert_eq!(
+            resp.unwrap_err(),
+            BlobError::AlreadyExists("k1".to_string())
+        );
     });
 }
 

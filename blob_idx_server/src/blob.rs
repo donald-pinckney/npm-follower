@@ -394,12 +394,12 @@ impl BlobStorage {
                 // if the key is written, we can't write to it
                 // but if the key is not written, we can overwrite it if the file is unlocked
                 if l.written {
-                    return Err(BlobError::AlreadyExists);
+                    return Err(BlobError::AlreadyExists(key.to_string()));
                 }
 
                 // check that the file is not locked (may be a cleaned key)
                 if self.locked_files.contains_key(&l.slice.file_id) {
-                    return Err(BlobError::AlreadyExists);
+                    return Err(BlobError::AlreadyExists(key.to_string()));
                 }
             }
         }

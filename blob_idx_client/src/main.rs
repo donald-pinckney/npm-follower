@@ -87,6 +87,31 @@ fn make_client() -> Result<reqwest::Client, ClientError> {
         .build()?)
 }
 
+/// Checks if the response was successful, and if not, returns an error.
+async fn check_req_failed(resp: reqwest::Response) -> Result<reqwest::Response, ClientError> {
+    let status = resp.status();
+    if !status.is_success() {
+        // try to parse into a BlobError, or send HttpServerError
+        let mut err_map = resp
+            .json::<serde_json::Map<String, serde_json::Value>>()
+            .await?;
+        eprintln!(
+            "Failed request. Got: {}",
+            err_map.get("error").unwrap_or(&serde_json::Value::Null)
+        );
+        if let Some(err) = err_map.remove("error") {
+            let blob_err = serde_json::from_value::<blob_idx_server::errors::BlobError>(err)?;
+            Err(ClientError::BlobError(blob_err))
+        } else {
+            Err(ClientError::HttpServerError(
+                std::num::NonZeroU16::new(status.as_u16()).unwrap(),
+            ))
+        }
+    } else {
+        Ok(resp)
+    }
+}
+
 async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
     if args.len() != 3 {
         eprintln!("Usage: {} read <tarball url key>", args[0]);
@@ -112,10 +137,7 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
         .send()
         .await?;
 
-    if !resp.status().is_success() {
-        eprintln!("Lookup request failed. Got: {}", resp.text().await?);
-        return Err(ClientError::BlobLookupError);
-    }
+    let resp = check_req_failed(resp).await?;
 
     let slice: BlobStorageSlice = resp.json().await?;
 
@@ -169,7 +191,8 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
 
     // the join handles will hold the name of the file and it's contents
     // the result, if failed, will return the url that failed
-    let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), String>>> = vec![];
+    let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), (String, std::num::NonZeroU16)>>> =
+        vec![];
     let client = make_client()?;
 
     for url in urls {
@@ -181,12 +204,13 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
             eprintln!("Downloading {}", url);
             let mut resp = match client.get(&url).send().await {
                 Ok(r) => r,
-                Err(_) => return Err(url),
+                Err(_) => return Err((url, std::num::NonZeroU16::new(0).unwrap())),
             };
             drop(_permit);
             // check if the response is not an error
             if !resp.status().is_success() {
-                return Err(url);
+                let non_zero_status = std::num::NonZeroU16::new(resp.status().as_u16()).unwrap();
+                return Err((url, non_zero_status));
             }
 
             let mut bytes = {
@@ -200,7 +224,8 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
             };
             while let Some(chunk) = match resp.chunk().await {
                 Ok(c) => c,
-                Err(_) => return Err(url), // presumably an io error
+                // presumably an io error
+                Err(_) => return Err((url, std::num::NonZeroU16::new(500).unwrap())),
             } {
                 bytes.extend_from_slice(&chunk);
             }
@@ -247,16 +272,10 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
         .await?;
 
     // if we get a 200, we can continue
-    if !resp.status().is_success() {
-        eprintln!("Create and lock request failed. Got: {}", resp.text().await?);
-        return Err(ClientError::BlobCreateLockError);
-    }
+    let resp = check_req_failed(resp).await?;
 
     // parse the response
-    let blob: BlobOffset = resp
-        .json()
-        .await
-        .map_err(|_| ClientError::BlobCreateLockError)?;
+    let blob: BlobOffset = resp.json().await.map_err(|_| ClientError::SerdeJsonError)?;
 
     let keep_alive = spawn_keep_alive_loop(blob.file_id);
 
@@ -315,15 +334,13 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
         .await?;
 
     // if we get a 200, we can continue
-    if !resp.status().is_success() {
-        eprintln!("Create and unlock request failed. Got: {}", resp.text().await?);
-        return Err(ClientError::BlobUnlockError);
-    }
+    check_req_failed(resp).await?;
 
     if !failures.is_empty() {
         return Err(ClientError::DownloadFailed { urls: failures });
     }
 
+    // kill keep alive loop
     keep_alive.abort();
     Ok(())
 }

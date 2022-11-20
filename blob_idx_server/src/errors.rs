@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[serde(tag = "type", content = "data")]
 pub enum BlobError {
-    AlreadyExists,
+    AlreadyExists(String),
     CreateNotLocked,
     DuplicateKeys,
     DoesNotExist,
@@ -33,25 +34,26 @@ pub enum JobError {
 #[serde(tag = "type")]
 pub enum ClientError {
     /// Some download urls failed. The vector contains the urls that failed.
-    DownloadFailed { urls: Vec<String> },
+    DownloadFailed {
+        urls: Vec<(String, std::num::NonZeroU16)>,
+    },
     /// Some IO error occurred.
     IoError,
     /// Some reqwest error occurred.
     ReqwestError,
-    // TODO: get rid of these, and use the blob error ADT instead.
-    /// Some blob error occurred while create lock a blob.
-    BlobCreateLockError,
-    /// Some blob error occurred while unlocking a blob.
-    BlobUnlockError,
-    /// Some blob error occurred while looking up a blob slice.
-    BlobLookupError,
+    /// Some error related to requesting the http server occurred.
+    HttpServerError(std::num::NonZeroU16),
+    /// Some blob error occurred.
+    BlobError(BlobError),
+    /// Some serde json error occurred.
+    SerdeJsonError,
 }
 
 #[derive(Debug)]
 pub enum HTTPError {
     Hyper(hyper::Error),
     Io(std::io::Error),
-    Blob(BlobError), // TODO: make this serializable and deal with client
+    Blob(BlobError),
     Job(JobError),
     Serde(serde_json::Error),
     InvalidBody(String), // missing a field in the body
@@ -63,9 +65,9 @@ pub enum HTTPError {
 impl std::fmt::Display for BlobError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BlobError::AlreadyExists => write!(f, "Blob already exists"),
+            BlobError::AlreadyExists(key) => write!(f, "Blob already exists: {}", key),
             BlobError::CreateNotLocked => write!(f, "Blob create not locked"),
-            BlobError::DuplicateKeys => write!(f, "Blob duplicate keys"),
+            BlobError::DuplicateKeys => write!(f, "Duplicate keys"),
             BlobError::DoesNotExist => write!(f, "Blob does not exist"),
             BlobError::ProhibitedKey => write!(f, "Blob key is prohibited"),
             BlobError::WrongNode => write!(f, "Blob is locked by another node"),
@@ -110,7 +112,11 @@ impl std::fmt::Display for HTTPError {
         match self {
             HTTPError::Hyper(e) => write!(f, "Hyper error: {}", e),
             HTTPError::Io(e) => write!(f, "IO error: {}", e),
-            HTTPError::Blob(e) => write!(f, "Blob error: {}", e),
+            HTTPError::Blob(e) => write!(
+                f,
+                "{}",
+                serde_json::to_string(e).map_err(|_| { std::fmt::Error })?
+            ),
             HTTPError::Job(JobError::ClientError(e)) => write!(f, "{}", e),
             HTTPError::Job(e) => write!(f, "Job error: {}", e),
             HTTPError::InvalidBody(e) => write!(f, "Invalid body: {}", e),
@@ -137,6 +143,12 @@ impl From<std::io::Error> for ClientError {
 impl From<reqwest::Error> for ClientError {
     fn from(_: reqwest::Error) -> Self {
         ClientError::ReqwestError
+    }
+}
+
+impl From<serde_json::Error> for ClientError {
+    fn from(_: serde_json::Error) -> Self {
+        ClientError::SerdeJsonError
     }
 }
 

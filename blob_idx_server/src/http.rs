@@ -13,6 +13,7 @@ use serde_json::json;
 
 use crate::{
     blob::{BlobStorage, BlobStorageConfig},
+    errors::JobError,
     job::JobManagerConfig,
 };
 use crate::{errors::HTTPError, job::JobManager};
@@ -156,7 +157,7 @@ impl Service<Request<Body>> for Svc {
         //       - returns: empty or error
         //     - /job/submit
         //       - body: { "job_type": { "type": "download_urls", "urls": ["url1", "url2"] } }
-        //       - returns: IDK TODO!
+        //       - returns: depends on job type
         //  - GET:
         //     - /blob/lookup
         //       - body: { "key": "some_key" }
@@ -211,7 +212,12 @@ impl Service<Request<Body>> for Svc {
             match thunk.await {
                 Ok(s) => mk_res(s),
                 Err(HTTPError::Blob(e)) => {
-                    mk_error(json!({"error": e.to_string()}).to_string(), 400)
+                    let json_val = serde_json::to_value(e).unwrap();
+                    mk_error(json!({ "error": json_val }).to_string(), 400)
+                }
+                Err(HTTPError::Job(JobError::ClientError(e))) => {
+                    let json_val = serde_json::to_value(e).unwrap();
+                    mk_error(json!({ "error": json_val }).to_string(), 400)
                 }
                 Err(HTTPError::Job(e)) => {
                     mk_error(json!({"error": e.to_string()}).to_string(), 400)
