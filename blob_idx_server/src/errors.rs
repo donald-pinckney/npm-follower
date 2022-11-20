@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq)]
-#[serde(tag = "type", content = "data")]
+#[serde(tag = "blob_type", content = "blob_data")]
 pub enum BlobError {
     AlreadyExists(String),
     CreateNotLocked,
@@ -31,7 +31,6 @@ pub enum JobError {
 
 /// Errors that the client can return. This enum is serialized to JSON and sent to the server.
 #[derive(Debug, Serialize, Deserialize)]
-// make it inner so that we can add fields to the enum without breaking the API
 #[serde(tag = "type", content = "data")]
 pub enum ClientError {
     /// Some download urls failed. The vector contains the urls that failed.
