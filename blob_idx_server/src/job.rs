@@ -34,7 +34,7 @@ pub struct JobManager {
 impl JobManager {
     pub async fn init(config: JobManagerConfig) -> Self {
         let mut worker_pool =
-            WorkerPool::init(config.max_worker_jobs, "job_xfer", config.ssh_factory).await;
+            WorkerPool::init(config.max_worker_jobs, "wp_xfer", config.ssh_factory).await;
         worker_pool
             .populate()
             .await
