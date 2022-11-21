@@ -20,6 +20,9 @@ use super::worker::Worker;
 
 /// A resource pool data structure that is used to query available worker jobs.
 pub(super) struct WorkerPool {
+    /// The name of the pool. Max 8 characters. Has to be unique,
+    /// other pools with the same name will be rejected.
+    name: String,
     /// map of [discovery's job_id] -> [worker]
     pool: Arc<DashMap<u64, Worker>>,
     /// channel that notifies that a worker is available.
@@ -37,9 +40,18 @@ pub(super) struct WorkerPool {
 
 impl WorkerPool {
     /// Initializes the worker pool with the given maximum number of workers and the given ssh session.
-    pub(crate) async fn init(max_worker_jobs: usize, ssh_factory: Box<dyn SshFactory>) -> Self {
+    /// The given name of the pool is used to identify the pool in the squeue output, so it
+    /// has to be unique.
+    pub(crate) async fn init(
+        max_worker_jobs: usize,
+        pool_name: impl Into<String>,
+        ssh_factory: Box<dyn SshFactory>,
+    ) -> Self {
+        let name = pool_name.into();
+        assert!(name.len() <= 8, "pool name too long");
         let (tx, rx): (Sender<u64>, Receiver<u64>) = tokio::sync::mpsc::channel(max_worker_jobs);
         Self {
+            name,
             pool: Arc::new(DashMap::new()),
             avail_tx: tx,
             avail_rx: Mutex::new(rx),
@@ -62,8 +74,11 @@ impl WorkerPool {
         assert!(self.pool.is_empty());
 
         // produces "job_id status hour:min:sec node_id"
-        let cmd = "squeue -u $USER | grep job_work | awk -F ' +' '{print $2, $6, $7, $9}'";
-        let output = self.ssh_session.run_command(cmd).await?;
+        let cmd = format!(
+            "squeue -u $USER | grep {} | awk -F ' +' '{{print $2, $6, $7, $9}}'",
+            self.name
+        );
+        let output = self.ssh_session.run_command(&cmd).await?;
 
         // check if empty
         let mut worker_count = 0;
@@ -130,7 +145,7 @@ impl WorkerPool {
             return Err(JobError::MaxWorkerJobsReached);
         }
 
-        let cmd = "sbatch worker.sh | cut -d ' ' -f4".to_string();
+        let cmd = format!("sbatch --job-name={} worker.sh | cut -d ' ' -f4", self.name);
         debug!("Running command: {}", cmd);
         let out = self.ssh_session.run_command(&cmd).await?;
         let job_id = out
