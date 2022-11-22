@@ -149,7 +149,7 @@ pub fn process_entries(
         let package = e.package_name;
         let instr = e.instr;
         panic::catch_unwind(AssertUnwindSafe(|| {
-            relational_db_builder::process_entry(conn, package, instr)
+            relational_db_builder::process_entry(conn, package, instr, seq, entry_id)
         }))
         .map_err(|err| ProcessEntryError {
             seq,

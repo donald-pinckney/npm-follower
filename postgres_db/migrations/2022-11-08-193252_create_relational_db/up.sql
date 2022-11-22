@@ -248,8 +248,8 @@ CREATE TYPE package_state_struct AS (
 CREATE DOMAIN package_state AS package_state_struct CHECK (
   (VALUE).package_state_type IS NOT NULL AND 
   (VALUE).seq IS NOT NULL AND 
-  (VALUE).diff_entry_id IS NOT NULL AND 
-  (VALUE).estimated_time IS NOT NULL
+  (VALUE).diff_entry_id IS NOT NULL --AND 
+  -- (VALUE).estimated_time IS NOT NULL
 );
 
 
