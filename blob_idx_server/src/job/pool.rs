@@ -35,7 +35,7 @@ pub(super) struct WorkerPool {
     /// ssh session for managing workers.
     ssh_session: Box<dyn Ssh>,
     /// ssh factory, for creating new ssh sessions.
-    ssh_factory: Box<dyn SshFactory>,
+    ssh_factory: Arc<Box<dyn SshFactory>>,
 }
 
 impl WorkerPool {
@@ -45,7 +45,7 @@ impl WorkerPool {
     pub(crate) async fn init(
         max_worker_jobs: usize,
         pool_name: impl Into<String>,
-        ssh_factory: Box<dyn SshFactory>,
+        ssh_factory: Arc<Box<dyn SshFactory>>,
     ) -> Self {
         let name = pool_name.into();
         assert!(name.len() <= 8, "pool name too long");

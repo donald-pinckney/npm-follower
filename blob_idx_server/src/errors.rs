@@ -47,6 +47,11 @@ pub enum ClientError {
     BlobError(BlobError),
     /// Some serde json error occurred.
     SerdeJsonError,
+    // this stuff is for the compute job
+    /// Duplicate tarball name
+    DuplicateTarballName(String),
+    /// The binary doesn't exist.
+    BinaryDoesNotExist,
 }
 
 #[derive(Debug)]

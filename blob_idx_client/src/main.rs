@@ -6,7 +6,7 @@ use blob_idx_server::{
     http::{
         BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest, LookupRequest,
     },
-    job::ClientResponse,
+    job::{ChunkResult, ClientResponse},
 };
 use tokio::{
     io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
@@ -23,7 +23,7 @@ async fn main() {
     let args: Vec<String> = std::env::args().collect();
     // args[1] is either "write" or "read"
     if args.len() < 3 {
-        eprintln!("Usage: {} [write|read] ...", args[0]);
+        eprintln!("Usage: {} [write|read|compute] ...", args[0]);
         std::process::exit(1);
     }
     let resp = match args[1].as_str() {
@@ -37,10 +37,20 @@ async fn main() {
                 message: None,
             },
         },
-        "read" => match read_and_send(args).await {
+        "read" => match read_and_send_main(args).await {
             Ok(o) => ClientResponse {
                 error: None,
-                message: Some(o),
+                message: Some(serde_json::Value::String(o)),
+            },
+            Err(e) => ClientResponse {
+                error: Some(e),
+                message: None,
+            },
+        },
+        "compute" => match compute_run_bin(args).await {
+            Ok(o) => ClientResponse {
+                error: None,
+                message: Some(serde_json::to_value(o).unwrap()),
             },
             Err(e) => ClientResponse {
                 error: Some(e),
@@ -112,17 +122,9 @@ async fn check_req_failed(resp: reqwest::Response) -> Result<reqwest::Response, 
     }
 }
 
-async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
-    if args.len() != 3 {
-        eprintln!("Usage: {} read <tarball url key>", args[0]);
-        std::process::exit(1);
-    }
-
+async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientError> {
     let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
-    let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
-
-    let tarball_url_key = &args[2];
 
     let client = make_client()?;
 
@@ -132,7 +134,7 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
         .get(format!("{}/blob/lookup", blob_api_url))
         .header("Authorization", blob_api_key.clone())
         .json(&LookupRequest {
-            key: tarball_url_key.clone(),
+            key: tarball_url_key,
         })
         .send()
         .await?;
@@ -140,6 +142,57 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
     let resp = check_req_failed(resp).await?;
 
     let slice: BlobStorageSlice = resp.json().await?;
+    Ok(slice)
+}
+
+async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> {
+    if args.len() != 5 {
+        eprintln!(
+            "Usage: {} compute <binary path> <tarball keys, separated by spaces>",
+            args[0]
+        );
+        std::process::exit(1);
+    }
+
+    let binary = args[2].clone();
+    let tarball_url_keys = args[3].clone();
+    let tarball_url_keys: Vec<String> =
+        tarball_url_keys.split(' ').map(|s| s.to_string()).collect();
+
+    let mut handles: Vec<JoinHandle<Result<String, ClientError>>> = Vec::new();
+    let mut slice_paths = Vec::new();
+    let pid = std::process::id();
+    for tarball_url_key in tarball_url_keys.clone() {
+        let handle = tokio::task::spawn(async move {
+            let slice_path =
+                read_and_send(tarball_url_key, &format!("/tmp/compute-{}", pid)).await?;
+            Ok(slice_path)
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        let slice = handle.await.unwrap()?;
+        slice_paths.push(slice);
+    }
+
+    let mut cmd = tokio::process::Command::new(binary);
+    cmd.args(vec![slice_paths.join(" ")]);
+    let output = cmd.output().await?;
+    let stdout = String::from_utf8(output.stdout).map_err(|_| ClientError::IoError)?;
+    let stderr = String::from_utf8(output.stderr).map_err(|_| ClientError::IoError)?;
+    let exit_code = output.status.code().ok_or(ClientError::IoError)?;
+
+    Ok(ChunkResult {
+        stdout,
+        stderr,
+        exit_code,
+    })
+}
+
+async fn read_and_send(tarball_key: String, tmp_dir_root: &str) -> Result<String, ClientError> {
+    let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
+    let slice = read_slice(tarball_key.to_string()).await?;
 
     let mut file =
         tokio::fs::File::open(format!("{}/{}", blob_storage_dir, slice.file_name)).await?;
@@ -151,9 +204,9 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
     let mut buf = vec![0; slice.num_bytes as usize];
     file.read_exact(&mut buf).await?;
 
-    // write to temp file, the dir is "/scratch/$USER/blob_slices/"
+    // write to temp file, the dir is "{tmp_dir_root}/blob_slices/"
     // it may need to be created
-    let temp_dir = format!("/scratch/{}/blob_slices", std::env::var("USER").unwrap());
+    let temp_dir = format!("/{}/blob_slices", tmp_dir_root);
     let temp_dir_path = std::path::Path::new(&temp_dir);
     if !temp_dir_path.exists() {
         std::fs::create_dir_all(temp_dir_path)?;
@@ -168,6 +221,17 @@ async fn read_and_send(args: Vec<String>) -> Result<String, ClientError> {
     file.write_all(&buf).await?;
 
     Ok(temp_file_path.to_str().unwrap().to_string())
+}
+
+async fn read_and_send_main(args: Vec<String>) -> Result<String, ClientError> {
+    if args.len() != 3 {
+        eprintln!("Usage: {} read <tarball url key>", args[0]);
+        std::process::exit(1);
+    }
+
+    let tarball_url_key = &args[2];
+    let tmp_dir_root = format!("/scratch/{}", std::env::var("USER").unwrap());
+    read_and_send(tarball_url_key.to_string(), &tmp_dir_root).await
 }
 
 async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
