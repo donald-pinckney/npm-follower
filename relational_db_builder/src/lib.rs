@@ -1,3 +1,5 @@
+mod relational_db_accessor;
+
 use postgres_db::{
     connection::{DbConnectionInTransaction, QueryRunner},
     custom_types::{PackageStateTimePoint, PackageStateType, Semver},
@@ -5,13 +7,18 @@ use postgres_db::{
     packages::{NewPackage, Package, PackageUpdate},
     packument::{PackageOnlyPackument, VersionOnlyPackument},
 };
+use relational_db_accessor::RelationalDbAccessor;
 use serde_json::Value;
 
-pub struct EntryProcessor {}
+pub struct EntryProcessor {
+    pub db: RelationalDbAccessor,
+}
 
 impl EntryProcessor {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            db: RelationalDbAccessor::new(),
+        }
     }
 }
 
@@ -120,7 +127,7 @@ impl EntryProcessor {
             },
         };
 
-        postgres_db::packages::insert_new_package(conn, new_package);
+        self.db.insert_new_package(conn, new_package);
     }
 
     fn update_package(
@@ -131,7 +138,7 @@ impl EntryProcessor {
         seq: i64,
         diff_entry_id: i64,
     ) {
-        let old_package = self.get_package_by_name(conn, &package); // TODO[perf]: replace with cached state
+        let old_package = self.db.get_package_by_name(conn, &package); // TODO[perf]: replace with cached state
         let old_history = old_package.package_state_history.clone();
 
         let new_package = match data {
@@ -144,7 +151,8 @@ impl EntryProcessor {
             } => {
                 // TODO[perf]: replace with cached state
                 let latest_id = latest.map(|latest_semver| {
-                    self.get_version_id_by_semver(conn, old_package.id, latest_semver)
+                    self.db
+                        .get_version_id_by_semver(conn, old_package.id, latest_semver)
                 });
                 NewPackage {
                     name: package.clone(),
@@ -224,7 +232,7 @@ impl EntryProcessor {
         _seq: i64,
         _diff_entry_id: i64,
     ) {
-        let package_id = self.get_package_id_by_name(conn, &package);
+        let package_id = self.db.get_package_id_by_name(conn, &package);
         postgres_db::dependencies::update_deps_missing_pack(conn, &package, package_id);
     }
 
@@ -258,25 +266,6 @@ impl EntryProcessor {
         seq: i64,
         diff_entry_id: i64,
     ) {
-    }
-}
-
-impl EntryProcessor {
-    fn get_package_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> Package {
-        todo!()
-    }
-
-    fn get_package_id_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> i64 {
-        todo!()
-    }
-
-    fn get_version_id_by_semver<R: QueryRunner>(
-        &mut self,
-        conn: &mut R,
-        package_id: i64,
-        v: Semver,
-    ) -> i64 {
-        todo!()
     }
 }
 
