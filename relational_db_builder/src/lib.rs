@@ -1,8 +1,8 @@
 use postgres_db::{
-    connection::DbConnectionInTransaction,
+    connection::{DbConnectionInTransaction, QueryRunner},
     custom_types::{PackageStateTimePoint, PackageStateType, Semver},
     diff_log::DiffLogInstruction,
-    packages::{NewPackage, PackageUpdate},
+    packages::{NewPackage, Package, PackageUpdate},
     packument::{PackageOnlyPackument, VersionOnlyPackument},
 };
 use serde_json::Value;
@@ -131,7 +131,7 @@ impl EntryProcessor {
         seq: i64,
         diff_entry_id: i64,
     ) {
-        let old_package = postgres_db::packages::get_package_by_name(conn, &package);
+        let old_package = self.get_package_by_name(conn, &package); // TODO[perf]: replace with cached state
         let old_history = old_package.package_state_history.clone();
 
         let new_package = match data {
@@ -142,12 +142,9 @@ impl EntryProcessor {
                 other_dist_tags,
                 extra_version_times: _,
             } => {
+                // TODO[perf]: replace with cached state
                 let latest_id = latest.map(|latest_semver| {
-                    postgres_db::versions::get_version_id_by_semver(
-                        conn,
-                        old_package.id,
-                        latest_semver,
-                    )
+                    self.get_version_id_by_semver(conn, old_package.id, latest_semver)
                 });
                 NewPackage {
                     name: package.clone(),
@@ -224,9 +221,11 @@ impl EntryProcessor {
         &mut self,
         conn: &mut DbConnectionInTransaction,
         package: String,
-        seq: i64,
-        diff_entry_id: i64,
+        _seq: i64,
+        _diff_entry_id: i64,
     ) {
+        let package_id = self.get_package_id_by_name(conn, &package);
+        postgres_db::dependencies::update_deps_missing_pack(conn, &package, package_id);
     }
 
     fn create_version(
@@ -259,6 +258,25 @@ impl EntryProcessor {
         seq: i64,
         diff_entry_id: i64,
     ) {
+    }
+}
+
+impl EntryProcessor {
+    fn get_package_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> Package {
+        todo!()
+    }
+
+    fn get_package_id_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> i64 {
+        todo!()
+    }
+
+    fn get_version_id_by_semver<R: QueryRunner>(
+        &mut self,
+        conn: &mut R,
+        package_id: i64,
+        v: Semver,
+    ) -> i64 {
+        todo!()
     }
 }
 

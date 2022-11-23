@@ -1,6 +1,8 @@
+DROP INDEX dependencies_dst_package_id_if_exists_idx;
 DROP INDEX dependencies_alias_package_name_idx;
 DROP INDEX dependencies_md5digest_idx;
 DROP INDEX dependencies_md5digest_with_version_idx;
+
 DROP INDEX versions_package_id_idx;
 
 ALTER TABLE packages DROP CONSTRAINT fkey_packages_dist_tag_latest_version;
