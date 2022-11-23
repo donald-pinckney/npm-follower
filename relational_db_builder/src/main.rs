@@ -13,6 +13,7 @@ use postgres_db::diff_log::DiffLogEntry;
 use postgres_db::diff_log::{self, DiffLogInstruction};
 use postgres_db::internal_state;
 
+use relational_db_builder::EntryProcessor;
 use utils::check_no_concurrent_processes;
 
 const PAGE_SIZE: i64 = 1024;
@@ -48,6 +49,8 @@ fn main() {
         session_num_diff_entries: num_entries_total,
     });
 
+    let mut entry_processor = EntryProcessor::new();
+
     // TODO: Extract this into function (duplicated in download_queuer/src/main.rs)
     loop {
         let batch_start = Instant::now();
@@ -71,7 +74,7 @@ fn main() {
 
         let process_entries_metrics = conn
             .run_psql_transaction(|mut trans_conn| {
-                match process_entries(&mut trans_conn, entries) {
+                match process_entries(&mut entry_processor, &mut trans_conn, entries) {
                     Ok(res) => {
                         // internal_state::set_relational_processed_seq(
                         //     last_seq_in_page,
@@ -137,6 +140,7 @@ fn main() {
 }
 
 pub fn process_entries(
+    processor: &mut EntryProcessor,
     conn: &mut DbConnectionInTransaction,
     entries: Vec<DiffLogEntry>,
 ) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError> {
@@ -149,7 +153,7 @@ pub fn process_entries(
         let package = e.package_name;
         let instr = e.instr;
         panic::catch_unwind(AssertUnwindSafe(|| {
-            relational_db_builder::process_entry(conn, package, instr, seq, entry_id)
+            processor.process_entry(conn, package, instr, seq, entry_id)
         }))
         .map_err(|err| ProcessEntryError {
             seq,
