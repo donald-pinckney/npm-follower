@@ -1,7 +1,7 @@
 use postgres_db::{
     connection::QueryRunner,
     custom_types::Semver,
-    packages::{NewPackage, Package},
+    packages::{NewPackage, Package, PackageUpdate},
 };
 
 pub struct RelationalDbAccessor {}
@@ -33,5 +33,24 @@ impl RelationalDbAccessor {
     pub fn insert_new_package<R: QueryRunner>(&mut self, conn: &mut R, new_package: NewPackage) {
         todo!()
         // postgres_db::packages::insert_new_package(conn, new_package);
+    }
+
+    pub fn update_package<R: QueryRunner>(
+        &mut self,
+        conn: &mut R,
+        package_id: i64,
+        diff: PackageUpdate,
+    ) {
+        //         postgres_db::packages::update_package(conn, &package, diff);
+        todo!()
+    }
+
+    pub fn update_deps_missing_pack<R: QueryRunner>(
+        &mut self,
+        conn: &mut R,
+        package_name: &str,
+        package_id: i64,
+    ) {
+        postgres_db::dependencies::update_deps_missing_pack(conn, package_name, package_id)
     }
 }

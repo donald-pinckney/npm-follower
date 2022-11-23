@@ -1,10 +1,10 @@
 mod relational_db_accessor;
 
 use postgres_db::{
-    connection::{DbConnectionInTransaction, QueryRunner},
+    connection::DbConnectionInTransaction,
     custom_types::{PackageStateTimePoint, PackageStateType, Semver},
     diff_log::DiffLogInstruction,
-    packages::{NewPackage, Package, PackageUpdate},
+    packages::NewPackage,
     packument::{PackageOnlyPackument, VersionOnlyPackument},
 };
 use relational_db_accessor::RelationalDbAccessor;
@@ -140,6 +140,7 @@ impl EntryProcessor {
     ) {
         let old_package = self.db.get_package_by_name(conn, &package); // TODO[perf]: replace with cached state
         let old_history = old_package.package_state_history.clone();
+        let package_id = old_package.id;
 
         let new_package = match data {
             PackageOnlyPackument::Normal {
@@ -152,7 +153,7 @@ impl EntryProcessor {
                 // TODO[perf]: replace with cached state
                 let latest_id = latest.map(|latest_semver| {
                     self.db
-                        .get_version_id_by_semver(conn, old_package.id, latest_semver)
+                        .get_version_id_by_semver(conn, package_id, latest_semver)
                 });
                 NewPackage {
                     name: package.clone(),
@@ -222,7 +223,7 @@ impl EntryProcessor {
 
         let diff = old_package.diff(new_package);
 
-        postgres_db::packages::update_package(conn, &package, diff);
+        self.db.update_package(conn, package_id, diff);
     }
 
     fn patch_package_refs(
@@ -233,7 +234,7 @@ impl EntryProcessor {
         _diff_entry_id: i64,
     ) {
         let package_id = self.db.get_package_id_by_name(conn, &package);
-        postgres_db::dependencies::update_deps_missing_pack(conn, &package, package_id);
+        self.db.update_deps_missing_pack(conn, &package, package_id);
     }
 
     fn create_version(

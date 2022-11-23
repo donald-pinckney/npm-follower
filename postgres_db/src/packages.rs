@@ -50,19 +50,21 @@ pub struct NewPackage {
 #[derive(Debug, AsChangeset)]
 #[diesel(table_name = packages)]
 pub struct PackageUpdate {
-    pub current_package_state_type: Option<PackageStateType>,
-    pub package_state_history: Option<Vec<PackageStateTimePoint>>,
-    pub dist_tag_latest_version: Option<Option<i64>>,
-    pub created: Option<Option<DateTime<Utc>>>,
-    pub modified: Option<Option<DateTime<Utc>>>,
-    pub other_dist_tags: Option<Option<Value>>,
-    pub other_time_data: Option<Option<Value>>,
-    pub unpublished_data: Option<Option<Value>>,
+    name: Option<String>, // but we ALWAYS set this to None
+    current_package_state_type: Option<PackageStateType>,
+    package_state_history: Option<Vec<PackageStateTimePoint>>,
+    dist_tag_latest_version: Option<Option<i64>>,
+    created: Option<Option<DateTime<Utc>>>,
+    modified: Option<Option<DateTime<Utc>>>,
+    other_dist_tags: Option<Option<Value>>,
+    other_time_data: Option<Option<Value>>,
+    unpublished_data: Option<Option<Value>>,
 }
 
 impl Package {
     pub fn diff(&self, new: NewPackage) -> PackageUpdate {
         let mut update = PackageUpdate {
+            name: None,
             current_package_state_type: None,
             package_state_history: None,
             dist_tag_latest_version: None,
@@ -114,8 +116,8 @@ pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) {
     conn.execute(query).expect("Error inserting new package");
 }
 
-pub fn update_package<R: QueryRunner>(conn: &mut R, package_name: &str, update: PackageUpdate) {
-    let query = diesel::update(packages::table.filter(packages::name.eq(package_name))).set(update);
+pub fn update_package<R: QueryRunner>(conn: &mut R, package_id: i64, update: PackageUpdate) {
+    let query = diesel::update(packages::table.filter(packages::id.eq(package_id))).set(update);
     conn.execute(query).expect("Error updating package");
 }
 
