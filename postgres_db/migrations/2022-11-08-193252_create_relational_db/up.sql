@@ -386,7 +386,11 @@ CREATE TABLE dependencies (
   raw_spec                      JSONB NOT NULL,
   spec                          parsed_spec NOT NULL,
 
-  freq_count                    BIGINT NOT NULL,
+  prod_freq_count               BIGINT NOT NULL,
+  dev_freq_count                BIGINT NOT NULL,
+  peer_freq_count               BIGINT NOT NULL,
+  optional_freq_count           BIGINT NOT NULL,
+
   md5digest                     TEXT NOT NULL, -- digest of only pkgname
   md5digest_with_version        TEXT NOT NULL, -- digest of "{pkgname}{raw_spec}"
 

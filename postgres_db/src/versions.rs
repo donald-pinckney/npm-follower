@@ -24,9 +24,29 @@ use serde::Deserialize;
 use serde::Serialize;
 
 #[derive(Queryable, Debug)]
-#[diesel(table_name = versions)]
 pub struct Version {
     pub id: i64,
+    pub package_id: i64,
+    pub semver: Semver,
+
+    pub current_version_state_type: VersionStateType,
+    pub version_state_history: Vec<VersionStateTimePoint>,
+
+    pub tarball_url: String,
+    pub repository_raw: Option<Value>,
+    pub repository_parsed: Option<RepoInfo>,
+    pub created: DateTime<Utc>,
+    pub extra_metadata: Value,
+
+    pub prod_dependencies: Vec<i64>, // this is a list of version ids
+    pub dev_dependencies: Vec<i64>,  // this is a list of version ids
+    pub peer_dependencies: Vec<i64>, // this is a list of version ids
+    pub optional_dependencies: Vec<i64>, // this is a list of version ids
+}
+
+#[derive(Insertable, Debug)]
+#[diesel(table_name = versions)]
+pub struct NewVersion {
     pub package_id: i64,
     pub semver: Semver,
 

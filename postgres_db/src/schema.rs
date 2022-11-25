@@ -56,7 +56,10 @@ diesel::table! {
         dst_package_id_if_exists -> Nullable<Int8>,
         raw_spec -> Jsonb,
         spec -> ParsedSpecStruct,
-        freq_count -> Int8,
+        prod_freq_count -> Int8,
+        dev_freq_count -> Int8,
+        peer_freq_count -> Int8,
+        optional_freq_count -> Int8,
         md5digest -> Text,
         md5digest_with_version -> Text,
     }

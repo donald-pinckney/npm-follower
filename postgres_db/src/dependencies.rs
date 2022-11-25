@@ -12,13 +12,23 @@ use sha2::{Digest, Sha256};
 // TODO: please rename this to Dependency, it throws me an error
 // and idk how to fix it
 pub struct NewDependency {
-    pub dst_package_name: String,
-    pub dst_package_id_if_exists: Option<i64>,
-    pub raw_spec: Value,
-    pub spec: ParsedSpec,
-    pub freq_count: i64,
-    pub md5digest: String,
-    pub md5digest_with_version: String,
+    dst_package_name: String,
+    dst_package_id_if_exists: Option<i64>,
+    raw_spec: Value,
+    spec: ParsedSpec,
+    prod_freq_count: i64,
+    dev_freq_count: i64,
+    peer_freq_count: i64,
+    optional_freq_count: i64,
+    md5digest: String,
+    md5digest_with_version: String,
+}
+
+pub enum DependencyType {
+    Prod,
+    Dev,
+    Peer,
+    Optional,
 }
 
 #[derive(Debug, Queryable)]
@@ -40,7 +50,7 @@ impl NewDependency {
         dst_package_id_if_exists: Option<i64>,
         raw_spec: Value,
         spec: ParsedSpec,
-        freq_count: i64,
+        dep_type: DependencyType,
     ) -> NewDependency {
         // sha hash of only the package name
         let mut hasher = Sha256::new();
@@ -51,12 +61,23 @@ impl NewDependency {
         hasher.update(format!("{}{}", dst_package_name, raw_spec));
         let md5digest_with_version = format!("{:x}", hasher.finalize());
 
+        let (prod_freq_count, dev_freq_count, peer_freq_count, optional_freq_count) = match dep_type
+        {
+            DependencyType::Prod => (1, 0, 0, 0),
+            DependencyType::Dev => (0, 1, 0, 0),
+            DependencyType::Peer => (0, 0, 1, 0),
+            DependencyType::Optional => (0, 0, 0, 1),
+        };
+
         NewDependency {
             dst_package_name,
             dst_package_id_if_exists,
             raw_spec,
             spec,
-            freq_count,
+            prod_freq_count,
+            dev_freq_count,
+            peer_freq_count,
+            optional_freq_count,
             md5digest,
             md5digest_with_version,
         }

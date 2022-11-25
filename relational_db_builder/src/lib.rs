@@ -1,11 +1,17 @@
 mod relational_db_accessor;
 
+use std::collections::HashSet;
+
 use postgres_db::{
     connection::DbConnectionInTransaction,
-    custom_types::{PackageStateTimePoint, PackageStateType, Semver},
+    custom_types::{
+        PackageStateTimePoint, PackageStateType, Semver, VersionStateTimePoint, VersionStateType,
+    },
+    dependencies::NewDependency,
     diff_log::DiffLogInstruction,
     packages::NewPackage,
-    packument::{PackageOnlyPackument, VersionOnlyPackument},
+    packument::{PackageOnlyPackument, Spec, VersionOnlyPackument},
+    versions::NewVersion,
 };
 use relational_db_accessor::RelationalDbAccessor;
 use serde_json::Value;
@@ -242,10 +248,108 @@ impl EntryProcessor {
         conn: &mut DbConnectionInTransaction,
         package: String,
         version: Semver,
-        data: VersionOnlyPackument,
+        mut data: VersionOnlyPackument,
         seq: i64,
         diff_entry_id: i64,
     ) {
+        assert_unique(data.prod_dependencies.iter().map(|(dst, _)| dst));
+        assert_unique(data.dev_dependencies.iter().map(|(dst, _)| dst));
+        assert_unique(data.peer_dependencies.iter().map(|(dst, _)| dst));
+        assert_unique(data.optional_dependencies.iter().map(|(dst, _)| dst));
+
+        let package_id = self.db.get_package_id_by_name(conn, &package);
+
+        let (repo_raw, repo_info) = data
+            .repository
+            .take()
+            .map_or((None, None), |x| (Some(x.raw), Some(x.info)));
+
+        let prod_inserted_ids = data
+            .prod_dependencies
+            .into_iter()
+            .map(|(dst_name, spec)| {
+                let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
+                let to_insert = NewDependency::create(
+                    dst_name,
+                    dst_id,
+                    spec.raw,
+                    spec.parsed,
+                    postgres_db::dependencies::DependencyType::Prod,
+                );
+                self.insert_or_inc_dependency(conn, to_insert)
+            })
+            .collect();
+
+        let dev_inserted_ids = data
+            .dev_dependencies
+            .into_iter()
+            .map(|(dst_name, spec)| {
+                let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
+                let to_insert = NewDependency::create(
+                    dst_name,
+                    dst_id,
+                    spec.raw,
+                    spec.parsed,
+                    postgres_db::dependencies::DependencyType::Dev,
+                );
+                self.insert_or_inc_dependency(conn, to_insert)
+            })
+            .collect();
+
+        let peer_inserted_ids = data
+            .peer_dependencies
+            .into_iter()
+            .map(|(dst_name, spec)| {
+                let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
+                let to_insert = NewDependency::create(
+                    dst_name,
+                    dst_id,
+                    spec.raw,
+                    spec.parsed,
+                    postgres_db::dependencies::DependencyType::Peer,
+                );
+                self.insert_or_inc_dependency(conn, to_insert)
+            })
+            .collect();
+
+        let optional_inserted_ids = data
+            .optional_dependencies
+            .into_iter()
+            .map(|(dst_name, spec)| {
+                let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
+                let to_insert = NewDependency::create(
+                    dst_name,
+                    dst_id,
+                    spec.raw,
+                    spec.parsed,
+                    postgres_db::dependencies::DependencyType::Optional,
+                );
+                self.insert_or_inc_dependency(conn, to_insert)
+            })
+            .collect();
+
+        let new_version_row = NewVersion {
+            package_id,
+            semver: version,
+            current_version_state_type: VersionStateType::Normal,
+            version_state_history: vec![VersionStateTimePoint {
+                state: VersionStateType::Normal,
+                seq,
+                diff_entry_id,
+                estimated_time: Some(data.time),
+            }],
+            tarball_url: data.dist.tarball_url,
+            repository_raw: repo_raw,
+            repository_parsed: repo_info,
+            created: data.time,
+            extra_metadata: Value::Object(data.extra_metadata.into_iter().collect()),
+            prod_dependencies: prod_inserted_ids,
+            dev_dependencies: dev_inserted_ids,
+            peer_dependencies: peer_inserted_ids,
+            optional_dependencies: optional_inserted_ids,
+        };
+
+        self.db.insert_new_version(conn, new_version_row);
     }
 
     fn update_version(
@@ -257,6 +361,7 @@ impl EntryProcessor {
         seq: i64,
         diff_entry_id: i64,
     ) {
+        todo!()
     }
 
     fn delete_version(
@@ -267,10 +372,30 @@ impl EntryProcessor {
         seq: i64,
         diff_entry_id: i64,
     ) {
+        todo!()
+    }
+
+    fn insert_or_inc_dependency(
+        &mut self,
+        conn: &mut DbConnectionInTransaction,
+        dep: NewDependency,
+    ) -> i64 {
+        todo!()
     }
 }
 
 fn snoc<T>(mut vec: Vec<T>, item: T) -> Vec<T> {
     vec.push(item);
     vec
+}
+
+fn assert_unique<T, X>(xs: T)
+where
+    T: Iterator<Item = X>,
+    X: Eq + std::hash::Hash,
+{
+    let mut set = HashSet::new();
+    for item in xs {
+        assert!(set.insert(item));
+    }
 }
