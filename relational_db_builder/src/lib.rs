@@ -7,7 +7,7 @@ use postgres_db::{
     custom_types::{
         PackageStateTimePoint, PackageStateType, Semver, VersionStateTimePoint, VersionStateType,
     },
-    dependencies::NewDependency,
+    dependencies::{DependencyType, NewDependency},
     diff_log::DiffLogInstruction,
     packages::NewPackage,
     packument::{PackageOnlyPackument, Spec, VersionOnlyPackument},
@@ -274,7 +274,7 @@ impl EntryProcessor {
                     dst_id,
                     spec.raw,
                     spec.parsed,
-                    postgres_db::dependencies::DependencyType::Prod,
+                    DependencyType::Prod,
                 );
                 self.insert_or_inc_dependency(conn, to_insert)
             })
@@ -290,7 +290,7 @@ impl EntryProcessor {
                     dst_id,
                     spec.raw,
                     spec.parsed,
-                    postgres_db::dependencies::DependencyType::Dev,
+                    DependencyType::Dev,
                 );
                 self.insert_or_inc_dependency(conn, to_insert)
             })
@@ -306,7 +306,7 @@ impl EntryProcessor {
                     dst_id,
                     spec.raw,
                     spec.parsed,
-                    postgres_db::dependencies::DependencyType::Peer,
+                    DependencyType::Peer,
                 );
                 self.insert_or_inc_dependency(conn, to_insert)
             })
@@ -322,7 +322,7 @@ impl EntryProcessor {
                     dst_id,
                     spec.raw,
                     spec.parsed,
-                    postgres_db::dependencies::DependencyType::Optional,
+                    DependencyType::Optional,
                 );
                 self.insert_or_inc_dependency(conn, to_insert)
             })
