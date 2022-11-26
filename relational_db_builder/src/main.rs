@@ -155,11 +155,14 @@ pub fn process_entries(
         panic::catch_unwind(AssertUnwindSafe(|| {
             processor.process_entry(conn, package, instr, seq, entry_id)
         }))
-        .map_err(|err| ProcessEntryError {
-            seq,
-            entry_id,
-            message: format!("{:?}", err),
-            err,
+        .map_err(|err| {
+            let message = panic_as_string(&err);
+            ProcessEntryError {
+                seq,
+                entry_id,
+                message,
+                err,
+            }
         })?;
     }
 
@@ -193,4 +196,26 @@ pub struct ProcessEntrySuccessMetrics {
     pub read_bytes: usize,
     pub write_bytes: usize,
     pub write_duration: Duration,
+}
+
+fn panic_as_string(p: &Box<dyn Any + Send>) -> String {
+    fn swap<A, B>(x: Result<A, B>) -> Result<B, A> {
+        match x {
+            Ok(a) => Err(a),
+            Err(b) => Ok(b),
+        }
+    }
+
+    fn panic_as_string_result_err(p: &Box<dyn Any + Send>) -> Result<(), String> {
+        swap(
+            p.as_ref()
+                .downcast_ref::<&str>()
+                .map(|s| s.to_string())
+                .ok_or(p),
+        )?;
+
+        Err("Unknown panic type".to_string())
+    }
+
+    panic_as_string_result_err(p).unwrap_err()
 }
