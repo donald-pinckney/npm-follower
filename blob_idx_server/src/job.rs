@@ -69,6 +69,8 @@ impl JobManager {
             .await
             .expect("populate worker pool failed");
 
+        println!("Job manager initialized");
+
         Self {
             xfer_pool,
             compute_pool,
