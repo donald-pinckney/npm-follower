@@ -220,7 +220,14 @@ impl WorkerPool {
                 WorkerStatus::Queued => {
                     // check/wait until worker is running, update status to running
                     debug!("Found queued worker {}, waiting for it to run", job_id);
-                    Ok(Some(wp.wait_running(worker).await?))
+                    match wp.wait_running(worker).await {
+                        Ok(w) => Ok(Some(w)),
+                        Err(e) => {
+                            // put worker back in pool
+                            wp.avail_tx.send(job_id).await.unwrap();
+                            Err(e)
+                        }
+                    }
                 }
                 WorkerStatus::Running {
                     started_at,
@@ -240,7 +247,7 @@ impl WorkerPool {
                         // expired, remove from pool and add a new worker
                         debug!("Found expired worker {}, removing", job_id);
                         wp.pool.remove(&job_id);
-                        worker.cancel(&*wp.ssh_session).await?;
+                        worker.cancel(&*wp.ssh_session).await.ok();
                         wp.spawn_worker().await.ok();
                         Ok(None)
                     } else {
@@ -253,7 +260,7 @@ impl WorkerPool {
                             // network is down, remove from pool and add a new worker
                             debug!("Network is down for worker {}, removing", job_id);
                             wp.pool.remove(&job_id);
-                            worker.cancel(&*wp.ssh_session).await?;
+                            worker.cancel(&*wp.ssh_session).await.ok();
                             wp.spawn_worker().await.ok();
                             Ok(None)
                         }

@@ -52,6 +52,10 @@ impl JobManager {
             (config.max_worker_jobs / 2 + 1, config.max_worker_jobs / 2)
         };
         let arc_ssh_factory = Arc::new(config.ssh_factory);
+        debug!(
+            "Initializing job manager with {} xfer workers and {} compute workers",
+            xfer_workers, compute_workers
+        );
         let mut xfer_pool =
             WorkerPool::init(xfer_workers, "wp_xfer", arc_ssh_factory.clone()).await;
         xfer_pool
