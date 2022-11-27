@@ -268,7 +268,7 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
             eprintln!("Downloading {}", url);
             let mut resp = match client.get(&url).send().await {
                 Ok(r) => r,
-                Err(_) => return Err((url, std::num::NonZeroU16::new(0).unwrap())),
+                Err(_) => return Err((url, std::num::NonZeroU16::new(1337).unwrap())),
             };
             drop(_permit);
             // check if the response is not an error
