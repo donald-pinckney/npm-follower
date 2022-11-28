@@ -52,6 +52,8 @@ pub enum ClientError {
     DuplicateTarballName(String),
     /// The binary doesn't exist.
     BinaryDoesNotExist,
+    /// The binary produced a bad stdout.
+    InvalidOutput,
 }
 
 #[derive(Debug)]

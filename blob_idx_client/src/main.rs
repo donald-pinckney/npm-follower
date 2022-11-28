@@ -167,7 +167,7 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
 
     let mut handles: Vec<JoinHandle<Result<(String, String), ClientError>>> = Vec::new();
     let mut slice_paths = Vec::new();
-    let mut slice_map = HashMap::new();
+    let mut slice_map = HashMap::new(); // map of [tmp slice path] -> [original tarball url]
     let pid = std::process::id();
     let atomic_idx = Arc::new(AtomicUsize::new(0));
     for tarball_url_key in tarball_url_keys.clone() {
@@ -190,19 +190,38 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
     for handle in handles {
         let (tarball_url, slice_path) = handle.await.unwrap()?;
         slice_paths.push(slice_path.clone());
-        slice_map.insert(tarball_url, slice_path);
+        slice_map.insert(slice_path, tarball_url);
+    }
+
+    // check that the binary exists
+    if !std::path::Path::new(&binary).exists() {
+        return Err(ClientError::BinaryDoesNotExist);
     }
 
     let mut cmd = tokio::process::Command::new(binary);
     cmd.args(vec![slice_paths.join(" ")]);
     let output = cmd.output().await?;
     let stdout = String::from_utf8(output.stdout).map_err(|_| ClientError::IoError)?;
+    let mut tarball_map = HashMap::new(); // map of [tb url] -> [output]
+    for line in stdout.lines() {
+        let mut parts = line.split(' ');
+        let tmp_tb_name = parts.next().ok_or(ClientError::InvalidOutput)?;
+        let tb_output = parts.next().ok_or(ClientError::InvalidOutput)?;
+        if parts.next().is_some() {
+            return Err(ClientError::InvalidOutput);
+        }
+        let tb_url = slice_map
+            .get(tmp_tb_name)
+            .ok_or(ClientError::InvalidOutput)?
+            .to_owned();
+        tarball_map.insert(tb_url, tb_output.to_string());
+    }
+
     let stderr = String::from_utf8(output.stderr).map_err(|_| ClientError::IoError)?;
     let exit_code = output.status.code().ok_or(ClientError::IoError)?;
 
     Ok(ChunkResult {
-        slice_map,
-        stdout,
+        tarball_map,
         stderr,
         exit_code,
     })
