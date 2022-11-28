@@ -92,8 +92,10 @@ impl RelationalDbAccessor {
         package_name: &str,
         package_id: i64,
     ) {
-        todo!()
-        // postgres_db::dependencies::update_deps_missing_pack(conn, package_name, package_id)
+        self.package_id_cache
+            .put(package_name.to_string(), package_id);
+        self.package_data_cache.promote(package_name);
+        postgres_db::dependencies::update_deps_missing_pack(conn, package_name, package_id)
     }
 
     pub fn insert_new_version<R: QueryRunner>(&mut self, conn: &mut R, new_version: NewVersion) {
