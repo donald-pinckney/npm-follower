@@ -335,7 +335,7 @@ impl BlobStorage {
             self.map.insert(key.to_string(), v);
             Ok(self.map.get(key).unwrap().value().clone())
         } else {
-            Err(BlobError::DoesNotExist)
+            Err(BlobError::DoesNotExist(key.to_string()))
         }
     }
 
@@ -363,7 +363,7 @@ impl BlobStorage {
             self.map.insert(key.to_string(), v);
             Ok(self.map.get_mut(key).unwrap())
         } else {
-            Err(BlobError::DoesNotExist)
+            Err(BlobError::DoesNotExist(key.to_string()))
         }
     }
 
