@@ -330,7 +330,8 @@ impl BlobStorage {
         let v: Option<String> = redis.get(key).await.unwrap();
         if let Some(v) = v {
             // serialize the string into a LockWrapper
-            let v: LockWrapper = serde_json::from_str(&v).unwrap();
+            let v: LockWrapper = serde_json::from_str(&v)
+                .unwrap_or_else(|_| panic!("Failed to deserialize string into LockWrapper: {}", v));
             self.map.insert(key.to_string(), v);
             Ok(self.map.get(key).unwrap().value().clone())
         } else {
