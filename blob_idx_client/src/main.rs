@@ -220,6 +220,20 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
     let stderr = String::from_utf8(output.stderr).map_err(|_| ClientError::IoError)?;
     let exit_code = output.status.code().ok_or(ClientError::IoError)?;
 
+    // now delete the tmp files
+    let mut handles: Vec<JoinHandle<()>> = Vec::new();
+    for slice_path in slice_map.keys() {
+        let p = slice_path.clone();
+        let handle = tokio::task::spawn(async move {
+            tokio::fs::remove_file(p).await.ok(); // we don't care if this fails
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.await.unwrap();
+    }
+
     Ok(ChunkResult {
         tarball_map,
         stderr,
