@@ -64,7 +64,7 @@ async fn main() {
             },
         },
         _ => {
-            eprintln!("Usage: {} [write|read] ...", args[0]);
+            eprintln!("Usage: {} [write|read|compute] ...", args[0]);
             std::process::exit(1);
         }
     };
@@ -224,7 +224,7 @@ async fn read_and_send(tarball_key: String, tmp_dir_root: &str) -> Result<String
 
     // write to temp file, the dir is "{tmp_dir_root}/blob_slices/"
     // it may need to be created
-    let temp_dir = format!("/{}/blob_slices", tmp_dir_root);
+    let temp_dir = format!("{}/blob_slices", tmp_dir_root);
     let temp_dir_path = std::path::Path::new(&temp_dir);
     if !temp_dir_path.exists() {
         std::fs::create_dir_all(temp_dir_path)?;
