@@ -146,7 +146,7 @@ async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientE
 }
 
 async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> {
-    if args.len() != 5 {
+    if args.len() != 4 {
         eprintln!(
             "Usage: {} compute <binary path> <tarball keys, separated by spaces>",
             args[0]

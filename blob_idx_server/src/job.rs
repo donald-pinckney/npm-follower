@@ -1,6 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use serde::{Deserialize, Serialize};
+use tokio::task::JoinHandle;
 
 use crate::{
     debug,
@@ -39,7 +40,7 @@ pub struct JobManagerConfig {
 
 pub struct JobManager {
     xfer_pool: WorkerPool,
-    compute_pool: WorkerPool,
+    compute_pool: Arc<WorkerPool>,
 }
 
 impl JobManager {
@@ -73,7 +74,7 @@ impl JobManager {
 
         Self {
             xfer_pool,
-            compute_pool,
+            compute_pool: Arc::new(compute_pool),
         }
     }
 
@@ -145,21 +146,41 @@ impl JobManager {
     /// Submits a compute job to the discovery cluster. Returns stdout for each tarball computed.
     /// Takes in the full path to the binary to run and a chunk of tarballs, where for each
     /// outer element, we have a list of tarballs to compute on a single node. We map
-    /// all chunks to different nodes. We return a hashmap of [tarball_name] -> [ChunkResult].
-    ///
-    /// We return errors in cases:
-    /// - tarball does not exist
-    /// - the binary does not exist
-    /// - there is a duplicate tarball name across the chunks
+    /// all chunks to different nodes. We return a list of client responses, where
+    /// the index of the response corresponds to the index of the chunk in the list of chunks.
     pub async fn submit_compute(
         &self,
         binary: String,
         tarball_chunks: Vec<Vec<String>>,
-    ) -> Result<HashMap<String, ChunkResult>, JobError> {
-        let mut tarball_to_chunk = HashMap::new();
+    ) -> Result<Vec<ClientResponse>, JobError> {
+        let mut handles: Vec<JoinHandle<Result<ClientResponse, JobError>>> = Vec::new();
+
         for chunk in &tarball_chunks {
             debug!("Submitting compute job with {} tarballs", chunk.len());
+            let wp_comp = self.compute_pool.clone();
+            let binary = binary.clone();
+            let tbs = chunk.join(" ");
+            handles.push(tokio::task::spawn(async move {
+                let worker = wp_comp.get_worker().await?;
+                let ssh = worker.get_ssh_session();
+                let cmd = format!(
+                    "cd $HOME/npm-follower/blob_idx_client && ./run.sh compute {} \"{}\"",
+                    binary, tbs
+                );
+                debug!("Running command:\n{}", cmd);
+                let out = ssh.run_command(&cmd).await?;
+                debug!("Output:\n{}", out);
+                let response: ClientResponse = serde_json::from_str(&out)
+                    .map_err(|_| JobError::ClientOutputNotParsable(out))?;
+                Ok(response)
+            }));
         }
-        Ok(tarball_to_chunk)
+
+        let mut responses = Vec::new();
+        for handle in handles {
+            responses.push(handle.await.unwrap()?);
+        }
+
+        Ok(responses)
     }
 }
