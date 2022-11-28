@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use deepsize::DeepSizeOf;
 use diesel::deserialize;
 use diesel::deserialize::FromSql;
 use diesel::pg::Pg;
@@ -13,7 +14,7 @@ use std::io::Write;
 use crate::schema::sql_types::PackageState;
 use crate::schema::sql_types::PackageStateEnum;
 
-#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone)]
+#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone, DeepSizeOf)]
 #[diesel(sql_type = PackageStateEnum)]
 pub enum PackageStateType {
     Normal,
@@ -45,7 +46,7 @@ impl FromSql<PackageStateEnum, Pg> for PackageStateType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone)]
+#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone, DeepSizeOf)]
 #[diesel(sql_type = PackageState)]
 pub struct PackageStateTimePoint {
     pub state: PackageStateType,

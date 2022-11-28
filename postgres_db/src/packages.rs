@@ -10,6 +10,7 @@ use crate::packument::PackageOnlyPackument;
 use crate::packument::VersionOnlyPackument;
 use chrono::DateTime;
 use chrono::Utc;
+use deepsize::DeepSizeOf;
 use diesel::insert_into;
 use diesel::prelude::*;
 use diesel::Insertable;
@@ -18,7 +19,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use serde_json::Value;
 
-#[derive(Queryable, Debug)]
+#[derive(Queryable, Debug, DeepSizeOf)]
 #[diesel(table_name = packages)]
 pub struct Package {
     pub id: i64,
@@ -111,9 +112,24 @@ impl Package {
     }
 }
 
-pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) {
-    let query = insert_into(packages::table).values(package);
-    conn.execute(query).expect("Error inserting new package");
+pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) -> Package {
+    let query = insert_into(packages::table)
+        .values(&package)
+        .returning(packages::id);
+    let new_id = conn.get_result(query).expect("Error inserting new package");
+
+    Package {
+        id: new_id,
+        name: package.name,
+        current_package_state_type: package.current_package_state_type,
+        package_state_history: package.package_state_history,
+        dist_tag_latest_version: package.dist_tag_latest_version,
+        created: package.created,
+        modified: package.modified,
+        other_dist_tags: package.other_dist_tags,
+        other_time_data: package.other_time_data,
+        unpublished_data: package.unpublished_data,
+    }
 }
 
 pub fn update_package<R: QueryRunner>(conn: &mut R, package_id: i64, update: PackageUpdate) {

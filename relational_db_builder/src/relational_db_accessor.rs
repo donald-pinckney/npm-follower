@@ -1,3 +1,7 @@
+use std::num::NonZeroUsize;
+
+use deepsize::DeepSizeOf;
+use lru::LruCache;
 use postgres_db::{
     connection::QueryRunner,
     custom_types::Semver,
@@ -5,11 +9,17 @@ use postgres_db::{
     versions::NewVersion,
 };
 
-pub struct RelationalDbAccessor {}
+pub struct RelationalDbAccessor {
+    package_id_cache: LruCache<String, i64>,
+    package_data_cache: LruCache<String, Package>,
+}
 
 impl RelationalDbAccessor {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            package_id_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()), // about 1 million entries
+            package_data_cache: LruCache::new(NonZeroUsize::new(1_073_741_824).unwrap()), // 1GB max memory usage
+        }
     }
 }
 
@@ -36,8 +46,13 @@ impl RelationalDbAccessor {
     }
 
     pub fn insert_new_package<R: QueryRunner>(&mut self, conn: &mut R, new_package: NewPackage) {
-        todo!()
-        // postgres_db::packages::insert_new_package(conn, new_package);
+        let inserted = postgres_db::packages::insert_new_package(conn, new_package);
+
+        let cache_entry_size = inserted.deep_size_of() + inserted.name.deep_size_of();
+        self.package_id_cache
+            .put(inserted.name.clone(), inserted.id);
+        self.package_data_cache
+            .put_with_cost(inserted.name.clone(), inserted, cache_entry_size);
     }
 
     pub fn update_package<R: QueryRunner>(

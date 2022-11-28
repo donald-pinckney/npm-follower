@@ -14,4 +14,5 @@ lazy_static = "1.4.0"
 diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
 dotenv = "0.15.0"
 sha2 = "0.10.6"
+deepsize = { git = "https://github.com/donald-pinckney/deepsize", features = ["chrono", "serde_json"] }
 #base16ct = { version = "0.1.1", features = ["std"] }
