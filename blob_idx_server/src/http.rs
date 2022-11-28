@@ -105,8 +105,16 @@ pub struct SubmitJobRequest {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum JobType {
-    DownloadURLs { urls: Vec<String> },
-    ReadKey { key: String },
+    DownloadURLs {
+        urls: Vec<String>,
+    },
+    ReadKey {
+        key: String,
+    },
+    Compute {
+        binary: String,
+        tarball_chunks: Vec<Vec<String>>,
+    },
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -251,6 +259,13 @@ mod routes {
                     Ok(serde_json::to_string(&SubmitJobReadKeyResponse {
                         filepath: fp,
                     })?)
+                }
+                JobType::Compute {
+                    binary,
+                    tarball_chunks,
+                } => {
+                    let res = job_manager.submit_compute(binary, tarball_chunks).await?;
+                    Ok(serde_json::to_string(&res)?)
                 }
             }
         }
