@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::sync::{
+    atomic::{AtomicUsize, Ordering},
+    Arc,
+};
 
 use blob_idx_server::{
     blob::{BlobOffset, BlobStorageSlice},
@@ -162,10 +165,20 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
     let mut handles: Vec<JoinHandle<Result<String, ClientError>>> = Vec::new();
     let mut slice_paths = Vec::new();
     let pid = std::process::id();
+    let atomic_idx = Arc::new(AtomicUsize::new(0));
     for tarball_url_key in tarball_url_keys.clone() {
+        let atomic_idx = atomic_idx.clone();
         let handle = tokio::task::spawn(async move {
-            let slice_path =
-                read_and_send(tarball_url_key, &format!("/tmp/compute-{}", pid)).await?;
+            let slice_path = read_and_send(
+                tarball_url_key,
+                &format!(
+                    "/tmp/compute-{}-{}",
+                    pid,
+                    atomic_idx.fetch_add(1, Ordering::SeqCst)
+                ),
+                false,
+            )
+            .await?;
             Ok(slice_path)
         });
         handles.push(handle);
@@ -190,7 +203,11 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
     })
 }
 
-async fn read_and_send(tarball_key: String, tmp_dir_root: &str) -> Result<String, ClientError> {
+async fn read_and_send(
+    tarball_key: String,
+    tmp_dir_root: &str,
+    uniq_path: bool,
+) -> Result<String, ClientError> {
     let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
     let slice = read_slice(tarball_key.to_string()).await?;
 
@@ -211,10 +228,19 @@ async fn read_and_send(tarball_key: String, tmp_dir_root: &str) -> Result<String
     if !temp_dir_path.exists() {
         std::fs::create_dir_all(temp_dir_path)?;
     }
-    // get pid of process, use that as a unique identifier
-    let pid = std::process::id();
-    let slurm_job_id = std::env::var("SLURM_JOB_ID").unwrap_or_else(|_| slice.file_id.to_string());
-    let temp_file_path = temp_dir_path.join(format!("blob-file-{}-{}", pid, slurm_job_id));
+    let temp_file_path = if uniq_path {
+        // get pid of process, use that as a unique identifier
+        let pid = std::process::id();
+        let slurm_job_id =
+            std::env::var("SLURM_JOB_ID").unwrap_or_else(|_| slice.file_id.to_string());
+
+        temp_dir_path.join(format!(
+            "blob-file-{}-{}%{}",
+            pid, slurm_job_id, tarball_key
+        ))
+    } else {
+        temp_dir_path.join(tarball_key)
+    };
 
     // write to temp file
     let mut file = tokio::fs::File::create(&temp_file_path).await?;
@@ -231,7 +257,7 @@ async fn read_and_send_main(args: Vec<String>) -> Result<String, ClientError> {
 
     let tarball_url_key = &args[2];
     let tmp_dir_root = format!("/scratch/{}", std::env::var("USER").unwrap());
-    read_and_send(tarball_url_key.to_string(), &tmp_dir_root).await
+    read_and_send(tarball_url_key.to_string(), &tmp_dir_root, true).await
 }
 
 async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
