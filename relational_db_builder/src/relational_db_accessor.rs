@@ -65,10 +65,25 @@ impl RelationalDbAccessor {
         &mut self,
         conn: &mut R,
         package_id: i64,
+        package_name: &str,
         diff: PackageUpdate,
     ) {
-        //         postgres_db::packages::update_package(conn, &package, diff);
-        todo!()
+        // NB: If the cache doesn't already have the package, we don't add it to the cache, since that would involve
+        // potentially a lot more Postgres I/O
+        let old_entry = self.package_data_cache.pop(package_name);
+        let new_entry = old_entry.map(|mut e| {
+            e.apply_diff(&diff);
+            e
+        });
+        if let Some(new_entry) = new_entry {
+            let cache_entry_size = new_entry.deep_size_of() + new_entry.name.deep_size_of();
+            self.package_data_cache.put_with_cost(
+                new_entry.name.clone(),
+                new_entry,
+                cache_entry_size,
+            );
+        }
+        postgres_db::packages::update_package(conn, package_id, diff);
     }
 
     pub fn update_deps_missing_pack<R: QueryRunner>(

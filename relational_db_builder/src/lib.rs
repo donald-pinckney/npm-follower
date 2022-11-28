@@ -139,12 +139,12 @@ impl EntryProcessor {
     fn update_package(
         &mut self,
         conn: &mut DbConnectionInTransaction,
-        package: String,
+        package_name: String,
         data: PackageOnlyPackument,
         seq: i64,
         diff_entry_id: i64,
     ) {
-        let old_package = self.db.get_package_by_name(conn, &package); // TODO[perf]: replace with cached state
+        let old_package = self.db.get_package_by_name(conn, &package_name);
         let old_history = old_package.package_state_history.clone();
         let package_id = old_package.id;
 
@@ -156,13 +156,12 @@ impl EntryProcessor {
                 other_dist_tags,
                 extra_version_times: _,
             } => {
-                // TODO[perf]: replace with cached state
                 let latest_id = latest.map(|latest_semver| {
                     self.db
                         .get_version_id_by_semver(conn, package_id, latest_semver)
                 });
                 NewPackage {
-                    name: package.clone(),
+                    name: package_name.clone(),
                     current_package_state_type: PackageStateType::Normal,
                     package_state_history: snoc(
                         old_history,
@@ -187,7 +186,7 @@ impl EntryProcessor {
                 unpublished_blob,
                 extra_version_times,
             } => NewPackage {
-                name: package.clone(),
+                name: package_name.clone(),
                 current_package_state_type: PackageStateType::Unpublished,
                 package_state_history: snoc(
                     old_history,
@@ -207,7 +206,7 @@ impl EntryProcessor {
             },
             // Maybe we want to treat these separately?
             PackageOnlyPackument::Deleted | PackageOnlyPackument::MissingData => NewPackage {
-                name: package.clone(),
+                name: package_name.clone(),
                 current_package_state_type: PackageStateType::Deleted,
                 package_state_history: snoc(
                     old_history,
@@ -229,7 +228,8 @@ impl EntryProcessor {
 
         let diff = old_package.diff(new_package);
 
-        self.db.update_package(conn, package_id, diff);
+        self.db
+            .update_package(conn, package_id, &package_name, diff);
     }
 
     fn patch_package_refs(

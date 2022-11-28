@@ -110,6 +110,42 @@ impl Package {
 
         update
     }
+
+    pub fn apply_diff(&mut self, diff: &PackageUpdate) {
+        assert!(diff.name.is_none());
+
+        if let Some(current_package_state_type) = &diff.current_package_state_type {
+            self.current_package_state_type = current_package_state_type.clone();
+        }
+
+        if let Some(package_state_history) = &diff.package_state_history {
+            self.package_state_history = package_state_history.clone();
+        }
+
+        if let Some(dist_tag_latest_version) = diff.dist_tag_latest_version {
+            self.dist_tag_latest_version = dist_tag_latest_version;
+        }
+
+        if let Some(created) = diff.created {
+            self.created = created;
+        }
+
+        if let Some(modified) = diff.modified {
+            self.modified = modified;
+        }
+
+        if let Some(other_dist_tags) = &diff.other_dist_tags {
+            self.other_dist_tags = other_dist_tags.clone();
+        }
+
+        if let Some(other_time_data) = &diff.other_time_data {
+            self.other_time_data = other_time_data.clone();
+        }
+
+        if let Some(unpublished_data) = &diff.unpublished_data {
+            self.unpublished_data = unpublished_data.clone();
+        }
+    }
 }
 
 pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) -> Package {
