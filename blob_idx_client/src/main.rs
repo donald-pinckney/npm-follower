@@ -1,6 +1,9 @@
-use std::sync::{
-    atomic::{AtomicUsize, Ordering},
-    Arc,
+use std::{
+    collections::HashMap,
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    },
 };
 
 use blob_idx_server::{
@@ -162,31 +165,32 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
     let tarball_url_keys: Vec<String> =
         tarball_url_keys.split(' ').map(|s| s.to_string()).collect();
 
-    let mut handles: Vec<JoinHandle<Result<String, ClientError>>> = Vec::new();
+    let mut handles: Vec<JoinHandle<Result<(String, String), ClientError>>> = Vec::new();
     let mut slice_paths = Vec::new();
+    let mut slice_map = HashMap::new();
     let pid = std::process::id();
     let atomic_idx = Arc::new(AtomicUsize::new(0));
     for tarball_url_key in tarball_url_keys.clone() {
         let atomic_idx = atomic_idx.clone();
         let handle = tokio::task::spawn(async move {
             let slice_path = read_and_send(
-                tarball_url_key,
+                tarball_url_key.clone(),
                 &format!(
                     "/tmp/compute-{}-{}",
                     pid,
                     atomic_idx.fetch_add(1, Ordering::SeqCst)
                 ),
-                false,
             )
             .await?;
-            Ok(slice_path)
+            Ok((tarball_url_key, slice_path))
         });
         handles.push(handle);
     }
 
     for handle in handles {
-        let slice = handle.await.unwrap()?;
-        slice_paths.push(slice);
+        let (tarball_url, slice_path) = handle.await.unwrap()?;
+        slice_paths.push(slice_path.clone());
+        slice_map.insert(tarball_url, slice_path);
     }
 
     let mut cmd = tokio::process::Command::new(binary);
@@ -197,17 +201,14 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
     let exit_code = output.status.code().ok_or(ClientError::IoError)?;
 
     Ok(ChunkResult {
+        slice_map,
         stdout,
         stderr,
         exit_code,
     })
 }
 
-async fn read_and_send(
-    tarball_key: String,
-    tmp_dir_root: &str,
-    uniq_path: bool,
-) -> Result<String, ClientError> {
+async fn read_and_send(tarball_key: String, tmp_dir_root: &str) -> Result<String, ClientError> {
     let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
     let slice = read_slice(tarball_key.to_string()).await?;
 
@@ -228,19 +229,16 @@ async fn read_and_send(
     if !temp_dir_path.exists() {
         std::fs::create_dir_all(temp_dir_path)?;
     }
-    let temp_file_path = if uniq_path {
+    let temp_file_path = {
         // get pid of process, use that as a unique identifier
         let pid = std::process::id();
         let slurm_job_id =
             std::env::var("SLURM_JOB_ID").unwrap_or_else(|_| slice.file_id.to_string());
 
-        temp_dir_path.join(format!(
-            "blob-file-{}-{}%{}",
-            pid, slurm_job_id, tarball_key
-        ))
-    } else {
-        temp_dir_path.join(tarball_key)
+        temp_dir_path.join(format!("blob-file-{}-{}", pid, slurm_job_id))
     };
+
+    eprintln!("Writing to temp file: {}", temp_file_path.display());
 
     // write to temp file
     let mut file = tokio::fs::File::create(&temp_file_path).await?;
@@ -257,7 +255,7 @@ async fn read_and_send_main(args: Vec<String>) -> Result<String, ClientError> {
 
     let tarball_url_key = &args[2];
     let tmp_dir_root = format!("/scratch/{}", std::env::var("USER").unwrap());
-    read_and_send(tarball_url_key.to_string(), &tmp_dir_root, true).await
+    read_and_send(tarball_url_key.to_string(), &tmp_dir_root).await
 }
 
 async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {

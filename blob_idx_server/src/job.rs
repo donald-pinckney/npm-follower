@@ -26,6 +26,8 @@ pub struct ClientResponse {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChunkResult {
     pub exit_code: i32,
+    /// A map from the tarball name to the slice name that has been created
+    pub slice_map: HashMap<String, String>,
     pub stdout: String,
     pub stderr: String,
 }
