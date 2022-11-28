@@ -23,6 +23,12 @@ impl RelationalDbAccessor {
     }
 }
 
+impl Default for RelationalDbAccessor {
+    fn default() -> Self {
+        RelationalDbAccessor::new()
+    }
+}
+
 impl RelationalDbAccessor {
     pub fn get_package_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> Package {
         todo!()
