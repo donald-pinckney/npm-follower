@@ -12,3 +12,4 @@ serde_json = "1.0.87"
 tokio = { version = "1", features = ["full"] }
 blob_idx_server = { path = "../blob_idx_server" }
 dotenvy = "0.15.6"
+base64 = "0.13.1"

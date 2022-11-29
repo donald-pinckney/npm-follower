@@ -22,12 +22,12 @@ pub struct ClientResponse {
     pub error: Option<ClientError>,
 }
 
-/// The result for a single tarball chunk computed by a worker.
+/// The result for a single tarball computed by a worker.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ChunkResult {
+pub struct TarballResult {
     pub exit_code: i32,
-    /// A map from the tarball name to the output that it produced (base64).
-    pub tarball_map: HashMap<String, String>,
+    // both of these below are base64 encoded
+    pub stdout: String,
     pub stderr: String,
 }
 

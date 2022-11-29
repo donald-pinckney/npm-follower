@@ -12,7 +12,7 @@ use blob_idx_server::{
     http::{
         BlobEntry, CreateAndLockRequest, CreateUnlockRequest, KeepAliveLockRequest, LookupRequest,
     },
-    job::{ChunkResult, ClientResponse},
+    job::{ClientResponse, TarballResult},
 };
 use tokio::{
     io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
@@ -151,7 +151,7 @@ async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientE
     Ok(slice)
 }
 
-async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> {
+async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballResult>, ClientError> {
     if args.len() != 4 {
         eprintln!(
             "Usage: {} compute <binary path> <tarball keys, separated by spaces>",
@@ -166,7 +166,6 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
         tarball_url_keys.split(' ').map(|s| s.to_string()).collect();
 
     let mut handles: Vec<JoinHandle<Result<(String, String), ClientError>>> = Vec::new();
-    let mut slice_paths = Vec::new();
     let mut slice_map = HashMap::new(); // map of [tmp slice path] -> [original tarball url]
     let pid = std::process::id();
     let atomic_idx = Arc::new(AtomicUsize::new(0));
@@ -189,7 +188,6 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
 
     for handle in handles {
         let (tarball_url, slice_path) = handle.await.unwrap()?;
-        slice_paths.push(slice_path.clone());
         slice_map.insert(slice_path, tarball_url);
     }
 
@@ -198,27 +196,32 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
         return Err(ClientError::BinaryDoesNotExist);
     }
 
-    let mut cmd = tokio::process::Command::new(binary);
-    cmd.args(vec![slice_paths.join(" ")]);
-    let output = cmd.output().await?;
-    let stdout = String::from_utf8(output.stdout).map_err(|_| ClientError::IoError)?;
-    let mut tarball_map = HashMap::new(); // map of [tb url] -> [output]
-    for line in stdout.lines() {
-        let mut parts = line.split(' ');
-        let tmp_tb_name = parts.next().ok_or(ClientError::InvalidOutput)?;
-        let tb_output = parts.next().ok_or(ClientError::InvalidOutput)?;
-        if parts.next().is_some() {
-            return Err(ClientError::InvalidOutput);
-        }
-        let tb_url = slice_map
-            .get(tmp_tb_name)
-            .ok_or(ClientError::InvalidOutput)?
-            .to_owned();
-        tarball_map.insert(tb_url, tb_output.to_string());
+    let mut handle_map: HashMap<String, JoinHandle<Result<TarballResult, ClientError>>> =
+        HashMap::new(); // where the string is the original tarball url
+    for (slice_path, original_tarball_url) in slice_map.iter() {
+        let mut cmd = tokio::process::Command::new(&binary);
+        cmd.arg(slice_path);
+        // slice_paths.push(slice_path);
+        let handle = tokio::task::spawn(async move {
+            let output = cmd.output().await?;
+            // make sure the base64 does not put newlines
+            let b64stout = base64::encode_config(&output.stdout, base64::STANDARD_NO_PAD);
+            let b64stderr = base64::encode_config(&output.stderr, base64::STANDARD_NO_PAD);
+            let exit_code = output.status.code().unwrap_or(1);
+            Ok(TarballResult {
+                stdout: b64stout,
+                stderr: b64stderr,
+                exit_code,
+            })
+        });
+        handle_map.insert(original_tarball_url.to_string(), handle);
     }
 
-    let stderr = String::from_utf8(output.stderr).map_err(|_| ClientError::IoError)?;
-    let exit_code = output.status.code().ok_or(ClientError::IoError)?;
+    let mut res_map = HashMap::new();
+    for (original_tarball_url, handle) in handle_map {
+        let res = handle.await.unwrap()?;
+        res_map.insert(original_tarball_url, res);
+    }
 
     // now delete the tmp files
     let mut handles: Vec<JoinHandle<()>> = Vec::new();
@@ -234,11 +237,7 @@ async fn compute_run_bin(args: Vec<String>) -> Result<ChunkResult, ClientError> 
         handle.await.unwrap();
     }
 
-    Ok(ChunkResult {
-        tarball_map,
-        stderr,
-        exit_code,
-    })
+    Ok(res_map)
 }
 
 async fn read_and_send(tarball_key: String, tmp_dir_root: &str) -> Result<String, ClientError> {
