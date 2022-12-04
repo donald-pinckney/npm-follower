@@ -75,7 +75,17 @@ impl RelationalDbAccessor {
         conn: &mut R,
         package: &str,
     ) -> Option<i64> {
-        todo!()
+        if let Some(&package_id) = self.package_id_cache.get(package) {
+            return Some(package_id);
+        }
+
+        let package_id = postgres_db::packages::maybe_get_package_id_by_name(conn, package);
+        if let Some(package_id) = package_id {
+            self.package_id_cache.put(package.to_string(), package_id);
+            Some(package_id)
+        } else {
+            None
+        }
     }
 
     pub fn get_version_id_by_semver<R: QueryRunner>(
@@ -84,7 +94,14 @@ impl RelationalDbAccessor {
         package_id: i64,
         v: Semver,
     ) -> i64 {
-        todo!()
+        if let Some(&version_id) = self.version_id_cache.get(&(package_id, v.clone())) {
+            version_id
+        } else {
+            let version_id =
+                postgres_db::versions::get_version_id_by_semver(conn, package_id, v.clone());
+            self.version_id_cache.put((package_id, v), version_id);
+            version_id
+        }
     }
 
     pub fn insert_new_package<R: QueryRunner>(&mut self, conn: &mut R, new_package: NewPackage) {

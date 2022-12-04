@@ -180,7 +180,20 @@ pub fn get_package<R: QueryRunner>(conn: &mut R, package_id: i64) -> Package {
 
 pub fn get_package_by_name<R: QueryRunner>(conn: &mut R, package_name: &str) -> Package {
     let query = packages::table.filter(packages::name.eq(package_name));
-    conn.get_result(query).expect("Error getting package")
+    conn.get_result(query)
+        .expect("Error getting package by name")
+}
+
+pub fn maybe_get_package_id_by_name<R: QueryRunner>(
+    conn: &mut R,
+    package_name: &str,
+) -> Option<i64> {
+    let query = packages::table
+        .filter(packages::name.eq(package_name))
+        .select(packages::id);
+    conn.first(query)
+        .optional()
+        .expect("Error getting package id")
 }
 
 // #[derive(Queryable, Insertable, Debug)]
