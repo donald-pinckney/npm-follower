@@ -1,4 +1,4 @@
-use std::num::NonZeroUsize;
+use std::{num::NonZeroUsize, rc::Rc};
 
 use deepsize::DeepSizeOf;
 use lru::LruCache;
@@ -11,7 +11,8 @@ use postgres_db::{
 
 pub struct RelationalDbAccessor {
     package_id_cache: LruCache<String, i64>,
-    package_data_cache: LruCache<String, Package>,
+    package_data_cache: LruCache<String, Rc<Package>>,
+    version_id_cache: LruCache<(i64, Semver), i64>,
 }
 
 impl RelationalDbAccessor {
@@ -19,6 +20,7 @@ impl RelationalDbAccessor {
         Self {
             package_id_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()), // about 1 million entries
             package_data_cache: LruCache::new(NonZeroUsize::new(1_073_741_824).unwrap()), // 1GB max memory usage
+            version_id_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()), // about 1 million entries
         }
     }
 }
@@ -30,8 +32,42 @@ impl Default for RelationalDbAccessor {
 }
 
 impl RelationalDbAccessor {
-    pub fn get_package_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> Package {
-        todo!()
+    pub fn get_package_by_name<R: QueryRunner>(
+        &mut self,
+        conn: &mut R,
+        package_name: &str,
+    ) -> Rc<Package> {
+        if let Some(package) = self.package_data_cache.get(package_name) {
+            self.package_id_cache
+                .put(package_name.to_string(), package.id);
+            return Rc::clone(package);
+        }
+
+        if let Some(&package_id) = self.package_id_cache.get(package_name) {
+            let package = postgres_db::packages::get_package(conn, package_id);
+            let cache_entry_size = package.deep_size_of() + package.name.deep_size_of();
+
+            let package = Rc::new(package);
+            self.package_data_cache.put_with_cost(
+                package.name.clone(),
+                Rc::clone(&package),
+                cache_entry_size,
+            );
+            return package;
+        }
+
+        let package = postgres_db::packages::get_package_by_name(conn, package_name);
+        let cache_entry_size = package.deep_size_of() + package.name.deep_size_of();
+
+        let package = Rc::new(package);
+        self.package_data_cache.put_with_cost(
+            package.name.clone(),
+            Rc::clone(&package),
+            cache_entry_size,
+        );
+        self.package_id_cache
+            .put(package_name.to_string(), package.id);
+        package
     }
 
     pub fn maybe_get_package_id_by_name<R: QueryRunner>(
@@ -57,8 +93,11 @@ impl RelationalDbAccessor {
         let cache_entry_size = inserted.deep_size_of() + inserted.name.deep_size_of();
         self.package_id_cache
             .put(inserted.name.clone(), inserted.id);
-        self.package_data_cache
-            .put_with_cost(inserted.name.clone(), inserted, cache_entry_size);
+        self.package_data_cache.put_with_cost(
+            inserted.name.clone(),
+            Rc::new(inserted),
+            cache_entry_size,
+        );
     }
 
     pub fn update_package<R: QueryRunner>(
@@ -72,7 +111,9 @@ impl RelationalDbAccessor {
         // potentially a lot more Postgres I/O
         let old_entry = self.package_data_cache.pop(package_name);
         let new_entry = old_entry.map(|mut e| {
-            e.apply_diff(&diff);
+            Rc::get_mut(&mut e)
+                .expect("there should be no other references to the cache entry")
+                .apply_diff(&diff);
             e
         });
         if let Some(new_entry) = new_entry {
@@ -99,8 +140,10 @@ impl RelationalDbAccessor {
     }
 
     pub fn insert_new_version<R: QueryRunner>(&mut self, conn: &mut R, new_version: NewVersion) {
-        todo!()
-        // postgres_db::packages::insert_new_package(conn, new_package);
+        let package_id = new_version.package_id;
+        let semver = new_version.semver.clone();
+        let id = postgres_db::versions::insert_new_version(conn, new_version);
+        self.version_id_cache.put((package_id, semver), id);
     }
 }
 
