@@ -307,7 +307,7 @@ CREATE TABLE packages (
   CONSTRAINT check_package_data_filled CHECK (
     (
       current_package_state_type = 'normal' AND
-      dist_tag_latest_version IS NOT NULL AND -- this might not be right???
+      -- dist_tag_latest_version IS NOT NULL AND -- this might not be right???
       created IS NOT NULL AND 
       modified IS NOT NULL AND
       other_dist_tags IS NOT NULL AND
