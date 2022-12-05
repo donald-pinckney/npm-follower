@@ -214,6 +214,13 @@ fn panic_as_string(p: &Box<dyn Any + Send>) -> String {
                 .ok_or(p),
         )?;
 
+        swap(
+            p.as_ref()
+                .downcast_ref::<String>()
+                .map(|s| s.to_string())
+                .ok_or(p),
+        )?;
+
         Err("Unknown panic type".to_string())
     }
 
