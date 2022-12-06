@@ -27,6 +27,7 @@ chrono = { version = "0.4.19", features = ["serde"] }
 url = "2.3.0"
 deepsize = { git = "https://github.com/donald-pinckney/deepsize", features = ["chrono", "serde_json"] }
 lru = { git = "https://github.com/donald-pinckney/lru-rs" }
+kdam = "0.3.0"
 
 [dev-dependencies]
 test-case = "2.1.0"

@@ -1,3 +1,4 @@
+use kdam::{tqdm, BarExt};
 use std::any::Any;
 use std::collections::HashSet;
 use std::panic::{self, AssertUnwindSafe};
@@ -36,6 +37,8 @@ fn main() {
         diff_log::query_num_diff_entries_after_seq(processed_up_to_seq, &mut conn);
     println!("Initial queries DONE!");
 
+    let num_batches = usize::try_from((num_changes_total + (PAGE_SIZE - 1)) / PAGE_SIZE).unwrap();
+
     let mut num_changes_so_far = 0;
     let mut num_entries_so_far = 0;
 
@@ -50,6 +53,8 @@ fn main() {
     });
 
     let mut entry_processor = EntryProcessor::new();
+
+    let mut batches_pb = tqdm!(total = num_batches, desc = "Batches", position = 0);
 
     // TODO: Extract this into function (duplicated in download_queuer/src/main.rs)
     loop {
@@ -123,6 +128,7 @@ fn main() {
                 session_start_time,
             },
         );
+        batches_pb.update(1);
     }
 
     let session_end_time = Utc::now();
@@ -146,7 +152,7 @@ pub fn process_entries(
 ) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError> {
     let mut read_bytes = 0;
 
-    for e in entries {
+    for e in tqdm!(entries.into_iter(), desc = "Current batch", position = 1) {
         read_bytes += entry_num_bytes(&e);
         let seq = e.seq;
         let entry_id = e.id;
