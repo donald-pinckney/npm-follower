@@ -272,69 +272,102 @@ impl EntryProcessor {
             .take()
             .map_or((None, None), |x| (Some(x.raw), Some(x.info)));
 
-        let prod_inserted_ids = data
+        let mut prod_to_insert: Vec<_> = data
             .prod_dependencies
             .into_iter()
             .map(|(dst_name, spec)| {
                 let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
-                let to_insert = NewDependency::create(
-                    dst_name,
-                    dst_id,
-                    spec.raw,
-                    spec.parsed,
+                (
+                    NewDependency::create(
+                        dst_name,
+                        dst_id,
+                        spec.raw,
+                        spec.parsed,
+                        DependencyType::Prod,
+                    ),
                     DependencyType::Prod,
-                );
-                self.insert_or_inc_dependency(conn, to_insert)
+                )
             })
             .collect();
 
-        let dev_inserted_ids = data
+        let mut dev_to_insert: Vec<_> = data
             .dev_dependencies
             .into_iter()
             .map(|(dst_name, spec)| {
                 let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
-                let to_insert = NewDependency::create(
-                    dst_name,
-                    dst_id,
-                    spec.raw,
-                    spec.parsed,
+                (
+                    NewDependency::create(
+                        dst_name,
+                        dst_id,
+                        spec.raw,
+                        spec.parsed,
+                        DependencyType::Dev,
+                    ),
                     DependencyType::Dev,
-                );
-                self.insert_or_inc_dependency(conn, to_insert)
+                )
             })
             .collect();
 
-        let peer_inserted_ids = data
+        let mut peer_to_insert: Vec<_> = data
             .peer_dependencies
             .into_iter()
             .map(|(dst_name, spec)| {
                 let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
-                let to_insert = NewDependency::create(
-                    dst_name,
-                    dst_id,
-                    spec.raw,
-                    spec.parsed,
+                (
+                    NewDependency::create(
+                        dst_name,
+                        dst_id,
+                        spec.raw,
+                        spec.parsed,
+                        DependencyType::Peer,
+                    ),
                     DependencyType::Peer,
-                );
-                self.insert_or_inc_dependency(conn, to_insert)
+                )
             })
             .collect();
 
-        let optional_inserted_ids = data
+        let mut optional_to_insert: Vec<_> = data
             .optional_dependencies
             .into_iter()
             .map(|(dst_name, spec)| {
                 let dst_id = self.db.maybe_get_package_id_by_name(conn, &dst_name);
-                let to_insert = NewDependency::create(
-                    dst_name,
-                    dst_id,
-                    spec.raw,
-                    spec.parsed,
+                (
+                    NewDependency::create(
+                        dst_name,
+                        dst_id,
+                        spec.raw,
+                        spec.parsed,
+                        DependencyType::Optional,
+                    ),
                     DependencyType::Optional,
-                );
-                self.insert_or_inc_dependency(conn, to_insert)
+                )
             })
             .collect();
+
+        let mut to_insert = Vec::new();
+        to_insert.append(&mut prod_to_insert);
+        to_insert.append(&mut dev_to_insert);
+        to_insert.append(&mut peer_to_insert);
+        to_insert.append(&mut optional_to_insert);
+
+        let (deps_to_insert, to_insert_types): (Vec<_>, Vec<_>) = to_insert.into_iter().unzip();
+
+        let inserted_ids = self.insert_or_inc_dependencies(conn, deps_to_insert);
+
+        let mut prod_inserted_ids = Vec::new();
+        let mut dev_inserted_ids = Vec::new();
+        let mut peer_inserted_ids = Vec::new();
+        let mut optional_inserted_ids = Vec::new();
+
+        for (dep_id, dep_t) in inserted_ids.into_iter().zip(to_insert_types) {
+            let dep_type_vec = match dep_t {
+                DependencyType::Prod => &mut prod_inserted_ids,
+                DependencyType::Dev => &mut dev_inserted_ids,
+                DependencyType::Peer => &mut peer_inserted_ids,
+                DependencyType::Optional => &mut optional_inserted_ids,
+            };
+            dep_type_vec.push(dep_id);
+        }
 
         let new_version_row = NewVersion {
             package_id,
@@ -383,12 +416,12 @@ impl EntryProcessor {
         todo!()
     }
 
-    fn insert_or_inc_dependency(
+    fn insert_or_inc_dependencies(
         &mut self,
         conn: &mut DbConnectionInTransaction,
-        dep: NewDependency,
-    ) -> i64 {
-        self.db.insert_or_inc_dependency(conn, dep)
+        deps: Vec<NewDependency>,
+    ) -> Vec<i64> {
+        self.db.insert_or_inc_dependencies(conn, deps)
     }
 }
 

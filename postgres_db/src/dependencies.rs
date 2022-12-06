@@ -120,11 +120,13 @@ pub fn update_deps_missing_pack<R: QueryRunner>(conn: &mut R, pack_name: &str, p
     // }
 }
 
-pub fn insert_dependency<R>(conn: &mut R, dep: NewDependency) -> i64
+fn insert_dependency<R>(conn: &mut R, dep: NewDependency) -> i64
 where
     R: QueryRunner,
 {
     use super::schema::dependencies::dsl::*;
+
+    // return 5;
 
     let insert_query = diesel::insert_into(dependencies)
         .values(&dep)
@@ -140,6 +142,15 @@ where
 
     conn.get_result(insert_query)
         .expect("Error inserting dependency")
+}
+
+pub fn insert_dependencies<R>(conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64>
+where
+    R: QueryRunner,
+{
+    deps.into_iter()
+        .map(|dep| insert_dependency(conn, dep))
+        .collect()
 }
 
 // pub fn insert_dependencies<R>(conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64>

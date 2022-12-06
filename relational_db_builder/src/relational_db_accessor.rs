@@ -11,7 +11,7 @@ use postgres_db::{
 };
 
 pub struct RelationalDbAccessor {
-    package_id_cache: LruCache<String, i64>,
+    package_id_cache: LruCache<String, Option<i64>>,
     package_data_cache: LruCache<String, Rc<Package>>,
     version_id_cache: LruCache<(i64, Semver), i64>,
 }
@@ -40,11 +40,12 @@ impl RelationalDbAccessor {
     ) -> Rc<Package> {
         if let Some(package) = self.package_data_cache.get(package_name) {
             self.package_id_cache
-                .put(package_name.to_string(), package.id);
+                .put(package_name.to_string(), Some(package.id));
             return Rc::clone(package);
         }
 
         if let Some(&package_id) = self.package_id_cache.get(package_name) {
+            let package_id = package_id.expect("Package does not exist!");
             let package = postgres_db::packages::get_package(conn, package_id);
             let cache_entry_size = package.deep_size_of() + package.name.deep_size_of();
 
@@ -67,7 +68,7 @@ impl RelationalDbAccessor {
             cache_entry_size,
         );
         self.package_id_cache
-            .put(package_name.to_string(), package.id);
+            .put(package_name.to_string(), Some(package.id));
         package
     }
 
@@ -77,16 +78,12 @@ impl RelationalDbAccessor {
         package: &str,
     ) -> Option<i64> {
         if let Some(&package_id) = self.package_id_cache.get(package) {
-            return Some(package_id);
+            return package_id;
         }
 
         let package_id = postgres_db::packages::maybe_get_package_id_by_name(conn, package);
-        if let Some(package_id) = package_id {
-            self.package_id_cache.put(package.to_string(), package_id);
-            Some(package_id)
-        } else {
-            None
-        }
+        self.package_id_cache.put(package.to_string(), package_id);
+        package_id
     }
 
     pub fn get_version_id_by_semver<R: QueryRunner>(
@@ -110,7 +107,7 @@ impl RelationalDbAccessor {
 
         let cache_entry_size = inserted.deep_size_of() + inserted.name.deep_size_of();
         self.package_id_cache
-            .put(inserted.name.clone(), inserted.id);
+            .put(inserted.name.clone(), Some(inserted.id));
         self.package_data_cache.put_with_cost(
             inserted.name.clone(),
             Rc::new(inserted),
@@ -152,7 +149,7 @@ impl RelationalDbAccessor {
         package_id: i64,
     ) {
         self.package_id_cache
-            .put(package_name.to_string(), package_id);
+            .put(package_name.to_string(), Some(package_id));
         self.package_data_cache.promote(package_name);
         postgres_db::dependencies::update_deps_missing_pack(conn, package_name, package_id)
     }
@@ -164,11 +161,15 @@ impl RelationalDbAccessor {
         self.version_id_cache.put((package_id, semver), id);
     }
 
-    pub fn insert_or_inc_dependency<R>(&mut self, conn: &mut R, dep: NewDependency) -> i64
+    pub fn insert_or_inc_dependencies<R>(
+        &mut self,
+        conn: &mut R,
+        deps: Vec<NewDependency>,
+    ) -> Vec<i64>
     where
         R: QueryRunner,
     {
-        postgres_db::dependencies::insert_dependency(conn, dep)
+        postgres_db::dependencies::insert_dependencies(conn, deps)
     }
 }
 
