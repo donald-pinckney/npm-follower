@@ -111,7 +111,12 @@ impl EntryProcessor {
                 created: Some(created),
                 modified: Some(modified),
                 other_dist_tags: None,
-                other_time_data: Some(serde_json::to_value(extra_version_times).unwrap()),
+                other_time_data: Some(
+                    serde_json::to_value(
+                        postgres_db::serde_non_string_key_serialization::BTreeMapSerializedAsString::new(extra_version_times),
+                    )
+                    .unwrap(),
+                ),
                 unpublished_data: Some(unpublished_blob),
             },
             // Maybe we want to treat these separately?

@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
 use serde::{Deserializer, Serializer};
 
@@ -23,4 +25,28 @@ where
 {
     let map_items = <Vec<(K, V)> as Deserialize>::deserialize(deserializer)?;
     Ok(M::from_iter(map_items))
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct BTreeMapSerializedAsString<K, V>
+where
+    K: Serialize + PartialEq + Eq + PartialOrd + Ord + for<'a> Deserialize<'a>,
+    V: Serialize + for<'a> Deserialize<'a>,
+{
+    #[serde(with = "crate::serde_non_string_key_serialization")]
+    inner: BTreeMap<K, V>,
+}
+
+impl<K, V> BTreeMapSerializedAsString<K, V>
+where
+    K: Serialize + PartialEq + Eq + PartialOrd + Ord + for<'a> Deserialize<'a>,
+    V: Serialize + for<'a> Deserialize<'a>,
+{
+    pub fn inner(self) -> BTreeMap<K, V> {
+        self.inner
+    }
+
+    pub fn new(inner: BTreeMap<K, V>) -> Self {
+        BTreeMapSerializedAsString { inner }
+    }
 }

@@ -17,7 +17,7 @@ pub mod versions;
 pub mod connection;
 pub mod custom_types;
 
-mod serde_non_string_key_serialization;
+pub mod serde_non_string_key_serialization;
 
 #[cfg(test)]
 pub mod testing;
