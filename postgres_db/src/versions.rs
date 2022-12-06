@@ -83,7 +83,7 @@ pub fn get_version_id_by_semver<R: QueryRunner>(conn: &mut R, package_id: i64, v
                 .and(versions::semver.eq(v)),
         )
         .select(versions::id);
-    conn.get_result(query).expect("Error getting package")
+    conn.get_result(query).expect("Error getting version")
 }
 
 // impl Version {
