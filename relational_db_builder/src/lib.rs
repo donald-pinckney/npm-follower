@@ -144,90 +144,93 @@ impl EntryProcessor {
         seq: i64,
         diff_entry_id: i64,
     ) {
-        let old_package = self.db.get_package_by_name(conn, &package_name);
-        let old_history = old_package.package_state_history.clone();
-        let package_id = old_package.id;
+        // We have to put this in a block so that we drop
+        // `old_package` before calling `update_package`.
+        let (diff, package_id) = {
+            let old_package = self.db.get_package_by_name(conn, &package_name);
+            let old_history = old_package.package_state_history.clone();
+            let package_id = old_package.id;
 
-        let new_package = match data {
-            PackageOnlyPackument::Normal {
-                latest,
-                created,
-                modified,
-                other_dist_tags,
-                extra_version_times: _,
-            } => {
-                let latest_id = latest.map(|latest_semver| {
-                    self.db
-                        .get_version_id_by_semver(conn, package_id, latest_semver)
-                });
-                NewPackage {
+            let new_package = match data {
+                PackageOnlyPackument::Normal {
+                    latest,
+                    created,
+                    modified,
+                    other_dist_tags,
+                    extra_version_times: _,
+                } => {
+                    let latest_id = latest.map(|latest_semver| {
+                        self.db
+                            .get_version_id_by_semver(conn, package_id, latest_semver)
+                    });
+                    NewPackage {
+                        name: package_name.clone(),
+                        current_package_state_type: PackageStateType::Normal,
+                        package_state_history: snoc(
+                            old_history,
+                            PackageStateTimePoint {
+                                state: PackageStateType::Normal,
+                                seq,
+                                diff_entry_id,
+                                estimated_time: Some(modified), // TODO ???
+                            },
+                        ),
+                        dist_tag_latest_version: latest_id,
+                        created: Some(created),
+                        modified: Some(modified),
+                        other_dist_tags: Some(Value::Object(other_dist_tags)),
+                        other_time_data: None,
+                        unpublished_data: None,
+                    }
+                }
+                PackageOnlyPackument::Unpublished {
+                    created,
+                    modified,
+                    unpublished_blob,
+                    extra_version_times,
+                } => NewPackage {
                     name: package_name.clone(),
-                    current_package_state_type: PackageStateType::Normal,
+                    current_package_state_type: PackageStateType::Unpublished,
                     package_state_history: snoc(
                         old_history,
                         PackageStateTimePoint {
-                            state: PackageStateType::Normal,
+                            state: PackageStateType::Unpublished,
                             seq,
                             diff_entry_id,
                             estimated_time: Some(modified), // TODO ???
                         },
                     ),
-                    dist_tag_latest_version: latest_id,
+                    dist_tag_latest_version: old_package.dist_tag_latest_version,
                     created: Some(created),
                     modified: Some(modified),
-                    other_dist_tags: Some(Value::Object(other_dist_tags)),
-                    other_time_data: None,
-                    unpublished_data: None,
-                }
-            }
-            PackageOnlyPackument::Unpublished {
-                created,
-                modified,
-                unpublished_blob,
-                extra_version_times,
-            } => NewPackage {
-                name: package_name.clone(),
-                current_package_state_type: PackageStateType::Unpublished,
-                package_state_history: snoc(
-                    old_history,
-                    PackageStateTimePoint {
-                        state: PackageStateType::Unpublished,
-                        seq,
-                        diff_entry_id,
-                        estimated_time: Some(modified), // TODO ???
-                    },
-                ),
-                dist_tag_latest_version: old_package.dist_tag_latest_version,
-                created: Some(created),
-                modified: Some(modified),
-                other_dist_tags: old_package.other_dist_tags.clone(),
-                other_time_data: Some(serde_json::to_value(extra_version_times).unwrap()),
-                unpublished_data: Some(unpublished_blob),
-            },
-            // Maybe we want to treat these separately?
-            PackageOnlyPackument::Deleted | PackageOnlyPackument::MissingData => NewPackage {
-                name: package_name.clone(),
-                current_package_state_type: PackageStateType::Deleted,
-                package_state_history: snoc(
-                    old_history,
-                    PackageStateTimePoint {
-                        state: PackageStateType::Deleted,
-                        seq,
-                        diff_entry_id,
-                        estimated_time: None, // TODO ???
-                    },
-                ),
-                dist_tag_latest_version: old_package.dist_tag_latest_version,
-                created: old_package.created,
-                modified: old_package.modified,
-                other_dist_tags: old_package.other_dist_tags.clone(),
-                other_time_data: old_package.other_time_data.clone(),
-                unpublished_data: old_package.unpublished_data.clone(),
-            },
+                    other_dist_tags: old_package.other_dist_tags.clone(),
+                    other_time_data: Some(serde_json::to_value(extra_version_times).unwrap()),
+                    unpublished_data: Some(unpublished_blob),
+                },
+                // Maybe we want to treat these separately?
+                PackageOnlyPackument::Deleted | PackageOnlyPackument::MissingData => NewPackage {
+                    name: package_name.clone(),
+                    current_package_state_type: PackageStateType::Deleted,
+                    package_state_history: snoc(
+                        old_history,
+                        PackageStateTimePoint {
+                            state: PackageStateType::Deleted,
+                            seq,
+                            diff_entry_id,
+                            estimated_time: None, // TODO ???
+                        },
+                    ),
+                    dist_tag_latest_version: old_package.dist_tag_latest_version,
+                    created: old_package.created,
+                    modified: old_package.modified,
+                    other_dist_tags: old_package.other_dist_tags.clone(),
+                    other_time_data: old_package.other_time_data.clone(),
+                    unpublished_data: old_package.unpublished_data.clone(),
+                },
+            };
+
+            (old_package.diff(new_package), package_id)
         };
-
-        let diff = old_package.diff(new_package);
-
         self.db
             .update_package(conn, package_id, &package_name, diff);
     }
