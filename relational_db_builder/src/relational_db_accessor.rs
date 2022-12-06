@@ -5,6 +5,7 @@ use lru::LruCache;
 use postgres_db::{
     connection::QueryRunner,
     custom_types::Semver,
+    dependencies::NewDependency,
     packages::{NewPackage, Package, PackageUpdate},
     versions::NewVersion,
 };
@@ -161,6 +162,13 @@ impl RelationalDbAccessor {
         let semver = new_version.semver.clone();
         let id = postgres_db::versions::insert_new_version(conn, new_version);
         self.version_id_cache.put((package_id, semver), id);
+    }
+
+    pub fn insert_or_inc_dependency<R>(&mut self, conn: &mut R, dep: NewDependency) -> i64
+    where
+        R: QueryRunner,
+    {
+        postgres_db::dependencies::insert_dependency(conn, dep)
     }
 }
 

@@ -6,6 +6,7 @@ DROP INDEX dependencies_md5digest_with_version_idx;
 DROP INDEX versions_package_id_idx;
 
 ALTER TABLE packages DROP CONSTRAINT fkey_packages_dist_tag_latest_version;
+ALTER TABLE dependencies DROP CONSTRAINT dependencies_md5digest_with_version_unique;
 DROP TABLE packages, versions, dependencies CASCADE;
 
 

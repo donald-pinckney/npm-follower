@@ -1,7 +1,7 @@
 use crate::{connection::QueryRunner, custom_types::ParsedSpec};
 
 use super::schema::dependencies;
-use diesel::Queryable;
+use diesel::{upsert::on_constraint, Queryable};
 use serde_json::Value;
 
 use diesel::prelude::*;
@@ -9,8 +9,6 @@ use sha2::{Digest, Sha256};
 
 #[derive(Insertable, Debug)]
 #[diesel(table_name = dependencies)]
-// TODO: please rename this to Dependency, it throws me an error
-// and idk how to fix it
 pub struct NewDependency {
     dst_package_name: String,
     dst_package_id_if_exists: Option<i64>,
@@ -122,7 +120,32 @@ pub fn update_deps_missing_pack<R: QueryRunner>(conn: &mut R, pack_name: &str, p
     // }
 }
 
-// pub fn insert_dependencies(conn: &mut DbConnection, deps: Vec<Dependencie>) -> Vec<i64> {
+pub fn insert_dependency<R>(conn: &mut R, dep: NewDependency) -> i64
+where
+    R: QueryRunner,
+{
+    use super::schema::dependencies::dsl::*;
+
+    let insert_query = diesel::insert_into(dependencies)
+        .values(&dep)
+        .on_conflict(on_constraint("dependencies_md5digest_with_version_unique"))
+        .do_update()
+        .set((
+            prod_freq_count.eq(prod_freq_count + dep.prod_freq_count),
+            dev_freq_count.eq(dev_freq_count + dep.dev_freq_count),
+            peer_freq_count.eq(peer_freq_count + dep.peer_freq_count),
+            optional_freq_count.eq(optional_freq_count + dep.optional_freq_count),
+        ))
+        .returning(id);
+
+    conn.get_result(insert_query)
+        .expect("Error inserting dependency")
+}
+
+// pub fn insert_dependencies<R>(conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64>
+// where
+//     R: QueryRunner,
+// {
 //     use super::schema::dependencies::dsl::*;
 
 //     // TODO [perf]: batch these inserts. Tried that, seemed to make it worse :(

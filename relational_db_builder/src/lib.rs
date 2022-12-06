@@ -380,7 +380,7 @@ impl EntryProcessor {
         conn: &mut DbConnectionInTransaction,
         dep: NewDependency,
     ) -> i64 {
-        todo!()
+        self.db.insert_or_inc_dependency(conn, dep)
     }
 }
 
