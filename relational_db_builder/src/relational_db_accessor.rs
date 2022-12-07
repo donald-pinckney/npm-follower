@@ -161,6 +161,13 @@ impl RelationalDbAccessor {
         self.version_id_cache.put((package_id, semver), id);
     }
 
+    fn insert_or_inc_dependency<R>(&mut self, conn: &mut R, dep: NewDependency) -> i64
+    where
+        R: QueryRunner,
+    {
+        todo!()
+    }
+
     pub fn insert_or_inc_dependencies<R>(
         &mut self,
         conn: &mut R,
@@ -178,4 +185,17 @@ impl RelationalDbAccessor {
         self.maybe_get_package_id_by_name(conn, package)
             .expect("The package should exist")
     }
+
+    // pub fn insert_or_inc_dependencies<R>(
+    //     &mut self,
+    //     conn: &mut R,
+    //     deps: Vec<NewDependency>,
+    // ) -> Vec<i64>
+    // where
+    //     R: QueryRunner,
+    // {
+    //     deps.into_iter()
+    //         .map(|d| self.insert_or_inc_dependency(conn, d))
+    //         .collect()
+    // }
 }

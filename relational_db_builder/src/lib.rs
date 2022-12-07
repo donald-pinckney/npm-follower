@@ -3,7 +3,7 @@ mod relational_db_accessor;
 use std::collections::HashSet;
 
 use postgres_db::{
-    connection::DbConnectionInTransaction,
+    connection::QueryRunner,
     custom_types::{
         PackageStateTimePoint, PackageStateType, Semver, VersionStateTimePoint, VersionStateType,
     },
@@ -29,14 +29,16 @@ impl EntryProcessor {
 }
 
 impl EntryProcessor {
-    pub fn process_entry(
+    pub fn process_entry<R>(
         &mut self,
-        conn: &mut DbConnectionInTransaction,
+        conn: &mut R,
         package: String,
         instr: DiffLogInstruction,
         seq: i64,
         diff_entry_id: i64,
-    ) {
+    ) where
+        R: QueryRunner,
+    {
         match instr {
             DiffLogInstruction::CreatePackage(data) => {
                 self.create_package(conn, package, data, seq, diff_entry_id)
@@ -59,14 +61,16 @@ impl EntryProcessor {
         }
     }
 
-    fn create_package(
+    fn create_package<R>(
         &mut self,
-        conn: &mut DbConnectionInTransaction,
+        conn: &mut R,
         package: String,
         data: PackageOnlyPackument,
         seq: i64,
         diff_entry_id: i64,
-    ) {
+    ) where
+        R: QueryRunner,
+    {
         let new_package = match data {
             PackageOnlyPackument::Normal {
                 latest,
@@ -141,14 +145,16 @@ impl EntryProcessor {
         self.db.insert_new_package(conn, new_package);
     }
 
-    fn update_package(
+    fn update_package<R>(
         &mut self,
-        conn: &mut DbConnectionInTransaction,
+        conn: &mut R,
         package_name: String,
         data: PackageOnlyPackument,
         seq: i64,
         diff_entry_id: i64,
-    ) {
+    ) where
+        R: QueryRunner,
+    {
         // We have to put this in a block so that we drop
         // `old_package` before calling `update_package`.
         let (diff, package_id) = {
@@ -240,26 +246,30 @@ impl EntryProcessor {
             .update_package(conn, package_id, &package_name, diff);
     }
 
-    fn patch_package_refs(
+    fn patch_package_refs<R>(
         &mut self,
-        conn: &mut DbConnectionInTransaction,
+        conn: &mut R,
         package: String,
         _seq: i64,
         _diff_entry_id: i64,
-    ) {
+    ) where
+        R: QueryRunner,
+    {
         let package_id = self.db.get_package_id_by_name(conn, &package);
         self.db.update_deps_missing_pack(conn, &package, package_id);
     }
 
-    fn create_version(
+    fn create_version<R>(
         &mut self,
-        conn: &mut DbConnectionInTransaction,
+        conn: &mut R,
         package: String,
         version: Semver,
         mut data: VersionOnlyPackument,
         seq: i64,
         diff_entry_id: i64,
-    ) {
+    ) where
+        R: QueryRunner,
+    {
         assert_unique(data.prod_dependencies.iter().map(|(dst, _)| dst));
         assert_unique(data.dev_dependencies.iter().map(|(dst, _)| dst));
         assert_unique(data.peer_dependencies.iter().map(|(dst, _)| dst));
@@ -393,34 +403,37 @@ impl EntryProcessor {
         self.db.insert_new_version(conn, new_version_row);
     }
 
-    fn update_version(
+    fn update_version<R>(
         &mut self,
-        conn: &mut DbConnectionInTransaction,
+        conn: &mut R,
         package: String,
         version: Semver,
         data: VersionOnlyPackument,
         seq: i64,
         diff_entry_id: i64,
-    ) {
+    ) where
+        R: QueryRunner,
+    {
         todo!()
     }
 
-    fn delete_version(
+    fn delete_version<R>(
         &mut self,
-        conn: &mut DbConnectionInTransaction,
+        conn: &mut R,
         package: String,
         version: Semver,
         seq: i64,
         diff_entry_id: i64,
-    ) {
+    ) where
+        R: QueryRunner,
+    {
         todo!()
     }
 
-    fn insert_or_inc_dependencies(
-        &mut self,
-        conn: &mut DbConnectionInTransaction,
-        deps: Vec<NewDependency>,
-    ) -> Vec<i64> {
+    fn insert_or_inc_dependencies<R>(&mut self, conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64>
+    where
+        R: QueryRunner,
+    {
         self.db.insert_or_inc_dependencies(conn, deps)
     }
 }

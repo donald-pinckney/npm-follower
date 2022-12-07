@@ -9,7 +9,7 @@ use metrics_logging::{
     MetricsLoggerTrait, RelationalDbBatchCompleteMetrics, RelationalDbEndSessionMetrics,
     RelationalDbPanicMetrics, RelationalDbStartSessionMetrics,
 };
-use postgres_db::connection::{DbConnection, DbConnectionInTransaction};
+use postgres_db::connection::{DbConnection, DbConnectionInTransaction, QueryRunner};
 use postgres_db::diff_log::DiffLogEntry;
 use postgres_db::diff_log::{self, DiffLogInstruction};
 use postgres_db::internal_state;
@@ -78,15 +78,15 @@ fn main() {
         let first_seq_in_page = entries.first().unwrap().seq;
         let last_seq_in_page = entries.last().unwrap().seq;
 
-        let process_entries_metrics = conn
-            .run_psql_transaction(|mut trans_conn| {
-                match process_entries(&mut entry_processor, &mut trans_conn, entries) {
+        let process_entries_metrics = //conn
+            // .run_psql_transaction(|mut trans_conn| {
+                match process_entries(&mut entry_processor, &mut conn, entries) {
                     Ok(res) => {
                         // internal_state::set_relational_processed_seq(
                         //     last_seq_in_page,
                         //     &mut trans_conn,
                         // );
-                        Ok(res)
+                        res
                     }
                     Err(err) => {
                         metrics_logger.log_relational_db_builder_panic(RelationalDbPanicMetrics {
@@ -97,9 +97,8 @@ fn main() {
                         });
                         std::panic::resume_unwind(err.err);
                     }
-                }
-            })
-            .unwrap();
+                };
+        // })
 
         num_changes_so_far += num_changes;
 
@@ -146,11 +145,14 @@ fn main() {
     })
 }
 
-pub fn process_entries(
+pub fn process_entries<R>(
     processor: &mut EntryProcessor,
-    conn: &mut DbConnectionInTransaction,
+    conn: &mut R,
     entries: Vec<DiffLogEntry>,
-) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError> {
+) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError>
+where
+    R: QueryRunner,
+{
     let mut read_bytes = 0;
 
     for e in tqdm!(entries.into_iter(), desc = "Current batch", position = 1) {
