@@ -227,6 +227,8 @@ impl RelationalDbAccessor {
 
             // In the case that we had to evict an entry, we MUST flush it to the DB (if needed)
             if evicted_state.need_flush {
+                // println!("Flushing evicted cache entry");
+
                 postgres_db::dependencies::set_dependency_counts(
                     conn,
                     evicted_state.id,
