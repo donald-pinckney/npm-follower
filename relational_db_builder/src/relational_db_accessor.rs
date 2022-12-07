@@ -10,10 +10,31 @@ use postgres_db::{
     versions::NewVersion,
 };
 
+struct DependencyState {
+    id: i64,
+    prod_freq_count: i64,
+    dev_freq_count: i64,
+    peer_freq_count: i64,
+    optional_freq_count: i64,
+    need_flush: bool,
+}
+
+impl DependencyState {
+    fn add_counts(&mut self, other: NewDependency) {
+        self.prod_freq_count += other.get_prod_freq_count();
+        self.dev_freq_count += other.get_dev_freq_count();
+        self.peer_freq_count += other.get_peer_freq_count();
+        self.optional_freq_count += other.get_optional_freq_count();
+    }
+}
+
 pub struct RelationalDbAccessor {
     package_id_cache: LruCache<String, Option<i64>>,
     package_data_cache: LruCache<String, Rc<Package>>,
     version_id_cache: LruCache<(i64, Semver), i64>,
+
+    // hash --> state
+    dependency_states_cache: LruCache<String, DependencyState>,
 }
 
 impl RelationalDbAccessor {
@@ -22,6 +43,9 @@ impl RelationalDbAccessor {
             package_id_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()), // about 1 million entries
             package_data_cache: LruCache::new(NonZeroUsize::new(1_073_741_824).unwrap()), // 1GB max memory usage
             version_id_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()), // about 1 million entries
+            dependency_states_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()),
+            // dependencies_to_flush: HashSet::new(),
+            // dependencies_with_missing_dst: HashMap::new(),
         }
     }
 }
@@ -165,25 +189,101 @@ impl RelationalDbAccessor {
     where
         R: QueryRunner,
     {
-        todo!()
+        // If the dep exists in the cache, we just increment the cache only,
+        // and mark it for flushing later
+        if let Some(mem_state) = self
+            .dependency_states_cache
+            .get_mut(dep.get_md5digest_with_version())
+        {
+            mem_state.add_counts(dep);
+            mem_state.need_flush = true;
+            return mem_state.id;
+        }
+
+        let copy_of_hash = dep.get_md5digest_with_version().to_string();
+
+        // If the dep isn't in the cache, that's because either:
+        // a) it doesn't exist in the DB, and needs to be created, or
+        // b) it is in the DB but not in the cache,
+        //
+        // We deal with both cases at once with an INSERT ON CONFLICT statement
+        // in which we increment counts, and then get back ID and all the updated counts
+        let (id, prod_freq_count, dev_freq_count, peer_freq_count, optional_freq_count) =
+            postgres_db::dependencies::insert_dependency_inc_counts(conn, dep);
+        let new_state = DependencyState {
+            id,
+            prod_freq_count,
+            dev_freq_count,
+            peer_freq_count,
+            optional_freq_count,
+            // initially not marked as needing flush, since hasn't received mem only writes yet
+            need_flush: false,
+        };
+
+        if let Some((_evicted_hash, evicted_state)) =
+            self.dependency_states_cache.push(copy_of_hash, new_state)
+        {
+            // println!("Evicting cache entry");
+
+            // In the case that we had to evict an entry, we MUST flush it to the DB (if needed)
+            if evicted_state.need_flush {
+                postgres_db::dependencies::set_dependency_counts(
+                    conn,
+                    evicted_state.id,
+                    (
+                        evicted_state.prod_freq_count,
+                        evicted_state.dev_freq_count,
+                        evicted_state.peer_freq_count,
+                        evicted_state.optional_freq_count,
+                    ),
+                )
+            }
+        }
+
+        id
     }
 
-    pub fn insert_or_inc_dependencies<R>(
-        &mut self,
-        conn: &mut R,
-        deps: Vec<NewDependency>,
-    ) -> Vec<i64>
+    pub fn flush_caches<R>(&mut self, conn: &mut R)
     where
         R: QueryRunner,
     {
-        postgres_db::dependencies::insert_dependencies(conn, deps)
-    }
-}
+        // println!("flushing caches");
 
-impl RelationalDbAccessor {
-    pub fn get_package_id_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> i64 {
-        self.maybe_get_package_id_by_name(conn, package)
-            .expect("The package should exist")
+        // Option 1: Flush everything, and clear the cache
+        self.dependency_states_cache
+            .iter()
+            .filter_map(|(_, state)| if state.need_flush { Some(state) } else { None })
+            .for_each(|state| {
+                postgres_db::dependencies::set_dependency_counts(
+                    conn,
+                    state.id,
+                    (
+                        state.prod_freq_count,
+                        state.dev_freq_count,
+                        state.peer_freq_count,
+                        state.optional_freq_count,
+                    ),
+                )
+            });
+        self.dependency_states_cache.clear();
+
+        // Option 2: Flush everything, don't clear the cache, and mark everything as flushed
+        // self.dependency_states_cache
+        //     .iter_mut()
+        //     .filter_map(|(_, state)| if state.need_flush { Some(state) } else { None })
+        //     .for_each(|state| {
+        //         postgres_db::dependencies::set_dependency_counts(
+        //             conn,
+        //             state.id,
+        //             (
+        //                 state.prod_freq_count,
+        //                 state.dev_freq_count,
+        //                 state.peer_freq_count,
+        //                 state.optional_freq_count,
+        //             ),
+        //         );
+        //         state.need_flush = false;
+        //     });
     }
 
     // pub fn insert_or_inc_dependencies<R>(
@@ -194,8 +294,26 @@ impl RelationalDbAccessor {
     // where
     //     R: QueryRunner,
     // {
-    //     deps.into_iter()
-    //         .map(|d| self.insert_or_inc_dependency(conn, d))
-    //         .collect()
+    //     postgres_db::dependencies::insert_dependencies(conn, deps)
     // }
+}
+
+impl RelationalDbAccessor {
+    pub fn get_package_id_by_name<R: QueryRunner>(&mut self, conn: &mut R, package: &str) -> i64 {
+        self.maybe_get_package_id_by_name(conn, package)
+            .expect("The package should exist")
+    }
+
+    pub fn insert_or_inc_dependencies<R>(
+        &mut self,
+        conn: &mut R,
+        deps: Vec<NewDependency>,
+    ) -> Vec<i64>
+    where
+        R: QueryRunner,
+    {
+        deps.into_iter()
+            .map(|d| self.insert_or_inc_dependency(conn, d))
+            .collect()
+    }
 }

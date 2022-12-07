@@ -61,6 +61,13 @@ impl EntryProcessor {
         }
     }
 
+    pub fn flush_caches<R>(&mut self, conn: &mut R)
+    where
+        R: QueryRunner,
+    {
+        self.db.flush_caches(conn);
+    }
+
     fn create_package<R>(
         &mut self,
         conn: &mut R,
