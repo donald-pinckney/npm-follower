@@ -156,7 +156,9 @@ where
 {
     let mut read_bytes = 0;
 
-    for e in tqdm!(entries.into_iter(), desc = "Current batch", position = 1) {
+    // let entries_iter = tqdm!(entries.into_iter(), desc = "Current batch", position = 1);
+    let entries_iter = entries.into_iter();
+    for e in entries_iter {
         read_bytes += entry_num_bytes(&e);
         let seq = e.seq;
         let entry_id = e.id;

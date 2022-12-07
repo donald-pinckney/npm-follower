@@ -421,7 +421,7 @@ impl EntryProcessor {
     ) where
         R: QueryRunner,
     {
-        todo!()
+        // todo!()
     }
 
     fn delete_version<R>(
@@ -434,7 +434,7 @@ impl EntryProcessor {
     ) where
         R: QueryRunner,
     {
-        todo!()
+        // todo!()
     }
 
     fn insert_or_inc_dependencies<R>(&mut self, conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64>
