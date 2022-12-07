@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{connection::QueryRunner, custom_types::ParsedSpec};
 
 use super::schema::dependencies;
@@ -80,6 +82,14 @@ impl NewDependency {
             md5digest_with_version,
         }
     }
+
+    fn add_counts(&mut self, other: NewDependency) {
+        assert_eq!(self.md5digest_with_version, other.md5digest_with_version);
+        self.prod_freq_count += other.prod_freq_count;
+        self.dev_freq_count += other.dev_freq_count;
+        self.peer_freq_count += other.peer_freq_count;
+        self.optional_freq_count += other.optional_freq_count;
+    }
 }
 
 pub fn update_deps_missing_pack<R: QueryRunner>(conn: &mut R, pack_name: &str, pack_id: i64) {
@@ -140,6 +150,10 @@ where
         ))
         .returning(id);
 
+    // let sql = diesel::debug_query::<diesel::pg::Pg, _>(&insert_query);
+    // println!("query is: {}", sql);
+    // panic!("stop");
+
     conn.get_result(insert_query)
         .expect("Error inserting dependency")
 }
@@ -148,9 +162,89 @@ pub fn insert_dependencies<R>(conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64
 where
     R: QueryRunner,
 {
-    deps.into_iter()
-        .map(|dep| insert_dependency(conn, dep))
+    use super::schema::dependencies::dsl::*;
+
+    let all_dep_hashes: Vec<_> = deps
+        .iter()
+        .map(|dep| dep.md5digest_with_version.clone())
+        .collect();
+
+    let mut collapsed_deps_map: HashMap<String, NewDependency> = HashMap::new();
+
+    for d in deps.into_iter() {
+        if let Some(acc_dep) = collapsed_deps_map.get_mut(&d.md5digest_with_version) {
+            acc_dep.add_counts(d);
+        } else {
+            collapsed_deps_map.insert(d.md5digest_with_version.clone(), d);
+        }
+    }
+
+    let collapsed_deps = collapsed_deps_map.into_values();
+
+    let mut insert_lists_map: HashMap<(i64, i64, i64, i64), Vec<NewDependency>> = HashMap::new();
+
+    for d in collapsed_deps {
+        let count = (
+            d.prod_freq_count,
+            d.dev_freq_count,
+            d.peer_freq_count,
+            d.optional_freq_count,
+        );
+
+        if let Some(insert_list) = insert_lists_map.get_mut(&count) {
+            insert_list.push(d);
+        } else {
+            insert_lists_map.insert(count, vec![d]);
+        }
+    }
+
+    let insert_lists = insert_lists_map.into_iter();
+
+    // return 5;
+
+    let mut returned_ids: HashMap<String, i64> = HashMap::new();
+
+    for (freq_counts, insert_list) in insert_lists {
+        let insert_query = diesel::insert_into(dependencies)
+            .values(&insert_list)
+            .on_conflict(on_constraint("dependencies_md5digest_with_version_unique"))
+            .do_update()
+            .set((
+                prod_freq_count.eq(prod_freq_count + freq_counts.0),
+                dev_freq_count.eq(dev_freq_count + freq_counts.1),
+                peer_freq_count.eq(peer_freq_count + freq_counts.2),
+                optional_freq_count.eq(optional_freq_count + freq_counts.3),
+            ))
+            .returning(id);
+
+        // let sql = diesel::debug_query::<diesel::pg::Pg, _>(&insert_query);
+        // println!("query is: {}", sql);
+        // panic!("stop");
+
+        let ids: Vec<i64> = conn
+            .get_results(insert_query)
+            .expect("Error inserting dependencies");
+
+        // let ids: Vec<i64> = std::iter::repeat(1234).take(insert_list.len()).collect();
+
+        let hash_id_pairs = insert_list
+            .into_iter()
+            .map(|dep| dep.md5digest_with_version)
+            .zip(ids.into_iter());
+
+        for (dep_hash, dep_id) in hash_id_pairs {
+            assert!(returned_ids.insert(dep_hash, dep_id).is_none());
+        }
+    }
+
+    all_dep_hashes
+        .into_iter()
+        .map(|h| *returned_ids.get(&h).unwrap())
         .collect()
+
+    // deps.into_iter()
+    //     .map(|dep| insert_dependency(conn, dep))
+    //     .collect()
 }
 
 // pub fn insert_dependencies<R>(conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64>

@@ -61,8 +61,9 @@ fn main() {
         let batch_start = Instant::now();
         let batch_start_time = Utc::now();
 
-        let entries =
+        let mut entries =
             diff_log::query_diff_entries_after_seq(processed_up_to_seq, PAGE_SIZE, &mut conn);
+        // entries.truncate(1300);
         let unique_seqs: HashSet<_> = entries.iter().map(|entry| entry.seq).collect();
         let num_changes = unique_seqs.len() as i64;
 
