@@ -189,16 +189,20 @@ impl RelationalDbAccessor {
     where
         R: QueryRunner,
     {
+        // return 5;
+
         // If the dep exists in the cache, we just increment the cache only,
         // and mark it for flushing later
         if let Some(mem_state) = self
             .dependency_states_cache
             .get_mut(dep.get_md5digest_with_version())
         {
+            // println!("dep cache hit");
             mem_state.add_counts(dep);
             mem_state.need_flush = true;
             return mem_state.id;
         }
+        // println!("dep cache miss");
 
         let copy_of_hash = dep.get_md5digest_with_version().to_string();
 
@@ -210,6 +214,8 @@ impl RelationalDbAccessor {
         // in which we increment counts, and then get back ID and all the updated counts
         let (id, prod_freq_count, dev_freq_count, peer_freq_count, optional_freq_count) =
             postgres_db::dependencies::insert_dependency_inc_counts(conn, dep);
+        // let (id, prod_freq_count, dev_freq_count, peer_freq_count, optional_freq_count) =
+        //     (5, 1, 1, 1, 1);
         let new_state = DependencyState {
             id,
             prod_freq_count,
