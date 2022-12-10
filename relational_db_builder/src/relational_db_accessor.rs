@@ -258,26 +258,8 @@ impl RelationalDbAccessor {
         // println!("flushing caches");
 
         // Option 1: Flush everything, and clear the cache
-        self.dependency_states_cache
-            .iter()
-            .filter_map(|(_, state)| if state.need_flush { Some(state) } else { None })
-            .for_each(|state| {
-                postgres_db::dependencies::set_dependency_counts(
-                    conn,
-                    state.id,
-                    (
-                        state.prod_freq_count,
-                        state.dev_freq_count,
-                        state.peer_freq_count,
-                        state.optional_freq_count,
-                    ),
-                )
-            });
-        self.dependency_states_cache.clear();
-
-        // Option 2: Flush everything, don't clear the cache, and mark everything as flushed
         // self.dependency_states_cache
-        //     .iter_mut()
+        //     .iter()
         //     .filter_map(|(_, state)| if state.need_flush { Some(state) } else { None })
         //     .for_each(|state| {
         //         postgres_db::dependencies::set_dependency_counts(
@@ -289,9 +271,27 @@ impl RelationalDbAccessor {
         //                 state.peer_freq_count,
         //                 state.optional_freq_count,
         //             ),
-        //         );
-        //         state.need_flush = false;
+        //         )
         //     });
+        // self.dependency_states_cache.clear();
+
+        // Option 2: Flush everything, don't clear the cache, and mark everything as flushed
+        self.dependency_states_cache
+            .iter_mut()
+            .filter_map(|(_, state)| if state.need_flush { Some(state) } else { None })
+            .for_each(|state| {
+                postgres_db::dependencies::set_dependency_counts(
+                    conn,
+                    state.id,
+                    (
+                        state.prod_freq_count,
+                        state.dev_freq_count,
+                        state.peer_freq_count,
+                        state.optional_freq_count,
+                    ),
+                );
+                state.need_flush = false;
+            });
     }
 
     // pub fn insert_or_inc_dependencies<R>(

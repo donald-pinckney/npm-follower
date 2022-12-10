@@ -17,7 +17,9 @@ use postgres_db::internal_state;
 use relational_db_builder::EntryProcessor;
 use utils::check_no_concurrent_processes;
 
-const PAGE_SIZE: i64 = 1024;
+const PAGE_SIZE: i64 = 1024; // 1024 4096
+
+// debug: start after: 12412916
 
 fn main() {
     check_no_concurrent_processes("relational_db_builder");
@@ -56,6 +58,8 @@ fn main() {
 
     let mut batches_pb = tqdm!(total = num_batches, desc = "Batches", position = 0);
 
+    let mut tmp = 0;
+
     // TODO: Extract this into function (duplicated in download_queuer/src/main.rs)
     loop {
         let batch_start = Instant::now();
@@ -82,11 +86,12 @@ fn main() {
             .run_psql_transaction(|mut trans_conn| {
                 match process_entries(&mut entry_processor, &mut trans_conn, entries) {
                     Ok(res) => {
-                        // internal_state::set_relational_processed_seq(
-                        //     last_seq_in_page,
-                        //     &mut trans_conn,
-                        // );
-                        Ok(res)
+                        internal_state::set_relational_processed_seq(
+                            last_seq_in_page,
+                            &mut trans_conn,
+                        );
+                        // Err(diesel::result::Error)
+                        Ok((res, true))
                     }
                     Err(err) => {
                         metrics_logger.log_relational_db_builder_panic(RelationalDbPanicMetrics {
@@ -130,6 +135,11 @@ fn main() {
             },
         );
         batches_pb.update(1);
+
+        // tmp += 1;
+        // if tmp == 4 {
+        //     break;
+        // }
     }
 
     let session_end_time = Utc::now();
