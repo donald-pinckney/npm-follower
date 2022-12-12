@@ -1,6 +1,6 @@
 use kdam::{tqdm, BarExt};
 use std::any::Any;
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 use std::panic::{self, AssertUnwindSafe};
 use std::time::{Duration, Instant};
 
@@ -17,9 +17,7 @@ use postgres_db::internal_state;
 use relational_db_builder::EntryProcessor;
 use utils::check_no_concurrent_processes;
 
-const PAGE_SIZE: i64 = 1024; // 1024 4096
-
-// debug: start after: 12412916
+const TARGET_PAGE_SIZE_NUM_ENTRIES: i64 = 32000;
 
 fn main() {
     check_no_concurrent_processes("relational_db_builder");
@@ -39,8 +37,6 @@ fn main() {
         diff_log::query_num_diff_entries_after_seq(processed_up_to_seq, &mut conn);
     println!("Initial queries DONE!");
 
-    let num_batches = usize::try_from((num_changes_total + (PAGE_SIZE - 1)) / PAGE_SIZE).unwrap();
-
     let mut num_changes_so_far = 0;
     let mut num_entries_so_far = 0;
 
@@ -56,18 +52,28 @@ fn main() {
 
     let mut entry_processor = EntryProcessor::new();
 
-    let mut batches_pb = tqdm!(total = num_batches, desc = "Batches", position = 0);
+    let mut batches_pb = tqdm!(
+        total = num_entries_total.try_into().unwrap(),
+        desc = "All entries",
+        position = 0
+    );
 
-    let mut tmp = 0;
+    // Initially we start the page size at 256
+    let mut current_page_size_seqs = 256;
+    let history_size = 4;
+    let mut batch_size_history: VecDeque<(i64, i64)> = VecDeque::new();
 
     // TODO: Extract this into function (duplicated in download_queuer/src/main.rs)
     loop {
         let batch_start = Instant::now();
         let batch_start_time = Utc::now();
 
-        let mut entries =
-            diff_log::query_diff_entries_after_seq(processed_up_to_seq, PAGE_SIZE, &mut conn);
-        // entries.truncate(1300);
+        let entries = diff_log::query_diff_entries_after_seq(
+            processed_up_to_seq,
+            current_page_size_seqs,
+            &mut conn,
+        );
+
         let unique_seqs: HashSet<_> = entries.iter().map(|entry| entry.seq).collect();
         let num_changes = unique_seqs.len() as i64;
 
@@ -90,7 +96,6 @@ fn main() {
                             last_seq_in_page,
                             &mut trans_conn,
                         );
-                        // Err(diesel::result::Error)
                         Ok((res, true))
                     }
                     Err(err) => {
@@ -134,12 +139,27 @@ fn main() {
                 session_start_time,
             },
         );
-        batches_pb.update(1);
 
-        // tmp += 1;
-        // if tmp == 4 {
-        //     break;
-        // }
+        batches_pb.update(num_entries.try_into().unwrap());
+
+        batch_size_history.push_front((num_entries, num_changes));
+        if batch_size_history.len() == history_size + 1 {
+            batch_size_history.pop_back();
+        }
+
+        if batch_size_history.len() == history_size {
+            let entries_sum = batch_size_history
+                .iter()
+                .fold(0, |acc, (n_entries, _n_changes)| acc + n_entries);
+
+            let changes_sum = batch_size_history
+                .iter()
+                .fold(0, |acc, (_n_entries, n_changes)| acc + n_changes);
+
+            let ratio_est = (entries_sum as f64) / (changes_sum as f64);
+            let page_size_seq_est = ((TARGET_PAGE_SIZE_NUM_ENTRIES as f64) / ratio_est) as i64;
+            current_page_size_seqs = page_size_seq_est.max(16).min(16384);
+        }
     }
 
     let session_end_time = Utc::now();
@@ -166,8 +186,8 @@ where
 {
     let mut read_bytes = 0;
 
-    // let entries_iter = tqdm!(entries.into_iter(), desc = "Current batch", position = 1);
-    let entries_iter = entries.into_iter();
+    let entries_iter = tqdm!(entries.into_iter(), desc = "Current batch", position = 1);
+    // let entries_iter = entries.into_iter();
     for e in entries_iter {
         read_bytes += entry_num_bytes(&e);
         let seq = e.seq;

@@ -1,4 +1,4 @@
-use std::{num::NonZeroUsize, rc::Rc};
+use std::{collections::HashSet, num::NonZeroUsize, rc::Rc};
 
 use deepsize::DeepSizeOf;
 use lru::LruCache;
@@ -16,7 +16,6 @@ struct DependencyState {
     dev_freq_count: i64,
     peer_freq_count: i64,
     optional_freq_count: i64,
-    need_flush: bool,
 }
 
 impl DependencyState {
@@ -35,6 +34,7 @@ pub struct RelationalDbAccessor {
 
     // hash --> state
     dependency_states_cache: LruCache<String, DependencyState>,
+    need_flush_set: HashSet<String>,
 }
 
 impl RelationalDbAccessor {
@@ -44,6 +44,7 @@ impl RelationalDbAccessor {
             package_data_cache: LruCache::new(NonZeroUsize::new(1_073_741_824).unwrap()), // 1GB max memory usage
             version_id_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()), // about 1 million entries
             dependency_states_cache: LruCache::new(NonZeroUsize::new(0x1000000).unwrap()), // about 16 million entries
+            need_flush_set: HashSet::with_capacity(0x1000000),
         }
     }
 }
@@ -187,8 +188,6 @@ impl RelationalDbAccessor {
     where
         R: QueryRunner,
     {
-        // return 5;
-
         // If the dep exists in the cache, we just increment the cache only,
         // and mark it for flushing later
         if let Some(mem_state) = self
@@ -196,8 +195,9 @@ impl RelationalDbAccessor {
             .get_mut(dep.get_md5digest_with_version())
         {
             // println!("dep cache hit");
+            self.need_flush_set
+                .insert(dep.get_md5digest_with_version().to_string());
             mem_state.add_counts(dep);
-            mem_state.need_flush = true;
             return mem_state.id;
         }
         // println!("dep cache miss");
@@ -212,25 +212,25 @@ impl RelationalDbAccessor {
         // in which we increment counts, and then get back ID and all the updated counts
         let (id, prod_freq_count, dev_freq_count, peer_freq_count, optional_freq_count) =
             postgres_db::dependencies::insert_dependency_inc_counts(conn, dep);
-        // let (id, prod_freq_count, dev_freq_count, peer_freq_count, optional_freq_count) =
-        //     (5, 1, 1, 1, 1);
         let new_state = DependencyState {
             id,
             prod_freq_count,
             dev_freq_count,
             peer_freq_count,
             optional_freq_count,
-            // initially not marked as needing flush, since hasn't received mem only writes yet
-            need_flush: false,
         };
+        // initially not marked as needing flush, since hasn't received mem only writes yet,
+        // so we don't add it to self.need_flush_set
 
-        if let Some((_evicted_hash, evicted_state)) =
+        if let Some((evicted_hash, evicted_state)) =
             self.dependency_states_cache.push(copy_of_hash, new_state)
         {
             // println!("Evicting cache entry");
 
             // In the case that we had to evict an entry, we MUST flush it to the DB (if needed)
-            if evicted_state.need_flush {
+            if self.need_flush_set.contains(&evicted_hash) {
+                self.need_flush_set.remove(&evicted_hash);
+
                 // println!("Flushing evicted cache entry");
 
                 postgres_db::dependencies::set_dependency_counts(
@@ -255,53 +255,31 @@ impl RelationalDbAccessor {
     {
         // println!("flushing caches");
 
-        // Option 1: Flush everything, and clear the cache
-        // self.dependency_states_cache
-        //     .iter()
-        //     .filter_map(|(_, state)| if state.need_flush { Some(state) } else { None })
-        //     .for_each(|state| {
-        //         postgres_db::dependencies::set_dependency_counts(
-        //             conn,
-        //             state.id,
-        //             (
-        //                 state.prod_freq_count,
-        //                 state.dev_freq_count,
-        //                 state.peer_freq_count,
-        //                 state.optional_freq_count,
-        //             ),
-        //         )
-        //     });
-        // self.dependency_states_cache.clear();
+        // Flush everything, don't clear the cache, and mark everything as flushed
 
-        // Option 2: Flush everything, don't clear the cache, and mark everything as flushed
-        self.dependency_states_cache
-            .iter_mut()
-            .filter_map(|(_, state)| if state.need_flush { Some(state) } else { None })
-            .for_each(|state| {
-                postgres_db::dependencies::set_dependency_counts(
-                    conn,
-                    state.id,
-                    (
-                        state.prod_freq_count,
-                        state.dev_freq_count,
-                        state.peer_freq_count,
-                        state.optional_freq_count,
-                    ),
-                );
-                state.need_flush = false;
-            });
+        self.need_flush_set.iter().for_each(|hash_needs_flush| {
+            let state = self
+                .dependency_states_cache
+                .peek(hash_needs_flush)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "BUG: {} needs to be flushed, but isn't in the cache",
+                        hash_needs_flush
+                    )
+                });
+            postgres_db::dependencies::set_dependency_counts(
+                conn,
+                state.id,
+                (
+                    state.prod_freq_count,
+                    state.dev_freq_count,
+                    state.peer_freq_count,
+                    state.optional_freq_count,
+                ),
+            );
+        });
+        self.need_flush_set.clear();
     }
-
-    // pub fn insert_or_inc_dependencies<R>(
-    //     &mut self,
-    //     conn: &mut R,
-    //     deps: Vec<NewDependency>,
-    // ) -> Vec<i64>
-    // where
-    //     R: QueryRunner,
-    // {
-    //     postgres_db::dependencies::insert_dependencies(conn, deps)
-    // }
 }
 
 impl RelationalDbAccessor {
