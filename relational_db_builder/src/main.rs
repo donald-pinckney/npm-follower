@@ -9,7 +9,7 @@ use metrics_logging::{
     MetricsLoggerTrait, RelationalDbBatchCompleteMetrics, RelationalDbEndSessionMetrics,
     RelationalDbPanicMetrics, RelationalDbStartSessionMetrics,
 };
-use postgres_db::connection::{DbConnection, DbConnectionInTransaction, QueryRunner};
+use postgres_db::connection::{DbConnection, QueryRunner};
 use postgres_db::diff_log::DiffLogEntry;
 use postgres_db::diff_log::{self, DiffLogInstruction};
 use postgres_db::internal_state;
