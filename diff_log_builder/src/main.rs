@@ -61,7 +61,7 @@ fn main() {
                             last_seq_in_page,
                             &mut trans_conn,
                         );
-                        Ok(res)
+                        Ok((res, true))
                     }
                     Err(err) => {
                         metrics_logger.log_diff_log_builder_panic(DiffLogPanicMetrics {
