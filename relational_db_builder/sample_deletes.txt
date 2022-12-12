@@ -1,0 +1,24 @@
+    id    |   seq    |          package_name          |       dt       | package_only_packument |      v       | version_packument 
+----------+----------+--------------------------------+----------------+------------------------+--------------+-------------------
+ 28959304 | 12943620 | sharepoint-fhellwig            | delete_version |                        | (0,0,5,,)    | 
+ 29160268 | 12947856 | singlePage                     | delete_version |                        | (1,1,0,,)    | 
+ 29160269 | 12947856 | singlePage                     | delete_version |                        | (1,1,2,,)    | 
+ 29160270 | 12947856 | singlePage                     | delete_version |                        | (1,1,3,,)    | 
+ 29160986 | 12947880 | node-dvnr                      | delete_version |                        | (10,30,11,,) | 
+ 29161027 | 12947886 | ecobeeesss                     | delete_version |                        | (10,30,11,,) | 
+ 29161470 | 12947911 | yoti_2020                      | delete_version |                        | (0,0,1,,)    | 
+ 29161472 | 12947911 | yoti_2020                      | delete_version |                        | (1,0,0,,)    | 
+ 29161501 | 12947920 | ai-aws-manager                 | delete_version |                        | (99,99,99,,) | 
+ 29161504 | 12947921 | ai-cluster-manager             | delete_version |                        | (99,99,99,,) | 
+ 29161507 | 12947922 | atlassian-sketch-plugin        | delete_version |                        | (99,99,99,,) | 
+ 29161955 | 12947961 | angieslist-visitor-app-common  | delete_version |                        | (2,0,772,,)  | 
+ 29199915 | 12949103 | chromaway-postchain-assignment | delete_version |                        | (1,0,0,,)    | 
+ 29245712 | 12950674 | cli-plugin-xxx3                | delete_version |                        | (0,0,1,,)    | 
+ 29245713 | 12950674 | cli-plugin-xxx3                | delete_version |                        | (0,0,2,,)    | 
+ 29371180 | 12952829 | create-pp-test                 | delete_version |                        | (1,0,0,,)    | 
+ 29371181 | 12952829 | create-pp-test                 | delete_version |                        | (1,0,1,,)    | 
+ 29371182 | 12952829 | create-pp-test                 | delete_version |                        | (1,0,2,,)    | 
+ 29379302 | 12953269 | permacast-airdrop-farmers      | delete_version |                        | (0,0,1,,)    | 
+ 29490320 | 12955549 | single-quote-react-component   | delete_version |                        | (1,0,0,,)    | 
+(20 rows)
+

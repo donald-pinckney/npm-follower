@@ -10,8 +10,12 @@ pub mod sql_types {
     pub struct InternalDiffLogVersionState;
 
     #[derive(diesel::sql_types::SqlType)]
-    #[diesel(postgres_type(name = "package_metadata_struct"))]
-    pub struct PackageMetadataStruct;
+    #[diesel(postgres_type(name = "package_state"))]
+    pub struct PackageState;
+
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "package_state_enum"))]
+    pub struct PackageStateEnum;
 
     #[derive(diesel::sql_types::SqlType)]
     #[diesel(postgres_type(name = "parsed_spec_struct"))]
@@ -24,6 +28,14 @@ pub mod sql_types {
     #[derive(diesel::sql_types::SqlType, diesel::query_builder::QueryId)]
     #[diesel(postgres_type(name = "semver_struct"))]
     pub struct SemverStruct;
+
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "version_state"))]
+    pub struct VersionState;
+
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "version_state_enum"))]
+    pub struct VersionStateEnum;
 }
 
 diesel::table! {
@@ -44,8 +56,10 @@ diesel::table! {
         dst_package_id_if_exists -> Nullable<Int8>,
         raw_spec -> Jsonb,
         spec -> ParsedSpecStruct,
-        secret -> Bool,
-        freq_count -> Int8,
+        prod_freq_count -> Int8,
+        dev_freq_count -> Int8,
+        peer_freq_count -> Int8,
+        optional_freq_count -> Int8,
         md5digest -> Text,
         md5digest_with_version -> Text,
     }
@@ -119,42 +133,50 @@ diesel::table! {
 
 diesel::table! {
     use diesel::sql_types::*;
-    use super::sql_types::PackageMetadataStruct;
+    use super::sql_types::PackageStateEnum;
+    use super::sql_types::PackageState;
 
     packages (id) {
         id -> Int8,
         name -> Text,
-        metadata -> PackageMetadataStruct,
-        secret -> Bool,
+        current_package_state_type -> PackageStateEnum,
+        package_state_history -> Array<PackageState>,
+        dist_tag_latest_version -> Nullable<Int8>,
+        created -> Nullable<Timestamptz>,
+        modified -> Nullable<Timestamptz>,
+        other_dist_tags -> Nullable<Jsonb>,
+        other_time_data -> Nullable<Jsonb>,
+        unpublished_data -> Nullable<Jsonb>,
     }
 }
 
 diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::SemverStruct;
+    use super::sql_types::VersionStateEnum;
+    use super::sql_types::VersionState;
     use super::sql_types::RepoInfoStruct;
 
     versions (id) {
         id -> Int8,
         package_id -> Int8,
         semver -> SemverStruct,
+        current_version_state_type -> VersionStateEnum,
+        version_state_history -> Array<VersionState>,
         tarball_url -> Text,
         repository_raw -> Nullable<Jsonb>,
         repository_parsed -> Nullable<RepoInfoStruct>,
         created -> Timestamptz,
-        deleted -> Bool,
         extra_metadata -> Jsonb,
         prod_dependencies -> Array<Int8>,
         dev_dependencies -> Array<Int8>,
         peer_dependencies -> Array<Int8>,
         optional_dependencies -> Array<Int8>,
-        secret -> Bool,
     }
 }
 
 diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
 diesel::joinable!(diff_log -> change_log (seq));
-diesel::joinable!(versions -> packages (package_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     change_log,

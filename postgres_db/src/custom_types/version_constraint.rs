@@ -25,7 +25,6 @@ impl<'a> FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjunctsOwned {
     fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let (stuff,): (Vec<VersionComparator>,) =
             FromSql::<Record<(Array<VersionComparatorSql>,)>, Pg>::from_sql(bytes)?;
-        // todo!()
         Ok(ConstraintConjunctsOwned(stuff))
     }
 }
@@ -36,7 +35,6 @@ impl ToSql<Array<ConstraintConjunctsSql>, Pg> for VersionConstraint {
     fn to_sql<'a>(&'a self, out: &mut Output<'a, '_, Pg>) -> serialize::Result {
         let disjuncts: Vec<_> = self.0.iter().map(ConstraintConjunctsBorrowed).collect();
         let mut stuff = out.reborrow();
-        // todo!()
         // Failure of type inference :(
         ToSql::<Array<ConstraintConjunctsSql>, Pg>::to_sql(&disjuncts, &mut stuff)
     }

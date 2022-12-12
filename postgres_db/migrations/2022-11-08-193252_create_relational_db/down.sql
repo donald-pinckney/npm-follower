@@ -1,10 +1,20 @@
-DROP INDEX dependencies_alias_package_name_idx;
+DROP INDEX dependencies_dst_package_id_if_exists_idx;
+-- DROP INDEX dependencies_alias_package_name_idx;
 DROP INDEX dependencies_md5digest_idx;
-DROP INDEX dependencies_md5digest_with_version_idx;
+-- DROP INDEX dependencies_md5digest_with_version_idx;
+
 DROP INDEX versions_package_id_idx;
 
+ALTER TABLE packages DROP CONSTRAINT fkey_packages_dist_tag_latest_version;
+ALTER TABLE dependencies DROP CONSTRAINT dependencies_md5digest_with_version_unique;
 DROP TABLE packages, versions, dependencies CASCADE;
 
+
+DROP DOMAIN     package_state;
+DROP TYPE       package_state_struct;
+DROP DOMAIN     version_state;
+DROP TYPE       version_state_struct;
+DROP TYPE       version_state_enum;
 DROP DOMAIN     repo_info;
 DROP TYPE       repo_info_struct;
 DROP TYPE       repo_host_enum;

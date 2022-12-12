@@ -124,23 +124,23 @@ pub enum VersionComparator {
 #[diesel(sql_type = Array<ConstraintConjunctsSql>)]
 pub struct VersionConstraint(pub Vec<Vec<VersionComparator>>);
 
-#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone)]
-#[diesel(sql_type = crate::schema::sql_types::PackageMetadataStruct)]
-pub enum PackageMetadata {
-    Normal {
-        dist_tag_latest_version: Option<i64>,
-        created: DateTime<Utc>,
-        modified: DateTime<Utc>,
-        other_dist_tags: BTreeMap<String, String>,
-    },
-    Unpublished {
-        created: DateTime<Utc>,
-        modified: DateTime<Utc>,
-        other_time_data: BTreeMap<Semver, DateTime<Utc>>,
-        unpublished_data: serde_json::Value,
-    },
-    Deleted,
-}
+// #[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone)]
+// #[diesel(sql_type = crate::schema::sql_types::PackageMetadataStruct)]
+// pub enum PackageMetadata {
+//     Normal {
+//         dist_tag_latest_version: Option<i64>,
+//         created: DateTime<Utc>,
+//         modified: DateTime<Utc>,
+//         other_dist_tags: BTreeMap<String, String>,
+//     },
+//     Unpublished {
+//         created: DateTime<Utc>,
+//         modified: DateTime<Utc>,
+//         other_time_data: BTreeMap<Semver, DateTime<Utc>>,
+//         unpublished_data: serde_json::Value,
+//     },
+//     Deleted,
+// }
 
 #[derive(Debug, FromSqlRow, AsExpression, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[diesel(sql_type = crate::schema::sql_types::RepoInfoStruct)]
@@ -275,6 +275,9 @@ mod diff_log;
 mod download_failed;
 mod helpers;
 mod package_metadata;
+pub use package_metadata::{
+    PackageStateTimePoint, PackageStateType, VersionStateTimePoint, VersionStateType,
+};
 mod parsed_spec;
 mod repo_info;
 mod semver;

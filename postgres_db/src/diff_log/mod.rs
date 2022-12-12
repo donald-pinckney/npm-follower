@@ -165,18 +165,22 @@ pub fn query_diff_entries_after_seq(
 
     let seq_subquery = change_log
         .filter(change_log::seq.gt(after_seq))
-        .limit(limit_size)
-        .order(change_log::seq);
+        .select(change_log::seq)
+        .order(change_log::seq)
+        .limit(limit_size);
 
-    let join_query = seq_subquery.inner_join(diff_log::table).select((
-        diff_log::id,
-        diff_log::seq,
-        diff_log::package_name,
-        diff_log::dt,
-        diff_log::package_only_packument,
-        diff_log::v,
-        diff_log::version_packument,
-    ));
+    let join_query = diff_log::table
+        .filter(diff_log::seq.eq_any(seq_subquery))
+        .select((
+            diff_log::id,
+            diff_log::seq,
+            diff_log::package_name,
+            diff_log::dt,
+            diff_log::package_only_packument,
+            diff_log::v,
+            diff_log::version_packument,
+        ))
+        .order(diff_log::id);
 
     let rows: Vec<DiffLogRow> = conn.load(join_query).unwrap_or_else(|err| {
         panic!(

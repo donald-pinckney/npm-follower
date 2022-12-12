@@ -1,4 +1,7 @@
+use kdam::{tqdm, BarExt};
 use std::any::Any;
+use std::collections::{HashSet, VecDeque};
+use std::panic::{self, AssertUnwindSafe};
 use std::time::{Duration, Instant};
 
 use chrono::Utc;
@@ -6,14 +9,15 @@ use metrics_logging::{
     MetricsLoggerTrait, RelationalDbBatchCompleteMetrics, RelationalDbEndSessionMetrics,
     RelationalDbPanicMetrics, RelationalDbStartSessionMetrics,
 };
-use postgres_db::connection::{DbConnection, DbConnectionInTransaction};
-use postgres_db::diff_log;
+use postgres_db::connection::{DbConnection, QueryRunner};
 use postgres_db::diff_log::DiffLogEntry;
+use postgres_db::diff_log::{self, DiffLogInstruction};
 use postgres_db::internal_state;
 
+use relational_db_builder::EntryProcessor;
 use utils::check_no_concurrent_processes;
 
-const PAGE_SIZE: i64 = 1024;
+const TARGET_PAGE_SIZE_NUM_ENTRIES: i64 = 32000;
 
 fn main() {
     check_no_concurrent_processes("relational_db_builder");
@@ -24,10 +28,14 @@ fn main() {
     let mut processed_up_to_seq =
         internal_state::query_relational_processed_seq(&mut conn).unwrap_or(0);
 
+    println!("Initial queries:");
+    println!("query_num_changes_after_seq");
     let num_changes_total =
         postgres_db::change_log::query_num_changes_after_seq(processed_up_to_seq, &mut conn);
+    println!("query_num_diff_entries_after_seq");
     let num_entries_total =
         diff_log::query_num_diff_entries_after_seq(processed_up_to_seq, &mut conn);
+    println!("Initial queries DONE!");
 
     let mut num_changes_so_far = 0;
     let mut num_entries_so_far = 0;
@@ -42,13 +50,32 @@ fn main() {
         session_num_diff_entries: num_entries_total,
     });
 
+    let mut entry_processor = EntryProcessor::new();
+
+    let mut batches_pb = tqdm!(
+        total = num_entries_total.try_into().unwrap(),
+        desc = "All entries",
+        position = 0
+    );
+
+    // Initially we start the page size at 256
+    let mut current_page_size_seqs = 256;
+    let history_size = 4;
+    let mut batch_size_history: VecDeque<(i64, i64)> = VecDeque::new();
+
     // TODO: Extract this into function (duplicated in download_queuer/src/main.rs)
     loop {
         let batch_start = Instant::now();
         let batch_start_time = Utc::now();
 
-        let entries =
-            diff_log::query_diff_entries_after_seq(processed_up_to_seq, PAGE_SIZE, &mut conn);
+        let entries = diff_log::query_diff_entries_after_seq(
+            processed_up_to_seq,
+            current_page_size_seqs,
+            &mut conn,
+        );
+
+        let unique_seqs: HashSet<_> = entries.iter().map(|entry| entry.seq).collect();
+        let num_changes = unique_seqs.len() as i64;
 
         let read_duration = batch_start.elapsed();
 
@@ -63,13 +90,13 @@ fn main() {
 
         let process_entries_metrics = conn
             .run_psql_transaction(|mut trans_conn| {
-                match process_entries(&mut trans_conn, entries) {
+                match process_entries(&mut entry_processor, &mut trans_conn, entries) {
                     Ok(res) => {
                         internal_state::set_relational_processed_seq(
                             last_seq_in_page,
                             &mut trans_conn,
                         );
-                        Ok(res)
+                        Ok((res, true))
                     }
                     Err(err) => {
                         metrics_logger.log_relational_db_builder_panic(RelationalDbPanicMetrics {
@@ -84,7 +111,6 @@ fn main() {
             })
             .unwrap();
 
-        let num_changes = process_entries_metrics.num_changes;
         num_changes_so_far += num_changes;
 
         processed_up_to_seq = last_seq_in_page;
@@ -114,8 +140,25 @@ fn main() {
             },
         );
 
-        if num_changes < PAGE_SIZE {
-            break;
+        batches_pb.update(num_entries.try_into().unwrap());
+
+        batch_size_history.push_front((num_entries, num_changes));
+        if batch_size_history.len() == history_size + 1 {
+            batch_size_history.pop_back();
+        }
+
+        if batch_size_history.len() == history_size {
+            let entries_sum = batch_size_history
+                .iter()
+                .fold(0, |acc, (n_entries, _n_changes)| acc + n_entries);
+
+            let changes_sum = batch_size_history
+                .iter()
+                .fold(0, |acc, (_n_entries, n_changes)| acc + n_changes);
+
+            let ratio_est = (entries_sum as f64) / (changes_sum as f64);
+            let page_size_seq_est = ((TARGET_PAGE_SIZE_NUM_ENTRIES as f64) / ratio_est) as i64;
+            current_page_size_seqs = page_size_seq_est.max(16).min(16384);
         }
     }
 
@@ -133,56 +176,56 @@ fn main() {
     })
 }
 
-pub fn process_entries(
-    conn: &mut DbConnectionInTransaction,
+pub fn process_entries<R>(
+    processor: &mut EntryProcessor,
+    conn: &mut R,
     entries: Vec<DiffLogEntry>,
-) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError> {
-    todo!()
+) -> Result<ProcessEntrySuccessMetrics, ProcessEntryError>
+where
+    R: QueryRunner,
+{
+    let mut read_bytes = 0;
 
-    // let mut state_manager = DiffStateManager::new();
-    // let mut new_diff_entries: Vec<NewDiffLogEntryWithHash> = Vec::new();
+    let entries_iter = tqdm!(entries.into_iter(), desc = "Current batch", position = 1);
+    // let entries_iter = entries.into_iter();
+    for e in entries_iter {
+        read_bytes += entry_num_bytes(&e);
+        let seq = e.seq;
+        let entry_id = e.id;
+        let package = e.package_name;
+        let instr = e.instr;
+        panic::catch_unwind(AssertUnwindSafe(|| {
+            processor.process_entry(conn, package, instr, seq, entry_id)
+        }))
+        .map_err(|err| {
+            let message = panic_as_string(&err);
+            ProcessEntryError {
+                seq,
+                entry_id,
+                message,
+                err,
+            }
+        })?;
+    }
 
-    // let mut read_bytes = 0;
-    // let mut write_bytes = 0;
+    processor.flush_caches(conn);
 
-    // for c in changes {
-    //     let seq = c.seq;
+    Ok(ProcessEntrySuccessMetrics {
+        read_bytes,
+        write_bytes: 0,
+        write_duration: Duration::from_secs(0),
+    })
+}
 
-    //     let result = panic::catch_unwind(AssertUnwindSafe(|| {
-    //         process_change(conn, c, &mut state_manager, &mut new_diff_entries)
-    //     }));
-
-    //     let (rb, wb) = match result {
-    //         Err(err) => {
-    //             let err_message = format!("Failed on seq: {}.\n:{:?}", seq, err);
-    //             return Result::Err(ProcessChangeError {
-    //                 seq,
-    //                 message: err_message,
-    //                 err,
-    //             });
-    //         }
-    //         Ok(r) => r,
-    //     };
-
-    //     read_bytes += rb;
-    //     write_bytes += wb;
-    // }
-
-    // let write_start = Instant::now();
-
-    // state_manager.flush_to_db(conn);
-    // diff_log::insert_diff_log_entries(
-    //     new_diff_entries.into_iter().map(|x| x.entry).collect(),
-    //     conn,
-    // );
-
-    // let write_duration = write_start.elapsed();
-
-    // Ok(ProcessChangeSuccessMetrics {
-    //     read_bytes,
-    //     write_bytes,
-    //     write_duration,
-    // })
+fn entry_num_bytes(e: &DiffLogEntry) -> usize {
+    match &e.instr {
+        DiffLogInstruction::CreatePackage(pack) | DiffLogInstruction::UpdatePackage(pack) => {
+            serde_json::to_vec(pack).unwrap().len()
+        }
+        DiffLogInstruction::CreateVersion(_, vpack)
+        | DiffLogInstruction::UpdateVersion(_, vpack) => serde_json::to_vec(vpack).unwrap().len(),
+        _ => 0,
+    }
 }
 
 #[derive(Debug)]
@@ -194,8 +237,36 @@ pub struct ProcessEntryError {
 }
 
 pub struct ProcessEntrySuccessMetrics {
-    pub num_changes: i64,
     pub read_bytes: usize,
     pub write_bytes: usize,
     pub write_duration: Duration,
+}
+
+fn panic_as_string(p: &Box<dyn Any + Send>) -> String {
+    fn swap<A, B>(x: Result<A, B>) -> Result<B, A> {
+        match x {
+            Ok(a) => Err(a),
+            Err(b) => Ok(b),
+        }
+    }
+
+    fn panic_as_string_result_err(p: &Box<dyn Any + Send>) -> Result<(), String> {
+        swap(
+            p.as_ref()
+                .downcast_ref::<&str>()
+                .map(|s| s.to_string())
+                .ok_or(p),
+        )?;
+
+        swap(
+            p.as_ref()
+                .downcast_ref::<String>()
+                .map(|s| s.to_string())
+                .ok_or(p),
+        )?;
+
+        Err("Unknown panic type".to_string())
+    }
+
+    panic_as_string_result_err(p).unwrap_err()
 }

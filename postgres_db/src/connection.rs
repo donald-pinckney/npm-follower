@@ -31,12 +31,29 @@ impl DbConnection {
 impl DbConnection {
     pub fn run_psql_transaction<F, R>(&mut self, transaction: F) -> Result<R, diesel::result::Error>
     where
-        F: FnOnce(DbConnectionInTransaction) -> Result<R, diesel::result::Error>,
+        F: FnOnce(DbConnectionInTransaction) -> Result<(R, bool), diesel::result::Error>,
     {
-        self.conn.transaction(|trans_conn| {
-            let borrowed_self = DbConnectionInTransaction { conn: trans_conn };
-            transaction(borrowed_self)
-        })
+        let mut res: Option<R> = None;
+
+        let maybe_err = self
+            .conn
+            .transaction(|trans_conn| {
+                let borrowed_self = DbConnectionInTransaction { conn: trans_conn };
+                let (result, should_commit) = transaction(borrowed_self)?;
+
+                res = Some(result);
+                if !should_commit {
+                    return Err(diesel::result::Error::RollbackTransaction);
+                }
+                Ok(())
+            })
+            .err();
+
+        if let Some(r) = res {
+            Ok(r)
+        } else {
+            Err(maybe_err.unwrap())
+        }
     }
 }
 

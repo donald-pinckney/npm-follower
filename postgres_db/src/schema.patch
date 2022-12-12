@@ -1,8 +1,8 @@
 diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
-index 665d05c..da5ae54 100644
+index 5912769..6b4dda6 100644
 --- a/postgres_db/src/schema.rs
 +++ b/postgres_db/src/schema.rs
-@@ -18,13 +18,13 @@ pub mod sql_types {
+@@ -22,13 +22,13 @@ pub mod sql_types {
      pub struct ParsedSpecStruct;
  
      #[derive(diesel::sql_types::SqlType)]
@@ -13,11 +13,11 @@ index 665d05c..da5ae54 100644
 +    #[derive(diesel::sql_types::SqlType, diesel::query_builder::QueryId)]
      #[diesel(postgres_type(name = "semver_struct"))]
      pub struct SemverStruct;
- }
  
- diesel::table! {
-     change_log (seq) {
-@@ -103,13 +103,13 @@ diesel::table! {
+     #[derive(diesel::sql_types::SqlType)]
+     #[diesel(postgres_type(name = "version_state"))]
+     pub struct VersionState;
+@@ -114,13 +114,13 @@ diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::InternalDiffLogVersionState;
  
@@ -32,12 +32,34 @@ index 665d05c..da5ae54 100644
  diesel::table! {
      internal_state (key) {
          key -> Varchar,
-@@ -141,16 +141,16 @@ diesel::table! {
+@@ -134,13 +134,13 @@ diesel::table! {
+     use super::sql_types::PackageState;
+ 
+     packages (id) {
+         id -> Int8,
+         name -> Text,
+         current_package_state_type -> PackageStateEnum,
+-        package_state_history -> Array<Nullable<PackageState>>,
++        package_state_history -> Array<PackageState>,
+         dist_tag_latest_version -> Nullable<Int8>,
+         created -> Nullable<Timestamptz>,
+         modified -> Nullable<Timestamptz>,
+         other_dist_tags -> Nullable<Jsonb>,
+         other_time_data -> Nullable<Jsonb>,
+         unpublished_data -> Nullable<Jsonb>,
+@@ -156,22 +156,22 @@ diesel::table! {
+ 
+     versions (id) {
+         id -> Int8,
+         package_id -> Int8,
+         semver -> SemverStruct,
+         current_version_state_type -> VersionStateEnum,
+-        version_state_history -> Array<Nullable<VersionState>>,
++        version_state_history -> Array<VersionState>,
          tarball_url -> Text,
          repository_raw -> Nullable<Jsonb>,
          repository_parsed -> Nullable<RepoInfoStruct>,
          created -> Timestamptz,
-         deleted -> Bool,
          extra_metadata -> Jsonb,
 -        prod_dependencies -> Array<Nullable<Int8>>,
 -        dev_dependencies -> Array<Nullable<Int8>>,
@@ -47,9 +69,9 @@ index 665d05c..da5ae54 100644
 +        dev_dependencies -> Array<Int8>,
 +        peer_dependencies -> Array<Int8>,
 +        optional_dependencies -> Array<Int8>,
-         secret -> Bool,
      }
  }
  
  diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
  diesel::joinable!(diff_log -> change_log (seq));
+ 
