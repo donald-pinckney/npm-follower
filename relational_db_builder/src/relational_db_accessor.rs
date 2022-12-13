@@ -1,13 +1,14 @@
 use std::{collections::HashSet, num::NonZeroUsize, rc::Rc};
 
+use chrono::{DateTime, Utc};
 use deepsize::DeepSizeOf;
 use lru::LruCache;
 use postgres_db::{
     connection::QueryRunner,
     custom_types::Semver,
-    dependencies::NewDependency,
+    dependencies::{Dependency, NewDependency},
     packages::{NewPackage, Package, PackageUpdate},
-    versions::NewVersion,
+    versions::{NewVersion, Version},
 };
 
 struct DependencyState {
@@ -247,6 +248,29 @@ impl RelationalDbAccessor {
         }
 
         id
+    }
+
+    pub fn get_version_by_id<R: QueryRunner>(&self, conn: &mut R, version_id: i64) -> Version {
+        postgres_db::versions::get_version_by_id(conn, version_id)
+    }
+
+    pub fn get_dependency_by_id<R: QueryRunner>(
+        &self,
+        conn: &mut R,
+        dependency_id: i64,
+    ) -> Dependency {
+        postgres_db::dependencies::get_dependency_by_id(conn, dependency_id)
+    }
+
+    pub fn delete_version<R: QueryRunner>(
+        &mut self,
+        conn: &mut R,
+        version_id: i64,
+        seq: i64,
+        diff_entry_id: i64,
+        delete_time: Option<DateTime<Utc>>,
+    ) {
+        postgres_db::versions::delete_version(conn, version_id, seq, diff_entry_id, delete_time);
     }
 
     pub fn flush_caches<R>(&mut self, conn: &mut R)

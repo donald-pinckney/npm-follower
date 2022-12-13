@@ -39,9 +39,62 @@ pub struct Dependency {
     pub dst_package_id_if_exists: Option<i64>,
     pub raw_spec: Value,
     pub spec: ParsedSpec,
-    pub freq_count: i64,
+    pub prod_freq_count: i64,
+    pub dev_freq_count: i64,
+    pub peer_freq_count: i64,
+    pub optional_freq_count: i64,
     pub md5digest: String,
     pub md5digest_with_version: String,
+}
+
+impl Dependency {
+    pub fn mark_as_delete(self, dep_type: DependencyType) -> Dependency {
+        match dep_type {
+            DependencyType::Prod => Dependency {
+                prod_freq_count: -1,
+                dev_freq_count: 0,
+                peer_freq_count: 0,
+                optional_freq_count: 0,
+                ..self
+            },
+            DependencyType::Dev => Dependency {
+                prod_freq_count: 0,
+                dev_freq_count: -1,
+                peer_freq_count: 0,
+                optional_freq_count: 0,
+                ..self
+            },
+            DependencyType::Peer => Dependency {
+                prod_freq_count: 0,
+                dev_freq_count: 0,
+                peer_freq_count: -1,
+                optional_freq_count: 0,
+                ..self
+            },
+            DependencyType::Optional => Dependency {
+                prod_freq_count: 0,
+                dev_freq_count: 0,
+                peer_freq_count: 0,
+                optional_freq_count: -1,
+                ..self
+            },
+        }
+    }
+
+    pub fn as_new(self) -> NewDependency {
+        NewDependency {
+            dst_package_name: self.dst_package_name,
+            dst_package_id_if_exists: self.dst_package_id_if_exists,
+            raw_spec: self.raw_spec,
+            spec: self.spec,
+            prod_freq_count: self.prod_freq_count,
+            dev_freq_count: self.dev_freq_count,
+            peer_freq_count: self.peer_freq_count,
+            optional_freq_count: self.optional_freq_count,
+            md5digest: self.md5digest,
+            md5digest_with_version: self.md5digest_with_version,
+        }
+    }
 }
 
 impl NewDependency {
@@ -185,4 +238,14 @@ where
         .execute(update_query)
         .expect("Error updating dependency counts");
     assert_eq!(rows, 1);
+}
+
+pub fn get_dependency_by_id<R>(conn: &mut R, dep_id: i64) -> Dependency
+where
+    R: QueryRunner,
+{
+    use super::schema::dependencies::dsl::*;
+
+    conn.get_result(dependencies.filter(id.eq(dep_id)))
+        .expect("Error getting dep by id")
 }
