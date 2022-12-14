@@ -511,16 +511,22 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
             let mut file = tokio::fs::File::open(&filepath).await?;
             let mut bytes = vec![];
             file.read_to_end(&mut bytes).await?;
-            Ok((filepath.to_string(), bytes))
+            let filename = std::path::Path::new(&filepath)
+                .file_name()
+                .ok_or(ClientError::IoError)?
+                .to_str()
+                .ok_or(ClientError::IoError)?
+                .to_string();
+            Ok((filename, bytes))
         }));
     }
 
     let mut blob_entries = vec![];
     let mut blob_bytes = vec![];
     for handle in handles {
-        let (filepath, bytes) = handle.await.unwrap()?;
+        let (filename, bytes) = handle.await.unwrap()?;
         let blob_entry = BlobEntry {
-            key: filepath.clone(),
+            key: filename,
             num_bytes: bytes.len() as u64,
         };
         blob_entries.push(blob_entry);
