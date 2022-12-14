@@ -25,7 +25,7 @@ pub mod sql_types {
     #[diesel(postgres_type(name = "repo_info_struct"))]
     pub struct RepoInfoStruct;
 
-    #[derive(diesel::sql_types::SqlType)]
+    #[derive(diesel::sql_types::SqlType, diesel::query_builder::QueryId)]
     #[diesel(postgres_type(name = "semver_struct"))]
     pub struct SemverStruct;
 
@@ -120,7 +120,7 @@ diesel::table! {
     internal_diff_log_state (package_name) {
         package_name -> Text,
         package_only_packument_hash -> Text,
-        versions -> Array<Nullable<InternalDiffLogVersionState>>,
+        versions -> Array<InternalDiffLogVersionState>,
     }
 }
 
@@ -141,7 +141,7 @@ diesel::table! {
         id -> Int8,
         name -> Text,
         current_package_state_type -> PackageStateEnum,
-        package_state_history -> Array<Nullable<PackageState>>,
+        package_state_history -> Array<PackageState>,
         dist_tag_latest_version -> Nullable<Int8>,
         created -> Nullable<Timestamptz>,
         modified -> Nullable<Timestamptz>,
@@ -163,19 +163,20 @@ diesel::table! {
         package_id -> Int8,
         semver -> SemverStruct,
         current_version_state_type -> VersionStateEnum,
-        version_state_history -> Array<Nullable<VersionState>>,
+        version_state_history -> Array<VersionState>,
         tarball_url -> Text,
         repository_raw -> Nullable<Jsonb>,
         repository_parsed -> Nullable<RepoInfoStruct>,
         created -> Timestamptz,
         extra_metadata -> Jsonb,
-        prod_dependencies -> Array<Nullable<Int8>>,
-        dev_dependencies -> Array<Nullable<Int8>>,
-        peer_dependencies -> Array<Nullable<Int8>>,
-        optional_dependencies -> Array<Nullable<Int8>>,
+        prod_dependencies -> Array<Int8>,
+        dev_dependencies -> Array<Int8>,
+        peer_dependencies -> Array<Int8>,
+        optional_dependencies -> Array<Int8>,
     }
 }
 
+diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
 diesel::joinable!(diff_log -> change_log (seq));
 
 diesel::allow_tables_to_appear_in_same_query!(
