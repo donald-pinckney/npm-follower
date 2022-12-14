@@ -109,7 +109,8 @@ diesel::table! {
         signature0_sig -> Nullable<Text>,
         signature0_keyid -> Nullable<Text>,
         npm_signature -> Nullable<Text>,
-        tgz_local_path -> Text,
+        tgz_local_path -> Nullable<Text>,
+        blob_storage_key -> Nullable<Text>,
     }
 }
 
@@ -127,7 +128,8 @@ diesel::table! {
 diesel::table! {
     internal_state (key) {
         key -> Varchar,
-        value -> Int8,
+        int_value -> Nullable<Int8>,
+        string_value -> Nullable<Text>,
     }
 }
 
