@@ -1,0 +1,15 @@
+{
+    "changes": [
+        {
+            "rev": "6-f543a7cb2e4881274bb52aa33e27e337"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "loyash",
+        "_rev": "6-f543a7cb2e4881274bb52aa33e27e337",
+        "name": "loyash"
+    },
+    "id": "loyash",
+    "seq": 4413127
+}

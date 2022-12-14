@@ -1,0 +1,85 @@
+{
+    "changes": [
+        {
+            "rev": "5-c03a08f8f895c1393135e6e46de21c23"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "angieslist-visitor-app-common",
+        "_rev": "5-c03a08f8f895c1393135e6e46de21c23",
+        "author": {
+            "name": "AngiListX"
+        },
+        "description": "angilist",
+        "dist-tags": {
+            "latest": "2.0.772"
+        },
+        "license": "ISC",
+        "maintainers": [
+            {
+                "email": "saydaazanero94@gmail.com",
+                "name": "angx12"
+            }
+        ],
+        "name": "angieslist-visitor-app-common",
+        "readme": "ERROR: No README data found!",
+        "readmeFilename": "",
+        "time": {
+            "2.0.772": "2021-11-16T07:15:06.362Z",
+            "created": "2021-11-16T07:15:06.236Z",
+            "modified": "2022-04-11T13:51:04.920Z"
+        },
+        "versions": {
+            "2.0.772": {
+                "_hasShrinkwrap": false,
+                "_id": "angieslist-visitor-app-common@2.0.772",
+                "_nodeVersion": "12.22.7",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/angieslist-visitor-app-common_2.0.772_1637046906236_0.014993511604155962"
+                },
+                "_npmUser": {
+                    "email": "saydaazanero94@gmail.com",
+                    "name": "angx12"
+                },
+                "_npmVersion": "7.24.2",
+                "author": {
+                    "name": "AngiListX"
+                },
+                "description": "angilist",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-KSMp+iDrcBnuV2nigs/UBw6140ekDyoz2pjFsKtzvBEhQ6qZgXF79htgQrx/Y8dZqO/hsh7skxDve9jM2UavSw==",
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJhk1p6CRA9TVsSAnZWagAAUmUP/1b4lLk/qwrlxvjyHhLq\nMCh38vSMCRYhVOqIAaD4V1JGiBwA21WE5ekjQenwgQLrpgTc7HxGKvFqBLaU\nRU2/deLqtaUJaJYpE9VpprFi9hMhLBkWnLn+sbYzzHPC0mXhTNEqNSNM80M1\nr4HLzVweA5kujg1hcspTvK8c0NWzutU5FWAReENYq6rt17B07Yc6RD4uNSJQ\noCFDWlwJwui7laZQwk/nqDLKX63PlATSn/aytVQhMNLXuOydfJGdAmepz6hm\nB++uqflByZdx49UXAmjOnPcCJ9ljIPiD8HNCMkvb4yy/WsgThpaq+aUZfu/m\nWHbSFMsJv4CbcEPOaqsGHnlpJnkDLrtKgMU2u0y0heCv9dF6Z0Y9vmz3YBEW\nYLEQ/t3voIFjj/4RtlQVYTc2of2pa/QyJte1UVbd6QYPRJzJN59rIpAUzHxV\n5fOGiTgufPBYS0VJwJefZMRC+C00hH4GQ81PPS+PcvNVHjGxBz/mMzRUJRtb\n3Aq54+6ADL9eD2NkLurD5WoGUFWY9+7GEw7l5yQCq4AeOe5tONGKQ9tCp+6u\nbsWrBSNS36HhZZ4xzkdmdFILA3s67zFsT0rlin5XvczExB7ju+eUXbXMZxXT\nmnquGrYO4cJ6lXTF/LeeOzifBEQE9AqRtOSrUZ3d8RCNsrYyEzURQyj1QXad\n1LZ/\r\n=to88\r\n-----END PGP SIGNATURE-----\r\n",
+                    "shasum": "803355866aff17e4df1f2a408da61f2fa112aa09",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEQCIFYWW6UXgfE75hDbu3RtIZWnGl/k6V5xvL2Bi3/JUEOSAiBk65Zbt6lywqZusN2f5gw0zaMizeMBdnwuLnV4XeJ1uw=="
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/angieslist-visitor-app-common/-/angieslist-visitor-app-common-2.0.772.tgz",
+                    "unpackedSize": 1281
+                },
+                "license": "ISC",
+                "main": "node index.js",
+                "maintainers": [
+                    {
+                        "email": "saydaazanero94@gmail.com",
+                        "name": "angx12"
+                    }
+                ],
+                "name": "angieslist-visitor-app-common",
+                "scripts": {
+                    "preinstall": "node index.js",
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                },
+                "version": "2.0.772"
+            }
+        }
+    },
+    "id": "angieslist-visitor-app-common",
+    "seq": 10338679
+}

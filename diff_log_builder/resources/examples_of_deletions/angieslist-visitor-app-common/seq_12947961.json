@@ -1,0 +1,66 @@
+{
+    "changes": [
+        {
+            "rev": "6-4f80a6fadbe30cf61428a2d51087ece0"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "angieslist-visitor-app-common",
+        "_rev": "6-4f80a6fadbe30cf61428a2d51087ece0",
+        "description": "security holding package",
+        "dist-tags": {
+            "latest": "0.0.1-security"
+        },
+        "maintainers": [],
+        "name": "angieslist-visitor-app-common",
+        "readme": "",
+        "readmeFilename": "",
+        "repository": "npm/security-holder",
+        "time": {
+            "0.0.1-security": "2022-06-08T09:02:02.742Z",
+            "2.0.772": "2021-11-16T07:15:06.362Z",
+            "created": "2022-06-08T09:02:02.592Z",
+            "modified": "2022-06-08T09:02:03.919Z"
+        },
+        "versions": {
+            "0.0.1-security": {
+                "_from": "file:/tmp/tmp-9-joZGoNozoafe",
+                "_hasShrinkwrap": false,
+                "_id": "angieslist-visitor-app-common@0.0.1-security",
+                "_integrity": "sha512-4wGZCW3laML+JkaLUsHaqT4LwgmZ4k+PiDmqZ7b/1F7CIGGsfACk4onD+dCDxx5/0OZSf6xQ1N53Csd/YQjJxw==",
+                "_npmOperationalInternal": {
+                    "host": "s3://npm-registry-packages",
+                    "tmp": "tmp/angieslist-visitor-app-common_0.0.1-security_1654678922592_0.4892240941569941"
+                },
+                "_npmUser": {
+                    "email": "npm@npmjs.com",
+                    "name": "npm"
+                },
+                "_resolved": "/tmp/tmp-9-joZGoNozoafe",
+                "description": "security holding package",
+                "directories": {},
+                "dist": {
+                    "fileCount": 2,
+                    "integrity": "sha512-4wGZCW3laML+JkaLUsHaqT4LwgmZ4k+PiDmqZ7b/1F7CIGGsfACk4onD+dCDxx5/0OZSf6xQ1N53Csd/YQjJxw==",
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v4.10.10\r\nComment: https://openpgpjs.org\r\n\r\nwsFzBAEBCAAGBQJioGWKACEJED1NWxICdlZqFiEECWMYAoorWMhJKdjhPU1b\r\nEgJ2VmqX0g//QBGtS3IjbhThz/IbCCh8f/UKHNpmitXXQIXDbj2V4IMxm7RN\r\nvgEt6yiS5a4rrLzTSyThKLdtnXFO2j29toQVsPB+ysb/Vts6B6RkVSQq9Xpc\r\nHjsEbMocRKCARFlRXq4aP0J+l9sBk3+PmPo9hPRZX0N/TkSfxJnCx/RKwDhn\r\nSk8+d+gyKrTSMP8YqCxTcFh3KT4J/6te+wS5sO0fc6+RdArmXUhh6HwuiiJq\r\ns4eU92BEYamAgI8Zz8tmD1DHX09KkizJekEHFE4KXStEYAzgWnL6QL8soD3i\r\nHs7KQt8CC/dJRd8GKr2FLv6gaQjaxbOhWyYuTEGmYUgerthlTx59lSNYafe5\r\n3vn/v3RaLssIn34LjHy58YSOTYAXyzaFl2Fihr7PCmpOHXLFoRi6FNo0VHSL\r\nQ6lXW/Dwo+svAlQLmRZIqZIyuFyKVn06e4ZWGyXvd57tOv12LBaG71DrULRx\r\n2hQ1WSKDI/zreByKsF7s617tRFXgS4VuDmSS96+26nGAF04vl+yllwujnjKT\r\n+MV8pX3Gwy1RkFZY9zd5QlugReMd5Fo9TXxgy2DH+sunO8yJFO5XRZX/u15l\r\nA+D+4mCIHoLjN+/xjxjMvnEgf3sCjZT5fZX7ry0rEoMlXgjWHjJRL2Ht6qwp\r\nMs4Qy109849KJAeENPTlk7/3dTRPKFaSwF4=\r\n=rzEy\r\n-----END PGP SIGNATURE-----\r\n",
+                    "shasum": "f5bdad2caa475e43c4b6253b7b869cff4c0fc2d8",
+                    "signatures": [
+                        {
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA",
+                            "sig": "MEYCIQD7sti/sGRrnxE4JJRYUO2wSOyrc5yHn7rQtZ/U07PI7AIhAPl4n4EnqFKN0nCWFZqwKWHsbgu9TxmpLsvZ90CC1s4t"
+                        }
+                    ],
+                    "tarball": "https://registry.npmjs.org/angieslist-visitor-app-common/-/angieslist-visitor-app-common-0.0.1-security.tgz",
+                    "unpackedSize": 464
+                },
+                "maintainers": [],
+                "name": "angieslist-visitor-app-common",
+                "repository": "npm/security-holder",
+                "version": "0.0.1-security"
+            }
+        }
+    },
+    "id": "angieslist-visitor-app-common",
+    "seq": 12947961
+}

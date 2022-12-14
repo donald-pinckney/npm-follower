@@ -1,9 +1,8 @@
-use postgres_db::custom_types::{Semver, PrereleaseTag};
+use postgres_db::custom_types::{PrereleaseTag, Semver};
 
 use test_case::test_case;
 
 use semver_spec_serialization::parse_semver;
-
 
 #[test_case("1.2.3", semver_simple(1, 2, 3))]
 #[test_case("0.0.0", semver_simple(0, 0, 0))]
@@ -43,12 +42,28 @@ fn test_parse_semver_err(v_str: &str) {
     assert!(parse_semver(v_str).is_err())
 }
 
-
-
 fn semver_simple(major: i64, minor: i64, bug: i64) -> Semver {
-    Semver { major, minor, bug, prerelease: vec![], build: vec![] }
+    Semver {
+        major,
+        minor,
+        bug,
+        prerelease: vec![],
+        build: vec![],
+    }
 }
 
-fn semver(major: i64, minor: i64, bug: i64, prerelease: Vec<PrereleaseTag>, build: Vec<String>) -> Semver {
-    Semver { major, minor, bug, prerelease, build }
+fn semver(
+    major: i64,
+    minor: i64,
+    bug: i64,
+    prerelease: Vec<PrereleaseTag>,
+    build: Vec<String>,
+) -> Semver {
+    Semver {
+        major,
+        minor,
+        bug,
+        prerelease,
+        build,
+    }
 }

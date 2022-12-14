@@ -1,4 +1,5 @@
 use downloader::download_db::download_to_dest;
+use postgres_db::connection::DbConnection;
 use utils::check_no_concurrent_processes;
 
 pub fn main() {
@@ -13,7 +14,7 @@ pub fn main() {
         std::process::exit(1);
     }
 
-    let conn = postgres_db::connect();
+    let mut conn = DbConnection::connect();
     let dest = &args[1];
     let num_workers = args[2].parse::<usize>().unwrap();
     let retry = if args.len() > 3 {
@@ -28,5 +29,5 @@ pub fn main() {
         std::process::exit(1);
     }
 
-    download_to_dest(&conn, dest, num_workers, retry).expect("Failed to download");
+    download_to_dest(&mut conn, dest, num_workers, retry).expect("Failed to download");
 }

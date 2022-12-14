@@ -1,0 +1,101 @@
+Some(("stack-component", Normal(
+    latest: Some((
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2014-02-28T00:27:38.610Z",
+    modified: "2014-02-28T00:36:08.002Z",
+    other_dist_tags: {},
+    extra_version_times: [],
+), {
+    (
+        major: 0,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("indexof", (
+                raw: "0.0.1",
+                parsed: Range(([
+                    [
+                        Eq((
+                            major: 0,
+                            minor: 0,
+                            bug: 1,
+                            prerelease: [],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/stack-component/-/stack-component-0.0.1.tgz",
+            shasum: Some("d769b0706a79a1d135da988dd5ecb1c250c71308"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: None,
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: Some((
+            raw: {
+                "type": "git",
+                "url": "git://github.com/bredele/stack.git",
+            },
+            info: (
+                cloneable_repo_url: "https://github.com/bredele/stack",
+                cloneable_repo_dir: "",
+                vcs: Git,
+                host_info: Github(
+                    user: "bredele",
+                    repo: "stack",
+                ),
+            ),
+        )),
+        time: "2014-02-28T00:36:08.002Z",
+        extra_metadata: {
+            "_npmUser": {
+                "email": "olivier.wietrich@gmail.com",
+                "name": "bredele",
+            },
+            "_npmVersion": "1.3.11",
+            "author": "Olivier Wietrich <olivier.wietrich@gmail.com> (http://github.com/bredele)",
+            "bugs": {
+                "url": "https://github.com/bredele/stack/issues",
+            },
+            "description": "Stack your dom nodes into a fragment",
+            "directories": {
+                "example": "examples",
+            },
+            "keywords": [
+                "stack",
+                "pile",
+                "fragment",
+                "document",
+            ],
+            "license": "MIT",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "email": "olivier.wietrich@gmail.com",
+                    "name": "bredele",
+                },
+            ],
+            "name": "stack-component",
+            "scripts": {
+                "test": "echo \"Error: no test specified\" && exit 1",
+            },
+            "version": "0.0.1",
+        },
+    ),
+}))

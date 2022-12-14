@@ -1,0 +1,45 @@
+{
+    "changes": [
+        {
+            "rev": "3-bd4407ed7d7e9007a00ac77f7b8e4b0d"
+        }
+    ],
+    "deleted": false,
+    "doc": {
+        "_id": "testing234",
+        "_rev": "3-bd4407ed7d7e9007a00ac77f7b8e4b0d",
+        "author": {
+            "name": "teste4"
+        },
+        "dist-tags": {
+            "latest": "0.0.1"
+        },
+        "maintainers": [],
+        "name": "testing234",
+        "readme": "",
+        "readmeFilename": "",
+        "time": {
+            "0.0.1": "2015-03-23T00:09:57.797Z",
+            "created": "2015-03-23T00:09:57.797Z",
+            "modified": "2019-01-05T15:00:51.076Z"
+        },
+        "versions": {
+            "0.0.1": {
+                "_npmUser": {
+                    "name": "teste4"
+                },
+                "author": {
+                    "name": "teste4"
+                },
+                "dist": {
+                    "shasum": "7777777",
+                    "tarball": "https://registry.npmjs.org/"
+                },
+                "name": "testing234",
+                "version": "0.0.1"
+            }
+        }
+    },
+    "id": "testing234",
+    "seq": 3296184
+}

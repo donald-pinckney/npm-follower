@@ -17,4 +17,4 @@ futures-util = "0.3.21"
 reqwest = { version = "0.11.10", features = ["json"] }
 indicatif = "0.16.2"
 async-std = "1.11.0"
-
+chrono = { version = "0.4.19", features = ["serde"] }

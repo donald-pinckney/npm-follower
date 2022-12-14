@@ -4,3 +4,5 @@ Cargo.lock
 scratch/
 .idea/
 /scratch_data/
+.secret.env
+diff_log_builder/logs

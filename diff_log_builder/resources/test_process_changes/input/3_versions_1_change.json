@@ -1,0 +1,72 @@
+[
+    [
+        {
+            "id": "foo",
+            "seq": 1,
+            "doc": {
+                "_id": "foo",
+                "_rev": "doesnt matter",
+                "dist-tags": {
+                    "latest": "1.0.2"
+                },
+                "time": {
+                    "1.0.0": "2021-01-21T00:31:48.316Z",
+                    "1.0.1": "2021-01-21T23:50:24.040Z",
+                    "1.0.2": "2021-01-22T10:46:59.761Z",
+                    "created": "2021-01-21T00:31:48.154Z",
+                    "modified": "2021-01-22T10:46:59.761Z"
+                },
+                "versions": {
+                    "1.0.0": {
+                        "_id": "foo@1.0.0",
+                        "dist": {
+                            "tarball": "https://registry.npmjs.org/foo/-/foo-1.0.0.tgz"
+                        },
+                        "dependencies": {
+                            "bar": "^1.0.0"
+                        },
+                        "repository": {
+                            "type": "git",
+                            "url": "git+https://github.com/MarieMalarme/foo.git"
+                        },
+                        "version": "1.0.0"
+                    },
+                    "1.0.1": {
+                        "_id": "foo@1.0.1",
+                        "dist": {
+                            "tarball": "https://registry.npmjs.org/foo/-/foo-1.0.1.tgz"
+                        },
+                        "dependencies": {
+                            "bar": "~1.0.1"
+                        },
+                        "repository": {
+                            "type": "git",
+                            "url": "git+https://github.com/MarieMalarme/foo.git"
+                        },
+                        "version": "1.0.1"
+                    },
+                    "1.0.2": {
+                        "_id": "foo@1.0.2",
+                        "dist": {
+                            "tarball": "https://registry.npmjs.org/foo/-/foo-1.0.2.tgz"
+                        },
+                        "dependencies": {
+                            "bar": "<1.2.0"
+                        },
+                        "repository": {
+                            "type": "git",
+                            "url": "git+https://github.com/MarieMalarme/foo.git"
+                        },
+                        "version": "1.0.2"
+                    }
+                }
+            },
+            "changes": [
+                {
+                    "rev": "doesnt matter"
+                }
+            ],
+            "deleted": false
+        }
+    ]
+]

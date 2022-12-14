@@ -12,5 +12,10 @@ CREATE TABLE downloaded_tarballs (
   signature0_keyid TEXT,
   npm_signature TEXT,
 
-  tgz_local_path TEXT NOT NULL
+  tgz_local_path TEXT,
+  blob_storage_key TEXT,
+
+  CONSTRAINT check_at_least_one_storage CHECK (
+    tgz_local_path IS NOT NULL OR blob_storage_key IS NOT NULL
+  )
 );

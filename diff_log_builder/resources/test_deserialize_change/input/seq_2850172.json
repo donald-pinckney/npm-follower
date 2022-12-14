@@ -1,0 +1,101 @@
+{
+    "id": "h5-1810-npm",
+    "doc": {
+        "_id": "h5-1810-npm",
+        "_rev": "2-f714b9b1beeccaa7dd76168a7cfd2fb9",
+        "bugs": {
+            "url": "https://github.com/Jiang-Xiaoming/h5-1810/issues"
+        },
+        "name": "h5-1810-npm",
+        "time": {
+            "0.0.1": "2018-09-19T04:12:23.575Z",
+            "created": "2018-09-19T04:12:23.443Z",
+            "modified": "2018-09-19T04:12:26.143Z"
+        },
+        "author": {
+            "name": "Ming"
+        },
+        "readme": "ERROR: No README data found!",
+        "license": "MIT",
+        "homepage": "https://github.com/Jiang-Xiaoming/h5-1810#readme",
+        "keywords": [
+            "h5-1810"
+        ],
+        "versions": {
+            "0.0.1": {
+                "_id": "h5-1810-npm@0.0.1",
+                "bugs": {
+                    "url": "https://github.com/Jiang-Xiaoming/h5-1810/issues"
+                },
+                "dist": {
+                    "shasum": "a64ed8549363116a23469fdd02e708b267e7347c",
+                    "tarball": "https://registry.npmjs.org/h5-1810-npm/-/h5-1810-npm-0.0.1.tgz",
+                    "fileCount": 2,
+                    "integrity": "sha512-y4misA70qhHtguHwdNaVnHgPukDJ/ZRoo3VLPblojwp47Pb+COnMui6dGfHCqvgDNUxcwVI2xr2ez5/p40Py6g==",
+                    "unpackedSize": 462,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbocyoCRA9TVsSAnZWagAAxroP/1U048uIJHTxhxESJRAU\nVvu2xgJgCABkMuRsz7wVY3P1IJtNk+M8N9pOqtGOLLkQeJ081dhVVC6LP1AL\nQjlT+XQZ/sxvs9TktxIkUxezb29tEq9w+BK3MRVsf+UGqmntLqBSD0OQZL7L\nqtP7Wn5NtkMv2dPvyYOdcmJU4R4vs2SDDqJgcfVPDcS4A/zuOF+HP4ELPjyC\nJBH6qw/9G1Fny1pBHLRYpUfVvn51SlrcmENNP+eJJabIcy3zBLn2MQAhJk0c\nbkhcIEvqYw7Gl92BiM7GmrBslcGXTvNZRRscXbt93GXSZ2JAD8nO5gPrgfhA\nuJWaqkshuUq2b6oU7g5qYs/l5wAvoag35gWzGz/H0DrUmdtByBh7ln1t1hzg\nHYRKc4vPHNtXsLm73pQUe/cXAy0FSeKh0BfvH6/9ml3jSMuxeQ+376yVtTUS\nolxkpXNAW30kqjlp/9BC63g1pVRnVpAEZ0j9Gxmg88OaCSN09X+DJ9WflLXH\nEXeHSEhtORbHR/NMnqj8IXug7+W9eLxHUaDETTpWL8bbtTL3xYTRV6bfSJ5P\nF0tjT9stSMweRiGXZYATcOzJiWst5iC9B/nEoIzyBq7fwej+XFMLaz86/mPl\n+6H3+mGN7I5pVqs6kx3rNTZGFed+dGfo4yiDzrdf938rD+d9C8cdHbiNIhK9\nx6re\r\n=FJYX\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "index.js",
+                "name": "h5-1810-npm",
+                "author": {
+                    "name": "Ming"
+                },
+                "gitHead": "d8716fc34d1e2a71ec2aad165e7450e3972bdf29",
+                "license": "MIT",
+                "scripts": {
+                    "test": "mocha"
+                },
+                "version": "0.0.1",
+                "_npmUser": {
+                    "name": "jiangxiaoming",
+                    "email": "2218215702@qq.com"
+                },
+                "homepage": "https://github.com/Jiang-Xiaoming/h5-1810#readme",
+                "keywords": [
+                    "h5-1810"
+                ],
+                "repository": {
+                    "url": "git+https://github.com/Jiang-Xiaoming/h5-1810.git",
+                    "type": "Git"
+                },
+                "_npmVersion": "5.5.1",
+                "description": "A test pageage",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "jiangxiaoming",
+                        "email": "2218215702@qq.com"
+                    }
+                ],
+                "_nodeVersion": "8.9.0",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/h5-1810-npm_0.0.1_1537330343443_0.8290061945508465",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "0.0.1"
+        },
+        "repository": {
+            "url": "git+https://github.com/Jiang-Xiaoming/h5-1810.git",
+            "type": "Git"
+        },
+        "description": "A test pageage",
+        "maintainers": [
+            {
+                "name": "jiangxiaoming",
+                "email": "2218215702@qq.com"
+            }
+        ],
+        "readmeFilename": ""
+    },
+    "seq": 2850172,
+    "changes": [
+        {
+            "rev": "2-f714b9b1beeccaa7dd76168a7cfd2fb9"
+        }
+    ],
+    "deleted": false
+}

@@ -1,0 +1,96 @@
+Some(("@y3ticorp/vue-cli-plugin-commons", Normal(
+    latest: Some((
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    )),
+    created: "2019-03-29T11:08:32.753Z",
+    modified: "2019-03-29T11:08:36.205Z",
+    other_dist_tags: {},
+    extra_version_times: [],
+), {
+    (
+        major: 1,
+        minor: 0,
+        bug: 0,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [
+            ("@y3ticorp/vue-cli-utils", (
+                raw: "^1.0.0",
+                parsed: Range(([
+                    [
+                        Gte((
+                            major: 1,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [],
+                            build: [],
+                        )),
+                        Lt((
+                            major: 2,
+                            minor: 0,
+                            bug: 0,
+                            prerelease: [
+                                Int(0),
+                            ],
+                            build: [],
+                        )),
+                    ],
+                ])),
+            )),
+        ],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/@y3ticorp/vue-cli-plugin-commons/-/vue-cli-plugin-commons-1.0.0.tgz",
+            shasum: Some("f8e8e506664e2dd79e033069709a0b03bf94e83d"),
+            unpacked_size: Some(7434),
+            file_count: Some(21),
+            integrity: Some("sha512-Gt6J6gvaBiOHkH43s4OhsQxg5Dwn9Inm2eyEgAENV30lsxCHHyA8mLtV4AZ8+rFzp9QUKLvyhbYaBwYz01B9kg=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: Some("-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcnfyxCRA9TVsSAnZWagAACXoP/RvHiTjvLWvWRqsdB6oc\nvECxmH18HfEQ8MlKlHX1W59+E/sWAR/lg79Z8ktLP5/doabZ0J32mQUAS39m\nvY+Q2rcrdhgQ8TU16obV+gsWDQH8QH2mTSZZsvmU6vBfqtxcktlmSGoevBOC\nLJEWbnFrx5xJDUR5YogITek5RjyymQBzFidUCzjOaZzpU5rUs2mAeu3UMU07\nAz/T4oQeMDIChoack1QHrgOT4nDDqNY0PuB55HVTsLQZ991W74MHitaq+kwX\nXA4xBfCuY0VYHZcyxPl8gvTHdXhsUrGcspIKzkBlz4YJF24z9t9hkZoE57Qo\nuX+v5MreLv9uI4zkESpyc1iBBZVtSxECy1E3HxdxHj6tyomekb8ulxP66DmK\nxb3H4N/dA+2UQGRiqBfBAUTBg55kvsL78cRFc5nmE4JIW07r2nGZG7JzspJo\nlwsCkIz7542Q9oL09D6BEgZkSIgAhb4NjqOpFryo2EMdebF+j03vyuEyG5Bz\n+51xGjne4hZ/VoQBuDXvUoHZOzSIp2+dEYnjEKNPcYVMlAy5KMKKiWFwC0Io\n/SUrL6Jghgz5cgq68eg6gzvjbn0+yvOHzjgnycGAj6Zu/WBab/QejpfZjb2t\nu2gWn0ko06BjM0DW6LJXqB2pCjq1bQkcvCs153q83P69cggYDxpvMQ8jwS22\nxpm7\r\n=0iJY\r\n-----END PGP SIGNATURE-----\r\n"),
+        ),
+        repository: None,
+        time: "2019-03-29T11:08:33.073Z",
+        extra_metadata: {
+            "_hasShrinkwrap": false,
+            "_id": "@y3ticorp/vue-cli-plugin-commons@1.0.0",
+            "_nodeVersion": "8.11.4",
+            "_npmOperationalInternal": {
+                "tmp": "tmp/vue-cli-plugin-commons_1.0.0_1553857712969_0.3642115175277596",
+                "host": "s3://npm-registry-packages",
+            },
+            "_npmUser": {
+                "name": "olivi3r",
+                "email": "olivier@riberi.me",
+            },
+            "_npmVersion": "6.9.0",
+            "description": "Highly opinionated Vue CLI 3 plugin for preparing project to @y3ticorp plugins",
+            "directories": {},
+            "gitHead": "d84d70985c02ca466afa78cfe9963e4a323ebc8a",
+            "main": "index.js",
+            "maintainers": [
+                {
+                    "name": "stanto",
+                    "email": "anthony@y3ti.com",
+                },
+                {
+                    "name": "olivi3r",
+                    "email": "olivier@riberi.me",
+                },
+            ],
+            "name": "@y3ticorp/vue-cli-plugin-commons",
+            "repo": {
+                "url": "git+https://gitlab.com/Y3TI/vue-cli/vue-cli-plugin-commons.git",
+                "type": "git",
+            },
+            "version": "1.0.0",
+        },
+    ),
+}))

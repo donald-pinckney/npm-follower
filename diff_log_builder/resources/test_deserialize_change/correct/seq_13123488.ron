@@ -1,0 +1,186 @@
+Some(("Sheet", Normal(
+    latest: Some((
+        major: 1,
+        minor: 0,
+        bug: 2,
+        prerelease: [
+            String("rc1"),
+        ],
+        build: [],
+    )),
+    created: "2015-01-01T00:00:00Z",
+    modified: "2022-06-12T13:45:33.419Z",
+    other_dist_tags: {},
+    extra_version_times: [],
+), {
+    (
+        major: 1,
+        minor: 0,
+        bug: 1,
+        prerelease: [],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/Sheet/-/Sheet-1.0.1.tgz",
+            shasum: Some("35e7fb60873f0022193342d0b9218ad79d18d01f"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: Some("sha512-0UQzzQxvItxVz+5cKzpRbaO906GPgnbDx7Tesg6CLW4cuDTeY5URxy4JB0ynTAs70KQFH6HZnNNFJyLkSMpZLg=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: None,
+        time: "2015-01-01T00:00:00Z",
+        extra_metadata: {
+            "_id": "Sheet@1.0.1",
+            "_nodeSupported": true,
+            "_nodeVersion": "v0.3.1-pre",
+            "_npmVersion": "0.2.7-2",
+            "authors": [
+                "Thomas Aylott",
+            ],
+            "bugs": {
+                "web": "http://github.com/subtleGradient/Sheet.js/issues",
+            },
+            "contributors": [
+                {
+                    "email": "thomas@subtlegradient.com",
+                    "name": "Thomas Aylott",
+                    "web": "http://subtlegradient.com",
+                },
+            ],
+            "copyright": "© 2010 Thomas Aylott",
+            "ctime": "2010-11-09T23:35:16Z",
+            "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
+            "directories": {
+                "doc": ".",
+                "lib": "./Source",
+                "src": "./Source",
+                "test": "./Test",
+            },
+            "engines": {
+                "node": "*",
+            },
+            "keywords": [
+                "CSS",
+                "CSSOM",
+                "styleSheet",
+                "cssRule",
+                "style",
+                "parse",
+            ],
+            "license": "MIT License",
+            "licenses": [
+                {
+                    "type": "MIT",
+                    "url": "http://creativecommons.org/licenses/MIT/",
+                },
+            ],
+            "main": "./Source/Sheet",
+            "mtime": "2010-11-09T23:35:16Z",
+            "name": "Sheet",
+            "repositories": [
+                {
+                    "type": "git",
+                    "url": "http://github.com/subtleGradient/Sheet.js/",
+                },
+            ],
+            "sources": [
+                "Source/Sheet.js",
+                "Source/SheetParser.CSS.js",
+            ],
+            "version": "1.0.1",
+        },
+    ),
+    (
+        major: 1,
+        minor: 0,
+        bug: 2,
+        prerelease: [
+            String("rc1"),
+        ],
+        build: [],
+    ): (
+        prod_dependencies: [],
+        dev_dependencies: [],
+        peer_dependencies: [],
+        optional_dependencies: [],
+        dist: (
+            tarball_url: "https://registry.npmjs.org/Sheet/-/Sheet-1.0.2rc1.tgz",
+            shasum: Some("6ef4839d92a87aa14ed57a93f30c428ac7af9b89"),
+            unpacked_size: None,
+            file_count: None,
+            integrity: Some("sha512-Q6EX6T6gEyDLpXMyi3mp3VBhbSnAib71G1qEMmSy6A7OUT5vk1zUqPI8CCSb9zJgHSL6gRjh8fH7VLWXq76J8w=="),
+            signature0_sig: None,
+            signature0_keyid: None,
+            npm_signature: None,
+        ),
+        repository: None,
+        time: "2022-06-12T13:45:33.419Z",
+        extra_metadata: {
+            "_id": "Sheet@1.0.2rc1",
+            "_nodeSupported": true,
+            "_nodeVersion": "v0.3.1-pre",
+            "_npmVersion": "0.2.7-2",
+            "authors": [
+                "Thomas Aylott",
+            ],
+            "bugs": {
+                "web": "http://github.com/subtleGradient/Sheet.js/issues",
+            },
+            "contributors": [
+                {
+                    "email": "thomas@subtlegradient.com",
+                    "name": "Thomas Aylott",
+                    "web": "http://subtlegradient.com",
+                },
+            ],
+            "copyright": "© 2010 Thomas Aylott",
+            "ctime": "2010-11-09T23:35:16Z",
+            "description": "100% DOM-less JavaScript implementation of the styleSheets, cssRule & style APIs \nSupports custom and browser-incompatible CSS syntax like nested rules",
+            "directories": {
+                "doc": ".",
+                "lib": "./Source",
+                "src": "./Source",
+                "test": "./Test",
+            },
+            "engines": {
+                "node": "*",
+            },
+            "keywords": [
+                "CSS",
+                "CSSOM",
+                "styleSheet",
+                "cssRule",
+                "style",
+                "parse",
+            ],
+            "license": "MIT License",
+            "licenses": [
+                {
+                    "type": "MIT",
+                    "url": "http://creativecommons.org/licenses/MIT/",
+                },
+            ],
+            "main": "./Source/Sheet",
+            "mtime": "2010-11-09T23:35:16Z",
+            "name": "Sheet",
+            "repositories": [
+                {
+                    "type": "git",
+                    "url": "http://github.com/subtleGradient/Sheet.js/",
+                },
+            ],
+            "sources": [
+                "Source/Sheet.js",
+                "Source/SheetParser.CSS.js",
+            ],
+            "version": "1.0.2rc1",
+        },
+    ),
+}))

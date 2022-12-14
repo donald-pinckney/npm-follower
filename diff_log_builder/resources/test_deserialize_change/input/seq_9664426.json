@@ -1,0 +1,189 @@
+{
+    "id": "@wasseypur/errors",
+    "doc": {
+        "_id": "@wasseypur/errors",
+        "_rev": "3-5b332fc09c3e7288398b82026955308d",
+        "bugs": {
+            "url": "https://github.com/arkenstan/wasseypur/issues"
+        },
+        "name": "@wasseypur/errors",
+        "time": {
+            "0.0.1": "2022-04-03T12:15:25.971Z",
+            "0.0.2": "2022-04-03T12:56:01.171Z",
+            "0.0.3": "2022-04-03T15:19:51.469Z",
+            "created": "2022-04-03T12:15:25.715Z",
+            "modified": "2022-04-03T15:19:51.558Z"
+        },
+        "readme": "# @wasseypur/errors\n\nFun little NSFW error HTTP errors library which spouts wasseypur slangs as error messages.\n\n> PLEASE DO NOT TRY THIS IN PRODUCTION ENVIRONMENTS\n\n## Installation\n\n> npm install --save @wasseypur/errors\n\n---\n\n## Usage\n\n### In Typescript\n\n```Typescript\nimport { BadRequest } from '@wasseypur/errors';\n\n// For Throwing Errors\ntry{\n\n  /* Logic code */\n  throw new BadRequest();\n\n\n}catch(error){\n\n  // Catch and use error\n\n}\n```\n\n### In Nodejs\n\n```Javascript\nconst { BadRequest } = require('@wasseypur/errors');\n\n// For Throwing Errors\ntry{\n\n  /* Logic code */\n  throw new BadRequest();\n\n\n}catch(error){\n\n  // Catch and use error\n\n}\n```\n\n## Supported Error Classes\n\n- BadRequest - 400\n- NotAuthenticated - 401\n- PaymentError - 402\n- Forbidden - 403\n- NotFound - 404\n- MethodNotAllowed - 405\n- NotAcceptable - 406\n- Timeout - 408\n- Conflict - 409\n- Gone - 410\n- LengthRequired - 411\n- Unprocessable - 422\n- TooManyRequests - 429\n- GeneralError - 500\n- NotImplemented - 501\n- BadGateway - 502\n- Unavailable - 503\n",
+        "homepage": "https://github.com/arkenstan/wasseypur#readme",
+        "versions": {
+            "0.0.1": {
+                "_id": "@wasseypur/errors@0.0.1",
+                "dist": {
+                    "shasum": "6285c37f9fea88e90776708d766d526624d573c3",
+                    "tarball": "https://registry.npmjs.org/@wasseypur/errors/-/errors-0.0.1.tgz",
+                    "fileCount": 17,
+                    "integrity": "sha512-a10HhmP1VQeRBQ4J8QmYX+wvB7IrH2LhyyqQQ2pek3l2L31G06wHMg5IiIaKCkJOxcL/QiXgjDtgMXY9MszC8A==",
+                    "signatures": [
+                        {
+                            "sig": "MEUCIQCshgrmrN7+xuzTRZyhXBLMyjlvBq/6R1JjIBrLgbmdCQIgEUuM52zQ359NUwBgqbLos6DOOiiIAg8HlQkyuwzjBi0=",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 25971,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v4.10.10\r\nComment: https://openpgpjs.org\r\n\r\nwsFzBAEBCAAGBQJiSY/dACEJED1NWxICdlZqFiEECWMYAoorWMhJKdjhPU1b\r\nEgJ2VmpM1xAAiGm7NzcaVjgGY1Z+EC9ZqF582P9RG0JJ1S2w84oL4RGA8lnn\r\nk4zRTVQHn+M7cFcQMpXSO832t10yofB9WMVJL73PLPLG69J+5EVjCXgPA3yl\r\ndGxoFbiqiY+TF6m98SN3Bku+KDJ7jhEHaGTQYi+/KxR4nz5AxdDyzkzWOhuF\r\nYwHG7zbQP2JEreLW4fhhL3clps8VR5F18QPMV0aV5HHR4H44/VqjecQiRAVC\r\n0UcQ76T03+iQ9Jt40N84VS/u4xQPwE/KuXPfgpO3Ld3+ilhlq7T/DcKboOff\r\n/rwN4o97WRxIzoRlpySejELD8WUJp778mIN4DAGTVpIU0eg05GTGbcgBARSR\r\nb39wXQFAdBTZ4RdlL4sKbKrUS6KsqfiY3HCjTm+7TW+aZUgcbrzWqH+xYxHO\r\nHAowwcNo91ppVaRak0tnhZCI5YBUdoO0HKx9OOcrId5+TccycLi87wOQYP4W\r\nL+7BMNGj807iql0yzVvWk/RdGvu+ruP+rh+y7nEAqIefUAR3uJAJNdem8Ngm\r\nZFhK13x00wDUH2FX1vbBejxj1/M98YwWhTJzeUY+HEvU4Re3ri+IBJye1p2Z\r\nL3kSbODNNVQqCHqP5g7SPYsr/cx4nHTbftygi/9isEknGFdEDyXXZ0vaDQmd\r\n3oqZpOmH3aL1kdVzfh7hjviCMZyLBWq4OEU=\r\n=iICY\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "./src/index.js",
+                "name": "@wasseypur/errors",
+                "type": "commonjs",
+                "gitHead": "4d6d014a995c40c8368018e9510fb08cff07e699",
+                "typings": "./src/index.d.ts",
+                "version": "0.0.1",
+                "_npmUser": {
+                    "name": "arkenstan",
+                    "email": "anshulwagadre@live.com"
+                },
+                "_npmVersion": "8.6.0",
+                "description": "Fun little NSFW error HTTP errors library which spouts wasseypur slangs as error messages.",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "arkenstan",
+                        "email": "anshulwagadre@live.com"
+                    }
+                ],
+                "_nodeVersion": "16.14.2",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/errors_0.0.1_1648988125789_0.8091796494826524",
+                    "host": "s3://npm-registry-packages"
+                }
+            },
+            "0.0.2": {
+                "_id": "@wasseypur/errors@0.0.2",
+                "bugs": {
+                    "url": "https://github.com/arkenstan/wasseypur/issues"
+                },
+                "dist": {
+                    "shasum": "160d959283e858136b296e9d0424c81e019436f4",
+                    "tarball": "https://registry.npmjs.org/@wasseypur/errors/-/errors-0.0.2.tgz",
+                    "fileCount": 17,
+                    "integrity": "sha512-MkdK6xjSJzVWZDDJkIRBzIWoxvXzQ63+5NSwWULppSc+a5BZvnDl6cY6bsZNKLt4zFzKuwSIwixJwMgnwcNKYg==",
+                    "signatures": [
+                        {
+                            "sig": "MEQCIB0x2LN3QLhduCaaGPSmHztBEUOOVjprIYopf70TuYJVAiBB5bdpY7eFby+3JYenvbfLjc4hTcHE72yVkdrSsTWyvQ==",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 26580,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v4.10.10\r\nComment: https://openpgpjs.org\r\n\r\nwsFzBAEBCAAGBQJiSZlhACEJED1NWxICdlZqFiEECWMYAoorWMhJKdjhPU1b\r\nEgJ2VmpIjA//ezP4oO/bk/TiCImO+Dv7d4vxhoq0hjLVnyWMNgotd1pugD8E\r\nfILH4kkupcg7MSuQhGg8HNoxFJAqZEK99kxCFsD/stlWIX7iJpCKw+tDFmwi\r\nDQOLNlFPm+C4zTbAGiL87fsrTWEiENPahqBbRIy3jRkqQK+3wE98f6BLbF/+\r\n2WN3UPtQQvRsxQHj/166peUA2GhKiQPYzFhjV7CRAR+D3u2e/eKzmYm2fnjS\r\nZBmoJHQ/aY6VhUTCmtVWggDT4PmdLiy1CJ3Pl4Lcx0L0vzu1/6BpoaZydJRa\r\npZvzFIQHo/OR8A2+/HW65AmsIkVAZrTyPLvQSnfg83Llu6RIbLfY64hu67PE\r\nJ6g4b0hmRF530npY3ZIXRYIBxJiFK6DzFFUpkkHlBwST9mN5ChJTNYDwfADF\r\nSI2vxC8n8NkbTMo9fiv+MrT1CPx5UQT1dqIvK4DP7+J0b2DpOMyzZKo45wgU\r\ntibCd6VpjR/L8T7DEeFyW6yVgPXbdtuzHdUNTwwA6j/Er1maoq74ZMzU0zt+\r\nxHXjX57d0nwFCPgr7DM5LBaLAiu/T4pcnZcneQlC4vfTlbcDxGXB0xWBKy4Q\r\nTY3NoMvEN/2FvPM/Yeywtn/67l6DDJ+i/XKvsoCyD7+yi2zxC0G4Jty0sOzX\r\ny00Mie5Plr+6beyVmTV307p/c9/3f7iw7Aw=\r\n=MDZH\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "./src/index.js",
+                "name": "@wasseypur/errors",
+                "type": "commonjs",
+                "gitHead": "c4a10ddf8960fbd205ee0b6040a747695369c7c4",
+                "typings": "./src/index.d.ts",
+                "version": "0.0.2",
+                "_npmUser": {
+                    "name": "arkenstan",
+                    "email": "anshulwagadre@live.com"
+                },
+                "homepage": "https://github.com/arkenstan/wasseypur#readme",
+                "repository": {
+                    "url": "git+https://github.com/arkenstan/wasseypur.git",
+                    "type": "commonjs",
+                    "directory": "packages/errors"
+                },
+                "_npmVersion": "8.6.0",
+                "description": "Fun little NSFW error HTTP errors library which spouts wasseypur slangs as error messages.",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "arkenstan",
+                        "email": "anshulwagadre@live.com"
+                    }
+                ],
+                "_nodeVersion": "16.14.2",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/errors_0.0.2_1648990561034_0.47758583459588144",
+                    "host": "s3://npm-registry-packages"
+                }
+            },
+            "0.0.3": {
+                "_id": "@wasseypur/errors@0.0.3",
+                "bugs": {
+                    "url": "https://github.com/arkenstan/wasseypur/issues"
+                },
+                "dist": {
+                    "shasum": "e17f4e7dba64455b1c7f9876aa6fc0096119f6cd",
+                    "tarball": "https://registry.npmjs.org/@wasseypur/errors/-/errors-0.0.3.tgz",
+                    "fileCount": 17,
+                    "integrity": "sha512-nS3oMrJsRt++NFl0qGSN/Qto0gxK0VZFUUam/wvznm4SoYvQtVnR3oD4+7O9wxyVWU7mtDPSjhaFUWM07aP/Tw==",
+                    "signatures": [
+                        {
+                            "sig": "MEUCIQD1djsof7v2BTzKIj9YvAF9WYVA0Ne4+wppbcrfVfcZowIgAZA426Shjy8uLV9XT5smDLlBBbmsnsaEJiE+j5JIzUs=",
+                            "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+                        }
+                    ],
+                    "unpackedSize": 26954,
+                    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v4.10.10\r\nComment: https://openpgpjs.org\r\n\r\nwsFzBAEBCAAGBQJiSbsXACEJED1NWxICdlZqFiEECWMYAoorWMhJKdjhPU1b\r\nEgJ2VmoiQQ//cbWYeAe/zhF1Ba7U/yL1mURDYQ4PrQ7ajmqH7A+bvnFLnz0i\r\n0hXVZoKGK0H+n//yGoDJzt+q/kPPQeeUmG4AMh+moYGYfupCJfElitICCA7v\r\nv9VNdVM6Rcv/fzNWv0r3ODAFxTuUiyPI6La6YRi8OAs0DiIC9gFujiWVdqFF\r\nriSCeP7jVgr3sbMF1sEVb+m5ZCUZT8Zg9GQI/NF4JGJXlMeWTh8gX45HdLwv\r\nXNJTgmVig5SbIAoXHPXGrwSX0BzXUv07BsPCQy7Qa1w+Q0dv/+P5V7qDuuSW\r\n6TlohUkZ1WxdozdCJA660Bi1qa73RBlTbH6bKYA0tccr8bcIX6/scVTHi5po\r\nHDB/Ig0V5w5b5kUBrv8ffzs5BCNbVtUyxQsYM5TYPsE3reTgEdf0LU5hA2E/\r\nLwzTBXncLa8FXFnLyFZd66fIOC3OlTAvQFSDMuXml2APS/QWWlfnINPoPrRO\r\nwkV2XHCwIgb32MnrAs2NpCWL56cZaiAx+Bh89ZdWZbruweffJsfgyHr37MKQ\r\nPJOH7vbofGcl2c3gsTtNHq8FeZ/WoaHMVeoyEIltUd48kboyLT22aWBp4edF\r\nTpH0rPW1Ns35SnUM2YO1h3TQCWbDRHhUF4o9BiiCKeG2K941yXVi7gtLI2Ho\r\nQP4LrINVOI4pr8IIkFoA8N4l0xSFpGnb5xg=\r\n=l9PT\r\n-----END PGP SIGNATURE-----\r\n"
+                },
+                "main": "./src/index.js",
+                "name": "@wasseypur/errors",
+                "type": "commonjs",
+                "gitHead": "05422c001cc073b8a13bb2845b05709d1315c222",
+                "typings": "./src/index.d.ts",
+                "version": "0.0.3",
+                "_npmUser": {
+                    "name": "arkenstan",
+                    "email": "anshulwagadre@live.com"
+                },
+                "homepage": "https://github.com/arkenstan/wasseypur#readme",
+                "repository": {
+                    "url": "git+https://github.com/arkenstan/wasseypur.git",
+                    "type": "commonjs",
+                    "directory": "packages/errors"
+                },
+                "_npmVersion": "8.6.0",
+                "description": "Fun little NSFW error HTTP errors library which spouts wasseypur slangs as error messages.",
+                "directories": {},
+                "maintainers": [
+                    {
+                        "name": "arkenstan",
+                        "email": "anshulwagadre@live.com"
+                    }
+                ],
+                "_nodeVersion": "16.14.2",
+                "_hasShrinkwrap": false,
+                "_npmOperationalInternal": {
+                    "tmp": "tmp/errors_0.0.3_1648999191313_0.9761877212805605",
+                    "host": "s3://npm-registry-packages"
+                }
+            }
+        },
+        "dist-tags": {
+            "latest": "0.0.3"
+        },
+        "repository": {
+            "url": "git+https://github.com/arkenstan/wasseypur.git",
+            "type": "commonjs",
+            "directory": "packages/errors"
+        },
+        "description": "Fun little NSFW error HTTP errors library which spouts wasseypur slangs as error messages.",
+        "maintainers": [
+            {
+                "name": "arkenstan",
+                "email": "anshulwagadre@live.com"
+            }
+        ],
+        "readmeFilename": "README.md"
+    },
+    "seq": 9664426,
+    "changes": [
+        {
+            "rev": "3-5b332fc09c3e7288398b82026955308d"
+        }
+    ],
+    "deleted": false
+}

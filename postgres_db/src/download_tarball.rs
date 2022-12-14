@@ -1,12 +1,13 @@
+use crate::connection::QueryRunner;
 use crate::download_queue::DownloadTask;
 
 use super::schema::downloaded_tarballs;
 use chrono::{DateTime, Utc};
 use diesel::Queryable;
 
-use diesel::prelude::*;
-use super::DbConnection;
+use super::connection::DbConnection;
 use super::schema;
+use diesel::prelude::*;
 
 #[derive(Queryable, Insertable, Debug)]
 #[diesel(table_name = downloaded_tarballs)]
@@ -22,7 +23,8 @@ pub struct DownloadedTarball {
     pub signature0_keyid: Option<String>,
     pub npm_signature: Option<String>,
 
-    pub tgz_local_path: String,
+    pub tgz_local_path: Option<String>,
+    pub blob_storage_key: Option<String>,
 }
 
 impl DownloadedTarball {
@@ -41,18 +43,21 @@ impl DownloadedTarball {
             signature0_keyid: task.signature0_keyid.clone(),
             npm_signature: task.npm_signature.clone(),
 
-            tgz_local_path: local_path,
+            tgz_local_path: Some(local_path),
+            blob_storage_key: None,
         }
     }
 }
 
-
-pub fn get_downloaded_urls_matching_tasks(conn: &DbConnection, chunk: &[DownloadTask]) -> Vec<String> {
+pub fn get_downloaded_urls_matching_tasks(
+    conn: &mut DbConnection,
+    chunk: &[DownloadTask],
+) -> Vec<String> {
     use schema::downloaded_tarballs::dsl::*;
 
-    downloaded_tarballs
+    let get_matching_tarball_urls_query = downloaded_tarballs
         .select(tarball_url)
-        .filter(tarball_url.eq_any(chunk.iter().map(|t| &t.url)))
-        .load(&conn.conn)
+        .filter(tarball_url.eq_any(chunk.iter().map(|t| &t.url)));
+    conn.load(get_matching_tarball_urls_query)
         .expect("Error checking for max sequence in change_log table")
 }
