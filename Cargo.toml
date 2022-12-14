@@ -3,6 +3,3 @@ members = ["changes_fetcher", "postgres_db", "download_queuer", "downloader", "d
 
 [profile.bench]
 debug = true
-
-[profile.bench]
-debug = true

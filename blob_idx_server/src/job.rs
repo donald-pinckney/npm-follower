@@ -184,4 +184,43 @@ impl JobManager {
 
         Ok(responses)
     }
+
+    /// Stores the files in the given filepaths (that reside on the discovery cluster) into
+    /// the blob index. The filepaths should be the full path to the file on the discovery cluster.
+    pub async fn submit_store_tarballs(&self, filepaths: Vec<String>) -> Result<(), JobError> {
+        debug!(
+            "Submitting store tarballs job with {} filepaths",
+            filepaths.len()
+        );
+        let worker = self.xfer_pool.get_worker().await?;
+        let (node_id, ssh) = match &*worker.status {
+            WorkerStatus::Running {
+                node_id,
+                ssh_session,
+                ..
+            } => (node_id, ssh_session),
+            _ => panic!("Worker should be running"),
+        };
+
+        let filepaths = filepaths.join(" ");
+
+        let cmd = format!(
+            "cd $HOME/npm-follower/blob_idx_client && ./run.sh store {} \"{}\"",
+            node_id, filepaths
+        );
+
+        debug!("Running command:\n{}", cmd);
+
+        let out = ssh.run_command(&cmd).await?;
+        debug!("Output:\n{}", out);
+
+        // parse into a ClientResponse
+        let response: ClientResponse =
+            serde_json::from_str(&out).map_err(|_| JobError::ClientOutputNotParsable(out))?;
+
+        match response.error {
+            Some(e) => Err(JobError::ClientError(e)),
+            None => Ok(()),
+        }
+    }
 }

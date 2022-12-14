@@ -115,6 +115,9 @@ pub enum JobType {
         binary: String,
         tarball_chunks: Vec<Vec<String>>,
     },
+    StoreTarballs {
+        filepaths: Vec<String>,
+    },
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -266,6 +269,10 @@ mod routes {
                 } => {
                     let res = job_manager.submit_compute(binary, tarball_chunks).await?;
                     Ok(serde_json::to_string(&res)?)
+                }
+                JobType::StoreTarballs { filepaths } => {
+                    job_manager.submit_store_tarballs(filepaths).await?;
+                    Ok("".to_string())
                 }
             }
         }

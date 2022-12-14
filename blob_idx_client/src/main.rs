@@ -29,11 +29,21 @@ async fn main() {
     let args: Vec<String> = std::env::args().collect();
     // args[1] is either "write" or "read"
     if args.len() < 3 {
-        eprintln!("Usage: {} [write|read|compute] ...", args[0]);
+        eprintln!("Usage: {} [write|read|compute|store] ...", args[0]);
         std::process::exit(1);
     }
     let resp = match args[1].as_str() {
         "write" => match download_and_write(args).await {
+            Ok(_) => ClientResponse {
+                error: None,
+                message: None,
+            },
+            Err(e) => ClientResponse {
+                error: Some(e),
+                message: None,
+            },
+        },
+        "store" => match store_from_local(args).await {
             Ok(_) => ClientResponse {
                 error: None,
                 message: None,
@@ -299,10 +309,6 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
         std::process::exit(1);
     }
 
-    let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
-    let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
-    let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
-
     let node_id: String = args[2].clone();
     let urls: Vec<String> = args[3].split(' ').map(|s| s.to_string()).collect();
 
@@ -378,6 +384,29 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
         return Err(ClientError::DownloadFailed { urls: failures });
     }
 
+    store_into_blob(blob_entries, blob_bytes, node_id).await?;
+
+    if !failures.is_empty() {
+        return Err(ClientError::DownloadFailed { urls: failures });
+    }
+    Ok(())
+}
+
+async fn store_into_blob(
+    blob_entries: Vec<BlobEntry>,
+    blob_bytes: Vec<Vec<u8>>,
+    node_id: String,
+) -> Result<(), ClientError> {
+    let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
+    let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
+    let blob_storage_dir = std::env::var("BLOB_STORAGE_DIR").expect("BLOB_STORAGE_DIR must be set");
+
+    let entries_keys = blob_entries
+        .iter()
+        .map(|e| e.key.clone())
+        .collect::<Vec<_>>()
+        .join(" ");
+
     // ask the blob api to lock
     let req = CreateAndLockRequest {
         entries: blob_entries,
@@ -432,7 +461,7 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
 
     // write offset to the offset file
     offset_file
-        .write_all(format!("\"{}\": {}\n", args[3], blob.byte_offset).as_bytes())
+        .write_all(format!("\"{}\": {}\n", entries_keys, blob.byte_offset).as_bytes())
         .await?;
 
     // write files in order of the blob entries
@@ -456,11 +485,49 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
     // if we get a 200, we can continue
     check_req_failed(resp).await?;
 
-    if !failures.is_empty() {
-        return Err(ClientError::DownloadFailed { urls: failures });
-    }
-
     // kill keep alive loop
     keep_alive.abort();
+    Ok(())
+}
+
+async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
+    if args.len() != 4 {
+        eprintln!(
+            "Usage: {} store <discovery node id> <tarball filepaths, separated by spaces>",
+            args[0]
+        );
+        std::process::exit(1);
+    }
+    let node_id = args[2].clone();
+    let filepaths = args[3]
+        .split(' ')
+        .map(|s| s.to_string())
+        .collect::<Vec<_>>();
+
+    // read all the files into memory
+    let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), ClientError>>> = vec![];
+    for filepath in filepaths {
+        handles.push(tokio::spawn(async move {
+            let mut file = tokio::fs::File::open(&filepath).await?;
+            let mut bytes = vec![];
+            file.read_to_end(&mut bytes).await?;
+            Ok((filepath.to_string(), bytes))
+        }));
+    }
+
+    let mut blob_entries = vec![];
+    let mut blob_bytes = vec![];
+    for handle in handles {
+        let (filepath, bytes) = handle.await.unwrap()?;
+        let blob_entry = BlobEntry {
+            key: filepath.clone(),
+            num_bytes: bytes.len() as u64,
+        };
+        blob_entries.push(blob_entry);
+        blob_bytes.push(bytes);
+    }
+
+    store_into_blob(blob_entries, blob_bytes, node_id).await?;
+
     Ok(())
 }
