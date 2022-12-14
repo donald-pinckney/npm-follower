@@ -28,6 +28,12 @@ impl EntryProcessor {
     }
 }
 
+impl Default for EntryProcessor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl EntryProcessor {
     pub fn process_entry<R>(
         &mut self,

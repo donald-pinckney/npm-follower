@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::{connection::QueryRunner, custom_types::ParsedSpec};
 
 use super::schema::dependencies;
@@ -134,14 +132,6 @@ impl NewDependency {
             md5digest,
             md5digest_with_version,
         }
-    }
-
-    fn add_counts(&mut self, other: NewDependency) {
-        assert_eq!(self.md5digest_with_version, other.md5digest_with_version);
-        self.prod_freq_count += other.prod_freq_count;
-        self.dev_freq_count += other.dev_freq_count;
-        self.peer_freq_count += other.peer_freq_count;
-        self.optional_freq_count += other.optional_freq_count;
     }
 
     pub fn get_md5digest_with_version(&self) -> &str {

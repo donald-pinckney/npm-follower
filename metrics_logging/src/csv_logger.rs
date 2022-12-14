@@ -172,23 +172,23 @@ impl MetricsLoggerTrait for CsvLogger {
 
     fn log_relational_db_builder_batch_complete_metrics(
         &mut self,
-        metrics: RelationalDbBatchCompleteMetrics,
+        _metrics: RelationalDbBatchCompleteMetrics,
     ) {
         todo!()
     }
 
     fn log_relational_db_builder_start_session(
         &mut self,
-        metrics: RelationalDbStartSessionMetrics,
+        _metrics: RelationalDbStartSessionMetrics,
     ) {
         todo!()
     }
 
-    fn log_relational_db_builder_end_session(&mut self, metrics: RelationalDbEndSessionMetrics) {
+    fn log_relational_db_builder_end_session(&mut self, _metrics: RelationalDbEndSessionMetrics) {
         todo!()
     }
 
-    fn log_relational_db_builder_panic(&mut self, metrics: RelationalDbPanicMetrics) {
+    fn log_relational_db_builder_panic(&mut self, _metrics: RelationalDbPanicMetrics) {
         todo!()
     }
 }

@@ -1,27 +1,16 @@
+use super::schema::versions;
+use crate::connection::QueryRunner;
 use crate::custom_types::RepoInfo;
 use crate::custom_types::Semver;
 use crate::custom_types::VersionStateTimePoint;
 use crate::custom_types::VersionStateType;
 
-use super::schema::versions;
 use chrono::{DateTime, Utc};
-use diesel::pg::upsert::excluded;
 use diesel::Queryable;
 use serde_json::Value;
 
-use super::schema;
-use crate::connection::DbConnection;
-use crate::connection::QueryRunner;
-use crate::custom_types::DiffTypeEnum;
-use crate::custom_types::PackageStateTimePoint;
-use crate::custom_types::PackageStateType;
-use crate::packument::PackageOnlyPackument;
-use crate::packument::VersionOnlyPackument;
-use diesel::insert_into;
 use diesel::prelude::*;
 use diesel::Insertable;
-use serde::Deserialize;
-use serde::Serialize;
 
 #[derive(Queryable, Debug)]
 pub struct Version {

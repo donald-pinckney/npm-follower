@@ -6,9 +6,7 @@ use diesel::pg::Pg;
 use diesel::pg::PgValue;
 use diesel::serialize::ToSql;
 use diesel::serialize::{self, IsNull, Output, WriteTuple};
-use diesel::sql_types::{Int8, Jsonb, Nullable, Record, Timestamptz};
-use serde_json::{Map, Value};
-use std::collections::BTreeMap;
+use diesel::sql_types::{Int8, Nullable, Record, Timestamptz};
 use std::io::Write;
 
 use crate::schema::sql_types::PackageState;
