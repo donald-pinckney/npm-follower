@@ -270,8 +270,8 @@ CREATE TYPE version_state_struct AS (
 CREATE DOMAIN version_state AS version_state_struct CHECK (
   (VALUE).version_state_type IS NOT NULL AND 
   (VALUE).seq IS NOT NULL AND 
-  (VALUE).diff_entry_id IS NOT NULL AND 
-  (VALUE).estimated_time IS NOT NULL
+  (VALUE).diff_entry_id IS NOT NULL --AND 
+  -- (VALUE).estimated_time IS NOT NULL
 );
 
 
