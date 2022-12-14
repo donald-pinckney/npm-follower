@@ -23,7 +23,8 @@ pub struct DownloadedTarball {
     pub signature0_keyid: Option<String>,
     pub npm_signature: Option<String>,
 
-    pub tgz_local_path: String,
+    pub tgz_local_path: Option<String>,
+    pub blob_storage_key: Option<String>,
 }
 
 impl DownloadedTarball {
@@ -42,7 +43,8 @@ impl DownloadedTarball {
             signature0_keyid: task.signature0_keyid.clone(),
             npm_signature: task.npm_signature.clone(),
 
-            tgz_local_path: local_path,
+            tgz_local_path: Some(local_path),
+            blob_storage_key: None,
         }
     }
 }
