@@ -1,13 +1,7 @@
-use super::schema;
 use super::schema::packages;
-use crate::connection::DbConnection;
 use crate::connection::QueryRunner;
-use crate::custom_types::DiffTypeEnum;
 use crate::custom_types::PackageStateTimePoint;
 use crate::custom_types::PackageStateType;
-use crate::custom_types::Semver;
-use crate::packument::PackageOnlyPackument;
-use crate::packument::VersionOnlyPackument;
 use chrono::DateTime;
 use chrono::Utc;
 use deepsize::DeepSizeOf;
@@ -15,8 +9,6 @@ use diesel::insert_into;
 use diesel::prelude::*;
 use diesel::Insertable;
 use diesel::Queryable;
-use serde::Deserialize;
-use serde::Serialize;
 use serde_json::Value;
 
 #[derive(Queryable, Debug, DeepSizeOf)]

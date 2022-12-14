@@ -7,7 +7,7 @@ use postgres_db::{
     custom_types::{
         PackageStateTimePoint, PackageStateType, Semver, VersionStateTimePoint, VersionStateType,
     },
-    dependencies::{DependencyType, NewDependency},
+    dependencies::{Dependency, DependencyType, NewDependency},
     diff_log::DiffLogInstruction,
     packages::NewPackage,
     packument::{PackageOnlyPackument, Spec, VersionOnlyPackument},
@@ -28,6 +28,12 @@ impl EntryProcessor {
     }
 }
 
+impl Default for EntryProcessor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl EntryProcessor {
     pub fn process_entry<R>(
         &mut self,
@@ -41,16 +47,16 @@ impl EntryProcessor {
     {
         match instr {
             DiffLogInstruction::CreatePackage(data) => {
-                // self.create_package(conn, package, data, seq, diff_entry_id)
+                self.create_package(conn, package, data, seq, diff_entry_id)
             }
             DiffLogInstruction::UpdatePackage(data) => {
-                // self.update_package(conn, package, data, seq, diff_entry_id)
+                self.update_package(conn, package, data, seq, diff_entry_id)
             }
             DiffLogInstruction::PatchPackageReferences => {
-                // self.patch_package_refs(conn, package, seq, diff_entry_id)
+                self.patch_package_refs(conn, package, seq, diff_entry_id)
             }
             DiffLogInstruction::CreateVersion(v, data) => {
-                // self.create_version(conn, package, v, data, seq, diff_entry_id)
+                self.create_version(conn, package, v, data, seq, diff_entry_id)
             }
             DiffLogInstruction::UpdateVersion(v, data) => {
                 self.update_version(conn, package, v, data, seq, diff_entry_id)
@@ -413,28 +419,153 @@ impl EntryProcessor {
     fn update_version<R>(
         &mut self,
         conn: &mut R,
-        package: String,
+        package_name: String,
         version: Semver,
-        data: VersionOnlyPackument,
+        new_pack_data: VersionOnlyPackument,
         seq: i64,
         diff_entry_id: i64,
     ) where
         R: QueryRunner,
     {
-        todo!()
+        let package_id = self.db.get_package_id_by_name(conn, &package_name);
+        let version_id = self
+            .db
+            .get_version_id_by_semver(conn, package_id, version.clone());
+        let current_data = self.db.get_version_by_id(conn, version_id);
+        let current_prod_deps: Vec<_> = current_data
+            .prod_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .collect();
+        let current_dev_deps: Vec<_> = current_data
+            .dev_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .collect();
+        let current_peer_deps: Vec<_> = current_data
+            .peer_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .collect();
+        let current_optional_deps: Vec<_> = current_data
+            .optional_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .collect();
+
+        // Assert that the version is in normal state
+        assert_eq!(
+            current_data.current_version_state_type,
+            VersionStateType::Normal
+        );
+
+        // Assert that deps didn't change
+        for (old, new) in current_prod_deps
+            .iter()
+            .zip(new_pack_data.prod_dependencies)
+        {
+            assert_dep_eq(old, &new);
+        }
+
+        for (old, new) in current_dev_deps.iter().zip(new_pack_data.dev_dependencies) {
+            assert_dep_eq(old, &new);
+        }
+
+        for (old, new) in current_peer_deps
+            .iter()
+            .zip(new_pack_data.peer_dependencies)
+        {
+            assert_dep_eq(old, &new);
+        }
+
+        for (old, new) in current_optional_deps
+            .iter()
+            .zip(new_pack_data.optional_dependencies)
+        {
+            assert_dep_eq(old, &new);
+        }
+
+        // Assert that tarball url didn't change
+        assert_eq!(
+            current_data.tarball_url, new_pack_data.dist.tarball_url,
+            "Tarball url changed"
+        );
+
+        // Assert that repo info didn't change
+        if let Some(new_repo_info) = new_pack_data.repository {
+            let current_repo_raw = current_data.repository_raw.expect("Repo changed (1)");
+            let current_repo_parsed = current_data.repository_parsed.expect("Repo changed (2)");
+
+            assert_eq!(current_repo_raw, new_repo_info.raw, "Repo changed (3)");
+
+            assert_eq!(current_repo_parsed, new_repo_info.info, "Repo changed (4)");
+        } else {
+            assert!(current_data.repository_raw.is_none(), "Repo changed (5)");
+            assert!(current_data.repository_parsed.is_none(), "Repo changed (6)");
+        }
+
+        // If time changed, we ignore that, because thats B.S., and print a warning
+        if current_data.created != new_pack_data.time {
+            println!(
+                "Warning: time changed for {}@{} in diff entry id {}, seq id {}",
+                package_name, version, diff_entry_id, seq
+            );
+        }
+
+        // Assert that extra metadata didn't change
+        let new_extra_metadata = Value::Object(new_pack_data.extra_metadata.into_iter().collect());
+        if current_data.extra_metadata != new_extra_metadata {
+            self.db
+                .set_version_extra_metadata(conn, version_id, new_extra_metadata);
+        }
     }
 
     fn delete_version<R>(
         &mut self,
         conn: &mut R,
-        package: String,
+        package_name: String,
         version: Semver,
         seq: i64,
         diff_entry_id: i64,
     ) where
         R: QueryRunner,
     {
-        todo!()
+        let package_id = self.db.get_package_id_by_name(conn, &package_name);
+        let version_id = self.db.get_version_id_by_semver(conn, package_id, version);
+        let current_data = self.db.get_version_by_id(conn, version_id);
+
+        let delete_prod_deps: Vec<_> = current_data
+            .prod_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .map(|x| x.mark_as_delete(DependencyType::Prod).as_new())
+            .collect();
+        let delete_dev_deps: Vec<_> = current_data
+            .dev_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .map(|x| x.mark_as_delete(DependencyType::Dev).as_new())
+            .collect();
+        let delete_peer_deps: Vec<_> = current_data
+            .peer_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .map(|x| x.mark_as_delete(DependencyType::Peer).as_new())
+            .collect();
+        let delete_optional_deps: Vec<_> = current_data
+            .optional_dependencies
+            .iter()
+            .map(|x| self.db.get_dependency_by_id(conn, *x))
+            .map(|x| x.mark_as_delete(DependencyType::Optional).as_new())
+            .collect();
+
+        self.insert_or_inc_dependencies(conn, delete_prod_deps);
+        self.insert_or_inc_dependencies(conn, delete_dev_deps);
+        self.insert_or_inc_dependencies(conn, delete_peer_deps);
+        self.insert_or_inc_dependencies(conn, delete_optional_deps);
+
+        self.db
+            .delete_version(conn, version_id, seq, diff_entry_id, None);
     }
 
     fn insert_or_inc_dependencies<R>(&mut self, conn: &mut R, deps: Vec<NewDependency>) -> Vec<i64>
@@ -459,4 +590,19 @@ where
     for item in xs {
         assert!(set.insert(item));
     }
+}
+
+fn assert_dep_eq(old_dep: &Dependency, new_dep: &(String, Spec)) {
+    assert_eq!(
+        old_dep.dst_package_name, new_dep.0,
+        "Dependency package name changed"
+    );
+    assert_eq!(
+        old_dep.raw_spec, new_dep.1.raw,
+        "Dependency raw spec changed"
+    );
+    assert_eq!(
+        old_dep.spec, new_dep.1.parsed,
+        "Dependency parsed spec changed"
+    );
 }
