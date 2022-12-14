@@ -500,11 +500,11 @@ impl EntryProcessor {
         assert_eq!(current_data.created, new_pack_data.time, "Time changed");
 
         // Assert that extra metadata didn't change
-        assert_eq!(
-            current_data.extra_metadata,
-            Value::Object(new_pack_data.extra_metadata.into_iter().collect()),
-            "Extra metadata changed"
-        );
+        let new_extra_metadata = Value::Object(new_pack_data.extra_metadata.into_iter().collect());
+        if current_data.extra_metadata != new_extra_metadata {
+            self.db
+                .set_version_extra_metadata(conn, version_id, new_extra_metadata);
+        }
     }
 
     fn delete_version<R>(

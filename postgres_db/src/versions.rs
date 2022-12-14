@@ -130,6 +130,22 @@ where
         .expect("Error saving new version")
 }
 
+pub fn set_version_extra_metadata<R>(conn: &mut R, version_id: i64, new_extra_metadata: Value)
+where
+    R: QueryRunner,
+{
+    use super::schema::versions::dsl::*;
+
+    let update_query =
+        diesel::update(versions.find(version_id)).set(extra_metadata.eq(new_extra_metadata));
+
+    assert_eq!(
+        conn.execute(update_query)
+            .expect("Error updating version extra metadata"),
+        1
+    );
+}
+
 pub fn delete_version<R>(
     conn: &mut R,
     version_id: i64,

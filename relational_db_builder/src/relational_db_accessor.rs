@@ -10,6 +10,7 @@ use postgres_db::{
     packages::{NewPackage, Package, PackageUpdate},
     versions::{NewVersion, Version},
 };
+use serde_json::Value;
 
 struct DependencyState {
     id: i64,
@@ -260,6 +261,17 @@ impl RelationalDbAccessor {
         dependency_id: i64,
     ) -> Dependency {
         postgres_db::dependencies::get_dependency_by_id(conn, dependency_id)
+    }
+
+    pub fn set_version_extra_metadata<R>(
+        &self,
+        conn: &mut R,
+        version_id: i64,
+        new_extra_metadata: Value,
+    ) where
+        R: QueryRunner,
+    {
+        postgres_db::versions::set_version_extra_metadata(conn, version_id, new_extra_metadata)
     }
 
     pub fn delete_version<R: QueryRunner>(
