@@ -422,7 +422,9 @@ impl EntryProcessor {
         R: QueryRunner,
     {
         let package_id = self.db.get_package_id_by_name(conn, &package_name);
-        let version_id = self.db.get_version_id_by_semver(conn, package_id, version);
+        let version_id = self
+            .db
+            .get_version_id_by_semver(conn, package_id, version.clone());
         let current_data = self.db.get_version_by_id(conn, version_id);
         let current_prod_deps: Vec<_> = current_data
             .prod_dependencies
@@ -496,8 +498,13 @@ impl EntryProcessor {
             assert!(current_data.repository_parsed.is_none(), "Repo changed (6)");
         }
 
-        // Assert that time didn't change
-        assert_eq!(current_data.created, new_pack_data.time, "Time changed");
+        // If time changed, we ignore that, because thats B.S., and print a warning
+        if current_data.created != new_pack_data.time {
+            println!(
+                "Warning: time changed for {}@{} in diff entry id {}, seq id {}",
+                package_name, version, diff_entry_id, seq
+            );
+        }
 
         // Assert that extra metadata didn't change
         let new_extra_metadata = Value::Object(new_pack_data.extra_metadata.into_iter().collect());
