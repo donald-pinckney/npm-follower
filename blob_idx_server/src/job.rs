@@ -17,7 +17,7 @@ pub(super) mod worker;
 
 /// The response that the worker client sends to the server.
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
+#[serde(tag = "type", content = "data")]
 pub enum ClientResponse {
     Message(serde_json::Value),
     Error(ClientError),
