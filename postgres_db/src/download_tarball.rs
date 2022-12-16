@@ -61,3 +61,38 @@ pub fn get_downloaded_urls_matching_tasks(
     conn.load(get_matching_tarball_urls_query)
         .expect("Error checking for max sequence in change_log table")
 }
+
+pub fn query_tarballs_after_url(
+    conn: &mut DbConnection,
+    after_url: &str,
+    limit: i64,
+) -> Vec<DownloadedTarball> {
+    // returns ordered by url, ascending
+    use schema::downloaded_tarballs::dsl::*;
+
+    let query = downloaded_tarballs
+        .filter(tarball_url.gt(after_url))
+        .order(tarball_url.asc())
+        .limit(limit);
+    conn.load(query).expect("Error querying tarballs after url")
+}
+
+pub fn query_first_tarball_by_url(conn: &mut DbConnection) -> Option<DownloadedTarball> {
+    // ordered by tarball_url, ascending
+    use schema::downloaded_tarballs::dsl::*;
+
+    let query = downloaded_tarballs.order(tarball_url.asc()).limit(1);
+    conn.load(query)
+        .expect("Error querying first tarball by url")
+        .pop()
+}
+
+pub fn num_total_downloaded_tarballs(conn: &mut DbConnection) -> i64 {
+    use schema::downloaded_tarballs::dsl::*;
+
+    let query = downloaded_tarballs.select(diesel::dsl::count(tarball_url));
+    conn.load(query)
+        .expect("Error querying number of downloaded tarballs")
+        .pop()
+        .unwrap()
+}
