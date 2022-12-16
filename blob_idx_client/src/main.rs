@@ -34,44 +34,20 @@ async fn main() {
     }
     let resp = match args[1].as_str() {
         "write" => match download_and_write(args).await {
-            Ok(_) => ClientResponse {
-                error: None,
-                message: None,
-            },
-            Err(e) => ClientResponse {
-                error: Some(e),
-                message: None,
-            },
+            Ok(_) => ClientResponse::Message(serde_json::json!({})),
+            Err(e) => ClientResponse::Error(e),
         },
         "store" => match store_from_local(args).await {
-            Ok(_) => ClientResponse {
-                error: None,
-                message: None,
-            },
-            Err(e) => ClientResponse {
-                error: Some(e),
-                message: None,
-            },
+            Ok(_) => ClientResponse::Message(serde_json::json!({})),
+            Err(e) => ClientResponse::Error(e),
         },
         "read" => match read_and_send_main(args).await {
-            Ok(o) => ClientResponse {
-                error: None,
-                message: Some(serde_json::Value::String(o)),
-            },
-            Err(e) => ClientResponse {
-                error: Some(e),
-                message: None,
-            },
+            Ok(o) => ClientResponse::Message(serde_json::Value::String(o)),
+            Err(e) => ClientResponse::Error(e),
         },
         "compute" => match compute_run_bin(args).await {
-            Ok(o) => ClientResponse {
-                error: None,
-                message: Some(serde_json::to_value(o).unwrap()),
-            },
-            Err(e) => ClientResponse {
-                error: Some(e),
-                message: None,
-            },
+            Ok(o) => ClientResponse::Message(serde_json::to_value(o).unwrap()),
+            Err(e) => ClientResponse::Error(e),
         },
         _ => {
             eprintln!("Usage: {} [write|read|compute] ...", args[0]);
@@ -506,7 +482,7 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
 
     // read all the files into memory
     let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), ClientError>>> = vec![];
-    for filepath in filepaths {
+    for filepath in filepaths.clone() {
         handles.push(tokio::spawn(async move {
             let mut file = tokio::fs::File::open(&filepath).await?;
             let mut bytes = vec![];
@@ -534,6 +510,11 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
     }
 
     store_into_blob(blob_entries, blob_bytes, node_id).await?;
+
+    // delete the files
+    for file in filepaths {
+        tokio::fs::remove_file(file).await?;
+    }
 
     Ok(())
 }

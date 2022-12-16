@@ -12,6 +12,7 @@ const PAGE_SIZE: i64 = 10; // TODO: increase this to 1024
 #[tokio::main]
 async fn main() {
     utils::check_no_concurrent_processes("tarball_transfer");
+    dotenvy::dotenv().ok();
     let mut conn = DbConnection::connect();
 
     let args = std::env::args().collect::<Vec<_>>();
@@ -77,11 +78,12 @@ async fn main() {
 
 pub fn spawn_transfer_worker(
     rx: Arc<Mutex<mpsc::Receiver<Vec<DownloadedTarball>>>>, // if we close this channel, the workers will exit
-    tx: mpsc::Sender<Vec<(String, String)>>,
+    db_tx: mpsc::Sender<Vec<(String, String)>>,
     worker_id: usize,
 ) -> tokio::task::JoinHandle<()> {
     tokio::task::spawn(async move {
         println!("Spawned transfer worker {}", worker_id);
+        let discovery_scp = std::env::var("DISCOVERY_SCP").unwrap();
         loop {
             let tarballs = {
                 let mut rx = rx.lock().await;
@@ -98,15 +100,15 @@ pub fn spawn_transfer_worker(
                 worker_id,
                 tarballs.len()
             );
-            tokio::time::sleep(std::time::Duration::from_millis(2000)).await;
-            tx.send(
-                tarballs
-                    .into_iter()
-                    .map(|tb| (tb.tarball_url, "placeholder".to_string()))
-                    .collect(),
-            )
-            .await
-            .unwrap();
+            db_tx
+                .send(
+                    tarballs
+                        .into_iter()
+                        .map(|tb| (tb.tarball_url, "placeholder".to_string()))
+                        .collect(),
+                )
+                .await
+                .unwrap();
         }
     })
 }
@@ -125,7 +127,7 @@ pub fn spawn_db_worker(
                     return;
                 }
             };
-            println!("Got {} tarballs to insert", tarballs.len());
+            println!("Got {} tarballs to edit", tarballs.len());
         }
     })
 }

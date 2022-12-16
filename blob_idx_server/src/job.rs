@@ -17,9 +17,10 @@ pub(super) mod worker;
 
 /// The response that the worker client sends to the server.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ClientResponse {
-    pub message: Option<serde_json::Value>,
-    pub error: Option<ClientError>,
+#[serde(tag = "type")]
+pub enum ClientResponse {
+    Message(serde_json::Value),
+    Error(ClientError),
 }
 
 /// The result for a single tarball computed by a worker.
@@ -109,9 +110,9 @@ impl JobManager {
         let response: ClientResponse =
             serde_json::from_str(&out).map_err(|_| JobError::ClientOutputNotParsable(out))?;
 
-        match response.error {
-            Some(e) => Err(JobError::ClientError(e)),
-            None => Ok(()),
+        match response {
+            ClientResponse::Message(_) => Ok(()),
+            ClientResponse::Error(e) => Err(JobError::ClientError(e)),
         }
     }
 
@@ -137,10 +138,9 @@ impl JobManager {
         let response: ClientResponse = serde_json::from_str(&out)
             .map_err(|_| JobError::ClientOutputNotParsable(out.clone()))?;
 
-        match (response.message, response.error) {
-            (Some(filepath), None) => Ok(filepath.as_str().unwrap().to_string()),
-            (_, Some(e)) => Err(JobError::ClientError(e)),
-            _ => Err(JobError::ClientOutputNotParsable(out)),
+        match response {
+            ClientResponse::Message(filepath) => Ok(filepath.as_str().unwrap().to_string()),
+            ClientResponse::Error(e) => Err(JobError::ClientError(e)),
         }
     }
 
@@ -218,9 +218,9 @@ impl JobManager {
         let response: ClientResponse =
             serde_json::from_str(&out).map_err(|_| JobError::ClientOutputNotParsable(out))?;
 
-        match response.error {
-            Some(e) => Err(JobError::ClientError(e)),
-            None => Ok(()),
+        match response {
+            ClientResponse::Message(_) => Ok(()),
+            ClientResponse::Error(e) => Err(JobError::ClientError(e)),
         }
     }
 }
