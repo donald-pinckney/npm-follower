@@ -243,8 +243,6 @@ pub fn spawn_transfer_worker(
                                             // we're done. this is the only file, and it already exists
                                             break;
                                         }
-                                        processed_tarballs
-                                            .retain(|(_, filename)| filename != &file);
                                         filepaths.retain(|f| f != &path);
                                     }
                                     _ => unreachable!(),
