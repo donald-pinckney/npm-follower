@@ -96,3 +96,11 @@ pub fn num_total_downloaded_tarballs(conn: &mut DbConnection) -> i64 {
         .pop()
         .unwrap()
 }
+
+pub fn set_blob_storage_key(conn: &mut DbConnection, tb_url: &str, blob_key: &str) {
+    use schema::downloaded_tarballs::dsl::*;
+
+    let query = diesel::update(downloaded_tarballs.filter(tarball_url.eq(tb_url)))
+        .set(blob_storage_key.eq(blob_key));
+    conn.execute(query).expect("Error setting blob storage key");
+}

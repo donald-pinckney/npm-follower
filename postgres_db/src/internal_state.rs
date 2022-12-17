@@ -28,10 +28,9 @@ pub fn set_queued_downloads_seq<R: QueryRunner>(seq: i64, conn: &mut R) {
 }
 
 pub fn query_tarball_transfer_last<R: QueryRunner>(conn: &mut R) -> Option<(String, i64)> {
-    Some((
-        query_key_value_string_state("tarball_transfer_last_url", conn)?,
-        query_key_value_int_state("tarball_transfer_last_seq", conn)?,
-    ))
+    let last_url = query_key_value_string_state("tarball_transfer_last_url", conn)?;
+    let last_seq = query_key_value_int_state("tarball_transfer_last_seq", conn)?;
+    Some((last_url, last_seq))
 }
 
 pub fn set_tarball_transfer_last<R: QueryRunner>(url: String, seq: i64, conn: &mut R) {
