@@ -45,7 +45,7 @@ async fn main() {
     let (mut last_url, mut queued_up_to) = internal_state::query_tarball_transfer_last(&mut conn)
         .unwrap_or((first_ever_tb.as_ref().unwrap().tarball_url.to_string(), 0));
 
-    let num_tarballs_total = download_tarball::num_total_downloaded_tarballs(&mut conn);
+    let num_tarballs_total = internal_state::query_queued_downloads_seq(&mut conn).unwrap_or(0);
     let mut num_tarballs_so_far = 0;
 
     loop {
