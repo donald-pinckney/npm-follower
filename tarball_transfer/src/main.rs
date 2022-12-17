@@ -167,7 +167,10 @@ pub fn spawn_transfer_worker(
                 // symlink the file into the tmp dir
                 let mut tmp_path = tmp_dir.clone();
                 tmp_path.push(&filename);
-                unwrap_or_retry!(tokio::fs::symlink(local_path, &tmp_path).await);
+                // if the file already exists, don't symlink
+                if !tmp_path.exists() {
+                    unwrap_or_retry!(tokio::fs::symlink(local_path, &tmp_path).await);
+                }
 
                 processed_tarballs.push((tarball.tarball_url.clone(), filename));
             }
@@ -248,7 +251,7 @@ pub fn spawn_transfer_worker(
                                 }
                             }
                             _ => {
-                                eprintln!("[{}] Error: {:?}", worker_id, txt);
+                                eprintln!("[{}] Response Error: {:?}", worker_id, txt);
                                 retry = true;
                                 continue 'o;
                             }
