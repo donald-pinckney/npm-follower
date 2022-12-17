@@ -12,7 +12,7 @@ use postgres_db::{
 };
 use tokio::sync::{mpsc, Mutex};
 
-const PAGE_SIZE: i64 = 10; // TODO: increase this to 1024
+const PAGE_SIZE: i64 = 1024;
 
 #[tokio::main]
 async fn main() {
