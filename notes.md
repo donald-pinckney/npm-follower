@@ -1,4 +1,47 @@
-# RQs for paper
+# Analysis of Security of the NPM Ecosystem Historically
+
+## Security Vulnerabilities
+
+- Have install scripts become more or less prevelant over time? Are they only added, or also removed from packages? What are the most frequent commands? {M}
+  Methodology: let's consider two metrics: a) frequency of packages with at least one version having an install script, and b) frequency of packages where the latest version has an install script.
+
+  We can then compute a) and b) for every month since the start of NPM. 
+  Interpretations of a) and b): Metric a) gives an upper bound on how useful install scripts are for developers: __% of packages found it useful to use install scripts at somepoint in their lifecycle. Metric b) says roughly how likely you are to be forced to run an install script if installing a random package at a given point in time.
+
+  Next, let's look at *changes* to install scripts. What % of packages contain in their history these types of changes: 1) add install script, 2) delete install script, 3) change install script? 
+  Let's manually examine a few of these in popular packages, and see why developers made those changes.
+
+  Finally, what's the content of install scripts? Let's count command / word occurrences within install scripts. We'll only count a word once for every time it occurrs in any version of a package.
+
+
+- How quickly do authors release updates in response to CVEs? {A, ???}
+- How well are CVEs updated to track fixes or non-fixes to packages? {A, ???} (Federico says they get updated, but do they really?)
+
+## Dependency Structure
+
+- After an update is published, how quickly do downstream packages update to receive it?  {M}
+  - Is this different between security updates vs. feature updates?
+- How are dependencies updated to patch vulnerabilities in dependencies?  {M, A}
+
+## Code changes & semver
+
+Each semver update is one of 4 *update types*: bug (1.1.1 -> 1.1.2), minor (1.1.1 -> 1.2.0), major (1.1.1 -> 2.0.0), or other (betas, and weird crap).
+
+- How frequent are each update type? {M}
+- Among each update type:
+  - what files are typically changed? {M, T}
+  - how large are the diffs? {M, T}
+  - ~~are the changes breaking? {M, T}~~ (too hard for now)
+
+
+
+
+
+
+
+
+
+# RQs for paper (OLD)
 
 We focus all RQs around historical analysis: how did X change over time, or how did X change in response to Y?
 
