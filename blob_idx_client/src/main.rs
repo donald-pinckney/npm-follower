@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     sync::{
         atomic::{AtomicUsize, Ordering},
         Arc,
@@ -499,8 +499,12 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
 
     let mut blob_entries = vec![];
     let mut blob_bytes = vec![];
+    let mut names = HashSet::new(); // can't have duplicate names
     for handle in handles {
         let (filename, bytes) = handle.await.unwrap()?;
+        if !names.insert(filename.clone()) {
+            continue;
+        }
         let blob_entry = BlobEntry {
             key: filename,
             num_bytes: bytes.len() as u64,
