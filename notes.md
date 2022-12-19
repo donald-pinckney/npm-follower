@@ -1,5 +1,43 @@
+# RQs for paper
 
-# NPM Dataset Questions
+We focus all RQs around historical analysis: how did X change over time, or how did X change in response to Y?
+
+We have 4 themes, each of which we analyze historically.
+
+## Security Vulnerabilities
+
+- Have install scripts become more or less prevelant over time? Are they only added, or also removed from packages? {M}
+- How quickly do authors release updates in response to CVEs? {A, ???}
+- How well are CVEs updated to track fixes or non-fixes to packages? {A, ???}
+
+## Dependency Structure
+
+- How common are: changing version constraints vs. adding new packages vs. deleting packages  {M}
+- After an update is published, how quickly do downstream packages update to receive it?  {M}
+- How are dependencies updated to patch vulnerabilities in dependencies?  {M, A}
+- Which packages are most important to the ecosystem, and how has this changed over time? {M}
+
+## Use of language features
+
+How have developers used features in JS / TS over time?
+
+- After the release of TypeScript, how rapidly have packages adopted types? Has the rate of adoption sped up or slowed down? {M}
+- For packages which adopt types, how do their types evolve over time? {M, T}
+- After X (classes, ES modules, async/await, etc.) is introduced to JS, how commonly is it used? {M, T}
+
+
+## Code changes & semver
+
+Each semver update is one of 4 *update types*: bug (1.1.1 -> 1.1.2), minor (1.1.1 -> 1.2.0), major (1.1.1 -> 2.0.0), or other (betas, and weird crap).
+
+- How frequent are each update type? {M}
+- Among each update type:
+  - what files are typically changed? {M, T}
+  - are the changes breaking? {M, T}
+  - how large are the diffs? {M, T}
+
+
+# NPM Dataset Questions (OLD!)
 
 
 
@@ -47,10 +85,6 @@
 - Which packages are "important" to the ecosystem? (see trivial packages paper, "technical plus factor")   {M, D?}
 
 
-
-
-## Questions that we harvest from prior work
-- ...
 
 
 
