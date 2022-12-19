@@ -54,7 +54,7 @@ async fn main() {
             queued_up_to,
             last_url,
             PAGE_SIZE,
-            100.0 * (num_tarballs_so_far as f64) / (num_tarballs_total as f64)
+            100.0 * (queued_up_to as f64) / (num_tarballs_total as f64)
         );
         let mut tarballs =
             download_tarball::query_tarballs_after_url(&mut conn, &last_url, PAGE_SIZE);
