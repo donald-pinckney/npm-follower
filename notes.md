@@ -35,7 +35,7 @@ Each semver update is one of 4 *update types*: bug (1.1.1 -> 1.1.2), minor (1.1.
 - Among each update type:
   - what files are typically changed? {M, T}
   - how large are the diffs? {M, T}
-  - lower-bound on non-breaking changes? {M, T} (too hard for now)
+  - lower-bound on non-breaking changes? {M, T}
 
   Methodology: For each update, we compute its diff D. From D, we find:
   - how many files are modified (N_F)
