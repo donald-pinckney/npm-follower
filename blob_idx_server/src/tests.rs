@@ -962,7 +962,7 @@ async fn test_slice_doesnt_exist() {
         .await;
 
         assert!(resp.is_err());
-        assert_eq!(resp.unwrap_err(), BlobError::DoesNotExist);
+        assert_eq!(resp.unwrap_err(), BlobError::DoesNotExist("k1".to_string()));
     });
 }
 
