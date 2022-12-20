@@ -1,9 +1,8 @@
 pub mod blob;
+pub mod errors;
 pub mod http;
 pub mod job;
-pub mod errors;
 pub mod ssh;
-
 
 /// Prints to stdout only if #cfg(debug_assertions) is set.
 #[macro_export]

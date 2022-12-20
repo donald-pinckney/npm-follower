@@ -1,9 +1,4 @@
-use blob_idx_server::{
-    blob,
-    http::HTTP,
-    job::JobManagerConfig,
-    ssh::{SshSessionFactory},
-};
+use blob_idx_server::{blob, http::HTTP, job::JobManagerConfig, ssh::SshSessionFactory};
 
 #[tokio::main]
 async fn main() {
