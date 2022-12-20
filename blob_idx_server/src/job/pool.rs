@@ -252,8 +252,14 @@ impl WorkerPool {
                         Ok(None)
                     } else {
                         debug!("Found running worker {}", job_id);
-                        // check if network is ok
-                        if worker.is_network_up().await? {
+                        // check if network is ok and not on login node
+                        let node_id = worker.get_node_id_via_hostname().await;
+                        let network_up = worker.is_network_up().await;
+                        if node_id.is_ok()
+                            && network_up.is_ok()
+                            && network_up.unwrap()
+                            && !node_id.unwrap().contains("login")
+                        {
                             debug!("Network is up for worker {}", job_id);
                             Ok(Some(worker))
                         } else {

@@ -79,6 +79,18 @@ impl Worker {
         Ok(out)
     }
 
+    /// Gets the node id via `hostname` from the ssh of the worker. Assumes that the
+    /// worker is running.
+    pub(crate) async fn get_node_id_via_hostname(&self) -> Result<String, JobError> {
+        match &*self.status {
+            WorkerStatus::Running { ssh_session, .. } => {
+                let out = ssh_session.run_command("hostname").await?;
+                Ok(out)
+            }
+            _ => panic!("Worker is not running"),
+        }
+    }
+
     /// Cancels the job of the worker on discovery.
     pub(crate) async fn cancel(&self, session: &dyn Ssh) -> Result<(), JobError> {
         session
