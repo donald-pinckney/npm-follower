@@ -13,8 +13,11 @@
 
   Finally, what's the content of install scripts? Let's count command / word occurrences within install scripts. We'll only count a word once for every time it occurrs in any version of a package.
 
+  Note: for all the above, we should ignore beta versions, etc.
 
-- How quickly do authors release updates in response to CVEs? {A, ???}
+
+- How quickly do authors release updates in response to CVEs? {A, M}
+- 
 - How well are CVEs updated to track fixes or non-fixes to packages? {A, ???} (Federico says they get updated, but do they really?)
 
 ## Dependency Structure
