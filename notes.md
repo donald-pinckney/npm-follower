@@ -3,6 +3,7 @@
 ## Security Vulnerabilities
 
 - Have install scripts become more or less prevelant over time? Are they only added, or also removed from packages? What are the most frequent commands? {M}
+  
   Methodology: let's consider two metrics: a) frequency of packages with at least one version having an install script, and b) frequency of packages where the latest version has an install script.
 
   We can then compute a) and b) for every month since the start of NPM. 
@@ -17,25 +18,52 @@
 
 
 - How quickly do authors release updates in response to CVEs? {A, M}
-- 
-- How well are CVEs updated to track fixes or non-fixes to packages? {A, ???} (Federico says they get updated, but do they really?)
+  
+  Methodology: for each CVE with a patch, we can look at the time between the publish time of the CVE and the publish time of the patched version. We can then look at the distribution of times between CVE publication and fix.
+  We can segment this on both the CVE side (severity, vector, etc.) and on the package side (popularity).
+
+
+- ~~How well are CVEs updated to track fixes or non-fixes to packages? {A, ???}~~ (Federico says they get updated, but do they really?)
 
 ## Dependency Structure
 
 - After an update is published, how quickly do downstream packages update to receive it?  {M}
   - Is this different between security updates vs. feature updates?
-- How are dependencies updated to patch vulnerabilities in dependencies?  {M, A}
+  
+  Methodology: this is probably one of the more complicated ones. In many cases, downstream dependencies *automatically* receive the update,
+  if their version constraint allows it. Suppose we are considering an update of package A from version V1 to V2, and we wish to see how often it is adopted.
+  First, we get all the packages (B) who's latest version (W1) prior to V2 being published had a dependency on A with constraint C satisfying V1. We then have 2 cases. If 
+  C also satisfies V2, then this counts as an *automatic update*. If C does not satisfy V2, then we attempt to find the first version W2 after W1 which does satisfy V2.
+  If we find such a version, then we count this as a *manual update*, and we find the time difference between W2 and V2. If we do not find such a version, then we count this as a *non-update*.
+
+  We'd then need to do this for all packages, and then aggregate the results. We can also segment this on upstream package popularity, downstream package popularity, dependency type (prod vs. dev), and update type (security patch vs. other).
+
 
 ## Code changes & semver
 
 Each semver update is one of 4 *update types*: bug (1.1.1 -> 1.1.2), minor (1.1.1 -> 1.2.0), major (1.1.1 -> 2.0.0), or other (betas, and weird crap).
 
 - How frequent are each update type? {M}
+
+  Methodology: for each package, we determine which percentage of its updates are bug, minor, or major (discarding other). We then aggregate this across all packages.
+
 - Among each update type:
   - what files are typically changed? {M, T}
   - how large are the diffs? {M, T}
-  - ~~are the changes breaking? {M, T}~~ (too hard for now)
+  - lower-bound on non-breaking changes? {M, T} (too hard for now)
 
+  Methodology: For each update, we compute its diff D. From D, we find:
+  - how many files are modified (N_F)
+  - how many lines are modified/added/removed (N_M, N_A, N_R)
+  - which files are modified (S_F)
+  - which file extensions are modified (S_E)
+
+  We then normalize these metrics per-package (as was done above), and aggregate across all packages. We also join each update with the update type (determined above),
+  and segment by update type. 
+
+  Finally, for each update we can also classify it as definitely non-breaking, or not.
+  If only `package.json` is modified, and non-code files (`.md`, etc.) are modified, then it's non-breaking (not quite, for `package.json` we have to check that the dependencies are changed in a non-breaking way, but that's not too hard).
+  We could try to do harder things, but likely won't have time.
 
 
 
