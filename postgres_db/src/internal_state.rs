@@ -27,6 +27,17 @@ pub fn set_queued_downloads_seq<R: QueryRunner>(seq: i64, conn: &mut R) {
     set_key_value_int_state("queued_downloads_seq", seq, conn);
 }
 
+pub fn query_tarball_transfer_last<R: QueryRunner>(conn: &mut R) -> Option<(String, i64)> {
+    let last_url = query_key_value_string_state("tarball_transfer_last_url", conn)?;
+    let last_seq = query_key_value_int_state("tarball_transfer_last_seq", conn)?;
+    Some((last_url, last_seq))
+}
+
+pub fn set_tarball_transfer_last<R: QueryRunner>(url: String, seq: i64, conn: &mut R) {
+    set_key_value_string_state("tarball_transfer_last_url", url, conn);
+    set_key_value_int_state("tarball_transfer_last_seq", seq, conn);
+}
+
 pub fn query_gha_pointer<R: QueryRunner>(conn: &mut R) -> Option<String> {
     query_key_value_string_state("gha_pointer", conn)
 }

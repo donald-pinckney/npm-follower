@@ -1,8 +1,5 @@
 [workspace]
-members = ["changes_fetcher", "postgres_db", "download_queuer", "downloader", "diff_log_builder", "relational_db_builder", "semver_spec_serialization", "utils", "metrics_logging"]
+members = ["changes_fetcher", "postgres_db", "download_queuer", "downloader", "diff_log_builder", "relational_db_builder", "semver_spec_serialization", "utils", "metrics_logging", "blob_idx_server", "blob_idx_client", "tarball_transfer"]
 
 [profile.bench]
 debug = true
-
-#[profile.release]
-#debug = true
