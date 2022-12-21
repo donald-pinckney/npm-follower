@@ -30,6 +30,11 @@ jobs:
         postgresql password: password
     - name: Setup Node.js environment
       uses: actions/setup-node@v3.3.0
+    - name: Setup Redis
+      uses: zhulik/redis-action@1.1.0
+      with:
+        redis version: '7.0.7'
+        number of databases: 16
     - name: Install Diesel
       run: cargo install diesel_cli --no-default-features --features postgres
     - name: Setup Diesel

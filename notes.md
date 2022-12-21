@@ -32,6 +32,30 @@ Each semver update is one of 4 *update types*: bug (1.1.1 -> 1.1.2), minor (1.1.
 
   Methodology: for each package, we determine which percentage of its updates are bug, minor, or major (discarding other). We then aggregate this across all packages.
 
+  What constitutes an update? Complications:
+  + There is no requirement that versions are increased monotonically. Probably rare, but will happen, so we need to not crash. Example A: 2.0.0, 1.0.0, 0.1.0.
+  + Actually common is for updates to be released on multiple "tracks". This needs to be computed right, since I expect it to be common. Example B: 5.5.10, 6.0.0, 6.1.0, 6.2.0, 5.5.11, 6.2.1 (https://www.npmjs.com/package/rxjs?activeTab=versions).
+
+  Example B should result in the updates: 5.5.10 -> 5.5.11 (bug), 6.0.0 -> 6.1.0 (minor), 6.1.0 -> 6.2.0 (minor), 6.2.0 -> 6.2.1 (bug), 5.5.11 -> 6.0.0 (major).
+
+  Proposed method: 
+  First, we filter out all versions with prerelease or build tags (e.g. -beta5, etc.).
+
+  For all remaining versions of a package, we first partition into equivalence classes based on semver-compatibility.
+  For example, the Example B would be partitioned into {(5.5.10, 5.5.11), (6.0.0, 6.1.0, 6.2.0, 6.2.1)}.
+  
+  We then assert that each equivalence class is ordered chronologically, if not we report the package as having a malformed history and filter it out.
+  I expect that relatively few will be filtered, out, but we should verify.
+  
+  Now, we build the set of updates. For each equivalence class, we say that there is an update between each version within the class chronologically.
+  So for Example B, this would generate the updates 5.5.10 -> 5.5.11 (bug), 6.0.0 -> 6.1.0 (minor), 6.1.0 -> 6.2.0 (minor), 6.2.0 -> 6.2.1 (bug).
+  
+  Finally, we need to consider the predecessors of the first versions in the classes. Let V be the first chronological version in a class. We note that the
+  ordering relation on versions extends to an ordering relation on the equivalency classes. Let Q be the greatest equivalency class which is strictly less than V
+  and has at least one member chronologically before V. Let W be the most recent version in Q which occurs chronologically before V. We then say there is an update from W to V.
+  For Example B, this would generate the update 5.5.10 -> 6.0.0 (major)
+
+
 - Among each update type:
   - what files are typically changed? {M, T}
   - how large are the diffs? {M, T}
