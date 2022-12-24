@@ -1,0 +1,37 @@
+query QueryAllGHSA($cursor: String) {
+  securityVulnerabilities(first: 100, after: $cursor, ecosystem: NPM) {
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    nodes {
+      advisory {
+        publishedAt
+        updatedAt
+        description
+        summary
+        references {
+          url
+        }
+        withdrawnAt
+        cvss {
+          vectorString
+          score
+        }
+        ghsaId
+        vulnerabilities(first: 100) {
+          nodes {
+            vulnerableVersionRange
+            package {
+              name
+            }
+            firstPatchedVersion {
+              identifier
+            }
+          }
+        }
+      }
+      severity
+    }
+  }
+}
