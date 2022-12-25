@@ -6,7 +6,7 @@ SELECT CASE
     WHEN ($1).minor <> 0 THEN ROW(0, ($1).minor, 0, NULL, NULL)::semver
     ELSE $1
   END $$ LANGUAGE SQL IMMUTABLE;
-CREATE TEMP TABLE analysis.non_betas_with_ordering AS WITH non_betas AS (
+CREATE TEMP TABLE non_betas_with_ordering AS WITH non_betas AS (
   SELECT id,
     package_id,
     semver,
@@ -52,13 +52,13 @@ SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
   semver,
   created
 FROM non_betas;
-CREATE TEMP TABLE analysis.version_counts AS
+CREATE TEMP TABLE version_counts AS
 SELECT package_id,
   COUNT(*) AS version_count,
   COUNT(DISTINCT group_base_semver) AS group_count
 FROM non_betas_with_ordering
 GROUP BY package_id;
-CREATE TEMP TABLE analysis.group_ranges AS
+CREATE TEMP TABLE group_ranges AS
 SELECT group_start.group_base_semver AS group_base_semver,
   group_start.chron_order_global AS start_chron_order_global,
   group_end.chron_order_global AS end_chron_order_global,
