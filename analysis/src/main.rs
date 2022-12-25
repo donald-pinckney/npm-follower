@@ -74,7 +74,11 @@ fn main() -> Result<(), std::io::Error> {
             .collect();
         rev_deps_sorted.sort();
         writeln!(output_file, "clean_{}: {}", step, rev_deps_sorted.join(" "))?;
-        writeln!(output_file, "\t{} clean/{}.sql", PSQL_COMMAND, step)?;
+        writeln!(
+            output_file,
+            "\ttest -f makefile_state/{}.touch && {} clean/{}.sql",
+            step, PSQL_COMMAND, step
+        )?;
         writeln!(output_file, "\trm -f makefile_state/{}.touch", step)?;
         writeln!(output_file)?;
     }

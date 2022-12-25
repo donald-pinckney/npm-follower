@@ -14,7 +14,7 @@ build_updates: version_ordering_validation makefile_state/build_updates.touch
 
 .PHONY: clean_build_updates
 clean_build_updates: 
-	psql -p 5431 -d npm_data -v ON_ERROR_STOP=1 -a -f clean/build_updates.sql
+	test -f makefile_state/build_updates.touch && psql -p 5431 -d npm_data -v ON_ERROR_STOP=1 -a -f clean/build_updates.sql
 	rm -f makefile_state/build_updates.touch
 
 # -------- setup_analysis --------
@@ -27,7 +27,7 @@ setup_analysis:  makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
 clean_setup_analysis: clean_version_ordering_validation
-	psql -p 5431 -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql
+	test -f makefile_state/setup_analysis.touch && psql -p 5431 -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql
 	rm -f makefile_state/setup_analysis.touch
 
 # -------- version_ordering_validation --------
@@ -40,6 +40,6 @@ version_ordering_validation: setup_analysis makefile_state/version_ordering_vali
 
 .PHONY: clean_version_ordering_validation
 clean_version_ordering_validation: clean_build_updates
-	psql -p 5431 -d npm_data -v ON_ERROR_STOP=1 -a -f clean/version_ordering_validation.sql
+	test -f makefile_state/version_ordering_validation.touch && psql -p 5431 -d npm_data -v ON_ERROR_STOP=1 -a -f clean/version_ordering_validation.sql
 	rm -f makefile_state/version_ordering_validation.touch
 
