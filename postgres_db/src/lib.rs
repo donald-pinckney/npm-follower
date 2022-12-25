@@ -7,6 +7,7 @@ pub mod dependencies;
 pub mod diff_log;
 pub mod download_queue;
 pub mod download_tarball;
+pub mod ghsa;
 pub mod internal_state;
 pub mod packages;
 pub mod packument;
