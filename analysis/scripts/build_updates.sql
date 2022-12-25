@@ -1,4 +1,4 @@
-WITH intra_group_updates AS (
+CREATE TABLE analysis.all_updates AS WITH intra_group_updates AS (
     SELECT from_v.group_base_semver AS group_base_semver,
         from_v.package_id AS package_id,
         from_v.id AS from_id,
@@ -39,8 +39,7 @@ inter_group_updates AS (
         INNER JOIN valid_non_betas_with_ordering from_v ON from_v.package_id = preds.package_id
         AND from_v.chron_order_global = preds.greatest_lower_chron_order_global
         INNER JOIN valid_non_betas_with_ordering to_v ON to_v.id = preds.to_id
-),
-CREATE TABLE analysis.all_updates AS
+)
 SELECT *
 FROM intra_group_updates
 UNION ALL

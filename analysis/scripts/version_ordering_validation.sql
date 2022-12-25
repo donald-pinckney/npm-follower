@@ -6,7 +6,7 @@ SELECT CASE
     WHEN ($1).minor <> 0 THEN ROW(0, ($1).minor, 0, NULL, NULL)::semver
     ELSE $1
   END $$ LANGUAGE SQL IMMUTABLE;
-WITH non_betas AS (
+CREATE TEMP TABLE analysis.non_betas_with_ordering AS WITH non_betas AS (
   SELECT id,
     package_id,
     semver,
@@ -18,7 +18,7 @@ WITH non_betas AS (
       package_id = 2451293
       OR package_id = 2717929
     )
-) CREATE TEMP TABLE analysis.non_betas_with_ordering AS
+)
 SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
   ROW_NUMBER() OVER(
     PARTITION BY package_id,
@@ -74,7 +74,7 @@ FROM non_betas_with_ordering group_start
   AND group_start.group_base_semver = group_end.group_base_semver
   AND group_start.semver_order_within_group = 1
   AND group_end.rev_semver_order_within_group = 1;
-WITH intra_group_correct_version_order_counts AS (
+CREATE TABLE analysis.valid_packages AS WITH intra_group_correct_version_order_counts AS (
   SELECT package_id,
     COUNT(*) AS correct_version_count
   FROM non_betas_with_ordering
@@ -89,7 +89,7 @@ valid_inter_group_order_counts AS (
     AND from_group.inter_group_order + 1 = to_group.inter_group_order
   WHERE from_group.start_created < to_group.start_created
   GROUP BY from_group.package_id
-) CREATE TABLE analysis.valid_packages AS
+)
 SELECT version_counts.package_id
 FROM version_counts
   INNER JOIN intra_group_correct_version_order_counts ON version_counts.package_id = intra_group_correct_version_order_counts.package_id
