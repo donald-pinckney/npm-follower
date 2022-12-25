@@ -1,1 +1,1 @@
-DROP SCHEMA analysis;
+DROP SCHEMA IF EXISTS analysis CASCADE;
