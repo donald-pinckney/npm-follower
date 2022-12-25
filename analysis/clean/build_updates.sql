@@ -1,2 +1,2 @@
-DROP TABLE analysis.all_updates;
-DROP TABLE analysis.all_overlaps;
+DROP TABLE IF EXISTS analysis.all_updates;
+DROP TABLE IF EXISTS analysis.all_overlaps;
