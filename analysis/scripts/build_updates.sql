@@ -45,6 +45,8 @@ FROM intra_group_updates
 UNION ALL
 SELECT *
 FROM inter_group_updates;
+
+
 CREATE TABLE analysis.all_overlaps AS
 SELECT x.package_id AS package_id,
     x.group_base_semver AS first_group_base_semver,
