@@ -6,6 +6,8 @@ SELECT CASE
     WHEN ($1).minor <> 0 THEN ROW(0, ($1).minor, 0, NULL, NULL)::semver
     ELSE $1
   END $$ LANGUAGE SQL IMMUTABLE;
+
+
 CREATE TEMP TABLE non_betas_with_ordering AS WITH non_betas AS (
   SELECT id,
     package_id,
@@ -51,12 +53,23 @@ SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
   semver,
   created
 FROM non_betas;
+
+CREATE INDEX analysis_non_betas_with_ordering_idx_package_id ON non_betas_with_ordering (package_id);
+CREATE INDEX analysis_non_betas_with_ordering_idx_group_base_semver ON analysis.non_betas_with_ordering (group_base_semver);
+CREATE INDEX analysis_non_betas_with_ordering_idx_semver_order_within_group ON analysis.non_betas_with_ordering (semver_order_within_group);
+CREATE INDEX analysis_non_betas_with_ordering_idx_rev_semver_order_within_group ON analysis.non_betas_with_ordering (rev_semver_order_within_group);
+
+ANALYZE analysis.non_betas_with_ordering;
+
 CREATE TEMP TABLE version_counts AS
 SELECT package_id,
   COUNT(*) AS version_count,
   COUNT(DISTINCT group_base_semver) AS group_count
 FROM non_betas_with_ordering
 GROUP BY package_id;
+
+ANALYZE version_counts;
+
 CREATE TEMP TABLE group_ranges AS
 SELECT group_start.group_base_semver AS group_base_semver,
   group_start.chron_order_global AS start_chron_order_global,
@@ -73,6 +86,9 @@ FROM non_betas_with_ordering group_start
   AND group_start.group_base_semver = group_end.group_base_semver
   AND group_start.semver_order_within_group = 1
   AND group_end.rev_semver_order_within_group = 1;
+
+ANALYZE group_ranges;
+
 CREATE TABLE analysis.valid_packages AS WITH intra_group_correct_version_order_counts AS (
   SELECT package_id,
     COUNT(*) AS correct_version_count
@@ -95,6 +111,9 @@ FROM version_counts
   LEFT JOIN valid_inter_group_order_counts ON version_counts.package_id = valid_inter_group_order_counts.package_id
 WHERE correct_version_count = version_count
   AND coalesce(group_trans_count, 0) + 1 = group_count;
+
+ANALYZE analysis.valid_packages;
+
 -- 2068382  
 CREATE TABLE analysis.malformed_packages AS
 SELECT package_id
@@ -103,6 +122,9 @@ WHERE package_id NOT IN (
     SELECT *
     FROM analysis.valid_packages
   );
+
+ANALYZE analysis.malformed_packages;
+
 CREATE TABLE analysis.valid_non_betas_with_ordering AS
 SELECT group_base_semver,
   inter_group_order,
@@ -118,6 +140,12 @@ WHERE package_id IN (
     SELECT *
     FROM analysis.valid_packages
   );
+
+
+-- We will probably want to add more indices here?
+ANALYZE analysis.valid_non_betas_with_ordering;
+
+
 CREATE TABLE analysis.valid_group_ranges AS
 SELECT *
 FROM group_ranges
@@ -125,3 +153,5 @@ WHERE package_id IN (
     SELECT *
     FROM analysis.valid_packages
   );
+
+ANALYZE analysis.valid_group_ranges;
