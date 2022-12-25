@@ -13,11 +13,10 @@ CREATE TEMP TABLE non_betas_with_ordering AS WITH non_betas AS (
     created
   FROM versions
   WHERE (semver).prerelease IS NULL
-    AND (semver).build IS NULL
-    AND (
-      package_id = 2451293
-      OR package_id = 2717929
-    )
+    AND (semver).build IS NULL -- AND (
+    --   package_id = 2451293
+    --   OR package_id = 2717929
+    -- )
 )
 SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
   ROW_NUMBER() OVER(
