@@ -7,8 +7,8 @@ CREATE TABLE analysis.all_updates AS WITH intra_group_updates AS (
         to_v.semver AS to_semver,
         from_v.created AS from_created,
         to_v.created AS to_created
-    FROM valid_non_betas_with_ordering from_v
-        INNER JOIN valid_non_betas_with_ordering to_v ON from_v.package_id = to_v.package_id
+    FROM analysis.valid_non_betas_with_ordering from_v
+        INNER JOIN analysis.valid_non_betas_with_ordering to_v ON from_v.package_id = to_v.package_id
         AND from_v.group_base_semver = to_v.group_base_semver
         AND from_v.order_within_group + 1 = to_v.order_within_group
 ),
@@ -17,8 +17,8 @@ selected_inter_group_predecessors AS (
         from_v.group_base_semver AS group_base_semver,
         MAX(from_v.chron_order_global) AS greatest_lower_chron_order_global,
         to_v.start_id AS to_id
-    FROM valid_non_betas_with_ordering from_v
-        INNER JOIN valid_group_ranges to_v ON from_v.package_id = to_v.package_id
+    FROM analysis.valid_non_betas_with_ordering from_v
+        INNER JOIN analysis.valid_group_ranges to_v ON from_v.package_id = to_v.package_id
         AND from_v.inter_group_order + 1 = to_v.inter_group_order
         AND from_v.chron_order_global < to_v.start_chron_order_global
     GROUP BY from_v.package_id,
@@ -36,9 +36,9 @@ inter_group_updates AS (
         from_v.created AS from_created,
         to_v.created AS to_created
     FROM selected_inter_group_predecessors preds
-        INNER JOIN valid_non_betas_with_ordering from_v ON from_v.package_id = preds.package_id
+        INNER JOIN analysis.valid_non_betas_with_ordering from_v ON from_v.package_id = preds.package_id
         AND from_v.chron_order_global = preds.greatest_lower_chron_order_global
-        INNER JOIN valid_non_betas_with_ordering to_v ON to_v.id = preds.to_id
+        INNER JOIN analysis.valid_non_betas_with_ordering to_v ON to_v.id = preds.to_id
 )
 SELECT *
 FROM intra_group_updates
@@ -53,7 +53,7 @@ SELECT x.package_id AS package_id,
     x.end_created AS first_group_end_created,
     y.start_created AS second_group_start_created,
     y.end_created AS second_group_end_created
-FROM valid_group_ranges x
-    INNER JOIN valid_group_ranges y ON x.package_id = y.package_id
+FROM analysis.valid_group_ranges x
+    INNER JOIN analysis.valid_group_ranges y ON x.package_id = y.package_id
     AND x.inter_group_order < y.inter_group_order
     AND x.end_created >= y.start_created;

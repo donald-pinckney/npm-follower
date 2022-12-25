@@ -102,7 +102,7 @@ SELECT package_id
 FROM version_counts
 WHERE package_id NOT IN (
     SELECT *
-    FROM valid_packages
+    FROM analysis.valid_packages
   );
 CREATE TABLE analysis.valid_non_betas_with_ordering AS
 SELECT group_base_semver,
@@ -117,12 +117,12 @@ SELECT group_base_semver,
 FROM non_betas_with_ordering
 WHERE package_id IN (
     SELECT *
-    FROM valid_packages
+    FROM analysis.valid_packages
   );
 CREATE TABLE analysis.valid_group_ranges AS
 SELECT *
 FROM group_ranges
 WHERE package_id IN (
     SELECT *
-    FROM valid_packages
+    FROM analysis.valid_packages
   );
