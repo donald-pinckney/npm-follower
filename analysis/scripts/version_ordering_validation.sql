@@ -55,11 +55,11 @@ SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
 FROM non_betas;
 
 CREATE INDEX analysis_non_betas_with_ordering_idx_package_id ON non_betas_with_ordering (package_id);
-CREATE INDEX analysis_non_betas_with_ordering_idx_group_base_semver ON analysis.non_betas_with_ordering (group_base_semver);
-CREATE INDEX analysis_non_betas_with_ordering_idx_semver_order_within_group ON analysis.non_betas_with_ordering (semver_order_within_group);
-CREATE INDEX analysis_non_betas_with_ordering_idx_rev_semver_order_within_group ON analysis.non_betas_with_ordering (rev_semver_order_within_group);
+CREATE INDEX analysis_non_betas_with_ordering_idx_group_base_semver ON non_betas_with_ordering (group_base_semver);
+CREATE INDEX analysis_non_betas_with_ordering_idx_semver_order_within_group ON non_betas_with_ordering (semver_order_within_group);
+CREATE INDEX analysis_non_betas_with_ordering_idx_rev_semver_order_within_group ON non_betas_with_ordering (rev_semver_order_within_group);
 
-ANALYZE analysis.non_betas_with_ordering;
+ANALYZE non_betas_with_ordering;
 
 CREATE TEMP TABLE version_counts AS
 SELECT package_id,
