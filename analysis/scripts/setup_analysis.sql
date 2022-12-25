@@ -1,1 +1,1 @@
-CREATE SCHEMA IF NOT EXISTS analysis;
+CREATE SCHEMA analysis;
