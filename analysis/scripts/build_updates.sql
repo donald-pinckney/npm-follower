@@ -40,23 +40,21 @@ inter_group_updates AS (
         AND from_v.chron_order_global = preds.greatest_lower_chron_order_global
         INNER JOIN valid_non_betas_with_ordering to_v ON to_v.id = preds.to_id
 ),
-CREATE TABLE analysis.all_updates AS (
-    SELECT *
-    FROM intra_group_updates
-    UNION ALL
-    SELECT *
-    FROM inter_group_updates
-);
-CREATE TABLE analysis.all_overlaps AS (
-    SELECT x.package_id AS package_id,
-        x.group_base_semver AS first_group_base_semver,
-        y.group_base_semver AS second_group_base_semver,
-        x.start_created AS first_group_start_created,
-        x.end_created AS first_group_end_created,
-        y.start_created AS second_group_start_created,
-        y.end_created AS second_group_end_created
-    FROM valid_group_ranges x
-        INNER JOIN valid_group_ranges y ON x.package_id = y.package_id
-        AND x.inter_group_order < y.inter_group_order
-        AND x.end_created >= y.start_created
-);
+CREATE TABLE analysis.all_updates AS
+SELECT *
+FROM intra_group_updates
+UNION ALL
+SELECT *
+FROM inter_group_updates;
+CREATE TABLE analysis.all_overlaps AS
+SELECT x.package_id AS package_id,
+    x.group_base_semver AS first_group_base_semver,
+    y.group_base_semver AS second_group_base_semver,
+    x.start_created AS first_group_start_created,
+    x.end_created AS first_group_end_created,
+    y.start_created AS second_group_start_created,
+    y.end_created AS second_group_end_created
+FROM valid_group_ranges x
+    INNER JOIN valid_group_ranges y ON x.package_id = y.package_id
+    AND x.inter_group_order < y.inter_group_order
+    AND x.end_created >= y.start_created;
