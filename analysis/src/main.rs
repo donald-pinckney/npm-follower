@@ -1,7 +1,7 @@
 use std::io::Write;
 use std::{collections::BTreeMap, fs::File};
 
-const PSQL_COMMAND: &str = "psql -a -f";
+const PSQL_COMMAND: &str = "psql -p 5431 -d npm_data -a -f";
 
 fn main() -> Result<(), std::io::Error> {
     let dependencies: BTreeMap<&'static str, Vec<&'static str>> = [
