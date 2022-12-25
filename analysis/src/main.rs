@@ -76,7 +76,7 @@ fn main() -> Result<(), std::io::Error> {
         writeln!(output_file, "clean_{}: {}", step, rev_deps_sorted.join(" "))?;
         writeln!(
             output_file,
-            "\ttest -f makefile_state/{}.touch && {} clean/{}.sql",
+            "\tif [ -f makefile_state/{}.touch ]; then {} clean/{}.sql; else true; fi",
             step, PSQL_COMMAND, step
         )?;
         writeln!(output_file, "\trm -f makefile_state/{}.touch", step)?;
