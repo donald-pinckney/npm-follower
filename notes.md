@@ -1,78 +1,87 @@
 # Analysis of Security of the NPM Ecosystem Historically
 
-## Security Vulnerabilities
+## 1. Finding updates (DONE, should unit it test it though)
 
-- How quickly do authors release updates in response to CVEs? {A, M}
-  
-  Methodology: for each CVE with a patch, we can look at the time between the publish time of the CVE and the publish time of the patched version. We can then look at the distribution of times between CVE publication and fix.
-  We can segment this on both the CVE side (severity, vector, etc.) and on the package side (popularity).
+First, we want to find the set of all updates to packages.
 
+What constitutes an update? Complications:
+- There is no requirement that versions are increased monotonically. Probably rare, but will happen, so we need to not crash. Example A: 2.0.0, 1.0.0, 0.1.0.
+- Actually common is for updates to be released on multiple "tracks". This needs to be computed right, since I expect it to be common. Example B: 5.5.10, 6.0.0, 6.1.0, 6.2.0, 5.5.11, 6.2.1 (https://www.npmjs.com/package/rxjs?activeTab=versions).
 
-- ~~How well are CVEs updated to track fixes or non-fixes to packages? {A, ???}~~ (Federico says they get updated, but do they really?)
+Example B should result in the updates: 5.5.10 -> 5.5.11 (bug), 6.0.0 -> 6.1.0 (minor), 6.1.0 -> 6.2.0 (minor), 6.2.0 -> 6.2.1 (bug), 5.5.11 -> 6.0.0 (major).
 
-## Dependency Structure
+Proposed method: 
+First, we filter out all versions with prerelease or build tags (e.g. -beta5, etc.).
 
-- After an update is published, how quickly do downstream packages update to receive it?  {M}
-  - Is this different between security updates vs. feature updates?
-  
-  Methodology: this is probably one of the more complicated ones. In many cases, downstream dependencies *automatically* receive the update,
-  if their version constraint allows it. Suppose we are considering an update of package A from version V1 to V2, and we wish to see how often it is adopted.
-  First, we get all the packages (B) who's latest version (W1) prior to V2 being published had a dependency on A with constraint C satisfying V1. We then have 2 cases. If 
-  C also satisfies V2, then this counts as an *automatic update*. If C does not satisfy V2, then we attempt to find the first version W2 after W1 which does satisfy V2.
-  If we find such a version, then we count this as a *manual update*, and we find the time difference between W2 and V2. If we do not find such a version, then we count this as a *non-update*.
+For all remaining versions of a package, we first partition into equivalence classes based on semver-compatibility.
+For example, the Example B would be partitioned into {(5.5.10, 5.5.11), (6.0.0, 6.1.0, 6.2.0, 6.2.1)}.
 
-  We'd then need to do this for all packages, and then aggregate the results. We can also segment this on upstream package popularity, downstream package popularity, dependency type (prod vs. dev), and update type (security patch vs. other).
+We then assert that each equivalence class is ordered chronologically, if not we report the package as having a malformed history and filter it out.
+I expect that relatively few will be filtered, out, but we should verify.
 
+Now, we build the set of updates. For each equivalence class, we say that there is an update between each version within the class chronologically.
+So for Example B, this would generate the updates 5.5.10 -> 5.5.11 (bug), 6.0.0 -> 6.1.0 (minor), 6.1.0 -> 6.2.0 (minor), 6.2.0 -> 6.2.1 (bug).
 
-## Code changes & semver
+Finally, we need to consider the predecessors of the first versions in the classes. Let V be the first chronological version in a class. We note that the
+ordering relation on versions extends to an ordering relation on the equivalency classes. Let Q be the greatest equivalency class which is strictly less than V
+and has at least one member chronologically before V. Let W be the most recent version in Q which occurs chronologically before V. We then say there is an update from W to V.
+For Example B, this would generate the update 5.5.10 -> 6.0.0 (major)
 
-Each semver update is one of 4 *update types*: bug (1.1.1 -> 1.1.2), minor (1.1.1 -> 1.2.0), major (1.1.1 -> 2.0.0), or other (betas, and weird crap).
+## 2. How common are each update type? (DONE)
 
-- How frequent are each update type? {M}
+For each update U we determine its type based on semver bumping. 
+We then aggregate the results across all updates / packages.
 
-  Methodology: for each package, we determine which percentage of its updates are bug, minor, or major (discarding other). We then aggregate this across all packages.
+## 3. Which updates are security updates, and how are these correlated with update type?
 
-  What constitutes an update? Complications:
-  + There is no requirement that versions are increased monotonically. Probably rare, but will happen, so we need to not crash. Example A: 2.0.0, 1.0.0, 0.1.0.
-  + Actually common is for updates to be released on multiple "tracks". This needs to be computed right, since I expect it to be common. Example B: 5.5.10, 6.0.0, 6.1.0, 6.2.0, 5.5.11, 6.2.1 (https://www.npmjs.com/package/rxjs?activeTab=versions).
+...
 
-  Example B should result in the updates: 5.5.10 -> 5.5.11 (bug), 6.0.0 -> 6.1.0 (minor), 6.1.0 -> 6.2.0 (minor), 6.2.0 -> 6.2.1 (bug), 5.5.11 -> 6.0.0 (major).
-
-  Proposed method: 
-  First, we filter out all versions with prerelease or build tags (e.g. -beta5, etc.).
-
-  For all remaining versions of a package, we first partition into equivalence classes based on semver-compatibility.
-  For example, the Example B would be partitioned into {(5.5.10, 5.5.11), (6.0.0, 6.1.0, 6.2.0, 6.2.1)}.
-  
-  We then assert that each equivalence class is ordered chronologically, if not we report the package as having a malformed history and filter it out.
-  I expect that relatively few will be filtered, out, but we should verify.
-  
-  Now, we build the set of updates. For each equivalence class, we say that there is an update between each version within the class chronologically.
-  So for Example B, this would generate the updates 5.5.10 -> 5.5.11 (bug), 6.0.0 -> 6.1.0 (minor), 6.1.0 -> 6.2.0 (minor), 6.2.0 -> 6.2.1 (bug).
-  
-  Finally, we need to consider the predecessors of the first versions in the classes. Let V be the first chronological version in a class. We note that the
-  ordering relation on versions extends to an ordering relation on the equivalency classes. Let Q be the greatest equivalency class which is strictly less than V
-  and has at least one member chronologically before V. Let W be the most recent version in Q which occurs chronologically before V. We then say there is an update from W to V.
-  For Example B, this would generate the update 5.5.10 -> 6.0.0 (major)
-
+## 4. What code changes are typically made in each update type / security/non-security update?
 
 - Among each update type:
+  - (implementation): capture the full path of every file changed in every diff, and number lines added/removed in each 
   - what files are typically changed? {M, T}
   - how large are the diffs? {M, T}
   - lower-bound on non-breaking changes? {M, T}
 
-  Methodology: For each update, we compute its diff D. From D, we find:
-  - how many files are modified (N_F)
-  - how many lines are modified/added/removed (N_M, N_A, N_R)
-  - which files are modified (S_F)
-  - which file extensions are modified (S_E)
+Methodology: For each update, we compute its diff D. From D, we find:
+- how many files are modified (N_F)
+- how many lines are modified/added/removed (N_M, N_A, N_R)
+- which files are modified (S_F)
+- which file extensions are modified (S_E)
 
-  We then normalize these metrics per-package (as was done above), and aggregate across all packages. We also join each update with the update type (determined above),
-  and segment by update type. 
+We then normalize these metrics per-package (as was done above), and aggregate across all packages. We also join each update with the update type (determined above),
+and segment by update type. 
 
-  Finally, for each update we can also classify it as definitely non-breaking, or not.
-  If only `package.json` is modified, and non-code files (`.md`, etc.) are modified, then it's non-breaking (not quite, for `package.json` we have to check that the dependencies are changed in a non-breaking way, but that's not too hard).
-  We could try to do harder things, but likely won't have time.
+Finally, for each update we can also classify it as definitely non-breaking, or not.
+If only `package.json` is modified, and non-code files (`.md`, etc.) are modified, then it's non-breaking (not quite, for `package.json` we have to check that the dependencies are changed in a non-breaking way, but that's not too hard).
+We could try to do harder things, but likely won't have time.
+
+## 5. How do authors address vulnerabilities?
+- How quickly do authors release updates in response to CVEs? Segment by severity? {A, M} 
+
+Methodology: for each CVE with a patch, we can look at the time between the publish time of the CVE and the publish time of the patched version. We can then look at the distribution of times between CVE publication and fix.
+We can segment this on both the CVE side (severity, vector, etc.) and on the package side (popularity).
+
+
+## 6. Flow of updates to downstream packages?
+- After an update is published, how quickly do downstream packages update to receive it?  {M}
+  - How many of these are automatic (instant) vs. manual?
+  - Is this different between security updates vs. feature updates?
+
+Methodology: this is probably one of the more complicated ones. In many cases, downstream dependencies *automatically* receive the update,
+if their version constraint allows it. Suppose we are considering an update of package A from version V1 to V2, and we wish to see how often it is adopted.
+First, we get all the packages (B) who's latest version (W1) prior to V2 being published had a dependency on A with constraint C satisfying V1. We then have 2 cases. If 
+C also satisfies V2, then this counts as an *automatic update*. If C does not satisfy V2, then we attempt to find the first version W2 after W1 which does satisfy V2.
+If we find such a version, then we count this as a *manual update*, and we find the time difference between W2 and V2. If we do not find such a version, then we count this as a *non-update*.
+
+We'd then need to do this for all packages, and then aggregate the results. We can also segment this on upstream package popularity, downstream package popularity, dependency type (prod vs. dev), and update type (security patch vs. other).
+
+## 7. Overall demographics of dataset
+- repo linkage, among other things
+
+
+
 
 
 
