@@ -115,23 +115,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    ghsa (id) {
-        id -> Text,
-        severity -> Text,
-        description -> Text,
-        summary -> Text,
-        withdrawn_at -> Nullable<Timestamptz>,
-        published_at -> Timestamptz,
-        updated_at -> Timestamptz,
-        refs -> Array<Nullable<Text>>,
-        cvss_score -> Nullable<Float4>,
-        cvss_vector -> Nullable<Text>,
-        packages -> Array<Nullable<Text>>,
-        vulns -> Jsonb,
-    }
-}
-
-diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::InternalDiffLogVersionState;
 
@@ -203,7 +186,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     diff_log,
     download_tasks,
     downloaded_tarballs,
-    ghsa,
     internal_diff_log_state,
     internal_state,
     packages,
