@@ -68,7 +68,8 @@ CREATE TABLE diff_log (
   version_packument JSONB,
 
 
-  FOREIGN KEY(seq) REFERENCES change_log(seq),
+  -- since we might export the DB without change_log, we don't actualy want to enforce this constraint
+  -- FOREIGN KEY(seq) REFERENCES change_log(seq),
   CONSTRAINT version_diff_valid CHECK (
     (dt = 'create_package'          AND package_only_packument IS NOT NULL AND v IS NULL     AND version_packument IS NULL) OR
     (dt = 'update_package'          AND package_only_packument IS NOT NULL AND v IS NULL     AND version_packument IS NULL) OR
