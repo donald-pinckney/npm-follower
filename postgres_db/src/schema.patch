@@ -1,5 +1,5 @@
 diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
-index b5fd9fe..21f1ce6 100644
+index 3fecae6..df85ac3 100644
 --- a/postgres_db/src/schema.rs
 +++ b/postgres_db/src/schema.rs
 @@ -22,25 +22,33 @@ pub mod sql_types {
@@ -37,7 +37,7 @@ index b5fd9fe..21f1ce6 100644
  
      dependencies (id) {
          id -> Int8,
-@@ -110,13 +118,13 @@ diesel::table! {
+@@ -127,13 +135,13 @@ diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::InternalDiffLogVersionState;
  
@@ -52,7 +52,7 @@ index b5fd9fe..21f1ce6 100644
  diesel::table! {
      internal_state (key) {
          key -> Varchar,
-@@ -131,13 +139,13 @@ diesel::table! {
+@@ -148,13 +156,13 @@ diesel::table! {
      use super::sql_types::PackageState;
  
      packages (id) {
@@ -67,7 +67,7 @@ index b5fd9fe..21f1ce6 100644
          other_dist_tags -> Nullable<Jsonb>,
          other_time_data -> Nullable<Jsonb>,
          unpublished_data -> Nullable<Jsonb>,
-@@ -153,28 +161,30 @@ diesel::table! {
+@@ -170,28 +178,30 @@ diesel::table! {
  
      versions (id) {
          id -> Int8,
@@ -101,5 +101,5 @@ index b5fd9fe..21f1ce6 100644
      diff_log,
      download_tasks,
      downloaded_tarballs,
+     ghsa,
      internal_diff_log_state,
-     internal_state,
