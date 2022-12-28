@@ -34,7 +34,7 @@ cargo install diesel_cli --no-default-features --features postgres
 ### PostgreSQL
 
 1. Download and install PostgreSQL as appropriate for your system.
-2. Configure the port to 5431 (default is 5432!)
+2. Configure the port to 5432 (default is 5432!)
 
 
 

@@ -24,7 +24,7 @@ jobs:
       uses: Harmon758/postgresql-action@v1.0.0
       with:
         # Version of PostgreSQL to use
-        postgresql version: 14
+        postgresql version: 15
         postgresql db: npm_data
         postgresql user: donald 
         postgresql password: password
