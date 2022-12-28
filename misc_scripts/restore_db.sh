@@ -11,7 +11,6 @@
 #grant all on schema public to pinckney;
 #grant all on schema public to federico;
 #alter default privileges in schema public grant all on tables to pinckney, federico;
-#alter default privileges in schema public grant all on tables to federico;
 #alter default privileges in schema public grant all on sequences to pinckney, federico;
 #alter default privileges in schema public grant all on functions to pinckney, federico;
 #alter default privileges in schema public grant all on types to pinckney, federico;
