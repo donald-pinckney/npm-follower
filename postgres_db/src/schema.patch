@@ -1,8 +1,8 @@
 diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
-index 3fecae6..df85ac3 100644
+index 752fe50..df85ac3 100644
 --- a/postgres_db/src/schema.rs
 +++ b/postgres_db/src/schema.rs
-@@ -22,25 +22,33 @@ pub mod sql_types {
+@@ -22,13 +22,13 @@ pub mod sql_types {
      pub struct ParsedSpecStruct;
  
      #[derive(diesel::sql_types::SqlType)]
@@ -17,27 +17,7 @@ index 3fecae6..df85ac3 100644
      #[derive(diesel::sql_types::SqlType)]
      #[diesel(postgres_type(name = "version_state"))]
      pub struct VersionState;
- 
-     #[derive(diesel::sql_types::SqlType)]
-     #[diesel(postgres_type(name = "version_state_enum"))]
-     pub struct VersionStateEnum;
- }
- 
-+diesel::table! {
-+    change_log (seq) {
-+        seq -> Int8,
-+        raw_json -> Jsonb,
-+        received_time -> Nullable<Timestamptz>,
-+    }
-+}
-+
- diesel::table! {
-     use diesel::sql_types::*;
-     use super::sql_types::ParsedSpecStruct;
- 
-     dependencies (id) {
-         id -> Int8,
-@@ -127,13 +135,13 @@ diesel::table! {
+@@ -135,13 +135,13 @@ diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::InternalDiffLogVersionState;
  
@@ -52,7 +32,7 @@ index 3fecae6..df85ac3 100644
  diesel::table! {
      internal_state (key) {
          key -> Varchar,
-@@ -148,13 +156,13 @@ diesel::table! {
+@@ -156,13 +156,13 @@ diesel::table! {
      use super::sql_types::PackageState;
  
      packages (id) {
@@ -67,7 +47,7 @@ index 3fecae6..df85ac3 100644
          other_dist_tags -> Nullable<Jsonb>,
          other_time_data -> Nullable<Jsonb>,
          unpublished_data -> Nullable<Jsonb>,
-@@ -170,28 +178,30 @@ diesel::table! {
+@@ -178,26 +178,27 @@ diesel::table! {
  
      versions (id) {
          id -> Int8,
@@ -96,10 +76,7 @@ index 3fecae6..df85ac3 100644
 +diesel::joinable!(diff_log -> change_log (seq));
  
  diesel::allow_tables_to_appear_in_same_query!(
-+    change_log,
+     change_log,
      dependencies,
      diff_log,
      download_tasks,
-     downloaded_tarballs,
-     ghsa,
-     internal_diff_log_state,
