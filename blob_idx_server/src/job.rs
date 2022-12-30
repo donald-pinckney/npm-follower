@@ -185,6 +185,52 @@ impl JobManager {
         Ok(responses)
     }
 
+    /// Submits a compute job to the discovery cluster. Returns stdout for each tarball computed.
+    /// Takes in the full path to the binary to run and a chunk of tarballs, where for each
+    /// outer element, we have a list of tarballs to compute on a single node. We map
+    /// all chunks to different nodes. We return a list of client responses, where
+    /// the index of the response corresponds to the index of the chunk in the list of chunks.
+    /// This is a multi-arg version of the above function.
+    pub async fn submit_compute_multi(
+        &self,
+        binary: String,
+        tarball_chunks: Vec<Vec<Vec<String>>>,
+    ) -> Result<Vec<ClientResponse>, JobError> {
+        let mut handles: Vec<JoinHandle<Result<ClientResponse, JobError>>> = Vec::new();
+
+        for chunk in &tarball_chunks {
+            debug!("Submitting compute job with {} tarballs", chunk.len());
+            let wp_comp = self.compute_pool.clone();
+            let binary = binary.clone();
+            let tbs = chunk
+                .iter()
+                .map(|sub| sub.join("&"))
+                .collect::<Vec<String>>()
+                .join(" ");
+            handles.push(tokio::task::spawn(async move {
+                let worker = wp_comp.get_worker().await?;
+                let ssh = worker.get_ssh_session();
+                let cmd = format!(
+                    "cd $HOME/npm-follower/blob_idx_client && ./run.sh compute_multi {} \"{}\"",
+                    binary, tbs
+                );
+                debug!("Running command:\n{}", cmd);
+                let out = ssh.run_command(&cmd).await?;
+                debug!("Output:\n{}", out);
+                let response: ClientResponse = serde_json::from_str(&out)
+                    .map_err(|_| JobError::ClientOutputNotParsable(out))?;
+                Ok(response)
+            }));
+        }
+
+        let mut responses = Vec::new();
+        for handle in handles {
+            responses.push(handle.await.unwrap()?);
+        }
+
+        Ok(responses)
+    }
+
     /// Stores the files in the given filepaths (that reside on the discovery cluster) into
     /// the blob index. The filepaths should be the full path to the file on the discovery cluster.
     pub async fn submit_store_tarballs(&self, filepaths: Vec<String>) -> Result<(), JobError> {

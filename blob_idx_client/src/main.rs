@@ -49,6 +49,10 @@ async fn main() {
             Ok(o) => ClientResponse::Message(serde_json::to_value(o).unwrap()),
             Err(e) => ClientResponse::Error(e),
         },
+        "compute_multi" => match compute_run_bin_multi(args).await {
+            Ok(o) => ClientResponse::Message(serde_json::to_value(o).unwrap()),
+            Err(e) => ClientResponse::Error(e),
+        },
         _ => {
             eprintln!("Usage: {} [write|read|compute] ...", args[0]);
             std::process::exit(1);
@@ -217,6 +221,108 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
             tokio::fs::remove_file(p).await.ok(); // we don't care if this fails
         });
         handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.await.unwrap();
+    }
+
+    Ok(res_map)
+}
+
+async fn compute_run_bin_multi(
+    args: Vec<String>,
+) -> Result<HashMap<String, TarballResult>, ClientError> {
+    if args.len() != 4 {
+        eprintln!(
+            "Usage: {} compute <binary path> <tarball keys, separated by spaces>",
+            args[0]
+        );
+        std::process::exit(1);
+    }
+
+    let binary = args[2].clone();
+    let tarball_url_keys = args[3].clone();
+    let tarball_url_keys: Vec<Vec<String>> = tarball_url_keys
+        .split(' ')
+        .map(|s| s.split('&').map(|s| s.to_string()).collect())
+        .collect();
+
+    let mut handles: Vec<JoinHandle<Result<(Vec<String>, Vec<String>), ClientError>>> = Vec::new();
+    // map of [Vec<tmp slice path>] -> [Vec<original tarball url>]
+    let mut slice_map = HashMap::new();
+    let pid = std::process::id();
+    let atomic_idx = Arc::new(AtomicUsize::new(0));
+    for tarball_url_keys in tarball_url_keys.clone() {
+        let atomic_idx = atomic_idx.clone();
+        let handle = tokio::task::spawn(async move {
+            let mut slice_paths = Vec::new();
+            let mut original_tarball_urls = Vec::new();
+            for tarball_url_key in tarball_url_keys {
+                let slice_path = read_and_send(
+                    tarball_url_key.clone(),
+                    &format!(
+                        "/tmp/compute-{}-{}",
+                        pid,
+                        atomic_idx.fetch_add(1, Ordering::SeqCst)
+                    ),
+                )
+                .await?;
+                slice_paths.push(slice_path);
+                original_tarball_urls.push(tarball_url_key);
+            }
+            Ok((slice_paths, original_tarball_urls))
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        let (slice_paths, tarball_urls) = handle.await.unwrap()?;
+        slice_map.insert(slice_paths, tarball_urls);
+    }
+
+    // check that the binary exists
+    if !std::path::Path::new(&binary).exists() {
+        return Err(ClientError::BinaryDoesNotExist);
+    }
+
+    let mut handle_map: HashMap<String, JoinHandle<Result<TarballResult, ClientError>>> =
+        HashMap::new(); // where the string is the original tarball url
+    for (slice_paths, original_tarball_urls) in slice_map.iter() {
+        let mut cmd = tokio::process::Command::new(&binary);
+        cmd.args(slice_paths);
+        // slice_paths.push(slice_path);
+        let handle = tokio::task::spawn(async move {
+            let output = cmd.output().await?;
+            // make sure the base64 does not put newlines
+            let b64stout = base64::encode_config(&output.stdout, base64::STANDARD_NO_PAD);
+            let b64stderr = base64::encode_config(&output.stderr, base64::STANDARD_NO_PAD);
+            let exit_code = output.status.code().unwrap_or(1);
+            Ok(TarballResult {
+                stdout: b64stout,
+                stderr: b64stderr,
+                exit_code,
+            })
+        });
+        handle_map.insert(original_tarball_urls.join("&").to_string(), handle);
+    }
+
+    let mut res_map = HashMap::new();
+    for (original_tarball_url, handle) in handle_map {
+        let res = handle.await.unwrap()?;
+        res_map.insert(original_tarball_url, res);
+    }
+
+    // now delete the tmp files
+    let mut handles: Vec<JoinHandle<()>> = Vec::new();
+    for slice_paths in slice_map.keys() {
+        for slice_path in slice_paths {
+            let p = slice_path.clone();
+            let handle = tokio::task::spawn(async move {
+                tokio::fs::remove_file(p).await.ok(); // we don't care if this fails
+            });
+            handles.push(handle);
+        }
     }
 
     for handle in handles {
