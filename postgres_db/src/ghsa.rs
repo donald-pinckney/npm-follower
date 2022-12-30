@@ -60,7 +60,10 @@ impl VulnMap {
     }
 }
 
-pub fn insert_ghsa(conn: &mut DbConnection, advisory: Ghsa) {
+pub fn insert_ghsa<R>(conn: &mut R, advisory: Ghsa)
+where
+    R: QueryRunner,
+{
     use schema::ghsa::dsl::*;
     let query = diesel::insert_into(ghsa)
         .values(&advisory)

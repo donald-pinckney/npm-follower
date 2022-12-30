@@ -1,4 +1,4 @@
-use postgres_db::connection::DbConnection;
+use postgres_db::connection::{DbConnection, QueryRunner};
 
 use std::collections::{HashMap, HashSet};
 
@@ -140,7 +140,10 @@ pub async fn scrape_ghsa(
     Ok((scraped_vulns, cursor))
 }
 
-fn insert_ghsa(conn: &mut DbConnection, vulns: Vec<SecurityVulnerability>) {
+fn insert_ghsa<R>(conn: &mut R, vulns: Vec<SecurityVulnerability>)
+where
+    R: QueryRunner,
+{
     for vuln in vulns {
         let mut packages = Vec::new();
         let mut vulnmap = postgres_db::ghsa::VulnMap {
@@ -212,9 +215,14 @@ async fn main() {
             std::process::exit(1);
         });
 
-    insert_ghsa(&mut conn, vulns);
+    conn.run_psql_transaction(|mut conn| {
+        insert_ghsa(&mut conn, vulns);
 
-    if let Some(cur) = next_cursor {
-        postgres_db::internal_state::set_gha_pointer(cur, &mut conn);
-    }
+        if let Some(cur) = next_cursor {
+            postgres_db::internal_state::set_gha_pointer(cur, &mut conn);
+        }
+
+        Ok(((), true))
+    })
+    .unwrap();
 }
