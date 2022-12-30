@@ -30,11 +30,10 @@ Install the Diesel CLI with:
 cargo install diesel_cli --no-default-features --features postgres
 ```
 
-
 ### PostgreSQL
 
 1. Download and install PostgreSQL as appropriate for your system.
-2. Configure the port to 5432 (default is 5432!)
+2. Configure the port to 5432 (default)
 
 
 
@@ -48,6 +47,17 @@ diesel setup
 popd
 ```
 
+## API Token Setup
+
+To scrape GHSA, you need a Github PAT with the `read:packages` scope. You can create one [here](https://github.com/settings/tokens).
+
+Then, you need to set your API token in `.secret.env`:
+
+```bash
+echo "export GITHUB_TOKEN=<TYPE API TOKEN HERE>" >> .secret.env
+```
+
+
 
 ## InfluxDB Setup
 
@@ -59,7 +69,7 @@ If you want to enable InfluxDB, you need to set `ENABLE_INFLUX_DB_LOGGING=true` 
 Then you need to set your API token in `.secret.env`:
 
 ```bash
-echo "export INFLUX_DB_TOKEN=<TYPE API TOKEN HERE>" > .secret.env
+echo "export INFLUX_DB_TOKEN=<TYPE API TOKEN HERE>" >> .secret.env
 ```
 
 ### Disabling InfluxDB

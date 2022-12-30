@@ -199,7 +199,8 @@ fn insert_ghsa(conn: &mut DbConnection, vulns: Vec<SecurityVulnerability>) {
 #[tokio::main]
 async fn main() {
     utils::check_no_concurrent_processes("ghsa_scraper");
-    dotenvy::dotenv().ok();
+    dotenvy::from_filename(".secret.env").expect("failed to load .secret.env. To setup GHSA scraping, run:\necho \"export GITHUB_TOKEN=<TYPE API TOKEN HERE>\" >> .secret.env\n\nThe token must be a Github PAT with read:packages permission.\n\n");
+
     let mut conn = DbConnection::connect();
     let github_token = std::env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN env var not set");
 
