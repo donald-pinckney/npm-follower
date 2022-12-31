@@ -1,5 +1,5 @@
 diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
-index 752fe50..df85ac3 100644
+index a5dd937..31c3c5d 100644
 --- a/postgres_db/src/schema.rs
 +++ b/postgres_db/src/schema.rs
 @@ -22,13 +22,13 @@ pub mod sql_types {
@@ -17,7 +17,21 @@ index 752fe50..df85ac3 100644
      #[derive(diesel::sql_types::SqlType)]
      #[diesel(postgres_type(name = "version_state"))]
      pub struct VersionState;
-@@ -135,13 +135,13 @@ diesel::table! {
+@@ -120,26 +120,26 @@ diesel::table! {
+         severity -> Text,
+         description -> Text,
+         summary -> Text,
+         withdrawn_at -> Nullable<Timestamptz>,
+         published_at -> Timestamptz,
+         updated_at -> Timestamptz,
+-        refs -> Array<Nullable<Text>>,
++        refs -> Array<Text>,
+         cvss_score -> Nullable<Float4>,
+         cvss_vector -> Nullable<Text>,
+     }
+ }
+ 
+ diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::InternalDiffLogVersionState;
  
@@ -32,7 +46,7 @@ index 752fe50..df85ac3 100644
  diesel::table! {
      internal_state (key) {
          key -> Varchar,
-@@ -156,13 +156,13 @@ diesel::table! {
+@@ -154,13 +154,13 @@ diesel::table! {
      use super::sql_types::PackageState;
  
      packages (id) {
@@ -47,7 +61,7 @@ index 752fe50..df85ac3 100644
          other_dist_tags -> Nullable<Jsonb>,
          other_time_data -> Nullable<Jsonb>,
          unpublished_data -> Nullable<Jsonb>,
-@@ -178,26 +178,27 @@ diesel::table! {
+@@ -176,22 +176,22 @@ diesel::table! {
  
      versions (id) {
          id -> Int8,
@@ -72,11 +86,20 @@ index 752fe50..df85ac3 100644
      }
  }
  
+ diesel::table! {
+     use diesel::sql_types::*;
+     use super::sql_types::SemverStruct;
+@@ -205,12 +205,13 @@ diesel::table! {
+         vulnerable_version_upper_bound_inclusive -> Bool,
+         first_patched_version -> Nullable<SemverStruct>,
+     }
+ }
+ 
  diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
 +diesel::joinable!(diff_log -> change_log (seq));
+ diesel::joinable!(vulnerabilities -> ghsa (ghsa_id));
  
  diesel::allow_tables_to_appear_in_same_query!(
      change_log,
      dependencies,
      diff_log,
-     download_tasks,
