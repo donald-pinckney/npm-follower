@@ -15,6 +15,7 @@ redis = "0.21.6"
 graphql_client = "0.11.0"
 
 postgres_db = { path = "../postgres_db" }
+semver_spec_serialization = { path = "../semver_spec_serialization" }
 utils = { path = "../utils" }
 thiserror = "1.0.38"
 chrono = "0.4.23"
