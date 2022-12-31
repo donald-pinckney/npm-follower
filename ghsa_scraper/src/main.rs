@@ -199,6 +199,11 @@ where
             .unwrap()
             .with_timezone(&chrono::Utc);
 
+        // if vuln.advisory.cvss.is_some() {
+        //     let cvss = vuln.advisory.cvss.unwrap();
+        //     cvss.vector_string
+        // }
+
         let ghsa_db_struct = postgres_db::ghsa::Ghsa {
             id: vuln.advisory.ghsa_id,
             severity: vuln.severity,
@@ -211,7 +216,7 @@ where
                 .advisory
                 .references
                 .iter()
-                .map(|r| Some(r.url.to_string()))
+                .map(|r| r.url.to_string())
                 .collect(),
             cvss_score: vuln.advisory.cvss.as_ref().map(|c| c.score),
             cvss_vector: vuln

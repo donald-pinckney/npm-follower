@@ -22,6 +22,7 @@ CREATE TABLE ghsa (
 
 
 CREATE TABLE vulnerabilities (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   ghsa_id TEXT NOT NULL REFERENCES ghsa (id),
   package_name TEXT NOT NULL,
   vulnerable_version_lower_bound semver,
@@ -29,7 +30,7 @@ CREATE TABLE vulnerabilities (
   vulnerable_version_upper_bound semver,
   vulnerable_version_upper_bound_inclusive BOOLEAN NOT NULL,
   first_patched_version semver,
-  PRIMARY KEY (
+  CONSTRAINT unique_range UNIQUE (
     ghsa_id,
     package_name,
     vulnerable_version_lower_bound,

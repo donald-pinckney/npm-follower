@@ -196,12 +196,13 @@ diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::SemverStruct;
 
-    vulnerabilities (ghsa_id, package_name, vulnerable_version_lower_bound, vulnerable_version_lower_bound_inclusive, vulnerable_version_upper_bound, vulnerable_version_upper_bound_inclusive) {
+    vulnerabilities (id) {
+        id -> Int8,
         ghsa_id -> Text,
         package_name -> Text,
-        vulnerable_version_lower_bound -> SemverStruct,
+        vulnerable_version_lower_bound -> Nullable<SemverStruct>,
         vulnerable_version_lower_bound_inclusive -> Bool,
-        vulnerable_version_upper_bound -> SemverStruct,
+        vulnerable_version_upper_bound -> Nullable<SemverStruct>,
         vulnerable_version_upper_bound_inclusive -> Bool,
         first_patched_version -> Nullable<SemverStruct>,
     }
