@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use super::connection::DbConnection;
 use super::schema;
 use super::schema::ghsa;
+use super::schema::vulnerabilities;
 use crate::connection::QueryRunner;
+use crate::custom_types::Semver;
 use chrono::{DateTime, Utc};
 use diesel::prelude::*;
 use diesel::upsert::excluded;
@@ -19,50 +21,45 @@ pub struct Ghsa {
     pub withdrawn_at: Option<DateTime<Utc>>,
     pub published_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub refs: Vec<Option<String>>, // diesel has problems without having this as an Option...
+    pub refs: Vec<String>,
     pub cvss_score: Option<f32>,
     pub cvss_vector: Option<String>,
-    pub packages: Vec<Option<String>>, // diesel has problems without having this as an Option...
-    // {
-    //    "package_name": {
-    //      "vulnerable": "< 1.2.3"
-    //      "patched": "1.2.3",
-    //    }
-    // }
-    pub vulns: serde_json::Value,
 }
 
-#[derive(Debug, Clone)]
-pub struct VulnMap {
-    pub vulns: HashMap<String, (String, Option<String>)>,
+#[derive(Insertable, Debug, Clone)]
+#[diesel(table_name = vulnerabilities)]
+pub struct GhsaVulnerability {
+    pub ghsa_id: String,
+    pub package_name: String,
+    pub vulnerable_version_lower_bound: Option<Semver>,
+    pub vulnerable_version_lower_bound_inclusive: bool,
+    pub vulnerable_version_upper_bound: Option<Semver>,
+    pub vulnerable_version_upper_bound_inclusive: bool,
+    pub first_patched_version: Option<Semver>,
 }
 
-impl std::ops::Deref for VulnMap {
-    type Target = HashMap<String, (String, Option<String>)>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.vulns
-    }
+#[derive(Queryable, Debug, Clone)]
+#[diesel(table_name = vulnerabilities)]
+struct GhsaVulnerabilityRow {
+    id: i64,
+    ghsa_id: String,
+    package_name: String,
+    vulnerable_version_lower_bound: Option<Semver>,
+    vulnerable_version_lower_bound_inclusive: bool,
+    vulnerable_version_upper_bound: Option<Semver>,
+    vulnerable_version_upper_bound_inclusive: bool,
+    first_patched_version: Option<Semver>,
 }
 
-impl VulnMap {
-    pub fn new(vulns: serde_json::Value) -> Self {
-        let mut map = HashMap::new();
-        for (package, vuln) in vulns.as_object().unwrap() {
-            let vulnerable = vuln["vulnerable"].as_str().unwrap();
-            let patched = vuln["patched"].as_str();
-            map.insert(
-                package.to_string(),
-                (vulnerable.to_string(), patched.map(|s| s.to_string())),
-            );
-        }
-        Self { vulns: map }
-    }
-}
-
-pub fn insert_ghsa(conn: &mut DbConnection, advisory: Ghsa) {
+pub fn insert_ghsa<R>(conn: &mut R, advisory: Ghsa, vulns: Vec<GhsaVulnerability>)
+where
+    R: QueryRunner,
+{
     use schema::ghsa::dsl::*;
-    let query = diesel::insert_into(ghsa)
+
+    // todo!()
+
+    let insert_ghsa_query = diesel::insert_into(ghsa)
         .values(&advisory)
         .on_conflict(id)
         .do_update()
@@ -76,16 +73,56 @@ pub fn insert_ghsa(conn: &mut DbConnection, advisory: Ghsa) {
             refs.eq(excluded(refs)),
             cvss_score.eq(excluded(cvss_score)),
             cvss_vector.eq(excluded(cvss_vector)),
-            packages.eq(excluded(packages)),
-            vulns.eq(excluded(vulns)),
         ));
 
-    conn.execute(query).expect("Failed to insert ghsa");
+    conn.execute(insert_ghsa_query)
+        .expect("Failed to insert ghsa");
+
+    // Probably not very efficient to delete rows and re-insert rather than updating,
+    // but should be fine for these fairly small tables.
+
+    let delete_old_query =
+        diesel::delete(vulnerabilities::table).filter(vulnerabilities::ghsa_id.eq(advisory.id));
+
+    conn.execute(delete_old_query)
+        .expect("Failed to delete old vulnerabilities");
+
+    let insert_vulns_query = diesel::insert_into(vulnerabilities::table).values(vulns);
+
+    conn.execute(insert_vulns_query)
+        .expect("Failed to insert vulnerabilities");
 }
 
-pub fn query_ghsa_by_id(conn: &mut DbConnection, ghsa_id: &str) -> Option<Ghsa> {
+pub fn query_ghsa_by_id(conn: &mut DbConnection, ghsa_id: &str) -> (Ghsa, Vec<GhsaVulnerability>) {
     use schema::ghsa::dsl::*;
-    let query = ghsa.filter(id.eq(ghsa_id));
 
-    conn.load(query).expect("Failed to query ghsa").pop()
+    // let query = ghsa.filter(id.eq(ghsa_id));
+
+    let adv: Ghsa = conn
+        .first(ghsa.filter(id.eq(ghsa_id)))
+        .unwrap_or_else(|err| panic!("Failed to find ghsa with id {}", ghsa_id));
+
+    let vuln_rows: Vec<GhsaVulnerabilityRow> = conn
+        .load(vulnerabilities::table.filter(vulnerabilities::ghsa_id.eq(ghsa_id)))
+        .unwrap_or_else(|err| {
+            panic!(
+                "Failed to query vulnerabilities for ghsa with id {}",
+                ghsa_id
+            )
+        });
+
+    let vulns = vuln_rows
+        .into_iter()
+        .map(|row| GhsaVulnerability {
+            ghsa_id: row.ghsa_id,
+            package_name: row.package_name,
+            vulnerable_version_lower_bound: row.vulnerable_version_lower_bound,
+            vulnerable_version_lower_bound_inclusive: row.vulnerable_version_lower_bound_inclusive,
+            vulnerable_version_upper_bound: row.vulnerable_version_upper_bound,
+            vulnerable_version_upper_bound_inclusive: row.vulnerable_version_upper_bound_inclusive,
+            first_patched_version: row.first_patched_version,
+        })
+        .collect();
+
+    (adv, vulns)
 }
