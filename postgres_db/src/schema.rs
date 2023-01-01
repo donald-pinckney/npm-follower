@@ -194,6 +194,14 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    diff_analysis (from_id, to_id) {
+        from_id -> Int8,
+        to_id -> Int8,
+        job_result -> Jsonb,
+    }
+}
+
 diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
 diesel::joinable!(diff_log -> change_log (seq));
 
@@ -208,4 +216,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     internal_state,
     packages,
     versions,
+    diff_analysis,
 );
