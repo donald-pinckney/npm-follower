@@ -1,8 +1,8 @@
 .PHONY: all
-all: build_updates find_patches setup_analysis version_ordering_validation
+all: build_updates find_patches prepare_diffs_to_compute setup_analysis version_ordering_validation
 
 .PHONY: clean
-clean: clean_build_updates clean_find_patches clean_setup_analysis clean_version_ordering_validation
+clean: clean_build_updates clean_find_patches clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
 
 # -------- build_updates --------
 makefile_state/build_updates.touch:
@@ -13,7 +13,7 @@ makefile_state/build_updates.touch:
 build_updates: version_ordering_validation makefile_state/build_updates.touch
 
 .PHONY: clean_build_updates
-clean_build_updates: clean_find_patches
+clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute
 	if [ -f makefile_state/build_updates.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/build_updates.sql; else true; fi
 	rm -f makefile_state/build_updates.touch
 
@@ -29,6 +29,19 @@ find_patches: build_updates makefile_state/find_patches.touch
 clean_find_patches: 
 	if [ -f makefile_state/find_patches.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/find_patches.sql; else true; fi
 	rm -f makefile_state/find_patches.touch
+
+# -------- prepare_diffs_to_compute --------
+makefile_state/prepare_diffs_to_compute.touch:
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/prepare_diffs_to_compute.sql
+	touch makefile_state/prepare_diffs_to_compute.touch
+
+.PHONY: prepare_diffs_to_compute
+prepare_diffs_to_compute: build_updates makefile_state/prepare_diffs_to_compute.touch
+
+.PHONY: clean_prepare_diffs_to_compute
+clean_prepare_diffs_to_compute: 
+	if [ -f makefile_state/prepare_diffs_to_compute.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/prepare_diffs_to_compute.sql; else true; fi
+	rm -f makefile_state/prepare_diffs_to_compute.touch
 
 # -------- setup_analysis --------
 makefile_state/setup_analysis.touch:
