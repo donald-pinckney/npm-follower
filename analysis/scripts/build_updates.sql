@@ -1,13 +1,18 @@
 CREATE TYPE analysis.update_type AS ENUM ('zero_to_something', 'bug', 'minor', 'major');
 
-CREATE OR REPLACE FUNCTION analysis.determine_update_type(semver, semver) RETURNS analysis.update_type AS $$
--- $1 = from
--- $2 = to
+CREATE OR REPLACE FUNCTION analysis.determine_update_type(semver, semver) RETURNS analysis.update_type AS $$ -- $1 = from
+    -- $2 = to
 SELECT CASE
         WHEN ($1) >= ($2) THEN NULL
-        WHEN ($1).prerelease IS NOT NULL OR ($1).build IS NOT NULL OR ($2).prerelease IS NOT NULL OR ($2).build IS NOT NULL THEN NULL
-        WHEN ($1).major = 0 AND ($1).minor = 0 AND ($1).bug = 0 THEN 'zero_to_something'::analysis.update_type
-        WHEN ($1).major = ($2).major AND ($1).minor = ($2).minor THEN 'bug'::analysis.update_type
+        WHEN ($1).prerelease IS NOT NULL
+        OR ($1).build IS NOT NULL
+        OR ($2).prerelease IS NOT NULL
+        OR ($2).build IS NOT NULL THEN NULL
+        WHEN ($1).major = 0
+        AND ($1).minor = 0
+        AND ($1).bug = 0 THEN 'zero_to_something'::analysis.update_type
+        WHEN ($1).major = ($2).major
+        AND ($1).minor = ($2).minor THEN 'bug'::analysis.update_type
         WHEN ($1).major = ($2).major THEN 'minor'::analysis.update_type
         ELSE 'major'::analysis.update_type
     END $$ LANGUAGE SQL IMMUTABLE;
@@ -63,6 +68,12 @@ FROM intra_group_updates
 UNION ALL
 SELECT *
 FROM inter_group_updates;
+
+
+CREATE INDEX analysis_all_updates_idx_package_id ON analysis.all_updates (package_id);
+CREATE INDEX analysis_all_updates_idx_to_semver ON analysis.all_updates (to_semver);
+
+ANALYZE analysis.all_updates;
 
 
 CREATE UNLOGGED TABLE analysis.all_overlaps AS

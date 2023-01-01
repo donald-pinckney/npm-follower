@@ -8,6 +8,7 @@ fn main() -> Result<(), std::io::Error> {
         ("setup_analysis", vec![]),
         ("version_ordering_validation", vec!["setup_analysis"]),
         ("build_updates", vec!["version_ordering_validation"]),
+        ("find_patches", vec!["build_updates"]),
     ]
     .into_iter()
     .collect();

@@ -1,8 +1,8 @@
 .PHONY: all
-all: build_updates setup_analysis version_ordering_validation
+all: build_updates find_patches setup_analysis version_ordering_validation
 
 .PHONY: clean
-clean: clean_build_updates clean_setup_analysis clean_version_ordering_validation
+clean: clean_build_updates clean_find_patches clean_setup_analysis clean_version_ordering_validation
 
 # -------- build_updates --------
 makefile_state/build_updates.touch:
@@ -13,9 +13,22 @@ makefile_state/build_updates.touch:
 build_updates: version_ordering_validation makefile_state/build_updates.touch
 
 .PHONY: clean_build_updates
-clean_build_updates: 
+clean_build_updates: clean_find_patches
 	if [ -f makefile_state/build_updates.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/build_updates.sql; else true; fi
 	rm -f makefile_state/build_updates.touch
+
+# -------- find_patches --------
+makefile_state/find_patches.touch:
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/find_patches.sql
+	touch makefile_state/find_patches.touch
+
+.PHONY: find_patches
+find_patches: build_updates makefile_state/find_patches.touch
+
+.PHONY: clean_find_patches
+clean_find_patches: 
+	if [ -f makefile_state/find_patches.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/find_patches.sql; else true; fi
+	rm -f makefile_state/find_patches.touch
 
 # -------- setup_analysis --------
 makefile_state/setup_analysis.touch:
