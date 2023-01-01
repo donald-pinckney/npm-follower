@@ -115,6 +115,10 @@ pub enum JobType {
         binary: String,
         tarball_chunks: Vec<Vec<String>>,
     },
+    ComputeMulti {
+        binary: String,
+        tarball_chunks: Vec<Vec<Vec<String>>>,
+    },
     StoreTarballs {
         filepaths: Vec<String>,
     },
@@ -268,6 +272,15 @@ mod routes {
                     tarball_chunks,
                 } => {
                     let res = job_manager.submit_compute(binary, tarball_chunks).await?;
+                    Ok(serde_json::to_string(&res)?)
+                }
+                JobType::ComputeMulti {
+                    binary,
+                    tarball_chunks,
+                } => {
+                    let res = job_manager
+                        .submit_compute_multi(binary, tarball_chunks)
+                        .await?;
                     Ok(serde_json::to_string(&res)?)
                 }
                 JobType::StoreTarballs { filepaths } => {
