@@ -28,10 +28,16 @@ pub enum DiffAnalysisJobResult {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileDiff {
+    // renaming for compactness
+    #[serde(rename = "a")]
     pub added: usize,
+    #[serde(rename = "r")]
     pub removed: usize,
+    #[serde(rename = "to")]
     pub total_old: Option<usize>,
+    #[serde(rename = "tn")]
     pub total_new: Option<usize>,
+    #[serde(rename = "w")]
     pub average_width: f64,
 }
 

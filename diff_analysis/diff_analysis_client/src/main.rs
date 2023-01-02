@@ -1,5 +1,6 @@
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
+    fs::File,
     path::{Path, PathBuf},
 };
 
@@ -29,6 +30,7 @@ async fn main() {
         std::process::exit(103);
     }
 
+    let mut result = HashMap::new();
     for file_old in fdir_old {
         let display_name = file_old.strip_prefix(&dir_old_pkg).unwrap();
         let file_new = Path::new(&dir_new_pkg).join(display_name);
@@ -36,25 +38,23 @@ async fn main() {
             calculate_proportions(&file_old, &file_new).await.unwrap();
         if fdir_new.remove(&file_new) {
             let (num_added, num_removed) = run_diff(&file_old, &file_new).await.unwrap();
-            println!(
-                "{} {} {} {:?} {:?} {}",
-                display_name.display(),
-                num_added,
-                num_removed,
-                new_lines_count,
-                old_lines_count,
-                avg_width
-            );
+            let file_diff = FileDiff {
+                added: num_added,
+                removed: num_removed,
+                total_old: old_lines_count,
+                total_new: new_lines_count,
+                average_width: avg_width,
+            };
+            result.insert(display_name.to_string_lossy().to_string(), file_diff);
         } else {
-            println!(
-                "{} {} {} {:?} {:?} {}",
-                display_name.display(),
-                0,
-                0,
-                new_lines_count,
-                old_lines_count,
-                avg_width
-            );
+            let file_diff = FileDiff {
+                added: 0,
+                removed: 0,
+                total_old: old_lines_count,
+                total_new: new_lines_count,
+                average_width: avg_width,
+            };
+            result.insert(display_name.to_string_lossy().to_string(), file_diff);
         }
     }
 
@@ -63,16 +63,18 @@ async fn main() {
         let file_old = Path::new(&dir_old_pkg).join(display_name);
         let (new_lines_count, old_lines_count, avg_width) =
             calculate_proportions(&file_old, &file_new).await.unwrap();
-        println!(
-            "{} {} {} {:?} {:?} {}",
-            display_name.display(),
-            0,
-            0,
-            new_lines_count,
-            old_lines_count,
-            avg_width
-        );
+        let file_diff = FileDiff {
+            added: 0,
+            removed: 0,
+            total_old: old_lines_count,
+            total_new: new_lines_count,
+            average_width: avg_width,
+        };
+        result.insert(display_name.to_string_lossy().to_string(), file_diff);
     }
+
+    let json = serde_json::to_string(&result).unwrap();
+    println!("{}", json);
 }
 
 // calculates the length and average line width of a file
