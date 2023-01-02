@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use blob_idx_server::{
     errors::{BlobError, ClientError, HTTPError},
     http::{JobType, SubmitJobRequest},
-    job::ClientResponse,
+    job::{ClientResponse, TarballResult},
 };
 use diesel::QueryableByName;
 use postgres_db::{
@@ -44,6 +44,7 @@ SELECT * FROM analysis.diffs_to_compute LIMIT(5000)
 const CHUNK_SIZE: usize = 500;
 const NUM_WORKERS: usize = 50;
 const NUM_LOCAL_WORKERS: usize = 5;
+const TOTAL_NUM_DIFFS: usize = 16542717; // hardcoded... but only used for progress bar
 
 #[tokio::main]
 async fn main() {
@@ -63,12 +64,15 @@ async fn main() {
     }
     let db_worker = spawn_db_worker(db_rx, DbConnection::connect());
 
+    let mut total = 0;
     for chunk in res.chunks(CHUNK_SIZE) {
         let chunk = chunk.to_vec();
+        total += chunk.len();
         data_tx.send(chunk).await.unwrap();
+        println!("[MANAGER] Progress: {}/{}", total, TOTAL_NUM_DIFFS);
     }
 
-    println!("DONE! Waiting for workers to finish...");
+    println!("[MANAGER] DONE! Waiting for workers to finish...");
     drop(data_tx);
 
     for worker in chunk_workers {
@@ -118,14 +122,46 @@ fn spawn_diff_worker(
 
             let client = reqwest::Client::new();
             println!("[{}] Submitting job", worker_id);
-            let resp = client
+            let http_resp = client
                 .post(&format!("{}/job/submit", blob_api_url))
                 .header("Authorization", &blob_api_key)
                 .json(&job)
                 .send()
                 .await
                 .unwrap();
-            println!("[{}] resp: {:?}", worker_id, resp.text().await);
+            let resps: Vec<ClientResponse> = http_resp.json().await.unwrap();
+            let mut diffs = vec![];
+            for resp in resps {
+                match resp {
+                    ClientResponse::Message(m) => {
+                        let res = HashMap::<String, TarballResult>::deserialize(m)
+                            .expect("Failed to deserialize");
+                        for (tb_split, res) in res {
+                            let (tb_old, tb_new) = tb_split.split_once('&').expect("Invalid split");
+                            let from_id = id_lookup[&tb_old];
+                            let to_id = id_lookup[&tb_new];
+                            let job_result = if res.exit_code == 0 && !res.stdout.is_empty() {
+                                let stdout = base64::decode(&res.stdout).expect("Failed to decode");
+                                match serde_json::from_slice::<HashMap<String, FileDiff>>(&stdout) {
+                                    Ok(res) => DiffAnalysisJobResult::Diff(res),
+                                    Err(_) => DiffAnalysisJobResult::ErrUnParseable,
+                                }
+                            } else if res.exit_code == 103 {
+                                DiffAnalysisJobResult::ErrTooManyFiles(0) // TODO: get num files
+                            } else {
+                                DiffAnalysisJobResult::ErrClient(res.stderr)
+                            };
+                            diffs.push(DiffAnalysis {
+                                from_id,
+                                to_id,
+                                job_result,
+                            })
+                        }
+                    }
+                    ClientResponse::Error(_) => todo!("handle error"),
+                };
+            }
+            db_tx.send(diffs).await.unwrap();
         }
     };
     tokio::task::spawn(thunk)
@@ -134,7 +170,7 @@ fn spawn_diff_worker(
 fn spawn_db_worker(mut db_rx: Receiver<Vec<DiffAnalysis>>, mut db: DbConnection) -> JoinHandle<()> {
     let thunk = async move {
         while let Some(diffs) = db_rx.recv().await {
-            println!("Inserting {} diffs", diffs.len());
+            println!("[DB] Inserting {} diffs", diffs.len());
         }
     };
     tokio::task::spawn(thunk)
