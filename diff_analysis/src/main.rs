@@ -42,14 +42,41 @@ const NUM_WORKERS: usize = 10;
 async fn main() {
     utils::check_no_concurrent_processes("diff_analysis");
     dotenvy::dotenv().ok();
+    let BLOB_API_URL = std::env::var("BLOB_API_URL").expect("BLOB_API_URL not set");
+    let BLOB_API_KEY = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY not set");
     let mut conn: DbConnection = DbConnection::connect();
     let q = diesel::sql_query(QUERY);
     let res: Vec<QRes> = conn.load(q).unwrap();
 
-    // let mut lookup: HashMap<(i64, i64), (String, String)> = HashMap::new();
-    let mut i = 0;
     for chunk in res.chunks(CHUNK_SIZE) {
-        println!("Starting chunk {} - {}", i, chunk.len());
-        i += 1;
+        let mut id_lookup: HashMap<&str, i64> = HashMap::new();
+        let mut tarball_chunks = vec![];
+        for chunk in chunk.chunks(CHUNK_SIZE / NUM_WORKERS) {
+            let mut tb_chunk = vec![];
+            for qres in chunk {
+                tb_chunk.push(vec![qres.from_key.to_string(), qres.to_key.to_string()]);
+                id_lookup.insert(&qres.from_key, qres.from_id);
+                id_lookup.insert(&qres.to_key, qres.to_id);
+            }
+            tarball_chunks.push(tb_chunk);
+        }
+
+        let job = SubmitJobRequest {
+            job_type: JobType::ComputeMulti {
+                binary: "/scratch/cassano.f/blob_bins/npm_tarball_diff.sh".to_string(),
+                tarball_chunks,
+            },
+        };
+
+        let client = reqwest::Client::new();
+        println!("Submitting job");
+        let resp = client
+            .post(&format!("{}/job/submit", BLOB_API_URL))
+            .header("Authorization", &BLOB_API_KEY)
+            .json(&job)
+            .send()
+            .await
+            .unwrap();
+        println!("resp: {:?}", resp.text().await);
     }
 }

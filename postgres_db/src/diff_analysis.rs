@@ -22,6 +22,7 @@ struct DiffAnalysisSql {
 pub enum DiffAnalysisJobResult {
     Diff(HashMap<String, FileDiff>),
     ErrTooManyFiles(usize),
+    ErrUnParseable,
     ErrClient(String),
 }
 
@@ -31,6 +32,7 @@ pub struct FileDiff {
     pub removed: usize,
     pub total_old: Option<usize>,
     pub total_new: Option<usize>,
+    pub average_width: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
