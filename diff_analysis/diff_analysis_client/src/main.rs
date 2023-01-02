@@ -73,6 +73,10 @@ async fn main() {
         result.insert(display_name.to_string_lossy().to_string(), file_diff);
     }
 
+    // remove the extracted tarballs
+    std::fs::remove_dir_all(&dir_old_pkg).ok();
+    std::fs::remove_dir_all(&dir_new_pkg).ok();
+
     let json = serde_json::to_string(&result).unwrap();
     println!("{}", json);
 }
