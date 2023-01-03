@@ -30,6 +30,7 @@ lazy_static! {
             js_dir.push("js_parser");
         } else if js_dir.ends_with("relational_db_builder/")
             || js_dir.ends_with("diff_log_builder/")
+            || js_dir.ends_with("historic_npm_registry/")
         {
             js_dir.push("..");
             js_dir.push("semver_spec_serialization");

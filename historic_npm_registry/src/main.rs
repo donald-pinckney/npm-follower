@@ -1,9 +1,13 @@
+use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
 
 use chrono::DateTime;
 use chrono::Utc;
 use moka::future::Cache;
+use postgres_db::custom_types::Semver;
+use postgres_db::packument::AllVersionPackuments;
+use postgres_db::packument::VersionOnlyPackument;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde_json::Map;
@@ -14,13 +18,16 @@ use warp::Filter;
 use warp::Rejection;
 use warp::Reply;
 
-type NpmCache = Cache<String, Arc<Value>>;
+type NpmCache = Cache<String, Option<Arc<AllVersionPackuments>>>;
 
-fn restrict_time(v: &Value, t: DateTime<Utc>) -> Value {
+fn restrict_time(v: &AllVersionPackuments, t: DateTime<Utc>) -> AllVersionPackuments {
     v.clone()
 }
 
-async fn request_package_from_npm(full_name: &str, client: ClientWithMiddleware) -> Value {
+async fn request_package_from_npm(
+    full_name: &str,
+    client: ClientWithMiddleware,
+) -> Option<AllVersionPackuments> {
     println!("hitting NPM for: {}", full_name);
 
     let packument_doc = client
@@ -37,9 +44,15 @@ async fn request_package_from_npm(full_name: &str, client: ClientWithMiddleware)
         _ => panic!("non-object packument"),
     };
 
-    let packument = diff_log_builder::deserialize_packument_doc(packument_doc, None, None);
-    println!("parsed: {:?}", packument);
-    Value::Null
+    let (_name, pkg_doc, versions) =
+        diff_log_builder::deserialize_packument_doc(packument_doc, None, None)
+            .expect("failed to parse packument");
+
+    if !pkg_doc.is_normal() {
+        return None;
+    }
+
+    Some(versions)
 }
 
 async fn lookup_package(
@@ -47,16 +60,16 @@ async fn lookup_package(
     full_name: String,
     client: ClientWithMiddleware,
     cache: NpmCache,
-) -> Value {
+) -> Option<AllVersionPackuments> {
     println!("looking up: {}", full_name);
     if let Some(cache_hit) = cache.get(&full_name) {
-        restrict_time(&cache_hit, t)
+        cache_hit.map(|x| restrict_time(&x, t))
     } else {
         let npm_response = request_package_from_npm(&full_name, client).await;
+        let npm_response = npm_response.map(Arc::new);
 
-        let npm_response = Arc::new(npm_response);
         cache.insert(full_name, npm_response.clone()).await;
-        restrict_time(&npm_response, t)
+        npm_response.map(|x| restrict_time(&x, t))
     }
 }
 
