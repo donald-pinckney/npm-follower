@@ -289,10 +289,14 @@ async fn compute_run_bin_multi(
             handles.push(handle);
         }
 
+        eprintln!("Waiting for all slices to be read and sent");
+
         for handle in handles {
             let (slice_paths, tarball_urls) = handle.await.unwrap()?;
             slice_map.insert(slice_paths, tarball_urls);
         }
+
+        eprintln!("All slices read and sent");
 
         // check that the binary exists
         if !std::path::Path::new(&binary).exists() {
@@ -323,6 +327,7 @@ async fn compute_run_bin_multi(
         let mut res_map = HashMap::new();
         for (original_tarball_url, handle) in handle_map {
             let res = handle.await.unwrap()?;
+            eprintln!("Got result for {}", original_tarball_url);
             res_map.insert(original_tarball_url, res);
         }
         Ok(res_map)
