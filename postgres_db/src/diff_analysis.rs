@@ -72,8 +72,8 @@ impl From<DiffAnalysis> for DiffAnalysisSql {
     }
 }
 
-pub fn insert_diff_analysis(
-    conn: &mut DbConnection,
+pub fn insert_diff_analysis<R: QueryRunner>(
+    conn: &mut R,
     diff: DiffAnalysis,
 ) -> Result<(), diesel::result::Error> {
     let diff: DiffAnalysisSql = diff.into();
@@ -91,15 +91,10 @@ pub fn insert_diff_analysis(
     Ok(())
 }
 
-pub fn insert_batch_diff_analysis(
-    conn: &mut DbConnection,
+pub fn insert_batch_diff_analysis<R: QueryRunner>(
+    conn: &mut R,
     diffs: Vec<DiffAnalysis>,
 ) -> Result<(), diesel::result::Error> {
-    // check that the diffs are unique
-    let mut set = std::collections::HashSet::new();
-    for diff in &diffs {
-        assert!(set.insert((diff.from_id, diff.to_id)));
-    }
     let diffs: Vec<DiffAnalysisSql> = diffs.into_iter().map(|d| d.into()).collect();
     conn.execute(
         diesel::insert_into(diff_analysis::table)

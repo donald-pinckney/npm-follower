@@ -7,7 +7,7 @@ use blob_idx_server::{
 };
 use diesel::QueryableByName;
 use postgres_db::{
-    connection::{DbConnection, QueryRunner},
+    connection::{DbConnection, DbConnectionInTransaction, QueryRunner},
     diff_analysis::{self, insert_diff_analysis, DiffAnalysis, DiffAnalysisJobResult, FileDiff},
     download_tarball::{self, DownloadedTarball},
     internal_state,
@@ -185,9 +185,12 @@ fn spawn_db_worker(
         while let Some(diffs) = db_rx.recv().await {
             println!("[DB] Inserting {} diffs", diffs.len());
             if !diffs.is_empty() {
-                delete_rows_after_compute(&diffs, &mut conn);
-                diff_analysis::insert_batch_diff_analysis(&mut conn, diffs)
-                    .expect("Failed to insert");
+                conn.run_psql_transaction(|mut c| {
+                    delete_rows_after_compute(&diffs, &mut c);
+                    diff_analysis::insert_batch_diff_analysis(&mut c, diffs)?;
+                    Ok(((), true))
+                })
+                .expect("Failed to insert diffs");
             }
             println!("[DB] Done");
         }
@@ -195,7 +198,7 @@ fn spawn_db_worker(
     tokio::task::spawn(thunk)
 }
 
-fn delete_rows_after_compute(diffs: &Vec<DiffAnalysis>, conn: &mut DbConnection) {
+fn delete_rows_after_compute(diffs: &Vec<DiffAnalysis>, conn: &mut DbConnectionInTransaction) {
     let mut pairs = String::new();
     for (i, diff) in diffs.iter().enumerate() {
         if let DiffAnalysisJobResult::Diff(_) = diff.job_result {
