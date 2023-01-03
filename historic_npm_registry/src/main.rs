@@ -57,20 +57,37 @@ async fn request_package_from_npm(
 
 async fn lookup_package(
     t: DateTime<Utc>,
-    full_name: String,
+    full_name: &str,
     client: ClientWithMiddleware,
     cache: NpmCache,
 ) -> Option<AllVersionPackuments> {
     println!("looking up: {}", full_name);
-    if let Some(cache_hit) = cache.get(&full_name) {
+    if let Some(cache_hit) = cache.get(full_name) {
         cache_hit.map(|x| restrict_time(&x, t))
     } else {
-        let npm_response = request_package_from_npm(&full_name, client).await;
+        let npm_response = request_package_from_npm(full_name, client).await;
         let npm_response = npm_response.map(Arc::new);
 
-        cache.insert(full_name, npm_response.clone()).await;
+        cache
+            .insert(full_name.to_owned(), npm_response.clone())
+            .await;
         npm_response.map(|x| restrict_time(&x, t))
     }
+}
+
+fn serialize_packument_in_npm_format(
+    package_name: &str,
+    versions: Option<AllVersionPackuments>,
+) -> Value {
+    if versions.is_none() {
+        let mut m = Map::new();
+        m.insert("error".to_owned(), Value::String("Not found".to_owned()));
+        return Value::Object(m);
+    }
+
+    let versions = versions.unwrap();
+
+    todo!()
 }
 
 async fn handle_request(
@@ -93,7 +110,11 @@ async fn handle_request(
         .unwrap();
 
     if let Ok(t) = DateTime::<Utc>::from_str(&t_str) {
-        warp::reply::json(&lookup_package(t, full_name, client, cache).await)
+        let matching_versions = lookup_package(t, &full_name, client, cache).await;
+        warp::reply::json(&serialize_packument_in_npm_format(
+            &full_name,
+            matching_versions,
+        ))
     } else {
         panic!("BAD DATE: {}", t_str)
     }
