@@ -41,8 +41,8 @@ const QUERY: &str = r#"
 SELECT * FROM analysis.diffs_to_compute
 "#;
 
-const CHUNK_SIZE: usize = 5000;
-const NUM_WORKERS: usize = 40;
+const CHUNK_SIZE: usize = 2500;
+const NUM_WORKERS: usize = 50;
 const NUM_LOCAL_WORKERS: usize = 3;
 const TOTAL_NUM_DIFFS: usize = 16542717; // hardcoded... but only used for progress bar
 
