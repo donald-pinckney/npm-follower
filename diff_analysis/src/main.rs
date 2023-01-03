@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use blob_idx_server::{
     errors::{BlobError, ClientError, HTTPError},
@@ -131,6 +134,7 @@ fn spawn_diff_worker(
                 .unwrap();
             let resps: Vec<ClientResponse> = http_resp.json().await.unwrap();
             let mut diffs = vec![];
+            let mut dedup = HashSet::new();
             for resp in resps {
                 match resp {
                     ClientResponse::Message(m) => {
@@ -140,6 +144,11 @@ fn spawn_diff_worker(
                             let (tb_old, tb_new) = tb_split.split_once('&').expect("Invalid split");
                             let from_id = id_lookup[&tb_old];
                             let to_id = id_lookup[&tb_new];
+                            if !dedup.insert((from_id, to_id)) {
+                                // this may happen for some reason?
+                                eprintln!("[{}] Duplicate diff: {} {}", worker_id, from_id, to_id);
+                                continue;
+                            }
                             let job_result = if res.exit_code == 0 && !res.stdout.is_empty() {
                                 let stdout = base64::decode(&res.stdout).expect("Failed to decode");
                                 match serde_json::from_slice::<HashMap<String, FileDiff>>(&stdout) {
