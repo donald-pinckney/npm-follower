@@ -40,14 +40,23 @@ struct QRes {
     to_key: String,
 }
 
+#[derive(QueryableByName, Debug, Clone)]
+struct QCount {
+    #[sql_type = "diesel::sql_types::BigInt"]
+    count: i64,
+}
+
 const QUERY: &str = r#"
 SELECT * FROM analysis.diffs_to_compute
+"#;
+
+const COUNT_QUERY: &str = r#"
+SELECT COUNT(*) FROM analysis.diffs_to_compute
 "#;
 
 const CHUNK_SIZE: usize = 2500;
 const NUM_WORKERS: usize = 50;
 const NUM_LOCAL_WORKERS: usize = 3;
-const TOTAL_NUM_DIFFS: usize = 16542717; // hardcoded... but only used for progress bar
 
 #[tokio::main]
 async fn main() {
@@ -67,12 +76,14 @@ async fn main() {
     }
     let db_worker = spawn_db_worker(db_rx, DbConnection::connect());
 
+    let total_count: Vec<QCount> = conn.load(diesel::sql_query(COUNT_QUERY)).unwrap();
+
     let mut total = 0;
     for chunk in res.chunks(CHUNK_SIZE) {
         let chunk = chunk.to_vec();
         total += chunk.len();
         data_tx.send(chunk).await.unwrap();
-        println!("[MANAGER] Progress: {}/{}", total, TOTAL_NUM_DIFFS);
+        println!("[MANAGER] Progress: {}/{}", total, total_count[0].count);
     }
 
     println!("[MANAGER] DONE! Waiting for workers to finish...");
