@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::connection::QueryRunner;
 
 use super::schema::diff_analysis;
-use diesel::Queryable;
+use diesel::{upsert::excluded, Queryable};
 
 use super::connection::DbConnection;
 use diesel::prelude::*;
@@ -21,7 +21,7 @@ struct DiffAnalysisSql {
 #[serde(rename_all = "camelCase", tag = "t", content = "d")]
 pub enum DiffAnalysisJobResult {
     Diff(HashMap<String, FileDiff>),
-    ErrTooManyFiles(usize),
+    ErrTooManyFiles(usize, usize), // old, new
     ErrUnParseable,
     ErrClient(String),
 }
@@ -74,15 +74,43 @@ impl From<DiffAnalysis> for DiffAnalysisSql {
 
 pub fn insert_diff_analysis(
     conn: &mut DbConnection,
-    from_id: i64,
-    to_id: i64,
-    job_result: DiffAnalysisJobResult,
+    diff: DiffAnalysis,
 ) -> Result<(), diesel::result::Error> {
-    let new_diff_analysis = DiffAnalysisSql {
-        from_id,
-        to_id,
-        job_result: serde_json::to_value(job_result).expect("Failed to serialize job result"),
-    };
-    conn.execute(diesel::insert_into(diff_analysis::table).values(&new_diff_analysis))?;
+    let diff: DiffAnalysisSql = diff.into();
+    conn.execute(
+        diesel::insert_into(diff_analysis::table)
+            .values(&diff)
+            .on_conflict((diff_analysis::from_id, diff_analysis::to_id))
+            .do_update()
+            .set((
+                diff_analysis::from_id.eq(excluded(diff_analysis::from_id)),
+                diff_analysis::to_id.eq(excluded(diff_analysis::to_id)),
+                diff_analysis::job_result.eq(excluded(diff_analysis::job_result)),
+            )),
+    )?;
+    Ok(())
+}
+
+pub fn insert_batch_diff_analysis(
+    conn: &mut DbConnection,
+    diffs: Vec<DiffAnalysis>,
+) -> Result<(), diesel::result::Error> {
+    // check that the diffs are unique
+    let mut set = std::collections::HashSet::new();
+    for diff in &diffs {
+        assert!(set.insert((diff.from_id, diff.to_id)));
+    }
+    let diffs: Vec<DiffAnalysisSql> = diffs.into_iter().map(|d| d.into()).collect();
+    conn.execute(
+        diesel::insert_into(diff_analysis::table)
+            .values(&diffs)
+            .on_conflict((diff_analysis::from_id, diff_analysis::to_id))
+            .do_update()
+            .set((
+                diff_analysis::from_id.eq(excluded(diff_analysis::from_id)),
+                diff_analysis::to_id.eq(excluded(diff_analysis::to_id)),
+                diff_analysis::job_result.eq(excluded(diff_analysis::job_result)),
+            )),
+    )?;
     Ok(())
 }

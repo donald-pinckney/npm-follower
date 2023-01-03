@@ -25,7 +25,7 @@ async fn main() {
 
     // if either one of the directories has more than 200 files, fail
     if fdir_old.len() > 200 || fdir_new.len() > 200 {
-        eprintln!("{},{}", fdir_old.len(), fdir_new.len());
+        eprint!("{},{}", fdir_old.len(), fdir_new.len());
         std::process::exit(103);
     }
 

@@ -8,7 +8,7 @@ use blob_idx_server::{
 use diesel::QueryableByName;
 use postgres_db::{
     connection::{DbConnection, QueryRunner},
-    diff_analysis::{insert_diff_analysis, DiffAnalysis, DiffAnalysisJobResult, FileDiff},
+    diff_analysis::{self, insert_diff_analysis, DiffAnalysis, DiffAnalysisJobResult, FileDiff},
     download_tarball::{self, DownloadedTarball},
     internal_state,
 };
@@ -38,10 +38,10 @@ struct QRes {
 }
 
 const QUERY: &str = r#"
-SELECT * FROM analysis.diffs_to_compute LIMIT(5000)
+SELECT * FROM analysis.diffs_to_compute
 "#;
 
-const CHUNK_SIZE: usize = 500;
+const CHUNK_SIZE: usize = 5000;
 const NUM_WORKERS: usize = 50;
 const NUM_LOCAL_WORKERS: usize = 5;
 const TOTAL_NUM_DIFFS: usize = 16542717; // hardcoded... but only used for progress bar
@@ -147,7 +147,15 @@ fn spawn_diff_worker(
                                     Err(_) => DiffAnalysisJobResult::ErrUnParseable,
                                 }
                             } else if res.exit_code == 103 {
-                                DiffAnalysisJobResult::ErrTooManyFiles(0) // TODO: get num files
+                                let stderr = String::from_utf8(
+                                    base64::decode(&res.stderr).expect("Failed to decode"),
+                                )
+                                .expect("Failed to decode");
+                                let (old, new) =
+                                    stderr.split_once(',').expect("Invalid comma split");
+                                let old = old.parse::<usize>().expect("Failed to parse");
+                                let new = new.parse::<usize>().expect("Failed to parse");
+                                DiffAnalysisJobResult::ErrTooManyFiles(old, new)
                             } else {
                                 DiffAnalysisJobResult::ErrClient(res.stderr)
                             };
@@ -158,7 +166,9 @@ fn spawn_diff_worker(
                             })
                         }
                     }
-                    ClientResponse::Error(_) => todo!("handle error"),
+                    ClientResponse::Error(e) => {
+                        eprintln!("[{}] Client Error: {}", worker_id, e);
+                    }
                 };
             }
             db_tx.send(diffs).await.unwrap();
@@ -167,10 +177,14 @@ fn spawn_diff_worker(
     tokio::task::spawn(thunk)
 }
 
-fn spawn_db_worker(mut db_rx: Receiver<Vec<DiffAnalysis>>, mut db: DbConnection) -> JoinHandle<()> {
+fn spawn_db_worker(
+    mut db_rx: Receiver<Vec<DiffAnalysis>>,
+    mut conn: DbConnection,
+) -> JoinHandle<()> {
     let thunk = async move {
         while let Some(diffs) = db_rx.recv().await {
             println!("[DB] Inserting {} diffs", diffs.len());
+            diff_analysis::insert_batch_diff_analysis(&mut conn, diffs).expect("Failed to insert");
         }
     };
     tokio::task::spawn(thunk)
