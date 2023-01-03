@@ -135,11 +135,15 @@ async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientE
         .header("Authorization", blob_api_key.clone())
         .body(body)
         .send()
-        .await?;
+        .await
+        .map_err(|e| ClientError::ReqwestError(format!("Failed to send request: {}", e)))?;
 
     let resp = check_req_failed(resp).await?;
 
-    let text = resp.text().await?;
+    let text = resp
+        .text()
+        .await
+        .map_err(|e| ClientError::ReqwestError(format!("Failed to read response body: {}", e)))?;
     let slice: BlobStorageSlice = serde_json::from_str(&text)
         .map_err(|e| ClientError::SerdeJsonError(format!("{} - {}", text, e)))?;
     Ok(slice)

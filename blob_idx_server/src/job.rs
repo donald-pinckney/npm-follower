@@ -237,6 +237,7 @@ impl JobManager {
                 {
                     Ok(res) => res?,
                     Err(_) => {
+                        println!("Worker timed out! Replacing...");
                         wp_comp.replace_worker(&worker).await?;
                         return Ok(ClientResponse::Error(ClientError::Timeout));
                     }
