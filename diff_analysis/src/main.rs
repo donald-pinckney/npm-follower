@@ -200,6 +200,7 @@ fn spawn_db_worker(
 
 fn delete_rows_after_compute(diffs: &[DiffAnalysis], conn: &mut DbConnectionInTransaction) {
     let mut pairs = String::new();
+    let mut err_count = 0;
     for diff in diffs.iter() {
         if matches!(
             diff.job_result,
@@ -208,9 +209,11 @@ fn delete_rows_after_compute(diffs: &[DiffAnalysis], conn: &mut DbConnectionInTr
             pairs.push_str(&format!("({}, {})", diff.from_id, diff.to_id));
             pairs.push_str(", ");
         } else {
-            println!("[DB] Skipping delete for {:?}", diff);
+            err_count += 1;
         }
     }
+
+    println!("[DB] Found {} errors in this batch", err_count);
 
     // we may have all Errs, in which case we don't need to delete anything
     if !pairs.is_empty() {
