@@ -12,3 +12,4 @@ chrono = { version = "0.4.19" }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
 reqwest = "0.11.13"
+percent-encoding = "2.2.0"
