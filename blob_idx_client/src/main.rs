@@ -126,12 +126,13 @@ async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientE
 
     // lookup request
     eprintln!("Sending lookup request for {}", tarball_url_key);
+    let body = serde_json::to_vec(&LookupRequest {
+        key: tarball_url_key,
+    })?;
     let resp = client
         .get(format!("{}/blob/lookup", blob_api_url))
         .header("Authorization", blob_api_key.clone())
-        .json(&LookupRequest {
-            key: tarball_url_key,
-        })
+        .body(body)
         .send()
         .await?;
 
