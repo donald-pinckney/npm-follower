@@ -97,10 +97,12 @@ fn make_client() -> Result<reqwest::Client, ClientError> {
 async fn check_req_failed(resp: reqwest::Response) -> Result<reqwest::Response, ClientError> {
     let status = resp.status();
     if !status.is_success() {
+        let text = resp.text().await.map_err(|e| {
+            ClientError::ReqwestError(format!("Failed to read response text: {}", e))
+        })?;
         // try to parse into a BlobError, or send HttpServerError
-        let mut err_map = resp
-            .json::<serde_json::Map<String, serde_json::Value>>()
-            .await?;
+        let mut err_map = serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(&text)
+            .map_err(|_| ClientError::SerdeJsonError(format!("Failed to parse error: {}", text)))?;
         eprintln!(
             "Failed request. Got: {}",
             err_map.get("error").unwrap_or(&serde_json::Value::Null)
