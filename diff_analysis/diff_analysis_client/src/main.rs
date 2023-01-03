@@ -1,6 +1,5 @@
 use std::{
     collections::{HashMap, HashSet},
-    fs::File,
     os::unix::prelude::PermissionsExt,
     path::{Path, PathBuf},
 };
@@ -153,6 +152,10 @@ fn filter_ext(file: &Path) -> bool {
 // and returns a list of paths to all the files in the tarball (recursively)
 pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Error> {
     let dir = std::path::Path::new(tarball).parent().unwrap();
+
+    // set write and read perms to the directory
+    std::fs::set_permissions(dir, std::fs::Permissions::from_mode(0o777))?;
+
     let mut cmd = std::process::Command::new("tar");
     cmd.arg("-xzf").arg(tarball).arg("-C").arg(dir);
     let output = cmd.output().unwrap();
@@ -175,11 +178,6 @@ pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Erro
         }
     }
     recurse(&pkg_dir, &mut files);
-
-    // set read permissions on all files
-    for file in files.iter() {
-        std::fs::set_permissions(file, std::fs::Permissions::from_mode(0o644)).unwrap();
-    }
 
     Ok(files)
 }
