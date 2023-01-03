@@ -88,7 +88,7 @@ fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
 fn make_client() -> Result<reqwest::Client, ClientError> {
     Ok(reqwest::ClientBuilder::new()
         .connect_timeout(std::time::Duration::from_secs(60))
-        .timeout(std::time::Duration::from_secs(1200))
+        .timeout(std::time::Duration::from_secs(600))
         .user_agent("Wget/1.21.3")
         .build()?)
 }
