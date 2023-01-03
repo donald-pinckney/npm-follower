@@ -530,7 +530,10 @@ async fn store_into_blob(
     let resp = check_req_failed(resp).await?;
 
     // parse the response
-    let blob: BlobOffset = resp.json().await.map_err(|_| ClientError::SerdeJsonError)?;
+    let blob: BlobOffset = resp
+        .json()
+        .await
+        .map_err(|e| ClientError::SerdeJsonError(e.to_string()))?;
 
     let keep_alive = spawn_keep_alive_loop(blob.file_id);
 
@@ -619,9 +622,9 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
             file.read_to_end(&mut bytes).await?;
             let filename = std::path::Path::new(&filepath)
                 .file_name()
-                .ok_or(ClientError::IoError)?
+                .ok_or_else(|| ClientError::IoError("Bad filename".to_string()))?
                 .to_str()
-                .ok_or(ClientError::IoError)?
+                .ok_or_else(|| ClientError::IoError("Bad filename".to_string()))?
                 .to_string();
             Ok((filename, bytes))
         }));
