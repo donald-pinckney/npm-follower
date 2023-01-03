@@ -177,7 +177,10 @@ impl JobManager {
                 .await
                 {
                     Ok(res) => res?,
-                    Err(_) => return Ok(ClientResponse::Error(ClientError::Timeout)),
+                    Err(_) => {
+                        wp_comp.replace_worker(&worker).await?;
+                        return Ok(ClientResponse::Error(ClientError::Timeout));
+                    }
                 };
                 debug!("Output:\n{}", out);
                 let response: ClientResponse = serde_json::from_str(&out)
@@ -233,7 +236,10 @@ impl JobManager {
                 .await
                 {
                     Ok(res) => res?,
-                    Err(_) => return Ok(ClientResponse::Error(ClientError::Timeout)),
+                    Err(_) => {
+                        wp_comp.replace_worker(&worker).await?;
+                        return Ok(ClientResponse::Error(ClientError::Timeout));
+                    }
                 };
 
                 debug!("Output:\n{}", out);
