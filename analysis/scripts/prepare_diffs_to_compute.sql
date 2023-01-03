@@ -15,4 +15,9 @@ FROM updates_with_urls u
     INNER JOIN downloaded_tarballs from_tar ON u.from_url = from_tar.tarball_url
     INNER JOIN downloaded_tarballs to_tar ON u.to_url = to_tar.tarball_url;
 
+ALTER TABLE analysis.diffs_to_compute ADD PRIMARY KEY (from_id, to_id);
+
+GRANT ALL ON analysis.diffs_to_compute TO pinckney;
+GRANT ALL ON analysis.diffs_to_compute TO federico;
+
 ANALYZE analysis.diffs_to_compute;
