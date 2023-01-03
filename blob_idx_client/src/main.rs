@@ -137,7 +137,9 @@ async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientE
 
     let resp = check_req_failed(resp).await?;
 
-    let slice: BlobStorageSlice = resp.json().await?;
+    let text = resp.text().await?;
+    let slice: BlobStorageSlice = serde_json::from_str(&text)
+        .map_err(|e| ClientError::SerdeJsonError(format!("{} - {}", text, e)))?;
     Ok(slice)
 }
 
