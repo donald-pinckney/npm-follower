@@ -1,6 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     fs::File,
+    os::unix::prelude::PermissionsExt,
     path::{Path, PathBuf},
 };
 
@@ -174,6 +175,11 @@ pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Erro
         }
     }
     recurse(&pkg_dir, &mut files);
+
+    // set read permissions on all files
+    for file in files.iter() {
+        std::fs::set_permissions(file, std::fs::Permissions::from_mode(0o644)).unwrap();
+    }
 
     Ok(files)
 }
