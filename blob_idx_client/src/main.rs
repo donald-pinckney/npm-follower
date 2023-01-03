@@ -122,7 +122,8 @@ async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientE
     let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
 
-    let client = make_client()?;
+    let client = make_client()
+        .map_err(|e| ClientError::ReqwestError(format!("Failed to build client: {}", e)))?;
 
     // lookup request
     eprintln!("Sending lookup request for {}", tarball_url_key);

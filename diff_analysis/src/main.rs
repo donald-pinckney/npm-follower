@@ -4,7 +4,6 @@ use std::{
 };
 
 use blob_idx_server::{
-    errors::{BlobError, ClientError, HTTPError},
     http::{JobType, SubmitJobRequest},
     job::{ClientResponse, TarballResult},
 };
