@@ -213,12 +213,19 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
         res_map.insert(original_tarball_url, res);
     }
 
-    // now delete the tmp files
+    // now delete the tmp file directories
     let mut handles: Vec<JoinHandle<()>> = Vec::new();
     for slice_path in slice_map.keys() {
         let p = slice_path.clone();
+        // go up two directories
+        let p = std::path::Path::new(&p)
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .to_path_buf();
         let handle = tokio::task::spawn(async move {
-            tokio::fs::remove_file(p).await.ok(); // we don't care if this fails
+            tokio::fs::remove_dir_all(p).await.ok(); // don't care if it fails
         });
         handles.push(handle);
     }
@@ -318,8 +325,15 @@ async fn compute_run_bin_multi(
     for slice_paths in slice_map.keys() {
         for slice_path in slice_paths {
             let p = slice_path.clone();
+            // go up two directories
+            let p = std::path::Path::new(&p)
+                .parent()
+                .unwrap()
+                .parent()
+                .unwrap()
+                .to_path_buf();
             let handle = tokio::task::spawn(async move {
-                tokio::fs::remove_file(p).await.ok(); // we don't care if this fails
+                tokio::fs::remove_dir_all(p).await.ok(); // we don't care if this fails
             });
             handles.push(handle);
         }
