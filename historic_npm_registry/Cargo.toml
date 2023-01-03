@@ -11,5 +11,10 @@ warp = "0.3.3"
 chrono = { version = "0.4.19" }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
-reqwest = "0.11.13"
+reqwest = { version = "0.11.13", features = ["json"] }
+reqwest-retry = "0.2.1"
+reqwest-middleware = "0.2.0"
 percent-encoding = "2.2.0"
+moka = { version = "0.9", features = ["future"] }
+futures-util = "0.3"
+diff_log_builder = { path = "../diff_log_builder" }

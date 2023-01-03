@@ -340,22 +340,39 @@ pub fn deserialize_change(
         return None;
     }
 
-    let mut doc = change_json
+    let doc = change_json
         .remove_key_unwrap_type::<Map<String, Value>>("doc")
         .unwrap();
+
+    deserialize_packument_doc(doc, Some(del), Some(package_name))
+}
+
+pub fn deserialize_packument_doc(
+    mut doc: Map<String, Value>,
+    check_deleted: Option<bool>,
+    check_package_name: Option<String>,
+) -> Option<(String, PackageOnlyPackument, AllVersionPackuments)> {
     let doc_id = doc.remove_key_unwrap_type::<String>("_id").unwrap();
     let doc_deleted = doc
         .remove_key_unwrap_type::<bool>("_deleted")
         .unwrap_or(false);
     doc.remove_key_unwrap_type::<String>("_rev").unwrap();
 
-    if del != doc_deleted {
-        panic!("ERROR: mismatched del and del_deleted");
-    }
+    let del = check_deleted.map_or(doc_deleted, |to_check| {
+        if to_check != doc_deleted {
+            panic!("ERROR: mismatched del and del_deleted");
+        }
+        to_check
+    });
 
-    if package_name != doc_id {
-        panic!("ERROR: mismatched package_name and doc_id");
-    }
+    let package_name = check_package_name
+        .map_or(&doc_id, |to_check| {
+            if to_check != doc_id {
+                panic!("ERROR: mismatched package_name and doc_id");
+            }
+            &doc_id
+        })
+        .clone();
 
     if del {
         if !doc.is_empty() {
