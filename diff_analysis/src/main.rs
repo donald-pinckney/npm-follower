@@ -131,11 +131,13 @@ fn spawn_diff_worker(
                 job_type: JobType::ComputeMulti {
                     binary: "/scratch/cassano.f/blob_bins/diff_analysis_client".to_string(),
                     tarball_chunks,
+                    timeout: Some(600),
                 },
             };
 
             let client = reqwest::Client::new();
-            println!("[{}] Submitting job", worker_id);
+            let time = chrono::Local::now();
+            println!("[{} - {}] Submitting job", worker_id, time);
             let http_resp = client
                 .post(&format!("{}/job/submit", blob_api_url))
                 .header("Authorization", &blob_api_key)

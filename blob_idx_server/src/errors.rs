@@ -54,6 +54,8 @@ pub enum ClientError {
     BinaryDoesNotExist,
     /// The binary produced a bad stdout.
     InvalidOutput,
+    /// The client timed out.
+    Timeout,
 }
 
 #[derive(Debug)]

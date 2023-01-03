@@ -153,6 +153,7 @@ impl JobManager {
         &self,
         binary: String,
         tarball_chunks: Vec<Vec<String>>,
+        timeout: u64,
     ) -> Result<Vec<ClientResponse>, JobError> {
         let mut handles: Vec<JoinHandle<Result<ClientResponse, JobError>>> = Vec::new();
 
@@ -169,7 +170,15 @@ impl JobManager {
                     binary, tbs
                 );
                 debug!("Running command:\n{}", cmd);
-                let out = ssh.run_command(&cmd).await?;
+                let out = match tokio::time::timeout(
+                    std::time::Duration::from_secs(timeout),
+                    ssh.run_command(&cmd),
+                )
+                .await
+                {
+                    Ok(res) => res?,
+                    Err(_) => return Ok(ClientResponse::Error(ClientError::Timeout)),
+                };
                 debug!("Output:\n{}", out);
                 let response: ClientResponse = serde_json::from_str(&out)
                     .map_err(|_| JobError::ClientOutputNotParsable(out))?;
@@ -195,6 +204,7 @@ impl JobManager {
         &self,
         binary: String,
         tarball_chunks: Vec<Vec<Vec<String>>>,
+        timeout: u64,
     ) -> Result<Vec<ClientResponse>, JobError> {
         let mut handles: Vec<JoinHandle<Result<ClientResponse, JobError>>> = Vec::new();
 
@@ -215,7 +225,17 @@ impl JobManager {
                     binary, tbs
                 );
                 debug!("Running command:\n{}", cmd);
-                let out = ssh.run_command(&cmd).await?;
+
+                let out = match tokio::time::timeout(
+                    std::time::Duration::from_secs(timeout),
+                    ssh.run_command(&cmd),
+                )
+                .await
+                {
+                    Ok(res) => res?,
+                    Err(_) => return Ok(ClientResponse::Error(ClientError::Timeout)),
+                };
+
                 debug!("Output:\n{}", out);
                 let response: ClientResponse = serde_json::from_str(&out)
                     .map_err(|_| JobError::ClientOutputNotParsable(out))?;

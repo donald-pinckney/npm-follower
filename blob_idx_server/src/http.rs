@@ -114,10 +114,12 @@ pub enum JobType {
     Compute {
         binary: String,
         tarball_chunks: Vec<Vec<String>>,
+        timeout: Option<u64>, // defaults to 10 minutes
     },
     ComputeMulti {
         binary: String,
         tarball_chunks: Vec<Vec<Vec<String>>>,
+        timeout: Option<u64>, // defaults to 10 minutes
     },
     StoreTarballs {
         filepaths: Vec<String>,
@@ -270,16 +272,20 @@ mod routes {
                 JobType::Compute {
                     binary,
                     tarball_chunks,
+                    timeout,
                 } => {
-                    let res = job_manager.submit_compute(binary, tarball_chunks).await?;
+                    let res = job_manager
+                        .submit_compute(binary, tarball_chunks, timeout.unwrap_or(600))
+                        .await?;
                     Ok(serde_json::to_string(&res)?)
                 }
                 JobType::ComputeMulti {
                     binary,
                     tarball_chunks,
+                    timeout,
                 } => {
                     let res = job_manager
-                        .submit_compute_multi(binary, tarball_chunks)
+                        .submit_compute_multi(binary, tarball_chunks, timeout.unwrap_or(600))
                         .await?;
                     Ok(serde_json::to_string(&res)?)
                 }

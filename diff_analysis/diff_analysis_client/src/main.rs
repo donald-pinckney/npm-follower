@@ -157,7 +157,7 @@ pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Erro
     std::fs::set_permissions(dir, std::fs::Permissions::from_mode(0o777))?;
 
     let mut cmd = std::process::Command::new("tar");
-    cmd.arg("-xzf").arg(tarball).arg("-C").arg(dir);
+    cmd.arg("-xf").arg(tarball).arg("-C").arg(dir);
     let output = cmd.output().unwrap();
     if !output.status.success() {
         eprintln!("tar failed: {}", String::from_utf8_lossy(&output.stderr));
@@ -167,13 +167,14 @@ pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Erro
     let mut files = HashSet::new();
     let pkg_dir = format!("{}/package", dir.to_str().unwrap());
     fn recurse(dir: &str, files: &mut HashSet<PathBuf>) {
-        for entry in std::fs::read_dir(dir).unwrap() {
-            let entry = entry.unwrap();
-            let path = entry.path();
-            if path.is_dir() {
-                recurse(path.to_str().unwrap(), files);
-            } else if path.is_file() && filter_ext(&path) {
-                files.insert(path);
+        if let Ok(mut entries) = std::fs::read_dir(dir) {
+            while let Some(Ok(entry)) = entries.next() {
+                let path = entry.path();
+                if path.is_dir() {
+                    recurse(path.to_str().unwrap(), files);
+                } else if path.is_file() && filter_ext(&path) {
+                    files.insert(path);
+                }
             }
         }
     }
