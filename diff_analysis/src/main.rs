@@ -42,8 +42,8 @@ SELECT * FROM analysis.diffs_to_compute
 "#;
 
 const CHUNK_SIZE: usize = 5000;
-const NUM_WORKERS: usize = 50;
-const NUM_LOCAL_WORKERS: usize = 5;
+const NUM_WORKERS: usize = 40;
+const NUM_LOCAL_WORKERS: usize = 3;
 const TOTAL_NUM_DIFFS: usize = 16542717; // hardcoded... but only used for progress bar
 
 #[tokio::main]
@@ -184,8 +184,31 @@ fn spawn_db_worker(
     let thunk = async move {
         while let Some(diffs) = db_rx.recv().await {
             println!("[DB] Inserting {} diffs", diffs.len());
-            diff_analysis::insert_batch_diff_analysis(&mut conn, diffs).expect("Failed to insert");
+            if !diffs.is_empty() {
+                delete_rows_after_compute(&diffs, &mut conn);
+                diff_analysis::insert_batch_diff_analysis(&mut conn, diffs)
+                    .expect("Failed to insert");
+            }
+            println!("[DB] Done");
         }
     };
     tokio::task::spawn(thunk)
+}
+
+fn delete_rows_after_compute(diffs: &Vec<DiffAnalysis>, conn: &mut DbConnection) {
+    let mut pairs = String::new();
+    for (i, diff) in diffs.iter().enumerate() {
+        if let DiffAnalysisJobResult::Diff(_) = diff.job_result {
+            pairs.push_str(&format!("({}, {})", diff.from_id, diff.to_id));
+            if i != diffs.len() - 1 {
+                pairs.push_str(", ");
+            }
+        }
+    }
+    // we have to delete (from_id, to_id) pairs, as alone they are not unique
+    let query = format!(
+        "DELETE FROM analysis.diffs_to_compute WHERE (from_id, to_id) IN ({})",
+        pairs
+    );
+    conn.execute(diesel::sql_query(query)).unwrap();
 }
