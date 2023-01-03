@@ -198,22 +198,26 @@ fn spawn_db_worker(
     tokio::task::spawn(thunk)
 }
 
-fn delete_rows_after_compute(diffs: &Vec<DiffAnalysis>, conn: &mut DbConnectionInTransaction) {
+fn delete_rows_after_compute(diffs: &[DiffAnalysis], conn: &mut DbConnectionInTransaction) {
     let mut pairs = String::new();
-    for (i, diff) in diffs.iter().enumerate() {
+    for diff in diffs.iter() {
         if matches!(
             diff.job_result,
             DiffAnalysisJobResult::Diff(_) | DiffAnalysisJobResult::ErrTooManyFiles(_, _)
         ) {
             pairs.push_str(&format!("({}, {})", diff.from_id, diff.to_id));
-            if i != diffs.len() - 1 {
-                pairs.push_str(", ");
-            }
+            pairs.push_str(", ");
+        } else {
+            println!("[DB] Skipping delete for {:?}", diff);
         }
     }
 
     // we may have all Errs, in which case we don't need to delete anything
     if !pairs.is_empty() {
+        // remove trailing comma and space
+        pairs.pop();
+        pairs.pop();
+
         // we have to delete (from_id, to_id) pairs, as alone they are not unique
         let query = format!(
             "DELETE FROM analysis.diffs_to_compute WHERE (from_id, to_id) IN ({})",
