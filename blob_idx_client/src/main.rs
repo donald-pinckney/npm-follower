@@ -230,13 +230,17 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
             .unwrap()
             .to_path_buf();
         let handle = tokio::task::spawn(async move {
-            tokio::fs::remove_dir_all(p).await.ok(); // don't care if it fails
+            // first, we have to set the permissions to be writable
+            let mut perms = tokio::fs::metadata(&p).await.unwrap().permissions();
+            perms.set_readonly(false);
+            tokio::fs::set_permissions(&p, perms).await.unwrap();
+            tokio::fs::remove_dir_all(p).await.unwrap();
         });
         handles.push(handle);
     }
 
     for handle in handles {
-        handle.await.unwrap();
+        handle.await.ok();
     }
 
     res
@@ -348,14 +352,18 @@ async fn compute_run_bin_multi(
                 .unwrap()
                 .to_path_buf();
             let handle = tokio::task::spawn(async move {
-                tokio::fs::remove_dir_all(p).await.ok(); // we don't care if this fails
+                // first, we have to set the permissions to be writable
+                let mut perms = tokio::fs::metadata(&p).await.unwrap().permissions();
+                perms.set_readonly(false);
+                tokio::fs::set_permissions(&p, perms).await.unwrap();
+                tokio::fs::remove_dir_all(p).await.unwrap();
             });
             handles.push(handle);
         }
     }
 
     for handle in handles {
-        handle.await.unwrap();
+        handle.await.ok();
     }
 
     res
