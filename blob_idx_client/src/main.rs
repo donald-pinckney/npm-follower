@@ -242,7 +242,7 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
             .unwrap()
             .to_path_buf();
         let handle = tokio::task::spawn(async move {
-            if p.exists() {
+            if let Ok(true) = tokio::fs::metadata(&p).await.map(|m| m.is_dir()) {
                 // first, we have to recursively set the permissions to be writable
                 let mut cmd = tokio::process::Command::new("chmod");
                 cmd.arg("-R")
@@ -373,7 +373,7 @@ async fn compute_run_bin_multi(
                 .unwrap()
                 .to_path_buf();
             let handle = tokio::task::spawn(async move {
-                if p.exists() {
+                if let Ok(true) = tokio::fs::metadata(&p).await.map(|m| m.is_dir()) {
                     // first, we have to set the permissions to be writable
                     // first, we have to recursively set the permissions to be writable
                     let mut cmd = tokio::process::Command::new("chmod");
