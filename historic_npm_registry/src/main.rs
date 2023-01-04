@@ -240,10 +240,23 @@ async fn handle_request(
 ) -> warp::reply::Json {
     println!("handle_request");
 
+    let name = percent_encoding::percent_decode(name.as_bytes())
+        .decode_utf8()
+        .unwrap();
+
     let full_name = if let Some(s) = scope {
+        println!("got scope as /: {}", s);
         format!("{}/{}", s, name)
     } else {
-        name
+        let comps: Vec<_> = name.split('/').collect();
+        if comps.len() == 2 {
+            println!("got scope as %2f: {}", comps[0]);
+            format!("{}/{}", comps[0], comps[1])
+        } else if comps.len() == 1 {
+            comps[0].to_owned()
+        } else {
+            panic!("Invalid request. Got name: {}", name);
+        }
     };
 
     let t_str = percent_encoding::percent_decode(t_str_url_encoded.as_bytes())
@@ -330,6 +343,18 @@ async fn main() {
             warp::redirect::permanent(uri)
         });
 
+    let tarball_scoped_redirect = warp::path!(String / String / String / "-" / String)
+        .and(warp::path::end())
+        .map(|_time, scope, name, tarball_name| {
+            let uri = Uri::builder()
+                .scheme("https")
+                .authority("registry.npmjs.org")
+                .path_and_query(format!("/{}/{}/-/{}", scope, name, tarball_name))
+                .build()
+                .unwrap();
+            warp::redirect::permanent(uri)
+        });
+
     warp::serve(
         empty_advisories
             .or(root)
@@ -337,6 +362,7 @@ async fn main() {
             .or(non_scoped)
             .or(scoped)
             .or(tarball_redirect)
+            .or(tarball_scoped_redirect)
             .recover(handle_rejection)
             .with(log),
     )
