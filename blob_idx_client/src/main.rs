@@ -229,11 +229,9 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
     let res = thunk.await;
 
     // now delete the tmp file directories
-    let mut handles: Vec<JoinHandle<()>> = Vec::new();
-    for slice_path in slice_map.keys() {
-        let p = slice_path.clone();
+    if let Some(slice_path) = slice_map.keys().next() {
         // go up three directories
-        let p = std::path::Path::new(&p)
+        let p = std::path::Path::new(&slice_path)
             .parent()
             .unwrap()
             .parent()
@@ -241,25 +239,16 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
             .parent()
             .unwrap()
             .to_path_buf();
-        let handle = tokio::task::spawn(async move {
-            if let Ok(true) = tokio::fs::metadata(&p).await.map(|m| m.is_dir()) {
-                // first, we have to recursively set the permissions to be writable
-                let mut cmd = tokio::process::Command::new("chmod");
-                cmd.arg("-R")
-                    .arg("777")
-                    .arg(p.to_str().unwrap())
-                    .output()
-                    .await
-                    .unwrap();
-                eprintln!("Deleting {}", p.to_str().unwrap());
-                tokio::fs::remove_dir_all(p).await.unwrap();
-            }
-        });
-        handles.push(handle);
-    }
-
-    for handle in handles {
-        handle.await.ok();
+        // first, we have to recursively set the permissions to be writable
+        let mut cmd = tokio::process::Command::new("chmod");
+        cmd.arg("-R")
+            .arg("777")
+            .arg(p.to_str().unwrap())
+            .output()
+            .await
+            .ok();
+        eprintln!("Deleting {}", p.to_str().unwrap());
+        tokio::fs::remove_dir_all(p).await.ok();
     }
 
     res
@@ -359,40 +348,26 @@ async fn compute_run_bin_multi(
     let res = thunk.await;
 
     // now delete the tmp files
-    let mut handles: Vec<JoinHandle<()>> = Vec::new();
-    for slice_paths in slice_map.keys() {
-        for slice_path in slice_paths {
-            let p = slice_path.clone();
-            // go up three directories
-            let p = std::path::Path::new(&p)
-                .parent()
-                .unwrap()
-                .parent()
-                .unwrap()
-                .parent()
-                .unwrap()
-                .to_path_buf();
-            let handle = tokio::task::spawn(async move {
-                if let Ok(true) = tokio::fs::metadata(&p).await.map(|m| m.is_dir()) {
-                    // first, we have to set the permissions to be writable
-                    // first, we have to recursively set the permissions to be writable
-                    let mut cmd = tokio::process::Command::new("chmod");
-                    cmd.arg("-R")
-                        .arg("777")
-                        .arg(p.to_str().unwrap())
-                        .output()
-                        .await
-                        .unwrap();
-                    eprintln!("Deleting {}", p.to_str().unwrap());
-                    tokio::fs::remove_dir_all(p).await.unwrap();
-                }
-            });
-            handles.push(handle);
-        }
-    }
-
-    for handle in handles {
-        handle.await.ok();
+    if let Some(slice_path) = slice_map.keys().next().and_then(|s| s.get(0)) {
+        // go up three directories
+        let p = std::path::Path::new(&slice_path)
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .to_path_buf();
+        // first, we have to recursively set the permissions to be writable
+        let mut cmd = tokio::process::Command::new("chmod");
+        cmd.arg("-R")
+            .arg("777")
+            .arg(p.to_str().unwrap())
+            .output()
+            .await
+            .ok();
+        eprintln!("Deleting {}", p.to_str().unwrap());
+        tokio::fs::remove_dir_all(p).await.ok();
     }
 
     res
