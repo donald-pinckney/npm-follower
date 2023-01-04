@@ -25,6 +25,8 @@ async fn main() {
 
     // if either one of the directories has more than 200 files, fail
     if fdir_old.len() > 200 || fdir_new.len() > 200 {
+        std::fs::remove_dir_all(&dir_old_pkg).ok();
+        std::fs::remove_dir_all(&dir_new_pkg).ok();
         eprint!("{},{}", fdir_old.len(), fdir_new.len());
         std::process::exit(103);
     }
@@ -153,7 +155,7 @@ fn filter_ext(file: &Path) -> bool {
 pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Error> {
     let dir = std::path::Path::new(tarball).parent().unwrap();
 
-    // set write and read perms to the directory
+    // set perms to the dir
     std::fs::set_permissions(dir, std::fs::Permissions::from_mode(0o777))?;
 
     let mut cmd = std::process::Command::new("tar");
@@ -166,10 +168,15 @@ pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Erro
 
     let mut files = HashSet::new();
     let pkg_dir = format!("{}/package", dir.to_str().unwrap());
+    // create dir
+    std::fs::create_dir_all(&pkg_dir)?;
+    std::fs::set_permissions(&pkg_dir, std::fs::Permissions::from_mode(0o777))?;
     fn recurse(dir: &str, files: &mut HashSet<PathBuf>) {
         if let Ok(mut entries) = std::fs::read_dir(dir) {
             while let Some(Ok(entry)) = entries.next() {
                 let path = entry.path();
+                // set perms
+                std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o777)).ok();
                 if path.is_dir() {
                     recurse(path.to_str().unwrap(), files);
                 } else if path.is_file() && filter_ext(&path) {
