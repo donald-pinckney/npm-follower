@@ -248,6 +248,7 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
                 .output()
                 .await
                 .unwrap();
+            eprintln!("Deleting {}", p.to_str().unwrap());
             tokio::fs::remove_dir_all(p).await.unwrap();
         });
         handles.push(handle);
@@ -375,6 +376,7 @@ async fn compute_run_bin_multi(
                     .output()
                     .await
                     .unwrap();
+                eprintln!("Deleting {}", p.to_str().unwrap());
                 tokio::fs::remove_dir_all(p).await.unwrap();
             });
             handles.push(handle);

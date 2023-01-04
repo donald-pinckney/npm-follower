@@ -175,6 +175,10 @@ pub fn extract_tarball(tarball: &Path) -> Result<HashSet<PathBuf>, std::io::Erro
         if let Ok(mut entries) = std::fs::read_dir(dir) {
             while let Some(Ok(entry)) = entries.next() {
                 let path = entry.path();
+                // do not recur into node_modules
+                if path.to_str().unwrap_or_default().contains("node_modules") {
+                    continue;
+                }
                 // set perms
                 std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o777)).ok();
                 if path.is_dir() {
