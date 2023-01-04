@@ -145,7 +145,7 @@ async fn request_package_from_npm(
     full_name: &str,
     client: ClientWithMiddleware,
 ) -> Option<ParsedPackument> {
-    println!("hitting NPM for: {}", full_name);
+    // println!("hitting NPM for: {}", full_name);
 
     let packument_doc = client
         .get(format!("https://registry.npmjs.org/{}", full_name))
@@ -170,7 +170,7 @@ async fn lookup_package(
     client: ClientWithMiddleware,
     cache: NpmCache,
 ) -> Option<ParsedPackument> {
-    println!("looking up: {}", full_name);
+    // println!("looking up: {}", full_name);
     if let Some(cache_hit) = cache.get(full_name) {
         cache_hit.and_then(|x| restrict_time(&x, t))
     } else {
@@ -247,19 +247,19 @@ async fn handle_request(
     client: ClientWithMiddleware,
     cache: NpmCache,
 ) -> warp::reply::Json {
-    println!("handle_request");
+    // println!("handle_request");
 
     let name = percent_encoding::percent_decode(name.as_bytes())
         .decode_utf8()
         .unwrap();
 
     let full_name = if let Some(s) = scope {
-        println!("got scope as /: {}", s);
+        // println!("got scope as /: {}", s);
         format!("{}/{}", s, name)
     } else {
         let comps: Vec<_> = name.split('/').collect();
         if comps.len() == 2 {
-            println!("got scope as %2f: {}", comps[0]);
+            // println!("got scope as %2f: {}", comps[0]);
             format!("{}/{}", comps[0], comps[1])
         } else if comps.len() == 1 {
             comps[0].to_owned()
