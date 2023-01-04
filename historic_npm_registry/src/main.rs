@@ -20,7 +20,7 @@ use warp::Reply;
 
 #[derive(Clone)]
 struct ParsedPackument {
-    latest_tag: String,
+    latest_tag: Option<String>,
     versions: Map<String, Value>,
     sorted_times: Vec<(String, DateTime<Utc>)>, // sorted by the date
     modified_time: DateTime<Utc>,
@@ -40,7 +40,7 @@ fn restrict_time(v: &ParsedPackument, filter_time: DateTime<Utc>) -> Option<Pars
     }
 
     let last_good_time_idx = first_bad_time_idx - 1;
-    let (last_good_version, last_good_time) = &v.sorted_times[last_good_time_idx];
+    let (_, last_good_time) = &v.sorted_times[last_good_time_idx];
 
     let good_times = &v.sorted_times[..first_bad_time_idx];
     let good_versions: Map<String, Value> = good_times
@@ -53,8 +53,14 @@ fn restrict_time(v: &ParsedPackument, filter_time: DateTime<Utc>) -> Option<Pars
         })
         .collect();
 
+    let last_non_beta_good_version = good_times
+        .iter()
+        .rev()
+        .find(|(v_name, _)| !v_name.contains('-') && !v_name.contains('+'))
+        .map(|(v_name, _)| v_name.to_owned());
+
     Some(ParsedPackument {
-        latest_tag: last_good_version.to_owned(),
+        latest_tag: last_non_beta_good_version,
         versions: good_versions,
         sorted_times: good_times.to_vec(),
         modified_time: *last_good_time,
@@ -118,7 +124,7 @@ fn parse_packument(mut j: Map<String, Value>) -> ParsedPackument {
     sorted_times.sort_by_key(|(_, dt)| *dt);
 
     ParsedPackument {
-        latest_tag,
+        latest_tag: Some(latest_tag),
         versions,
         sorted_times,
         modified_time,
@@ -203,15 +209,26 @@ fn serialize_packument_in_npm_format(
     )
     .collect();
 
-    json!({
-        "_id": package_name,
-        "name": package_name,
-        "dist-tags": {
-            "latest": packument.latest_tag
-        },
-        "versions": packument.versions,
-        "time": time_dict
-    })
+    if let Some(latest_tag) = packument.latest_tag {
+        json!({
+            "_id": package_name,
+            "name": package_name,
+            "dist-tags": {
+                "latest": latest_tag
+            },
+            "versions": packument.versions,
+            "time": time_dict
+        })
+    } else {
+        json!({
+            "_id": package_name,
+            "name": package_name,
+            "dist-tags": {
+            },
+            "versions": packument.versions,
+            "time": time_dict
+        })
+    }
 }
 
 async fn handle_request(
