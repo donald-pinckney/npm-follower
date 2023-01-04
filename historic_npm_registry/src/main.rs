@@ -29,26 +29,35 @@ struct ParsedPackument {
 
 type NpmCache = Cache<String, Option<Arc<ParsedPackument>>>;
 
-fn restrict_time(v: &ParsedPackument, filter_time: DateTime<Utc>) -> Option<ParsedPackument> {
-    let first_bad_time_idx = v.sorted_times.partition_point(|(_, vt)| *vt <= filter_time);
+fn restrict_time(
+    packument: &ParsedPackument,
+    filter_time: DateTime<Utc>,
+) -> Option<ParsedPackument> {
+    let first_bad_time_idx = packument
+        .sorted_times
+        .partition_point(|(_, vt)| *vt <= filter_time);
     if first_bad_time_idx == 0 {
         // Everything must be filtered out, so we bail early with None
         return None;
-    } else if first_bad_time_idx == v.sorted_times.len() {
+    } else if first_bad_time_idx == packument.sorted_times.len() {
         // Nothing is filtered out
-        return Some(v.clone());
+        return Some(packument.clone());
     }
 
     let last_good_time_idx = first_bad_time_idx - 1;
-    let (_, last_good_time) = &v.sorted_times[last_good_time_idx];
+    let (_, last_good_time) = &packument.sorted_times[last_good_time_idx];
 
-    let good_times = &v.sorted_times[..first_bad_time_idx];
+    let good_times = &packument.sorted_times[..first_bad_time_idx];
     let good_versions: Map<String, Value> = good_times
         .iter()
         .map(|(v_name, _)| {
             (
                 v_name.clone(),
-                v.versions.get(v_name).expect("version must exist").clone(),
+                packument
+                    .versions
+                    .get(v_name)
+                    .expect("version must exist")
+                    .clone(),
             )
         })
         .collect();
@@ -64,7 +73,7 @@ fn restrict_time(v: &ParsedPackument, filter_time: DateTime<Utc>) -> Option<Pars
         versions: good_versions,
         sorted_times: good_times.to_vec(),
         modified_time: *last_good_time,
-        created_time: v.created_time,
+        created_time: packument.created_time,
     })
 }
 
