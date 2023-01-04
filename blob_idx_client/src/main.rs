@@ -176,7 +176,7 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
                 let slice_path = read_and_send(
                     tarball_url_key.clone(),
                     &format!(
-                        "/tmp/compute-{}-{}",
+                        "/tmp/compute-{}/{}",
                         pid,
                         atomic_idx.fetch_add(1, Ordering::SeqCst)
                     ),
@@ -243,7 +243,7 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
             // first, we have to recursively set the permissions to be writable
             let mut cmd = tokio::process::Command::new("chmod");
             cmd.arg("-R")
-                .arg("u+w")
+                .arg("777")
                 .arg(p.to_str().unwrap())
                 .output()
                 .await
@@ -293,7 +293,7 @@ async fn compute_run_bin_multi(
                     let slice_path = read_and_send(
                         tarball_url_key.clone(),
                         &format!(
-                            "/tmp/compute-{}-{}",
+                            "/tmp/compute-{}/{}",
                             pid,
                             atomic_idx.fetch_add(1, Ordering::SeqCst)
                         ),
@@ -370,7 +370,7 @@ async fn compute_run_bin_multi(
                 // first, we have to recursively set the permissions to be writable
                 let mut cmd = tokio::process::Command::new("chmod");
                 cmd.arg("-R")
-                    .arg("u+w")
+                    .arg("777")
                     .arg(p.to_str().unwrap())
                     .output()
                     .await
