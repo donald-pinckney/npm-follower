@@ -240,10 +240,14 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
             .unwrap()
             .to_path_buf();
         let handle = tokio::task::spawn(async move {
-            // first, we have to set the permissions to be writable
-            let mut perms = tokio::fs::metadata(&p).await.unwrap().permissions();
-            perms.set_readonly(false);
-            tokio::fs::set_permissions(&p, perms).await.unwrap();
+            // first, we have to recursively set the permissions to be writable
+            let mut cmd = tokio::process::Command::new("chmod");
+            cmd.arg("-R")
+                .arg("u+w")
+                .arg(p.to_str().unwrap())
+                .output()
+                .await
+                .unwrap();
             tokio::fs::remove_dir_all(p).await.unwrap();
         });
         handles.push(handle);
@@ -363,9 +367,14 @@ async fn compute_run_bin_multi(
                 .to_path_buf();
             let handle = tokio::task::spawn(async move {
                 // first, we have to set the permissions to be writable
-                let mut perms = tokio::fs::metadata(&p).await.unwrap().permissions();
-                perms.set_readonly(false);
-                tokio::fs::set_permissions(&p, perms).await.unwrap();
+                // first, we have to recursively set the permissions to be writable
+                let mut cmd = tokio::process::Command::new("chmod");
+                cmd.arg("-R")
+                    .arg("u+w")
+                    .arg(p.to_str().unwrap())
+                    .output()
+                    .await
+                    .unwrap();
                 tokio::fs::remove_dir_all(p).await.unwrap();
             });
             handles.push(handle);
