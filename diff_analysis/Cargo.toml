@@ -18,3 +18,4 @@ postgres_db = { path = "../postgres_db" }
 utils = { path = "../utils" }
 blob_idx_server = { path = "../blob_idx_server" }
 chrono = "0.4.23"
+rand = "0.8.5"

@@ -14,6 +14,7 @@ use postgres_db::{
     download_tarball::{self, DownloadedTarball},
     internal_state,
 };
+use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use tokio::{
     sync::{
@@ -63,7 +64,9 @@ async fn main() {
     dotenvy::dotenv().ok();
     let mut conn: DbConnection = DbConnection::connect();
     let q = diesel::sql_query(QUERY);
-    let res: Vec<QRes> = conn.load(q).unwrap();
+    // shuffle the result
+    let mut res: Vec<QRes> = conn.load(q).unwrap();
+    res.shuffle(&mut rand::thread_rng());
 
     let (data_tx, data_rx) = tokio::sync::mpsc::channel(NUM_WORKERS);
     let data_rx = Arc::new(Mutex::new(data_rx));
