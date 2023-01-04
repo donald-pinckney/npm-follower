@@ -232,24 +232,28 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
     let mut handles: Vec<JoinHandle<()>> = Vec::new();
     for slice_path in slice_map.keys() {
         let p = slice_path.clone();
-        // go up two directories
+        // go up three directories
         let p = std::path::Path::new(&p)
+            .parent()
+            .unwrap()
             .parent()
             .unwrap()
             .parent()
             .unwrap()
             .to_path_buf();
         let handle = tokio::task::spawn(async move {
-            // first, we have to recursively set the permissions to be writable
-            let mut cmd = tokio::process::Command::new("chmod");
-            cmd.arg("-R")
-                .arg("777")
-                .arg(p.to_str().unwrap())
-                .output()
-                .await
-                .unwrap();
-            eprintln!("Deleting {}", p.to_str().unwrap());
-            tokio::fs::remove_dir_all(p).await.unwrap();
+            if p.exists() {
+                // first, we have to recursively set the permissions to be writable
+                let mut cmd = tokio::process::Command::new("chmod");
+                cmd.arg("-R")
+                    .arg("777")
+                    .arg(p.to_str().unwrap())
+                    .output()
+                    .await
+                    .unwrap();
+                eprintln!("Deleting {}", p.to_str().unwrap());
+                tokio::fs::remove_dir_all(p).await.unwrap();
+            }
         });
         handles.push(handle);
     }
@@ -359,25 +363,29 @@ async fn compute_run_bin_multi(
     for slice_paths in slice_map.keys() {
         for slice_path in slice_paths {
             let p = slice_path.clone();
-            // go up two directories
+            // go up three directories
             let p = std::path::Path::new(&p)
+                .parent()
+                .unwrap()
                 .parent()
                 .unwrap()
                 .parent()
                 .unwrap()
                 .to_path_buf();
             let handle = tokio::task::spawn(async move {
-                // first, we have to set the permissions to be writable
-                // first, we have to recursively set the permissions to be writable
-                let mut cmd = tokio::process::Command::new("chmod");
-                cmd.arg("-R")
-                    .arg("777")
-                    .arg(p.to_str().unwrap())
-                    .output()
-                    .await
-                    .unwrap();
-                eprintln!("Deleting {}", p.to_str().unwrap());
-                tokio::fs::remove_dir_all(p).await.unwrap();
+                if p.exists() {
+                    // first, we have to set the permissions to be writable
+                    // first, we have to recursively set the permissions to be writable
+                    let mut cmd = tokio::process::Command::new("chmod");
+                    cmd.arg("-R")
+                        .arg("777")
+                        .arg(p.to_str().unwrap())
+                        .output()
+                        .await
+                        .unwrap();
+                    eprintln!("Deleting {}", p.to_str().unwrap());
+                    tokio::fs::remove_dir_all(p).await.unwrap();
+                }
             });
             handles.push(handle);
         }
