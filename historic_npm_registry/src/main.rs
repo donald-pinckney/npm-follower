@@ -1,33 +1,135 @@
-use std::collections::BTreeMap;
+use std::mem;
 use std::str::FromStr;
 use std::sync::Arc;
 
 use chrono::DateTime;
 use chrono::Utc;
 use moka::future::Cache;
-use postgres_db::custom_types::Semver;
-use postgres_db::packument::AllVersionPackuments;
-use postgres_db::packument::VersionOnlyPackument;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+use serde_json::json;
 use serde_json::Map;
 use serde_json::Value;
 use warp::http::StatusCode;
+use warp::hyper::Uri;
 use warp::reply;
+use warp::reply::Json;
 use warp::Filter;
 use warp::Rejection;
 use warp::Reply;
 
-type NpmCache = Cache<String, Option<Arc<AllVersionPackuments>>>;
+#[derive(Clone)]
+struct ParsedPackument {
+    latest_tag: String,
+    versions: Map<String, Value>,
+    sorted_times: Vec<(String, DateTime<Utc>)>, // sorted by the date
+    modified_time: DateTime<Utc>,
+    created_time: DateTime<Utc>,
+}
 
-fn restrict_time(v: &AllVersionPackuments, t: DateTime<Utc>) -> AllVersionPackuments {
-    v.clone()
+type NpmCache = Cache<String, Option<Arc<ParsedPackument>>>;
+
+fn restrict_time(v: &ParsedPackument, filter_time: DateTime<Utc>) -> Option<ParsedPackument> {
+    let first_bad_time_idx = v.sorted_times.partition_point(|(_, vt)| *vt <= filter_time);
+    if first_bad_time_idx == 0 {
+        // Everything must be filtered out, so we bail early with None
+        return None;
+    } else if first_bad_time_idx == v.sorted_times.len() {
+        // Nothing is filtered out
+        return Some(v.clone());
+    }
+
+    let last_good_time_idx = first_bad_time_idx - 1;
+    let (last_good_version, last_good_time) = &v.sorted_times[last_good_time_idx];
+
+    let good_times = &v.sorted_times[..first_bad_time_idx];
+    let good_versions: Map<String, Value> = good_times
+        .iter()
+        .map(|(v_name, _)| {
+            (
+                v_name.clone(),
+                v.versions.get(v_name).expect("version must exist").clone(),
+            )
+        })
+        .collect();
+
+    Some(ParsedPackument {
+        latest_tag: last_good_version.to_owned(),
+        versions: good_versions,
+        sorted_times: good_times.to_vec(),
+        modified_time: *last_good_time,
+        created_time: v.created_time,
+    })
+}
+
+fn parse_datetime(x: &str) -> DateTime<Utc> {
+    let dt = DateTime::parse_from_rfc3339(x)
+        .or_else(|_| DateTime::parse_from_rfc3339(&format!("{}Z", x)))
+        .unwrap();
+    dt.with_timezone(&Utc)
+}
+
+fn parse_packument(mut j: Map<String, Value>) -> ParsedPackument {
+    let latest_tag = {
+        let dist_tags = j.remove("dist-tags").expect("dist-tags must be present");
+        dist_tags
+            .as_object()
+            .expect("dist-tags must be an object")
+            .get("latest")
+            .expect("latest tag must exist")
+            .as_str()
+            .expect("latest tag must be a string")
+            .to_owned()
+    };
+
+    let versions = j.remove("versions").expect("versions must be present");
+    let mut time = j.remove("time").expect("time must be present");
+
+    let versions = match versions {
+        Value::Object(o) => o,
+        _ => panic!("versions must be an object"),
+    };
+
+    let time = time.as_object_mut().expect("time must be an object");
+    let modified_time = parse_datetime(
+        time.remove("modified")
+            .expect("modified time must exist")
+            .as_str()
+            .expect("time must be a string"),
+    );
+
+    let created_time = parse_datetime(
+        time.remove("created")
+            .expect("created time must exist")
+            .as_str()
+            .expect("time must be a string"),
+    );
+
+    let mut sorted_times: Vec<_> = mem::take(time)
+        .into_iter()
+        .map(|(v, dt_str)| {
+            (
+                v,
+                parse_datetime(dt_str.as_str().expect("dates must be strings")),
+            )
+        })
+        .collect();
+
+    sorted_times.sort_by_key(|(_, dt)| *dt);
+
+    ParsedPackument {
+        latest_tag,
+        versions,
+        sorted_times,
+        modified_time,
+        created_time,
+    }
 }
 
 async fn request_package_from_npm(
     full_name: &str,
     client: ClientWithMiddleware,
-) -> Option<AllVersionPackuments> {
+) -> Option<ParsedPackument> {
     println!("hitting NPM for: {}", full_name);
 
     let packument_doc = client
@@ -44,15 +146,7 @@ async fn request_package_from_npm(
         _ => panic!("non-object packument"),
     };
 
-    let (_name, pkg_doc, versions) =
-        diff_log_builder::deserialize_packument_doc(packument_doc, None, None)
-            .expect("failed to parse packument");
-
-    if !pkg_doc.is_normal() {
-        return None;
-    }
-
-    Some(versions)
+    Some(parse_packument(packument_doc))
 }
 
 async fn lookup_package(
@@ -60,10 +154,10 @@ async fn lookup_package(
     full_name: &str,
     client: ClientWithMiddleware,
     cache: NpmCache,
-) -> Option<AllVersionPackuments> {
+) -> Option<ParsedPackument> {
     println!("looking up: {}", full_name);
     if let Some(cache_hit) = cache.get(full_name) {
-        cache_hit.map(|x| restrict_time(&x, t))
+        cache_hit.and_then(|x| restrict_time(&x, t))
     } else {
         let npm_response = request_package_from_npm(full_name, client).await;
         let npm_response = npm_response.map(Arc::new);
@@ -71,23 +165,53 @@ async fn lookup_package(
         cache
             .insert(full_name.to_owned(), npm_response.clone())
             .await;
-        npm_response.map(|x| restrict_time(&x, t))
+        npm_response.and_then(|x| restrict_time(&x, t))
     }
+}
+
+fn serialize_datetime(dt: DateTime<Utc>) -> Value {
+    Value::String(dt.to_rfc3339_opts(chrono::SecondsFormat::Millis, true))
 }
 
 fn serialize_packument_in_npm_format(
     package_name: &str,
-    versions: Option<AllVersionPackuments>,
+    packument: Option<ParsedPackument>,
 ) -> Value {
-    if versions.is_none() {
+    if packument.is_none() {
         let mut m = Map::new();
         m.insert("error".to_owned(), Value::String("Not found".to_owned()));
         return Value::Object(m);
     }
 
-    let versions = versions.unwrap();
+    let packument = packument.unwrap();
 
-    todo!()
+    let time_dict: Map<String, Value> = std::iter::once((
+        "modified".to_owned(),
+        serialize_datetime(packument.modified_time),
+    ))
+    .chain(
+        std::iter::once((
+            "created".to_owned(),
+            serialize_datetime(packument.created_time),
+        ))
+        .chain(
+            packument
+                .sorted_times
+                .into_iter()
+                .map(|(v, dt)| (v, serialize_datetime(dt))),
+        ),
+    )
+    .collect();
+
+    json!({
+        "_id": package_name,
+        "name": package_name,
+        "dist-tags": {
+            "latest": packument.latest_tag
+        },
+        "versions": packument.versions,
+        "time": time_dict
+    })
 }
 
 async fn handle_request(
@@ -116,7 +240,7 @@ async fn handle_request(
             matching_versions,
         ))
     } else {
-        panic!("BAD DATE: {}", t_str)
+        panic!("BAD DATE: {}, full_name = {}", t_str, full_name)
     }
 }
 
@@ -131,6 +255,8 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
 
 #[tokio::main]
 async fn main() {
+    pretty_env_logger::init();
+
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(6);
     let req_client = ClientBuilder::new(reqwest::Client::new())
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
@@ -144,6 +270,7 @@ async fn main() {
         .and(warp::path::param::<String>())
         .and(warp::any().map(move || req_client.clone()))
         .and(warp::any().map(move || cache.clone()))
+        .and(warp::path::end())
         .then(
             |t_str_url: String, name, req_client_inner, cache| async move {
                 handle_request(t_str_url, None, name, req_client_inner, cache).await
@@ -155,21 +282,46 @@ async fn main() {
         .and(warp::path::param::<String>())
         .and(warp::any().map(move || req_client2.clone()))
         .and(warp::any().map(move || cache2.clone()))
+        .and(warp::path::end())
         .then(
             |t_str_url: String, scope, name, req_client_inner, cache| async move {
                 handle_request(t_str_url, Some(scope), name, req_client_inner, cache).await
             },
         );
 
+    let root = warp::path::end().map(|| StatusCode::NOT_FOUND);
+
+    let css = warp::path!("static" / "main.css")
+        .and(warp::path::end())
+        .map(|| StatusCode::NOT_FOUND);
     let empty_advisories =
         warp::path!(String / "-" / "npm" / "v1" / "security" / "advisories" / "bulk")
+            .and(warp::path::end())
             .map(|_t| warp::reply::json(&Value::Object(Map::default())));
+
+    let log = warp::log("http");
+
+    let tarball_redirect = warp::path!(String / String / "-" / String)
+        .and(warp::path::end())
+        .map(|_time, name, tarball_name| {
+            let uri = Uri::builder()
+                .scheme("https")
+                .authority("registry.npmjs.org")
+                .path_and_query(format!("/{}/-/{}", name, tarball_name))
+                .build()
+                .unwrap();
+            warp::redirect::permanent(uri)
+        });
 
     warp::serve(
         empty_advisories
+            .or(root)
+            .or(css)
             .or(non_scoped)
             .or(scoped)
-            .recover(handle_rejection),
+            .or(tarball_redirect)
+            .recover(handle_rejection)
+            .with(log),
     )
     .run(([0, 0, 0, 0], 80))
     .await;

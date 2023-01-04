@@ -17,6 +17,5 @@ reqwest-middleware = "0.2.0"
 percent-encoding = "2.2.0"
 moka = { version = "0.9", features = ["future"] }
 futures-util = "0.3"
-diff_log_builder = { path = "../diff_log_builder" }
-postgres_db = { path = "../postgres_db" }
-
+log = "0.4"
+pretty_env_logger = "0.4"
