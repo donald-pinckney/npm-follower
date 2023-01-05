@@ -12,15 +12,13 @@ FROM deps_of_package src_dep
 WHERE d.dst_package_id_if_exists IS NOT NULL;
 
 ALTER TABLE analysis.possible_direct_deps
-ALTER COLUMN pkg
-SET NOT NULL;
+ADD PRIMARY KEY (pkg, depends_on_pkg);
 
 ALTER TABLE analysis.possible_direct_deps
-ALTER COLUMN depends_on_pkg
-SET NOT NULL;
+ADD CONSTRAINT analysis_possible_direct_deps_fkey_pkg FOREIGN KEY (pkg) REFERENCES packages (id);
+ALTER TABLE analysis.possible_direct_deps
+ADD CONSTRAINT analysis_possible_direct_deps_fkey_depends_on_pkg FOREIGN KEY (depends_on_pkg) REFERENCES packages (id);
 
-CREATE INDEX analysis_possible_direct_deps_idx_pkg ON analysis.possible_direct_deps (pkg);
-CREATE INDEX analysis_possible_direct_deps_idx_depends_on_pkg ON analysis.possible_direct_deps (depends_on_pkg);
 
 ANALYZE analysis.possible_direct_deps;
 
