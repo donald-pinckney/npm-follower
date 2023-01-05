@@ -19,6 +19,11 @@ ALTER TABLE analysis.possible_direct_deps
 ALTER COLUMN depends_on_pkg
 SET NOT NULL;
 
+CREATE INDEX analysis_possible_direct_deps_idx_pkg ON analysis.possible_direct_deps (pkg);
+CREATE INDEX analysis_possible_direct_deps_idx_depends_on_pkg ON analysis.possible_direct_deps (depends_on_pkg);
+
+ANALYZE analysis.possible_direct_deps;
+
 
 GRANT SELECT ON analysis.possible_direct_deps TO data_analyzer;
 GRANT ALL ON analysis.possible_direct_deps TO pinckney;
