@@ -22,3 +22,7 @@ vuln_patch_updates as (
 )
 select *
 from vuln_patch_updates;
+
+GRANT SELECT ON analysis.vuln_patch_updates TO data_analyzer;
+GRANT ALL ON analysis.vuln_patch_updates TO pinckney;
+GRANT ALL ON analysis.vuln_patch_updates TO federico;

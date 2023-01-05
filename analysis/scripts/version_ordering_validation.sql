@@ -114,6 +114,10 @@ WHERE correct_version_count = version_count
 
 ANALYZE analysis.valid_packages;
 
+GRANT SELECT ON analysis.valid_packages TO data_analyzer;
+GRANT ALL ON analysis.valid_packages TO pinckney;
+GRANT ALL ON analysis.valid_packages TO federico;
+
 -- 2068382  
 CREATE TABLE analysis.malformed_packages AS
 SELECT package_id
@@ -124,6 +128,10 @@ WHERE package_id NOT IN (
   );
 
 ANALYZE analysis.malformed_packages;
+
+GRANT SELECT ON analysis.malformed_packages TO data_analyzer;
+GRANT ALL ON analysis.malformed_packages TO pinckney;
+GRANT ALL ON analysis.malformed_packages TO federico;
 
 CREATE TABLE analysis.valid_non_betas_with_ordering AS
 SELECT group_base_semver,
@@ -145,6 +153,10 @@ WHERE package_id IN (
 -- We will probably want to add more indices here?
 ANALYZE analysis.valid_non_betas_with_ordering;
 
+GRANT SELECT ON analysis.valid_non_betas_with_ordering TO data_analyzer;
+GRANT ALL ON analysis.valid_non_betas_with_ordering TO pinckney;
+GRANT ALL ON analysis.valid_non_betas_with_ordering TO federico;
+
 
 CREATE TABLE analysis.valid_group_ranges AS
 SELECT *
@@ -155,3 +167,7 @@ WHERE package_id IN (
   );
 
 ANALYZE analysis.valid_group_ranges;
+
+GRANT SELECT ON analysis.valid_group_ranges TO data_analyzer;
+GRANT ALL ON analysis.valid_group_ranges TO pinckney;
+GRANT ALL ON analysis.valid_group_ranges TO federico;

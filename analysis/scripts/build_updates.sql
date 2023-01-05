@@ -75,6 +75,10 @@ CREATE INDEX analysis_all_updates_idx_to_semver ON analysis.all_updates (to_semv
 
 ANALYZE analysis.all_updates;
 
+GRANT SELECT ON analysis.all_updates TO data_analyzer;
+GRANT ALL ON analysis.all_updates TO pinckney;
+GRANT ALL ON analysis.all_updates TO federico;
+
 
 CREATE TABLE analysis.all_overlaps AS
 SELECT x.package_id AS package_id,
@@ -88,3 +92,7 @@ FROM analysis.valid_group_ranges x
     INNER JOIN analysis.valid_group_ranges y ON x.package_id = y.package_id
     AND x.inter_group_order < y.inter_group_order
     AND x.end_created >= y.start_created;
+
+GRANT SELECT ON analysis.all_overlaps TO data_analyzer;
+GRANT ALL ON analysis.all_overlaps TO pinckney;
+GRANT ALL ON analysis.all_overlaps TO federico;
