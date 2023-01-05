@@ -6,6 +6,7 @@ const PSQL_COMMAND: &str = "psql -d npm_data -v ON_ERROR_STOP=1 -a -f";
 fn main() -> Result<(), std::io::Error> {
     let dependencies: BTreeMap<&'static str, Vec<&'static str>> = [
         ("setup_analysis", vec![]),
+        ("possible_direct_deps", vec!["setup_analysis"]),
         ("version_ordering_validation", vec!["setup_analysis"]),
         ("build_updates", vec!["version_ordering_validation"]),
         ("find_patches", vec!["build_updates"]),

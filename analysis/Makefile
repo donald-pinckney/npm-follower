@@ -1,8 +1,8 @@
 .PHONY: all
-all: build_updates find_patches prepare_diffs_to_compute setup_analysis version_ordering_validation
+all: build_updates find_patches possible_direct_deps prepare_diffs_to_compute setup_analysis version_ordering_validation
 
 .PHONY: clean
-clean: clean_build_updates clean_find_patches clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
+clean: clean_build_updates clean_find_patches clean_possible_direct_deps clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
 
 # -------- build_updates --------
 makefile_state/build_updates.touch:
@@ -30,6 +30,19 @@ clean_find_patches:
 	if [ -f makefile_state/find_patches.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/find_patches.sql; else true; fi
 	rm -f makefile_state/find_patches.touch
 
+# -------- possible_direct_deps --------
+makefile_state/possible_direct_deps.touch:
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_direct_deps.sql
+	touch makefile_state/possible_direct_deps.touch
+
+.PHONY: possible_direct_deps
+possible_direct_deps: setup_analysis makefile_state/possible_direct_deps.touch
+
+.PHONY: clean_possible_direct_deps
+clean_possible_direct_deps: 
+	if [ -f makefile_state/possible_direct_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_direct_deps.sql; else true; fi
+	rm -f makefile_state/possible_direct_deps.touch
+
 # -------- prepare_diffs_to_compute --------
 makefile_state/prepare_diffs_to_compute.touch:
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/prepare_diffs_to_compute.sql
@@ -52,7 +65,7 @@ makefile_state/setup_analysis.touch:
 setup_analysis:  makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
-clean_setup_analysis: clean_version_ordering_validation
+clean_setup_analysis: clean_possible_direct_deps clean_version_ordering_validation
 	if [ -f makefile_state/setup_analysis.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql; else true; fi
 	rm -f makefile_state/setup_analysis.touch
 
