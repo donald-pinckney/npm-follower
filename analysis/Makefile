@@ -1,8 +1,8 @@
 .PHONY: all
-all: build_updates find_patches possible_direct_deps prepare_diffs_to_compute setup_analysis version_ordering_validation
+all: build_updates find_patches possible_direct_deps possible_transitive_deps prepare_diffs_to_compute setup_analysis version_ordering_validation
 
 .PHONY: clean
-clean: clean_build_updates clean_find_patches clean_possible_direct_deps clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
+clean: clean_build_updates clean_find_patches clean_possible_direct_deps clean_possible_transitive_deps clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
 
 # -------- build_updates --------
 makefile_state/build_updates.touch:
@@ -39,9 +39,22 @@ makefile_state/possible_direct_deps.touch:
 possible_direct_deps: setup_analysis makefile_state/possible_direct_deps.touch
 
 .PHONY: clean_possible_direct_deps
-clean_possible_direct_deps: 
+clean_possible_direct_deps: clean_possible_transitive_deps
 	if [ -f makefile_state/possible_direct_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_direct_deps.sql; else true; fi
 	rm -f makefile_state/possible_direct_deps.touch
+
+# -------- possible_transitive_deps --------
+makefile_state/possible_transitive_deps.touch:
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_transitive_deps.sql
+	touch makefile_state/possible_transitive_deps.touch
+
+.PHONY: possible_transitive_deps
+possible_transitive_deps: possible_direct_deps makefile_state/possible_transitive_deps.touch
+
+.PHONY: clean_possible_transitive_deps
+clean_possible_transitive_deps: 
+	if [ -f makefile_state/possible_transitive_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_transitive_deps.sql; else true; fi
+	rm -f makefile_state/possible_transitive_deps.touch
 
 # -------- prepare_diffs_to_compute --------
 makefile_state/prepare_diffs_to_compute.touch:
