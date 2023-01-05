@@ -54,22 +54,23 @@ fn main() -> Result<(), std::io::Error> {
     writeln!(output_file)?;
 
     for (step, depends_on) in dependencies {
+        let mut depends_on_sorted = depends_on.clone();
+        depends_on_sorted.sort();
+
+        let deps = depends_on_sorted
+            .iter()
+            .map(|d| format!("makefile_state/{}.touch", *d))
+            .collect::<Vec<_>>()
+            .join(" ");
+
         writeln!(output_file, "# -------- {} --------", step)?;
-        writeln!(output_file, "makefile_state/{}.touch:", step)?;
+        writeln!(output_file, "makefile_state/{}.touch: {}", step, deps)?;
         writeln!(output_file, "\t{} scripts/{}.sql", PSQL_COMMAND, step)?;
         writeln!(output_file, "\ttouch makefile_state/{}.touch", step)?;
         writeln!(output_file)?;
         writeln!(output_file, ".PHONY: {}", step)?;
+        writeln!(output_file, "{}: makefile_state/{}.touch", step, step)?;
 
-        let mut depends_on_sorted = depends_on.clone();
-        depends_on_sorted.sort();
-
-        let deps = depends_on_sorted.join(" ");
-        writeln!(
-            output_file,
-            "{}: {} makefile_state/{}.touch",
-            step, deps, step
-        )?;
         writeln!(output_file)?;
         writeln!(output_file, ".PHONY: clean_{}", step)?;
         let mut rev_deps_sorted: Vec<_> = reverse_dependencies[step]

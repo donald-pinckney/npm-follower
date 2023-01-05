@@ -5,12 +5,12 @@ all: build_updates find_patches possible_direct_deps possible_transitive_deps pr
 clean: clean_build_updates clean_find_patches clean_possible_direct_deps clean_possible_transitive_deps clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
 
 # -------- build_updates --------
-makefile_state/build_updates.touch:
+makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/build_updates.sql
 	touch makefile_state/build_updates.touch
 
 .PHONY: build_updates
-build_updates: version_ordering_validation makefile_state/build_updates.touch
+build_updates: makefile_state/build_updates.touch
 
 .PHONY: clean_build_updates
 clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute
@@ -18,12 +18,12 @@ clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute
 	rm -f makefile_state/build_updates.touch
 
 # -------- find_patches --------
-makefile_state/find_patches.touch:
+makefile_state/find_patches.touch: makefile_state/build_updates.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/find_patches.sql
 	touch makefile_state/find_patches.touch
 
 .PHONY: find_patches
-find_patches: build_updates makefile_state/find_patches.touch
+find_patches: makefile_state/find_patches.touch
 
 .PHONY: clean_find_patches
 clean_find_patches: 
@@ -31,12 +31,12 @@ clean_find_patches:
 	rm -f makefile_state/find_patches.touch
 
 # -------- possible_direct_deps --------
-makefile_state/possible_direct_deps.touch:
+makefile_state/possible_direct_deps.touch: makefile_state/setup_analysis.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_direct_deps.sql
 	touch makefile_state/possible_direct_deps.touch
 
 .PHONY: possible_direct_deps
-possible_direct_deps: setup_analysis makefile_state/possible_direct_deps.touch
+possible_direct_deps: makefile_state/possible_direct_deps.touch
 
 .PHONY: clean_possible_direct_deps
 clean_possible_direct_deps: clean_possible_transitive_deps
@@ -44,12 +44,12 @@ clean_possible_direct_deps: clean_possible_transitive_deps
 	rm -f makefile_state/possible_direct_deps.touch
 
 # -------- possible_transitive_deps --------
-makefile_state/possible_transitive_deps.touch:
+makefile_state/possible_transitive_deps.touch: makefile_state/possible_direct_deps.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_transitive_deps.sql
 	touch makefile_state/possible_transitive_deps.touch
 
 .PHONY: possible_transitive_deps
-possible_transitive_deps: possible_direct_deps makefile_state/possible_transitive_deps.touch
+possible_transitive_deps: makefile_state/possible_transitive_deps.touch
 
 .PHONY: clean_possible_transitive_deps
 clean_possible_transitive_deps: 
@@ -57,12 +57,12 @@ clean_possible_transitive_deps:
 	rm -f makefile_state/possible_transitive_deps.touch
 
 # -------- prepare_diffs_to_compute --------
-makefile_state/prepare_diffs_to_compute.touch:
+makefile_state/prepare_diffs_to_compute.touch: makefile_state/build_updates.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/prepare_diffs_to_compute.sql
 	touch makefile_state/prepare_diffs_to_compute.touch
 
 .PHONY: prepare_diffs_to_compute
-prepare_diffs_to_compute: build_updates makefile_state/prepare_diffs_to_compute.touch
+prepare_diffs_to_compute: makefile_state/prepare_diffs_to_compute.touch
 
 .PHONY: clean_prepare_diffs_to_compute
 clean_prepare_diffs_to_compute: 
@@ -70,12 +70,12 @@ clean_prepare_diffs_to_compute:
 	rm -f makefile_state/prepare_diffs_to_compute.touch
 
 # -------- setup_analysis --------
-makefile_state/setup_analysis.touch:
+makefile_state/setup_analysis.touch: 
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/setup_analysis.sql
 	touch makefile_state/setup_analysis.touch
 
 .PHONY: setup_analysis
-setup_analysis:  makefile_state/setup_analysis.touch
+setup_analysis: makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
 clean_setup_analysis: clean_possible_direct_deps clean_version_ordering_validation
@@ -83,12 +83,12 @@ clean_setup_analysis: clean_possible_direct_deps clean_version_ordering_validati
 	rm -f makefile_state/setup_analysis.touch
 
 # -------- version_ordering_validation --------
-makefile_state/version_ordering_validation.touch:
+makefile_state/version_ordering_validation.touch: makefile_state/setup_analysis.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/version_ordering_validation.sql
 	touch makefile_state/version_ordering_validation.touch
 
 .PHONY: version_ordering_validation
-version_ordering_validation: setup_analysis makefile_state/version_ordering_validation.touch
+version_ordering_validation: makefile_state/version_ordering_validation.touch
 
 .PHONY: clean_version_ordering_validation
 clean_version_ordering_validation: clean_build_updates
