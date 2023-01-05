@@ -17,7 +17,7 @@ SELECT CASE
         ELSE 'major'::analysis.update_type
     END $$ LANGUAGE SQL IMMUTABLE;
 
-CREATE UNLOGGED TABLE analysis.all_updates AS WITH intra_group_updates AS (
+CREATE TABLE analysis.all_updates AS WITH intra_group_updates AS (
     SELECT from_v.package_id AS package_id,
         from_v.group_base_semver AS from_group_base_semver,
         to_v.group_base_semver AS to_group_base_semver,
@@ -76,7 +76,7 @@ CREATE INDEX analysis_all_updates_idx_to_semver ON analysis.all_updates (to_semv
 ANALYZE analysis.all_updates;
 
 
-CREATE UNLOGGED TABLE analysis.all_overlaps AS
+CREATE TABLE analysis.all_overlaps AS
 SELECT x.package_id AS package_id,
     x.group_base_semver AS first_group_base_semver,
     y.group_base_semver AS second_group_base_semver,

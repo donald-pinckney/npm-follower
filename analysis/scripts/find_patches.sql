@@ -1,4 +1,4 @@
-CREATE UNLOGGED TABLE analysis.vuln_patch_updates AS with valid_vulns as (
+CREATE TABLE analysis.vuln_patch_updates AS with valid_vulns as (
     select v.*,
         pkg.id as package_id
     from vulnerabilities v

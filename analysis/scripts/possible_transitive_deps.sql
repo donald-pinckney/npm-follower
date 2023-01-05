@@ -1,4 +1,4 @@
-CREATE UNLOGGED TABLE analysis.possible_transitive_deps AS WITH RECURSIVE search_graph(pkg, depends_on_pkg) AS (
+CREATE TABLE analysis.possible_transitive_deps AS WITH RECURSIVE search_graph(pkg, depends_on_pkg) AS (
     SELECT g.pkg,
         g.depends_on_pkg
     FROM analysis.possible_direct_deps g

@@ -89,7 +89,7 @@ FROM non_betas_with_ordering group_start
 
 ANALYZE group_ranges;
 
-CREATE UNLOGGED TABLE analysis.valid_packages AS WITH intra_group_correct_version_order_counts AS (
+CREATE TABLE analysis.valid_packages AS WITH intra_group_correct_version_order_counts AS (
   SELECT package_id,
     COUNT(*) AS correct_version_count
   FROM non_betas_with_ordering
@@ -115,7 +115,7 @@ WHERE correct_version_count = version_count
 ANALYZE analysis.valid_packages;
 
 -- 2068382  
-CREATE UNLOGGED TABLE analysis.malformed_packages AS
+CREATE TABLE analysis.malformed_packages AS
 SELECT package_id
 FROM version_counts
 WHERE package_id NOT IN (
@@ -125,7 +125,7 @@ WHERE package_id NOT IN (
 
 ANALYZE analysis.malformed_packages;
 
-CREATE UNLOGGED TABLE analysis.valid_non_betas_with_ordering AS
+CREATE TABLE analysis.valid_non_betas_with_ordering AS
 SELECT group_base_semver,
   inter_group_order,
   semver_order_within_group AS order_within_group,
@@ -146,7 +146,7 @@ WHERE package_id IN (
 ANALYZE analysis.valid_non_betas_with_ordering;
 
 
-CREATE UNLOGGED TABLE analysis.valid_group_ranges AS
+CREATE TABLE analysis.valid_group_ranges AS
 SELECT *
 FROM group_ranges
 WHERE package_id IN (
