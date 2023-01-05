@@ -1,13 +1,13 @@
-CREATE UNLOGGED TABLE analysis.possible_transitive_deps AS WITH RECURSIVE search_graph(from_id, to_id) AS (
-    SELECT g.from_id,
-        g.to_id
+CREATE UNLOGGED TABLE analysis.possible_transitive_deps AS WITH RECURSIVE search_graph(pkg, depends_on_pkg) AS (
+    SELECT g.pkg,
+        g.depends_on_pkg
     FROM analysis.possible_direct_deps g
     UNION
-    SELECT g.from_id,
-        g.to_id
+    SELECT g.pkg,
+        g.depends_on_pkg
     FROM analysis.possible_direct_deps g,
         search_graph sg
-    WHERE g.from_id = sg.to_id
+    WHERE g.pkg = sg.depends_on_pkg
 )
 SELECT *
 FROM search_graph;
