@@ -10,8 +10,15 @@ fn main() -> Result<(), std::io::Error> {
         ("build_updates", vec!["version_ordering_validation"]),
         ("find_patches", vec!["build_updates"]),
         ("prepare_diffs_to_compute", vec!["build_updates"]),
-        ("possible_direct_deps", vec!["setup_analysis"]),
-        ("possible_transitive_deps", vec!["possible_direct_deps"]),
+        ("possible_direct_runtime_deps", vec!["setup_analysis"]),
+        ("possible_direct_dev_version_deps", vec!["setup_analysis"]),
+        (
+            "possible_transitive_deps",
+            vec![
+                "possible_direct_runtime_deps",
+                "possible_direct_dev_version_deps",
+            ],
+        ),
     ]
     .into_iter()
     .collect();

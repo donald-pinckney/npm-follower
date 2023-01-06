@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS analysis.possible_direct_dev_version_deps;
