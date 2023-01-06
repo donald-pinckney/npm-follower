@@ -1,5 +1,5 @@
 CREATE TABLE analysis.possible_direct_dev_version_deps AS WITH deps_of_version AS (
-    SELECT version_id,
+    SELECT id as version_id,
         unnest(dev_dependencies) AS dep_id
     FROM versions
 )
