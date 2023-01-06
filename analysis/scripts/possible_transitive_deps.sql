@@ -9,7 +9,7 @@ CREATE TABLE analysis.possible_transitive_deps AS WITH RECURSIVE search_graph(pk
         INNER JOIN analysis.possible_direct_deps g ON sg.depends_on_pkg = g.pkg
 ) CYCLE pkg
 SET is_cycle USING path
-SELECT pkg,
+SELECT DISTINCT pkg,
     depends_on_pkg
 FROM search_graph;
 
