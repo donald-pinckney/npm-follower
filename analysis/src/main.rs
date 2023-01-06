@@ -13,9 +13,16 @@ fn main() -> Result<(), std::io::Error> {
         ("possible_direct_runtime_deps", vec!["setup_analysis"]),
         ("possible_direct_dev_version_deps", vec!["setup_analysis"]),
         (
-            "possible_transitive_deps",
+            "possible_transitive_runtime_deps",
             vec![
                 "possible_direct_runtime_deps",
+                "possible_direct_dev_version_deps",
+            ],
+        ),
+        (
+            "possible_install_deps",
+            vec![
+                "possible_transitive_runtime_deps",
                 "possible_direct_dev_version_deps",
             ],
         ),
