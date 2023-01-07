@@ -17,7 +17,7 @@ ADD PRIMARY KEY (version_id, depends_on_pkg);
 ALTER TABLE analysis.possible_direct_runtime_version_deps
 ADD CONSTRAINT analysis_possible_direct_runtime_version_deps_fkey_version_id FOREIGN KEY (version_id) REFERENCES versions (id);
 ALTER TABLE analysis.possible_direct_runtime_version_deps
-ADD CONSTRAINT analysis_possible_direct_runtime_version_deps_fkey_depends_on_pkg FOREIGN KEY (depends_on_pkg) REFERENCES packages (id);
+ADD CONSTRAINT possible_direct_runtime_version_deps_fkey_depends_on_pkg FOREIGN KEY (depends_on_pkg) REFERENCES packages (id);
 
 
 ANALYZE analysis.possible_direct_runtime_version_deps;
