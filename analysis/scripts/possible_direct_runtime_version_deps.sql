@@ -1,6 +1,8 @@
 CREATE TABLE analysis.possible_direct_runtime_version_deps AS WITH deps_of_version AS (
     SELECT id as version_id,
-        prod_dependencies || optional_dependencies || peer_dependencies
+        unnest(
+            prod_dependencies || optional_dependencies || peer_dependencies
+        ) AS dep_id
     FROM versions
 )
 SELECT DISTINCT src_dep.version_id AS version_id,
