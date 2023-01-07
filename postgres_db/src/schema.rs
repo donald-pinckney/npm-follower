@@ -66,6 +66,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    diff_analysis (from_id, to_id) {
+        from_id -> Int8,
+        to_id -> Int8,
+        job_result -> Jsonb,
+    }
+}
+
+diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::DiffType;
     use super::sql_types::SemverStruct;
@@ -215,6 +223,7 @@ diesel::joinable!(vulnerabilities -> ghsa (ghsa_id));
 diesel::allow_tables_to_appear_in_same_query!(
     change_log,
     dependencies,
+    diff_analysis,
     diff_log,
     download_tasks,
     downloaded_tarballs,

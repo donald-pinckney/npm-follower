@@ -49,6 +49,10 @@ async fn main() {
             Ok(o) => ClientResponse::Message(serde_json::to_value(o).unwrap()),
             Err(e) => ClientResponse::Error(e),
         },
+        "compute_multi" => match compute_run_bin_multi(args).await {
+            Ok(o) => ClientResponse::Message(serde_json::to_value(o).unwrap()),
+            Err(e) => ClientResponse::Error(e),
+        },
         _ => {
             eprintln!("Usage: {} [write|read|compute] ...", args[0]);
             std::process::exit(1);
@@ -83,7 +87,7 @@ fn spawn_keep_alive_loop(file_id: u32) -> JoinHandle<()> {
 
 fn make_client() -> Result<reqwest::Client, ClientError> {
     Ok(reqwest::ClientBuilder::new()
-        .connect_timeout(std::time::Duration::from_secs(10))
+        .connect_timeout(std::time::Duration::from_secs(60))
         .timeout(std::time::Duration::from_secs(600))
         .user_agent("Wget/1.21.3")
         .build()?)
@@ -93,10 +97,12 @@ fn make_client() -> Result<reqwest::Client, ClientError> {
 async fn check_req_failed(resp: reqwest::Response) -> Result<reqwest::Response, ClientError> {
     let status = resp.status();
     if !status.is_success() {
+        let text = resp.text().await.map_err(|e| {
+            ClientError::ReqwestError(format!("Failed to read response text: {}", e))
+        })?;
         // try to parse into a BlobError, or send HttpServerError
-        let mut err_map = resp
-            .json::<serde_json::Map<String, serde_json::Value>>()
-            .await?;
+        let mut err_map = serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(&text)
+            .map_err(|_| ClientError::SerdeJsonError(format!("Failed to parse error: {}", text)))?;
         eprintln!(
             "Failed request. Got: {}",
             err_map.get("error").unwrap_or(&serde_json::Value::Null)
@@ -118,22 +124,30 @@ async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientE
     let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
 
-    let client = make_client()?;
+    let client = make_client()
+        .map_err(|e| ClientError::ReqwestError(format!("Failed to build client: {}", e)))?;
 
     // lookup request
     eprintln!("Sending lookup request for {}", tarball_url_key);
+    let body = serde_json::to_vec(&LookupRequest {
+        key: tarball_url_key,
+    })?;
     let resp = client
         .get(format!("{}/blob/lookup", blob_api_url))
         .header("Authorization", blob_api_key.clone())
-        .json(&LookupRequest {
-            key: tarball_url_key,
-        })
+        .body(body)
         .send()
-        .await?;
+        .await
+        .map_err(|e| ClientError::ReqwestError(format!("Failed to send request: {}", e)))?;
 
     let resp = check_req_failed(resp).await?;
 
-    let slice: BlobStorageSlice = resp.json().await?;
+    let text = resp
+        .text()
+        .await
+        .map_err(|e| ClientError::ReqwestError(format!("Failed to read response body: {}", e)))?;
+    let slice: BlobStorageSlice = serde_json::from_str(&text)
+        .map_err(|e| ClientError::SerdeJsonError(format!("{} - {}", text, e)))?;
     Ok(slice)
 }
 
@@ -153,77 +167,210 @@ async fn compute_run_bin(args: Vec<String>) -> Result<HashMap<String, TarballRes
 
     let mut handles: Vec<JoinHandle<Result<(String, String), ClientError>>> = Vec::new();
     let mut slice_map = HashMap::new(); // map of [tmp slice path] -> [original tarball url]
-    let pid = std::process::id();
-    let atomic_idx = Arc::new(AtomicUsize::new(0));
-    for tarball_url_key in tarball_url_keys.clone() {
-        let atomic_idx = atomic_idx.clone();
-        let handle = tokio::task::spawn(async move {
-            let slice_path = read_and_send(
-                tarball_url_key.clone(),
-                &format!(
-                    "/tmp/compute-{}-{}",
-                    pid,
-                    atomic_idx.fetch_add(1, Ordering::SeqCst)
-                ),
-            )
-            .await?;
-            Ok((tarball_url_key, slice_path))
-        });
-        handles.push(handle);
+    let thunk = async {
+        let pid = std::process::id();
+        let atomic_idx = Arc::new(AtomicUsize::new(0));
+        for tarball_url_key in tarball_url_keys.clone() {
+            let atomic_idx = atomic_idx.clone();
+            let handle = tokio::task::spawn(async move {
+                let slice_path = read_and_send(
+                    tarball_url_key.clone(),
+                    &format!(
+                        "/tmp/compute-{}/{}",
+                        pid,
+                        atomic_idx.fetch_add(1, Ordering::SeqCst)
+                    ),
+                )
+                .await?;
+                Ok((tarball_url_key, slice_path))
+            });
+            handles.push(handle);
+        }
+
+        for handle in handles {
+            let (tarball_url, slice_path) = handle.await.unwrap()?;
+            slice_map.insert(slice_path, tarball_url);
+        }
+
+        // check that the binary exists
+        if !std::path::Path::new(&binary).exists() {
+            return Err(ClientError::BinaryDoesNotExist);
+        }
+
+        let mut handle_map: HashMap<String, JoinHandle<Result<TarballResult, ClientError>>> =
+            HashMap::new(); // where the string is the original tarball url
+        for (slice_path, original_tarball_url) in slice_map.iter() {
+            let mut cmd = tokio::process::Command::new(&binary);
+            cmd.arg(slice_path);
+            // slice_paths.push(slice_path);
+            let handle = tokio::task::spawn(async move {
+                let output = cmd.output().await?;
+                // make sure the base64 does not put newlines
+                let b64stout = base64::encode_config(&output.stdout, base64::STANDARD_NO_PAD);
+                let b64stderr = base64::encode_config(&output.stderr, base64::STANDARD_NO_PAD);
+                let exit_code = output.status.code().unwrap_or(1);
+                Ok(TarballResult {
+                    stdout: b64stout,
+                    stderr: b64stderr,
+                    exit_code,
+                })
+            });
+            handle_map.insert(original_tarball_url.to_string(), handle);
+        }
+
+        let mut res_map = HashMap::new();
+        for (original_tarball_url, handle) in handle_map {
+            let res = handle.await.unwrap()?;
+            res_map.insert(original_tarball_url, res);
+        }
+        Ok(res_map)
+    };
+
+    let res = thunk.await;
+
+    // now delete the tmp file directories
+    if let Some(slice_path) = slice_map.keys().next() {
+        // go up three directories
+        let p = std::path::Path::new(&slice_path)
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .to_path_buf();
+        // first, we have to recursively set the permissions to be writable
+        let mut cmd = tokio::process::Command::new("chmod");
+        cmd.arg("-R")
+            .arg("777")
+            .arg(p.to_str().unwrap())
+            .output()
+            .await
+            .ok();
+        eprintln!("Deleting {}", p.to_str().unwrap());
+        tokio::fs::remove_dir_all(p).await.ok();
     }
 
-    for handle in handles {
-        let (tarball_url, slice_path) = handle.await.unwrap()?;
-        slice_map.insert(slice_path, tarball_url);
+    res
+}
+
+async fn compute_run_bin_multi(
+    args: Vec<String>,
+) -> Result<HashMap<String, TarballResult>, ClientError> {
+    if args.len() != 4 {
+        eprintln!(
+            "Usage: {} compute <binary path> <tarball keys, separated by spaces>",
+            args[0]
+        );
+        std::process::exit(1);
     }
 
-    // check that the binary exists
-    if !std::path::Path::new(&binary).exists() {
-        return Err(ClientError::BinaryDoesNotExist);
-    }
+    let binary = args[2].clone();
+    let tarball_url_keys = args[3].clone();
+    let tarball_url_keys: Vec<Vec<String>> = tarball_url_keys
+        .split(' ')
+        .map(|s| s.split('&').map(|s| s.to_string()).collect())
+        .collect();
 
-    let mut handle_map: HashMap<String, JoinHandle<Result<TarballResult, ClientError>>> =
-        HashMap::new(); // where the string is the original tarball url
-    for (slice_path, original_tarball_url) in slice_map.iter() {
-        let mut cmd = tokio::process::Command::new(&binary);
-        cmd.arg(slice_path);
-        // slice_paths.push(slice_path);
-        let handle = tokio::task::spawn(async move {
-            let output = cmd.output().await?;
-            // make sure the base64 does not put newlines
-            let b64stout = base64::encode_config(&output.stdout, base64::STANDARD_NO_PAD);
-            let b64stderr = base64::encode_config(&output.stderr, base64::STANDARD_NO_PAD);
-            let exit_code = output.status.code().unwrap_or(1);
-            Ok(TarballResult {
-                stdout: b64stout,
-                stderr: b64stderr,
-                exit_code,
-            })
-        });
-        handle_map.insert(original_tarball_url.to_string(), handle);
-    }
+    let mut handles: Vec<JoinHandle<Result<(Vec<String>, Vec<String>), ClientError>>> = Vec::new();
+    // map of [Vec<tmp slice path>] -> [Vec<original tarball url>]
+    let mut slice_map = HashMap::new();
+    let thunk = async {
+        let pid = std::process::id();
+        let atomic_idx = Arc::new(AtomicUsize::new(0));
+        for tarball_url_keys in tarball_url_keys.clone() {
+            let atomic_idx = atomic_idx.clone();
+            let handle = tokio::task::spawn(async move {
+                let mut slice_paths = Vec::new();
+                let mut original_tarball_urls = Vec::new();
+                for tarball_url_key in tarball_url_keys {
+                    let slice_path = read_and_send(
+                        tarball_url_key.clone(),
+                        &format!(
+                            "/tmp/compute-{}/{}",
+                            pid,
+                            atomic_idx.fetch_add(1, Ordering::SeqCst)
+                        ),
+                    )
+                    .await?;
+                    slice_paths.push(slice_path);
+                    original_tarball_urls.push(tarball_url_key);
+                }
+                Ok((slice_paths, original_tarball_urls))
+            });
+            handles.push(handle);
+        }
 
-    let mut res_map = HashMap::new();
-    for (original_tarball_url, handle) in handle_map {
-        let res = handle.await.unwrap()?;
-        res_map.insert(original_tarball_url, res);
-    }
+        eprintln!("Waiting for all slices to be read and sent");
+
+        for handle in handles {
+            let (slice_paths, tarball_urls) = handle.await.unwrap()?;
+            slice_map.insert(slice_paths, tarball_urls);
+        }
+
+        eprintln!("All slices read and sent");
+
+        // check that the binary exists
+        if !std::path::Path::new(&binary).exists() {
+            return Err(ClientError::BinaryDoesNotExist);
+        }
+
+        let mut handle_map: HashMap<String, JoinHandle<Result<TarballResult, ClientError>>> =
+            HashMap::new(); // where the string is the original tarball url
+        for (slice_paths, original_tarball_urls) in slice_map.iter() {
+            let mut cmd = tokio::process::Command::new(&binary);
+            cmd.args(slice_paths);
+            // slice_paths.push(slice_path);
+            let handle = tokio::task::spawn(async move {
+                let output = cmd.output().await?;
+                // make sure the base64 does not put newlines
+                let b64stout = base64::encode_config(&output.stdout, base64::STANDARD_NO_PAD);
+                let b64stderr = base64::encode_config(&output.stderr, base64::STANDARD_NO_PAD);
+                let exit_code = output.status.code().unwrap_or(1);
+                Ok(TarballResult {
+                    stdout: b64stout,
+                    stderr: b64stderr,
+                    exit_code,
+                })
+            });
+            handle_map.insert(original_tarball_urls.join("&").to_string(), handle);
+        }
+
+        let mut res_map = HashMap::new();
+        for (original_tarball_url, handle) in handle_map {
+            let res = handle.await.unwrap()?;
+            eprintln!("Got result for {}", original_tarball_url);
+            res_map.insert(original_tarball_url, res);
+        }
+        Ok(res_map)
+    };
+
+    let res = thunk.await;
 
     // now delete the tmp files
-    let mut handles: Vec<JoinHandle<()>> = Vec::new();
-    for slice_path in slice_map.keys() {
-        let p = slice_path.clone();
-        let handle = tokio::task::spawn(async move {
-            tokio::fs::remove_file(p).await.ok(); // we don't care if this fails
-        });
-        handles.push(handle);
+    if let Some(slice_path) = slice_map.keys().next().and_then(|s| s.get(0)) {
+        // go up three directories
+        let p = std::path::Path::new(&slice_path)
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .to_path_buf();
+        // first, we have to recursively set the permissions to be writable
+        let mut cmd = tokio::process::Command::new("chmod");
+        cmd.arg("-R")
+            .arg("777")
+            .arg(p.to_str().unwrap())
+            .output()
+            .await
+            .ok();
+        eprintln!("Deleting {}", p.to_str().unwrap());
+        tokio::fs::remove_dir_all(p).await.ok();
     }
 
-    for handle in handles {
-        handle.await.unwrap();
-    }
-
-    Ok(res_map)
+    res
 }
 
 async fn read_and_send(tarball_key: String, tmp_dir_root: &str) -> Result<String, ClientError> {
@@ -400,7 +547,10 @@ async fn store_into_blob(
     let resp = check_req_failed(resp).await?;
 
     // parse the response
-    let blob: BlobOffset = resp.json().await.map_err(|_| ClientError::SerdeJsonError)?;
+    let blob: BlobOffset = resp
+        .json()
+        .await
+        .map_err(|e| ClientError::SerdeJsonError(e.to_string()))?;
 
     let keep_alive = spawn_keep_alive_loop(blob.file_id);
 
@@ -489,9 +639,9 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
             file.read_to_end(&mut bytes).await?;
             let filename = std::path::Path::new(&filepath)
                 .file_name()
-                .ok_or(ClientError::IoError)?
+                .ok_or_else(|| ClientError::IoError("Bad filename".to_string()))?
                 .to_str()
-                .ok_or(ClientError::IoError)?
+                .ok_or_else(|| ClientError::IoError("Bad filename".to_string()))?
                 .to_string();
             Ok((filename, bytes))
         }));

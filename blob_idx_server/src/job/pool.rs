@@ -246,9 +246,7 @@ impl WorkerPool {
                     if worker_age > chrono::Duration::hours(23) {
                         // expired, remove from pool and add a new worker
                         debug!("Found expired worker {}, removing", job_id);
-                        wp.pool.remove(&job_id);
-                        worker.cancel(&*wp.ssh_session).await.ok();
-                        wp.spawn_worker().await.ok();
+                        wp.replace_worker(&worker).await.ok();
                         Ok(None)
                     } else {
                         debug!("Found running worker {}", job_id);
@@ -265,9 +263,7 @@ impl WorkerPool {
                         } else {
                             // network is down, remove from pool and add a new worker
                             debug!("Network is down for worker {}, removing", job_id);
-                            wp.pool.remove(&job_id);
-                            worker.cancel(&*wp.ssh_session).await.ok();
-                            wp.spawn_worker().await.ok();
+                            wp.replace_worker(&worker).await.ok();
                             Ok(None)
                         }
                     }
@@ -281,6 +277,14 @@ impl WorkerPool {
                 None => continue,
             }
         }
+    }
+
+    /// Replaces the given worker with a new one.
+    pub async fn replace_worker(&self, worker: &Worker) -> Result<(), JobError> {
+        self.pool.remove(&worker.job_id);
+        worker.cancel(&*self.ssh_session).await?;
+        self.spawn_worker().await?;
+        Ok(())
     }
 }
 

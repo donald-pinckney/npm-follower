@@ -153,6 +153,7 @@ impl JobManager {
         &self,
         binary: String,
         tarball_chunks: Vec<Vec<String>>,
+        timeout: u64,
     ) -> Result<Vec<ClientResponse>, JobError> {
         let mut handles: Vec<JoinHandle<Result<ClientResponse, JobError>>> = Vec::new();
 
@@ -169,7 +170,79 @@ impl JobManager {
                     binary, tbs
                 );
                 debug!("Running command:\n{}", cmd);
-                let out = ssh.run_command(&cmd).await?;
+                let out = match tokio::time::timeout(
+                    std::time::Duration::from_secs(timeout),
+                    ssh.run_command(&cmd),
+                )
+                .await
+                {
+                    Ok(res) => res?,
+                    Err(_) => {
+                        wp_comp.replace_worker(&worker).await?;
+                        return Ok(ClientResponse::Error(ClientError::Timeout));
+                    }
+                };
+                debug!("Output:\n{}", out);
+                let response: ClientResponse = serde_json::from_str(&out)
+                    .map_err(|_| JobError::ClientOutputNotParsable(out))?;
+                Ok(response)
+            }));
+        }
+
+        let mut responses = Vec::new();
+        for handle in handles {
+            responses.push(handle.await.unwrap()?);
+        }
+
+        Ok(responses)
+    }
+
+    /// Submits a compute job to the discovery cluster. Returns stdout for each tarball computed.
+    /// Takes in the full path to the binary to run and a chunk of tarballs, where for each
+    /// outer element, we have a list of tarballs to compute on a single node. We map
+    /// all chunks to different nodes. We return a list of client responses, where
+    /// the index of the response corresponds to the index of the chunk in the list of chunks.
+    /// This is a multi-arg version of the above function.
+    pub async fn submit_compute_multi(
+        &self,
+        binary: String,
+        tarball_chunks: Vec<Vec<Vec<String>>>,
+        timeout: u64,
+    ) -> Result<Vec<ClientResponse>, JobError> {
+        let mut handles: Vec<JoinHandle<Result<ClientResponse, JobError>>> = Vec::new();
+
+        for chunk in &tarball_chunks {
+            debug!("Submitting compute job with {} tarballs", chunk.len());
+            let wp_comp = self.compute_pool.clone();
+            let binary = binary.clone();
+            let tbs = chunk
+                .iter()
+                .map(|sub| sub.join("&"))
+                .collect::<Vec<String>>()
+                .join(" ");
+            handles.push(tokio::task::spawn(async move {
+                let worker = wp_comp.get_worker().await?;
+                let ssh = worker.get_ssh_session();
+                let cmd = format!(
+                    "cd $HOME/npm-follower/blob_idx_client && ./run.sh compute_multi {} \"{}\"",
+                    binary, tbs
+                );
+                debug!("Running command:\n{}", cmd);
+
+                let out = match tokio::time::timeout(
+                    std::time::Duration::from_secs(timeout),
+                    ssh.run_command(&cmd),
+                )
+                .await
+                {
+                    Ok(res) => res?,
+                    Err(_) => {
+                        println!("Worker timed out! Replacing...");
+                        wp_comp.replace_worker(&worker).await?;
+                        return Ok(ClientResponse::Error(ClientError::Timeout));
+                    }
+                };
+
                 debug!("Output:\n{}", out);
                 let response: ClientResponse = serde_json::from_str(&out)
                     .map_err(|_| JobError::ClientOutputNotParsable(out))?;

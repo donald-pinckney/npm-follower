@@ -114,6 +114,12 @@ pub enum JobType {
     Compute {
         binary: String,
         tarball_chunks: Vec<Vec<String>>,
+        timeout: Option<u64>, // defaults to 10 minutes
+    },
+    ComputeMulti {
+        binary: String,
+        tarball_chunks: Vec<Vec<Vec<String>>>,
+        timeout: Option<u64>, // defaults to 10 minutes
     },
     StoreTarballs {
         filepaths: Vec<String>,
@@ -266,8 +272,21 @@ mod routes {
                 JobType::Compute {
                     binary,
                     tarball_chunks,
+                    timeout,
                 } => {
-                    let res = job_manager.submit_compute(binary, tarball_chunks).await?;
+                    let res = job_manager
+                        .submit_compute(binary, tarball_chunks, timeout.unwrap_or(600))
+                        .await?;
+                    Ok(serde_json::to_string(&res)?)
+                }
+                JobType::ComputeMulti {
+                    binary,
+                    tarball_chunks,
+                    timeout,
+                } => {
+                    let res = job_manager
+                        .submit_compute_multi(binary, tarball_chunks, timeout.unwrap_or(600))
+                        .await?;
                     Ok(serde_json::to_string(&res)?)
                 }
                 JobType::StoreTarballs { filepaths } => {
@@ -286,8 +305,6 @@ mod routes {
             body: LookupRequest,
         ) -> Result<String, HTTPError> {
             let res = blob.lookup(body.key).await?;
-            #[cfg(debug_assertions)]
-            blob.debug_print("ran lookup").await;
             Ok(serde_json::to_string(&res)?)
         }
 
@@ -296,8 +313,6 @@ mod routes {
             body: KeepAliveLockRequest,
         ) -> Result<String, HTTPError> {
             blob.keep_alive_lock(body.file_id).await?;
-            #[cfg(debug_assertions)]
-            blob.debug_print("ran keep_alive_lock").await;
             Ok("".to_string())
         }
 
@@ -306,8 +321,6 @@ mod routes {
             body: CreateUnlockRequest,
         ) -> Result<String, HTTPError> {
             blob.create_unlock(body.file_id, body.node_id).await?;
-            #[cfg(debug_assertions)]
-            blob.debug_print("ran create_unlock").await;
             Ok("".to_string())
         }
 
@@ -316,8 +329,6 @@ mod routes {
             body: CreateAndLockRequest,
         ) -> Result<String, HTTPError> {
             let res = blob.create_and_lock(body.entries, body.node_id).await?;
-            #[cfg(debug_assertions)]
-            blob.debug_print("ran create_and_lock").await;
             Ok(serde_json::to_string(&res)?)
         }
     }

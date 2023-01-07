@@ -38,15 +38,15 @@ pub enum ClientError {
         urls: Vec<(String, std::num::NonZeroU16)>,
     },
     /// Some IO error occurred.
-    IoError,
+    IoError(String),
     /// Some reqwest error occurred.
-    ReqwestError,
+    ReqwestError(String),
     /// Some error related to requesting the http server occurred.
     HttpServerError(std::num::NonZeroU16),
     /// Some blob error occurred.
     BlobError(BlobError),
     /// Some serde json error occurred.
-    SerdeJsonError,
+    SerdeJsonError(String),
     // this stuff is for the compute job
     /// Duplicate tarball name
     DuplicateTarballName(String),
@@ -54,6 +54,8 @@ pub enum ClientError {
     BinaryDoesNotExist,
     /// The binary produced a bad stdout.
     InvalidOutput,
+    /// The client timed out.
+    Timeout,
 }
 
 #[derive(Debug)]
@@ -142,20 +144,20 @@ impl From<openssh::Error> for JobError {
 }
 
 impl From<std::io::Error> for ClientError {
-    fn from(_: std::io::Error) -> Self {
-        ClientError::IoError
+    fn from(e: std::io::Error) -> Self {
+        ClientError::IoError(e.to_string())
     }
 }
 
 impl From<reqwest::Error> for ClientError {
-    fn from(_: reqwest::Error) -> Self {
-        ClientError::ReqwestError
+    fn from(e: reqwest::Error) -> Self {
+        ClientError::ReqwestError(e.to_string())
     }
 }
 
 impl From<serde_json::Error> for ClientError {
-    fn from(_: serde_json::Error) -> Self {
-        ClientError::SerdeJsonError
+    fn from(e: serde_json::Error) -> Self {
+        ClientError::SerdeJsonError(e.to_string())
     }
 }
 
