@@ -31,6 +31,3 @@ GRANT SELECT ON analysis.possible_install_deps TO data_analyzer;
 GRANT ALL ON analysis.possible_install_deps TO pinckney;
 GRANT ALL ON analysis.possible_install_deps TO federico;
 
-
-
-CHECKPOINT;
