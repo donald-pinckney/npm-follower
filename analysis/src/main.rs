@@ -11,11 +11,11 @@ fn main() -> Result<(), std::io::Error> {
         ("build_updates", vec!["version_ordering_validation"]),
         ("find_patches", vec!["build_updates"]),
         ("prepare_diffs_to_compute", vec!["build_updates"]),
+        ("possible_direct_dev_deps", vec!["setup_analysis"]),
         ("possible_direct_runtime_deps", vec!["setup_analysis"]),
-        ("possible_direct_runtime_version_deps", vec!["setup_analysis"]),
-        ("possible_direct_dev_version_deps", vec!["setup_analysis"]),
         ("possible_transitive_runtime_deps", vec!["possible_direct_runtime_deps"]),
-        ("possible_install_deps", vec!["possible_transitive_runtime_deps", "possible_direct_runtime_version_deps", "possible_direct_dev_version_deps"]),
+        ("possible_install_deps", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps"]),
+        ("deps_stats", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"])
     ]
     .into_iter()
     .collect();
@@ -48,14 +48,14 @@ fn main() -> Result<(), std::io::Error> {
     writeln!(output_file, "all: {}", all_nodes.join(" "))?;
     writeln!(output_file)?;
 
-    writeln!(output_file, ".PHONY: clean")?;
-    let all_clean_nodes: Vec<_> = dependencies
-        .keys()
-        .cloned()
-        .map(|n| format!("clean_{}", n))
-        .collect();
-    writeln!(output_file, "clean: {}", all_clean_nodes.join(" "))?;
-    writeln!(output_file)?;
+    // writeln!(output_file, ".PHONY: clean")?;
+    // let all_clean_nodes: Vec<_> = dependencies
+    //     .keys()
+    //     .cloned()
+    //     .map(|n| format!("clean_{}", n))
+    //     .collect();
+    // writeln!(output_file, "clean: {}", all_clean_nodes.join(" "))?;
+    // writeln!(output_file)?;
 
     for (step, depends_on) in dependencies {
         let mut depends_on_sorted = depends_on.clone();
