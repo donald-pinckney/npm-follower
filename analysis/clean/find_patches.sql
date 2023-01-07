@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS analysis.vuln_patch_updates;

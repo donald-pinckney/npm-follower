@@ -1,18 +1,23 @@
 CREATE TYPE analysis.update_type AS ENUM ('zero_to_something', 'bug', 'minor', 'major');
 
-CREATE OR REPLACE FUNCTION analysis.determine_update_type(semver, semver) RETURNS analysis.update_type AS $$
--- $1 = from
--- $2 = to
+CREATE OR REPLACE FUNCTION analysis.determine_update_type(semver, semver) RETURNS analysis.update_type AS $$ -- $1 = from
+    -- $2 = to
 SELECT CASE
         WHEN ($1) >= ($2) THEN NULL
-        WHEN ($1).prerelease IS NOT NULL OR ($1).build IS NOT NULL OR ($2).prerelease IS NOT NULL OR ($2).build IS NOT NULL THEN NULL
-        WHEN ($1).major = 0 AND ($1).minor = 0 AND ($1).bug = 0 THEN 'zero_to_something'::analysis.update_type
-        WHEN ($1).major = ($2).major AND ($1).minor = ($2).minor THEN 'bug'::analysis.update_type
+        WHEN ($1).prerelease IS NOT NULL
+        OR ($1).build IS NOT NULL
+        OR ($2).prerelease IS NOT NULL
+        OR ($2).build IS NOT NULL THEN NULL
+        WHEN ($1).major = 0
+        AND ($1).minor = 0
+        AND ($1).bug = 0 THEN 'zero_to_something'::analysis.update_type
+        WHEN ($1).major = ($2).major
+        AND ($1).minor = ($2).minor THEN 'bug'::analysis.update_type
         WHEN ($1).major = ($2).major THEN 'minor'::analysis.update_type
         ELSE 'major'::analysis.update_type
     END $$ LANGUAGE SQL IMMUTABLE;
 
-CREATE UNLOGGED TABLE analysis.all_updates AS WITH intra_group_updates AS (
+CREATE TABLE analysis.all_updates AS WITH intra_group_updates AS (
     SELECT from_v.package_id AS package_id,
         from_v.group_base_semver AS from_group_base_semver,
         to_v.group_base_semver AS to_group_base_semver,
@@ -65,7 +70,17 @@ SELECT *
 FROM inter_group_updates;
 
 
-CREATE UNLOGGED TABLE analysis.all_overlaps AS
+CREATE INDEX analysis_all_updates_idx_package_id ON analysis.all_updates (package_id);
+CREATE INDEX analysis_all_updates_idx_to_semver ON analysis.all_updates (to_semver);
+
+ANALYZE analysis.all_updates;
+
+GRANT SELECT ON analysis.all_updates TO data_analyzer;
+GRANT ALL ON analysis.all_updates TO pinckney;
+GRANT ALL ON analysis.all_updates TO federico;
+
+
+CREATE TABLE analysis.all_overlaps AS
 SELECT x.package_id AS package_id,
     x.group_base_semver AS first_group_base_semver,
     y.group_base_semver AS second_group_base_semver,
@@ -77,3 +92,7 @@ FROM analysis.valid_group_ranges x
     INNER JOIN analysis.valid_group_ranges y ON x.package_id = y.package_id
     AND x.inter_group_order < y.inter_group_order
     AND x.end_created >= y.start_created;
+
+GRANT SELECT ON analysis.all_overlaps TO data_analyzer;
+GRANT ALL ON analysis.all_overlaps TO pinckney;
+GRANT ALL ON analysis.all_overlaps TO federico;

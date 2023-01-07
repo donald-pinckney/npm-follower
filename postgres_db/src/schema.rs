@@ -123,11 +123,9 @@ diesel::table! {
         withdrawn_at -> Nullable<Timestamptz>,
         published_at -> Timestamptz,
         updated_at -> Timestamptz,
-        refs -> Array<Nullable<Text>>,
+        refs -> Array<Text>,
         cvss_score -> Nullable<Float4>,
         cvss_vector -> Nullable<Text>,
-        packages -> Array<Nullable<Text>>,
-        vulns -> Jsonb,
     }
 }
 
@@ -195,6 +193,7 @@ diesel::table! {
 }
 
 diesel::table! {
+    use diesel::sql_types::*;
     diff_analysis (from_id, to_id) {
         from_id -> Int8,
         to_id -> Int8,
@@ -202,8 +201,25 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    use diesel::sql_types::*;
+    use super::sql_types::SemverStruct;
+
+    vulnerabilities (id) {
+        id -> Int8,
+        ghsa_id -> Text,
+        package_name -> Text,
+        vulnerable_version_lower_bound -> Nullable<SemverStruct>,
+        vulnerable_version_lower_bound_inclusive -> Bool,
+        vulnerable_version_upper_bound -> Nullable<SemverStruct>,
+        vulnerable_version_upper_bound_inclusive -> Bool,
+        first_patched_version -> Nullable<SemverStruct>,
+    }
+}
+
 diesel::joinable!(dependencies -> packages (dst_package_id_if_exists));
 diesel::joinable!(diff_log -> change_log (seq));
+diesel::joinable!(vulnerabilities -> ghsa (ghsa_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     change_log,
@@ -217,4 +233,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     packages,
     versions,
     diff_analysis,
+    vulnerabilities,
 );

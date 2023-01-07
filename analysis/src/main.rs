@@ -4,10 +4,18 @@ use std::{collections::BTreeMap, fs::File};
 const PSQL_COMMAND: &str = "psql -d npm_data -v ON_ERROR_STOP=1 -a -f";
 
 fn main() -> Result<(), std::io::Error> {
+    #[rustfmt::skip]
     let dependencies: BTreeMap<&'static str, Vec<&'static str>> = [
         ("setup_analysis", vec![]),
         ("version_ordering_validation", vec!["setup_analysis"]),
         ("build_updates", vec!["version_ordering_validation"]),
+        ("find_patches", vec!["build_updates"]),
+        ("prepare_diffs_to_compute", vec!["build_updates"]),
+        ("possible_direct_dev_deps", vec!["setup_analysis"]),
+        ("possible_direct_runtime_deps", vec!["setup_analysis"]),
+        ("possible_transitive_runtime_deps", vec!["possible_direct_runtime_deps"]),
+        ("possible_install_deps", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps"]),
+        ("deps_stats", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"])
     ]
     .into_iter()
     .collect();
@@ -40,32 +48,33 @@ fn main() -> Result<(), std::io::Error> {
     writeln!(output_file, "all: {}", all_nodes.join(" "))?;
     writeln!(output_file)?;
 
-    writeln!(output_file, ".PHONY: clean")?;
-    let all_clean_nodes: Vec<_> = dependencies
-        .keys()
-        .cloned()
-        .map(|n| format!("clean_{}", n))
-        .collect();
-    writeln!(output_file, "clean: {}", all_clean_nodes.join(" "))?;
-    writeln!(output_file)?;
+    // writeln!(output_file, ".PHONY: clean")?;
+    // let all_clean_nodes: Vec<_> = dependencies
+    //     .keys()
+    //     .cloned()
+    //     .map(|n| format!("clean_{}", n))
+    //     .collect();
+    // writeln!(output_file, "clean: {}", all_clean_nodes.join(" "))?;
+    // writeln!(output_file)?;
 
     for (step, depends_on) in dependencies {
+        let mut depends_on_sorted = depends_on.clone();
+        depends_on_sorted.sort();
+
+        let deps = depends_on_sorted
+            .iter()
+            .map(|d| format!("makefile_state/{}.touch", *d))
+            .collect::<Vec<_>>()
+            .join(" ");
+
         writeln!(output_file, "# -------- {} --------", step)?;
-        writeln!(output_file, "makefile_state/{}.touch:", step)?;
+        writeln!(output_file, "makefile_state/{}.touch: {}", step, deps)?;
         writeln!(output_file, "\t{} scripts/{}.sql", PSQL_COMMAND, step)?;
         writeln!(output_file, "\ttouch makefile_state/{}.touch", step)?;
         writeln!(output_file)?;
         writeln!(output_file, ".PHONY: {}", step)?;
+        writeln!(output_file, "{}: makefile_state/{}.touch", step, step)?;
 
-        let mut depends_on_sorted = depends_on.clone();
-        depends_on_sorted.sort();
-
-        let deps = depends_on_sorted.join(" ");
-        writeln!(
-            output_file,
-            "{}: {} makefile_state/{}.touch",
-            step, deps, step
-        )?;
         writeln!(output_file)?;
         writeln!(output_file, ".PHONY: clean_{}", step)?;
         let mut rev_deps_sorted: Vec<_> = reverse_dependencies[step]

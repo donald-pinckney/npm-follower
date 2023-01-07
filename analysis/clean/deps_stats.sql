@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS analysis.deps_stats;

@@ -1,0 +1,1 @@
+DROP TABLE analysis.diffs_to_compute;
