@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS analysis.possible_transitive_runtime_deps;
+-- DROP TABLE IF EXISTS analysis.possible_transitive_runtime_deps;

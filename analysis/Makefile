@@ -1,8 +1,8 @@
 .PHONY: all
-all: build_updates find_patches possible_direct_dev_version_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute setup_analysis version_ordering_validation
+all: build_updates find_patches possible_direct_dev_version_deps possible_direct_runtime_deps possible_direct_runtime_version_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute setup_analysis version_ordering_validation
 
 .PHONY: clean
-clean: clean_build_updates clean_find_patches clean_possible_direct_dev_version_deps clean_possible_direct_runtime_deps clean_possible_install_deps clean_possible_transitive_runtime_deps clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
+clean: clean_build_updates clean_find_patches clean_possible_direct_dev_version_deps clean_possible_direct_runtime_deps clean_possible_direct_runtime_version_deps clean_possible_install_deps clean_possible_transitive_runtime_deps clean_prepare_diffs_to_compute clean_setup_analysis clean_version_ordering_validation
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -39,7 +39,7 @@ makefile_state/possible_direct_dev_version_deps.touch: makefile_state/setup_anal
 possible_direct_dev_version_deps: makefile_state/possible_direct_dev_version_deps.touch
 
 .PHONY: clean_possible_direct_dev_version_deps
-clean_possible_direct_dev_version_deps: clean_possible_install_deps clean_possible_transitive_runtime_deps
+clean_possible_direct_dev_version_deps: clean_possible_install_deps
 	if [ -f makefile_state/possible_direct_dev_version_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_direct_dev_version_deps.sql; else true; fi
 	rm -f makefile_state/possible_direct_dev_version_deps.touch
 
@@ -56,8 +56,21 @@ clean_possible_direct_runtime_deps: clean_possible_transitive_runtime_deps
 	if [ -f makefile_state/possible_direct_runtime_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_direct_runtime_deps.sql; else true; fi
 	rm -f makefile_state/possible_direct_runtime_deps.touch
 
+# -------- possible_direct_runtime_version_deps --------
+makefile_state/possible_direct_runtime_version_deps.touch: makefile_state/setup_analysis.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_direct_runtime_version_deps.sql
+	touch makefile_state/possible_direct_runtime_version_deps.touch
+
+.PHONY: possible_direct_runtime_version_deps
+possible_direct_runtime_version_deps: makefile_state/possible_direct_runtime_version_deps.touch
+
+.PHONY: clean_possible_direct_runtime_version_deps
+clean_possible_direct_runtime_version_deps: clean_possible_install_deps
+	if [ -f makefile_state/possible_direct_runtime_version_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_direct_runtime_version_deps.sql; else true; fi
+	rm -f makefile_state/possible_direct_runtime_version_deps.touch
+
 # -------- possible_install_deps --------
-makefile_state/possible_install_deps.touch: makefile_state/possible_direct_dev_version_deps.touch makefile_state/possible_transitive_runtime_deps.touch
+makefile_state/possible_install_deps.touch: makefile_state/possible_direct_dev_version_deps.touch makefile_state/possible_direct_runtime_version_deps.touch makefile_state/possible_transitive_runtime_deps.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_install_deps.sql
 	touch makefile_state/possible_install_deps.touch
 
@@ -70,7 +83,7 @@ clean_possible_install_deps:
 	rm -f makefile_state/possible_install_deps.touch
 
 # -------- possible_transitive_runtime_deps --------
-makefile_state/possible_transitive_runtime_deps.touch: makefile_state/possible_direct_dev_version_deps.touch makefile_state/possible_direct_runtime_deps.touch
+makefile_state/possible_transitive_runtime_deps.touch: makefile_state/possible_direct_runtime_deps.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_transitive_runtime_deps.sql
 	touch makefile_state/possible_transitive_runtime_deps.touch
 
@@ -104,7 +117,7 @@ makefile_state/setup_analysis.touch:
 setup_analysis: makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
-clean_setup_analysis: clean_possible_direct_dev_version_deps clean_possible_direct_runtime_deps clean_version_ordering_validation
+clean_setup_analysis: clean_possible_direct_dev_version_deps clean_possible_direct_runtime_deps clean_possible_direct_runtime_version_deps clean_version_ordering_validation
 	if [ -f makefile_state/setup_analysis.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql; else true; fi
 	rm -f makefile_state/setup_analysis.touch
 

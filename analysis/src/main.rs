@@ -4,6 +4,7 @@ use std::{collections::BTreeMap, fs::File};
 const PSQL_COMMAND: &str = "psql -d npm_data -v ON_ERROR_STOP=1 -a -f";
 
 fn main() -> Result<(), std::io::Error> {
+    #[rustfmt::skip]
     let dependencies: BTreeMap<&'static str, Vec<&'static str>> = [
         ("setup_analysis", vec![]),
         ("version_ordering_validation", vec!["setup_analysis"]),
@@ -11,21 +12,10 @@ fn main() -> Result<(), std::io::Error> {
         ("find_patches", vec!["build_updates"]),
         ("prepare_diffs_to_compute", vec!["build_updates"]),
         ("possible_direct_runtime_deps", vec!["setup_analysis"]),
+        ("possible_direct_runtime_version_deps", vec!["setup_analysis"]),
         ("possible_direct_dev_version_deps", vec!["setup_analysis"]),
-        (
-            "possible_transitive_runtime_deps",
-            vec![
-                "possible_direct_runtime_deps",
-                "possible_direct_dev_version_deps",
-            ],
-        ),
-        (
-            "possible_install_deps",
-            vec![
-                "possible_transitive_runtime_deps",
-                "possible_direct_dev_version_deps",
-            ],
-        ),
+        ("possible_transitive_runtime_deps", vec!["possible_direct_runtime_deps"]),
+        ("possible_install_deps", vec!["possible_transitive_runtime_deps", "possible_direct_runtime_version_deps", "possible_direct_dev_version_deps"]),
     ]
     .into_iter()
     .collect();

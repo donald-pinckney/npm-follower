@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS analysis.possible_direct_runtime_version_deps;
