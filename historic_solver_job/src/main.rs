@@ -8,7 +8,7 @@
 //    If it contains lodash 1.0.1 and no other versions, then the flow is categorized as "non-instant" with dT = T - T_0. Loop 6 until done, or give up.
 
 use async_trait::async_trait;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use historic_solver_job_server::{
     async_pool::{handle_get_jobs, handle_submit_result},
     Job, JobResult,
@@ -25,6 +25,7 @@ struct Configuration {
     postgres_connection_str: String,
     registry_host: String,
     node_name: String,
+    max_job_time: Duration,
 }
 
 lazy_static! {
@@ -48,6 +49,7 @@ async fn main() {
     let (result_tx, mut result_rx) = mpsc::unbounded_channel();
 
     let schedule_more_jobs_if_fewer_than = JOBS_PER_THREAD * CONFIG.num_threads / 10;
+    let start_time = Utc::now();
 
     tokio::spawn(async move {
         let mut active_jobs: i64 = 0;
@@ -56,16 +58,31 @@ async fn main() {
 
         grab_and_run_job_batch(&mut active_jobs, &result_tx, &db).await;
 
+        if active_jobs == 0 {
+            println!("We got no initial jobs to run, exiting.");
+            return;
+        }
+
         while let Some(result) = result_rx.recv().await {
             write_result_to_postgres(result, &db).await;
 
             active_jobs -= 1;
 
-            if active_jobs < schedule_more_jobs_if_fewer_than {
+            let now = Utc::now();
+            let dt = now - start_time;
+
+            if active_jobs < schedule_more_jobs_if_fewer_than && dt < CONFIG.max_job_time {
                 grab_and_run_job_batch(&mut active_jobs, &result_tx, &db).await;
             }
+
+            if active_jobs == 0 {
+                println!("No jobs left to run, exiting");
+                return;
+            }
         }
-    });
+    })
+    .await
+    .unwrap();
 }
 
 async fn grab_and_run_job_batch(
@@ -74,9 +91,6 @@ async fn grab_and_run_job_batch(
     db: &DbConnection,
 ) {
     let jobs = grab_job_batch(db).await;
-    if jobs.is_empty() {
-        return;
-    }
 
     *active_jobs += jobs.len() as i64;
 
@@ -105,5 +119,6 @@ fn load_config() -> Configuration {
         postgres_connection_str: todo!(),
         registry_host: todo!(),
         node_name: todo!(),
+        max_job_time: todo!(),
     }
 }
