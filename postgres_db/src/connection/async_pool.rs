@@ -28,7 +28,7 @@ impl DbConnection {
         dotenv().expect("failed to load .env");
 
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-        let mgr = bb8_diesel::DieselConnectionManager::<PgConnection>::new("localhost:1234");
+        let mgr = bb8_diesel::DieselConnectionManager::<PgConnection>::new(&database_url);
         let pool = bb8::Pool::builder()
             .build(mgr)
             .await
