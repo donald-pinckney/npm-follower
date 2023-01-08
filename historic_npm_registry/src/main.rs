@@ -30,8 +30,10 @@ type NpmCache = Cache<String, Option<Arc<ParsedPackument>>>;
 
 fn restrict_time(
     packument: &ParsedPackument,
-    filter_time: DateTime<Utc>,
+    maybe_filter_time: Option<DateTime<Utc>>,
 ) -> Option<ParsedPackument> {
+    let filter_time = maybe_filter_time.unwrap_or(DateTime::<Utc>::MAX_UTC);
+
     let first_bad_time_idx = packument
         .sorted_times
         .partition_point(|(_, vt)| *vt <= filter_time);
@@ -164,14 +166,14 @@ async fn request_package_from_npm(
 }
 
 async fn lookup_package(
-    t: DateTime<Utc>,
+    maybe_t: Option<DateTime<Utc>>,
     full_name: &str,
     client: ClientWithMiddleware,
     cache: NpmCache,
 ) -> Option<ParsedPackument> {
     // println!("looking up: {}", full_name);
     if let Some(cache_hit) = cache.get(full_name) {
-        cache_hit.and_then(|x| restrict_time(&x, t))
+        cache_hit.and_then(|x| restrict_time(&x, maybe_t))
     } else {
         let npm_response = request_package_from_npm(full_name, client).await;
         let npm_response = npm_response.map(Arc::new);
@@ -179,7 +181,7 @@ async fn lookup_package(
         cache
             .insert(full_name.to_owned(), npm_response.clone())
             .await;
-        npm_response.and_then(|x| restrict_time(&x, t))
+        npm_response.and_then(|x| restrict_time(&x, maybe_t))
     }
 }
 
@@ -271,15 +273,19 @@ async fn handle_request(
         .decode_utf8()
         .unwrap();
 
-    if let Ok(t) = DateTime::<Utc>::from_str(&t_str) {
-        let matching_versions = lookup_package(t, &full_name, client, cache).await;
-        warp::reply::json(&serialize_packument_in_npm_format(
-            &full_name,
-            matching_versions,
-        ))
+    let parsed_t = if t_str == "now" {
+        None
+    } else if let Ok(t) = DateTime::<Utc>::from_str(&t_str) {
+        Some(t)
     } else {
         panic!("BAD DATE: {}, full_name = {}", t_str, full_name)
-    }
+    };
+
+    let matching_versions = lookup_package(parsed_t, &full_name, client, cache).await;
+    warp::reply::json(&serialize_packument_in_npm_format(
+        &full_name,
+        matching_versions,
+    ))
 }
 
 // Custom rejection handler that maps rejections into responses.

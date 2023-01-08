@@ -197,7 +197,7 @@ impl<'conn> QueryRunner for DbConnectionInTransaction<'conn> {
 }
 
 pub mod testing {
-    use crate::connection::DbConnection;
+    use super::DbConnection;
     use diesel::pg::PgConnection;
     use diesel::prelude::*;
     use dotenv::dotenv;

@@ -1,0 +1,18 @@
+[package]
+name = "historic_solver_job"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+chrono = { version = "0.4.19" }
+serde = { version = "1.0.136", features = ["derive"] }
+serde_json = { version = "1.0.79", features = ["preserve_order"] }
+reqwest = { version = "0.11.13", features = ["json"] }
+percent-encoding = "2.2.0"
+lazy_static = "1.4.0"
+#postgres_db = { path = "../postgres_db" }
+historic_solver_job_server = { path = "../historic_solver_job_server" }
+async-trait = "0.1.61"
