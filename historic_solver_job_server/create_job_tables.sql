@@ -46,3 +46,7 @@ CREATE INDEX state_idx ON historic_solver.job_inputs (job_state);
 GRANT ALL ON SCHEMA historic_solver TO historic_solve_runner;
 GRANT ALL ON historic_solver.job_inputs TO historic_solve_runner;
 GRANT ALL ON historic_solver.job_results TO historic_solve_runner;
+
+GRANT USAGE ON SCHEMA historic_solver TO data_analyzer;
+GRANT SELECT ON historic_solver.job_inputs TO data_analyzer;
+GRANT SELECT ON historic_solver.job_results TO data_analyzer;
