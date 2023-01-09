@@ -1,4 +1,4 @@
-CREATE TABLE analysis.subsampled_updates WITH filtered_updates as (
+CREATE TABLE analysis.subsampled_updates AS WITH filtered_updates as (
   SELECT *
   from analysis.all_updates
   where to_created < TIMESTAMP WITH TIME ZONE '2021-01-01 00:00:00+00'
