@@ -123,7 +123,7 @@ fn num_files(
         ));
     }
     query.push_str(" ON CONFLICT (from_id, to_id) DO NOTHING");
-    println!("Inserting {} rows", num_files.len());
+    println!("Inserting {} rows into diff_num_files...", num_files.len());
     let diesel_query = diesel::sql_query(query);
     conn.execute(diesel_query)?;
     Ok(())
@@ -186,7 +186,7 @@ fn num_lines(
         ));
     }
     query.push_str(" ON CONFLICT (from_id, to_id) DO NOTHING");
-    println!("Inserting {} rows", num_lines.len());
+    println!("Inserting {} rows into diff_num_lines...", num_lines.len());
     let diesel_query = diesel::sql_query(query);
     conn.execute(diesel_query)?;
     Ok(())
@@ -250,7 +250,7 @@ fn ext_count(
     query.push_str(
         " ON CONFLICT (ext) DO UPDATE SET count = analysis.diff_ext_count.count + excluded.count",
     );
-    println!("Inserting {} rows", ext_counts.len());
+    println!("Inserting {} rows into diff_ext_count...", ext_counts.len());
     let diesel_query = diesel::sql_query(query);
     conn.execute(diesel_query)?;
     Ok(())
