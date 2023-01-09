@@ -17,6 +17,7 @@ members = [
     "historic_npm_registry",
     "diff_analysis",
     "diff_analysis/diff_analysis_client",
+    "diff_queries"
 ]
 
 [profile.bench]

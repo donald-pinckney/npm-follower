@@ -5,7 +5,6 @@ use crate::connection::QueryRunner;
 use super::schema::diff_analysis;
 use diesel::{upsert::excluded, Queryable};
 
-use super::connection::DbConnection;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -108,4 +107,17 @@ pub fn insert_batch_diff_analysis<R: QueryRunner>(
             )),
     )?;
     Ok(())
+}
+
+pub fn query_table<R: QueryRunner>(
+    conn: &mut R,
+    limit: Option<i64>,
+) -> Result<Vec<DiffAnalysis>, diesel::result::Error> {
+    use super::schema::diff_analysis::dsl::*;
+    let results: Vec<DiffAnalysisSql> = match limit {
+        Some(limit) => conn.load(diff_analysis.limit(limit))?,
+        None => conn.load(diff_analysis)?,
+    };
+
+    Ok(results.into_iter().map(|d| d.into()).collect())
 }
