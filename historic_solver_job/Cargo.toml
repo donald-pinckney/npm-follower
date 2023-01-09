@@ -16,3 +16,4 @@ lazy_static = "1.4.0"
 postgres_db = { path = "../postgres_db" }
 historic_solver_job_server = { path = "../historic_solver_job_server" }
 async-trait = "0.1.61"
+dotenv = "0.15.0"
