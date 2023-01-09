@@ -20,11 +20,26 @@ SELECT package_id,
   to_semver,
   from_created,
   to_created,
-  ty
+  ty,
+  NULL as patched_ghsa
 FROM ranked_updates
-WHERE date_rank = 1;
-
-
+WHERE date_rank = 1
+  and ROW(from_id, to_id) NOT IN (
+    SELECT from_id,
+      to_id
+    FROM analysis.vuln_patch_updates
+  )
+UNION ALL
+SELECT package_id,
+  from_id,
+  to_id,
+  from_semver,
+  to_semver,
+  from_created,
+  to_created,
+  ty,
+  patched_ghsa
+FROM analysis.vuln_patch_updates
 ALTER TABLE analysis.subsampled_updates
 ADD PRIMARY KEY (from_id, to_id);
 
