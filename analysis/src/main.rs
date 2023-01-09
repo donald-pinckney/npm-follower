@@ -11,6 +11,7 @@ fn main() -> Result<(), std::io::Error> {
         ("build_updates", vec!["version_ordering_validation"]),
         ("find_patches", vec!["build_updates"]),
         ("vulnerable_versions", vec!["setup_analysis"]),
+        ("vuln_intro_updates", vec!["vulnerable_versions", "build_updates"]),
         ("prepare_diffs_to_compute", vec!["build_updates"]),
         ("possible_direct_dev_deps", vec!["setup_analysis"]),
         ("possible_direct_runtime_deps", vec!["setup_analysis"]),
@@ -19,7 +20,6 @@ fn main() -> Result<(), std::io::Error> {
         ("deps_stats", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"]),
         ("subsampled_possible_install_deps", vec!["possible_install_deps"]),
         ("subsampled_updates", vec!["build_updates"]),
-
     ]
     .into_iter()
     .collect();
