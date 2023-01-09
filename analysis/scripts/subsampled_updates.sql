@@ -31,12 +31,12 @@ SELECT package_id,
   from_created,
   to_created,
   ty,
-  NULL as patched_ghsa,
-  NULL as introduced_ghsa
+  FALSE as patches_vuln,
+  FALSE as introduced_vuln
 FROM ranked_updates
 WHERE date_rank = 1
 UNION ALL
-SELECT package_id,
+SELECT DISTINCT package_id,
   from_id,
   to_id,
   from_semver,
@@ -44,8 +44,8 @@ SELECT package_id,
   from_created,
   to_created,
   ty,
-  patched_ghsa,
-  NULL as introduced_ghsa
+  TRUE as patches_vuln,
+  FALSE as introduced_vuln
 FROM analysis.vuln_patch_updates
 where ROW(from_id, to_id) NOT IN (
     SELECT from_id,
@@ -53,7 +53,7 @@ where ROW(from_id, to_id) NOT IN (
     FROM analysis.vuln_intro_updates
   )
 UNION ALL
-SELECT package_id,
+SELECT DISTINCT package_id,
   from_id,
   to_id,
   from_semver,
@@ -61,8 +61,8 @@ SELECT package_id,
   from_created,
   to_created,
   ty,
-  NULL as patched_ghsa,
-  introduced_ghsa
+  FALSE as patches_vuln,
+  TRUE as introduced_vuln
 FROM analysis.vuln_intro_updates
 where ROW(from_id, to_id) NOT IN (
     SELECT from_id,
@@ -70,7 +70,7 @@ where ROW(from_id, to_id) NOT IN (
     FROM analysis.vuln_patch_updates
   )
 UNION ALL
-SELECT i.package_id,
+SELECT DISTINCT i.package_id,
   i.from_id,
   i.to_id,
   i.from_semver,
@@ -78,8 +78,8 @@ SELECT i.package_id,
   i.from_created,
   i.to_created,
   i.ty,
-  p.patched_ghsa,
-  i.introduced_ghsa
+  TRUE as patches_vuln,
+  TRUE as introduced_vuln
 FROM analysis.vuln_intro_updates i
   inner join analysis.vuln_patch_updates p on i.from_id = p.from_id
   and i.to_id = p.to_id;
