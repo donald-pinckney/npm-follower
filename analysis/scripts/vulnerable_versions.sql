@@ -22,12 +22,12 @@ END $$ LANGUAGE SQL IMMUTABLE;
     
 CREATE OR REPLACE FUNCTION analysis.matches_range(semver, semver_struct, bool, semver_struct, bool) RETURNS bool AS $$
 SELECT CASE
-        WHEN $2 IS NOT NULL
+        WHEN NOT $2 IS NULL
         AND (
             ($2).prerelease IS NOT NULL
             OR ($2).build IS NOT NULL
         )
-        AND $4 IS NOT NULL
+        AND NOT $4 IS NULL
         AND (
             ($4).prerelease IS NOT NULL
             OR ($4).build IS NOT NULL
@@ -38,12 +38,12 @@ SELECT CASE
             analysis.non_beta_semver($4),
             FALSE
         )
-        WHEN $2 IS NOT NULL
+        WHEN NOT $2 IS NULL
         AND (
             ($2).prerelease IS NOT NULL
             OR ($2).build IS NOT NULL
         ) THEN analysis.matches_range_non_beta($1, analysis.non_beta_semver($2), TRUE, $4, $5)
-        WHEN $4 IS NOT NULL
+        WHEN NOT $4 IS NULL
         AND (
             ($4).prerelease IS NOT NULL
             OR ($4).build IS NOT NULL
