@@ -46,9 +46,6 @@ impl RunnableJob for Job {
 
 #[tokio::main]
 async fn main() {
-    println!("config: {:#?}", *CONFIG);
-    return;
-
     let (result_tx, mut result_rx) = mpsc::unbounded_channel();
 
     let schedule_more_jobs_if_fewer_than = JOBS_PER_THREAD * CONFIG.num_threads / 10;

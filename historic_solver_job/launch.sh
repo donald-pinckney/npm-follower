@@ -12,8 +12,11 @@ else
 fi
 
 
+num_threads=32
 
 NPM_CACHE_DIR=$npm_cache_dir \
+NUM_THREADS=$num_threads \
+TOKIO_WORKER_THREADS=$num_threads \
 REGISTRY_HOST=pinckney2.vpc.ripley.cloud \
 NODE_NAME=$(hostname) \
 MAX_JOB_TIME=$remaining_time \
