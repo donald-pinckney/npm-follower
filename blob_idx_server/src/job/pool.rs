@@ -116,6 +116,7 @@ impl WorkerPool {
                     usage_map.remove(&job_id);
                     if let Some(w) = pool.get(&job_id) {
                         w.cancel(&*ssh).await.ok();
+                        println!("Garbage collected job {}", job_id);
                     }
                 }
             }
