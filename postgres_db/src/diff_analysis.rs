@@ -112,11 +112,35 @@ pub fn insert_batch_diff_analysis<R: QueryRunner>(
 pub fn query_table<R: QueryRunner>(
     conn: &mut R,
     limit: Option<i64>,
+    last: Option<(i64, i64)>,
 ) -> Result<Vec<DiffAnalysis>, diesel::result::Error> {
     use super::schema::diff_analysis::dsl::*;
-    let results: Vec<DiffAnalysisSql> = match limit {
-        Some(limit) => conn.load(diff_analysis.limit(limit))?,
-        None => conn.load(diff_analysis)?,
+    let results: Vec<DiffAnalysisSql> = match (limit, last) {
+        (Some(limit), Some(last)) => conn.load(
+            diff_analysis
+                .filter(
+                    from_id
+                        .gt(last.0)
+                        .or(from_id.eq(last.0).and(to_id.gt(last.1))),
+                )
+                .order((from_id.asc(), to_id.asc()))
+                .limit(limit),
+        )?,
+        (Some(limit), None) => conn.load(
+            diff_analysis
+                .limit(limit)
+                .order((from_id.asc(), to_id.asc())),
+        )?,
+        (None, Some(last)) => conn.load(
+            diff_analysis
+                .filter(
+                    from_id
+                        .gt(last.0)
+                        .or(from_id.eq(last.0).and(to_id.gt(last.1))),
+                )
+                .order((from_id.asc(), to_id.asc())),
+        )?,
+        (None, None) => conn.load(diff_analysis.order((from_id.asc(), to_id.asc())))?,
     };
 
     Ok(results.into_iter().map(|d| d.into()).collect())
