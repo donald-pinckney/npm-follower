@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute setup_analysis subsampled_possible_install_deps subsampled_updates version_ordering_validation vulnerable_versions
+all: build_updates deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute setup_analysis subsampled_possible_install_deps subsampled_updates version_ordering_validation vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -10,7 +10,7 @@ makefile_state/build_updates.touch: makefile_state/version_ordering_validation.t
 build_updates: makefile_state/build_updates.touch
 
 .PHONY: clean_build_updates
-clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute clean_subsampled_updates
+clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute clean_subsampled_updates clean_vuln_intro_updates
 	if [ -f makefile_state/build_updates.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/build_updates.sql; else true; fi
 	rm -f makefile_state/build_updates.touch
 
@@ -157,6 +157,19 @@ clean_version_ordering_validation: clean_build_updates
 	if [ -f makefile_state/version_ordering_validation.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/version_ordering_validation.sql; else true; fi
 	rm -f makefile_state/version_ordering_validation.touch
 
+# -------- vuln_intro_updates --------
+makefile_state/vuln_intro_updates.touch: makefile_state/build_updates.touch makefile_state/vulnerable_versions.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/vuln_intro_updates.sql
+	touch makefile_state/vuln_intro_updates.touch
+
+.PHONY: vuln_intro_updates
+vuln_intro_updates: makefile_state/vuln_intro_updates.touch
+
+.PHONY: clean_vuln_intro_updates
+clean_vuln_intro_updates: 
+	if [ -f makefile_state/vuln_intro_updates.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/vuln_intro_updates.sql; else true; fi
+	rm -f makefile_state/vuln_intro_updates.touch
+
 # -------- vulnerable_versions --------
 makefile_state/vulnerable_versions.touch: makefile_state/setup_analysis.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/vulnerable_versions.sql
@@ -166,7 +179,7 @@ makefile_state/vulnerable_versions.touch: makefile_state/setup_analysis.touch
 vulnerable_versions: makefile_state/vulnerable_versions.touch
 
 .PHONY: clean_vulnerable_versions
-clean_vulnerable_versions: 
+clean_vulnerable_versions: clean_vuln_intro_updates
 	if [ -f makefile_state/vulnerable_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/vulnerable_versions.sql; else true; fi
 	rm -f makefile_state/vulnerable_versions.touch
 
