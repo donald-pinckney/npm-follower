@@ -26,13 +26,7 @@ WHERE date_rank = 1;
 
 
 ALTER TABLE analysis.subsampled_updates
-ADD PRIMARY KEY (pkg, depends_on_pkg);
-
-ALTER TABLE analysis.subsampled_updates
-ADD CONSTRAINT analysis_subsampled_updates_fkey_pkg FOREIGN KEY (pkg) REFERENCES packages (id);
-
-ALTER TABLE analysis.subsampled_updates
-ADD CONSTRAINT analysis_subsampled_updates_fkey_depends_on_pkg FOREIGN KEY (depends_on_pkg) REFERENCES packages (id);
+ADD PRIMARY KEY (from_id, to_id);
 
 ANALYZE analysis.subsampled_updates;
 
