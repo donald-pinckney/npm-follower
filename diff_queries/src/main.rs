@@ -8,7 +8,7 @@ use postgres_db::{
 use serde::{Deserialize, Serialize};
 
 fn print_usage_exit(argv0: &str) -> ! {
-    eprintln!("Usage: {} [num_files|num_lines|ext_count] chunk_size", argv0);
+    eprintln!("Usage: {} chunk_size", argv0);
     std::process::exit(1);
 }
 
@@ -16,19 +16,11 @@ fn main() {
     utils::check_no_concurrent_processes("diff_queries");
     dotenvy::dotenv().ok();
     let args = std::env::args().collect::<Vec<_>>();
-    if args.len() < 3 {
+    if args.len() < 2 {
         print_usage_exit(args[0].as_str());
     }
-    let chunk_size = args[2].parse::<i64>().unwrap();
+    let chunk_size = args[1].parse::<i64>().unwrap();
     let mut conn: DbConnection = DbConnection::connect();
-    let write_func = match args[1].as_str() {
-        "num_files" => num_files,
-        "num_lines" => num_lines,
-        "ext_count" => ext_count,
-        _ => {
-            print_usage_exit(args[0].as_str());
-        }
-    };
 
     let mut last = None;
     let mut num_processed = 0;
@@ -54,7 +46,9 @@ fn main() {
         println!("Writing {} rows to the file...", table.len());
         let time = std::time::Instant::now();
         let len_table = table.len();
-        write_func(&mut conn, table).unwrap();
+        num_files(&mut conn, &table).unwrap();
+        num_lines(&mut conn, &table).unwrap();
+        ext_count(&mut conn, &table).unwrap();
         println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
     }
 }
@@ -75,7 +69,7 @@ struct NumFiles {
 
 fn num_files(
     conn: &mut DbConnection,
-    diffs: Vec<DiffAnalysis>,
+    diffs: &Vec<DiffAnalysis>,
 ) -> Result<(), diesel::result::Error> {
     let mut num_files: Vec<NumFiles> = vec![];
     for diff in diffs {
@@ -149,7 +143,7 @@ struct NumLines {
 
 fn num_lines(
     conn: &mut DbConnection,
-    diffs: Vec<DiffAnalysis>,
+    diffs: &Vec<DiffAnalysis>,
 ) -> Result<(), diesel::result::Error> {
     let mut num_lines: Vec<NumLines> = vec![];
     for diff in diffs {
@@ -217,7 +211,7 @@ fn get_extension(path: &str) -> Option<&str> {
 
 fn ext_count(
     conn: &mut DbConnection,
-    diffs: Vec<DiffAnalysis>,
+    diffs: &Vec<DiffAnalysis>,
 ) -> Result<(), diesel::result::Error> {
     let mut ext_counts: HashMap<String, i64> = HashMap::new();
     for diff in diffs {
