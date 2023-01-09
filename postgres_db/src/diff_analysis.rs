@@ -109,6 +109,12 @@ pub fn insert_batch_diff_analysis<R: QueryRunner>(
     Ok(())
 }
 
+pub fn count_diff_analysis<R: QueryRunner>(conn: &mut R) -> Result<i64, diesel::result::Error> {
+    use crate::schema::diff_analysis::dsl::*;
+    let count = conn.get_result(diff_analysis.count())?;
+    Ok(count)
+}
+
 pub fn query_table<R: QueryRunner>(
     conn: &mut R,
     limit: Option<i64>,
