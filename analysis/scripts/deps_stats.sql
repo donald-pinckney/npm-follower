@@ -195,14 +195,15 @@ CREATE TABLE analysis.deps_stats AS WITH computed_stats_wide as (
     min(x),
     max(x),
     stddev_pop(x),
-    mode(x),
+    mode() within group(
+      order by x
+    ),
     percentile_cont(ARRAY [0.05, 0.25, 0.5, 0.75, 0.95]) within group(
       order by x
     ) as percentiles_5_25_50_75_95
   from analysis.all_dep_counts
   group by count_type
 ),
--- select * from computed_stats_wide;
 computed_stats as (
   select count_type,
     'avg' as statistic_name,
