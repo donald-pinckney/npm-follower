@@ -35,12 +35,6 @@ pub(super) struct WorkerPool {
     ssh_session: Box<dyn Ssh>,
     /// ssh factory, for creating new ssh sessions.
     ssh_factory: Arc<Box<dyn SshFactory>>,
-    /// garbage collection lock. the tasks use read, the gc uses write.
-    gc_lock: Arc<RwLock<()>>,
-    /// garbage collector task
-    _gc_task: tokio::task::JoinHandle<()>,
-    /// usage map (last time a node was used)
-    usage_map: Arc<DashMap<u64, chrono::DateTime<chrono::Utc>>>,
 }
 
 impl WorkerPool {
@@ -56,72 +50,20 @@ impl WorkerPool {
         assert!(name.len() <= 8, "pool name too long");
         let (tx, rx): (Sender<u64>, Receiver<u64>) =
             tokio::sync::mpsc::channel(std::cmp::max(1, max_worker_jobs));
-        let gc_lock = Arc::new(RwLock::new(()));
-        let usage_map = Arc::new(DashMap::new());
         let pool = Arc::new(DashMap::new());
         let ssh_session = ssh_factory
             .spawn()
             .await
             .expect("failed to create ssh session");
-        let ssh_session_gc = ssh_factory
-            .spawn()
-            .await
-            .expect("failed to create ssh session");
         Self {
             name,
-            _gc_task: Self::spawn_gc(
-                gc_lock.clone(),
-                usage_map.clone(),
-                pool.clone(),
-                ssh_session_gc,
-            ),
             pool,
             avail_tx: tx,
             avail_rx: Mutex::new(rx),
             max_worker_jobs,
             ssh_session,
             ssh_factory,
-            gc_lock,
-            usage_map,
         }
-    }
-
-    /// Spawns the garbage collection task. Every 15 minutes, garbage collects tasks that haven't
-    /// been used in the last 30 minutes.
-    fn spawn_gc(
-        lock: Arc<RwLock<()>>,
-        usage_map: Arc<DashMap<u64, chrono::DateTime<chrono::Utc>>>,
-        pool: Arc<DashMap<u64, Worker>>,
-        ssh: Box<dyn Ssh>,
-    ) -> tokio::task::JoinHandle<()> {
-        tokio::task::spawn(async move {
-            let duration = std::time::Duration::from_secs(900);
-            let max_idle = chrono::Duration::from_std(std::time::Duration::from_secs(1800))
-                .expect("std::Duration -> chrono::Duration is out of band");
-            let mut timer = tokio::time::interval(duration);
-            timer.tick().await; // start ticking
-            loop {
-                timer.tick().await;
-                let _lock = lock.write().await;
-                let now = chrono::Utc::now();
-                let mut to_remove = vec![];
-                for entry in usage_map.iter() {
-                    let (job_id, last_used) = entry.pair();
-                    let diff = now - *last_used;
-                    if diff > max_idle {
-                        to_remove.push(*job_id);
-                    }
-                }
-
-                for job_id in to_remove {
-                    usage_map.remove(&job_id);
-                    if let Some(w) = pool.get(&job_id) {
-                        w.cancel(&*ssh).await.ok();
-                        println!("Garbage collected job {}", job_id);
-                    }
-                }
-            }
-        })
     }
 
     /// Populates the worker pool with workers.
@@ -163,7 +105,6 @@ impl WorkerPool {
                     job_id, status, job_time, node_id
                 );
                 let worker_status = {
-                    self.usage_map.insert(job_id, chrono::Utc::now());
                     if status == "R" {
                         WorkerStatus::Running {
                             started_at: job_time,
@@ -201,9 +142,6 @@ impl WorkerPool {
     /// Spawns a new worker and adds it to the pool. This worker will be queued on discovery,
     /// so it won't be available for work until discovery is done.
     pub(crate) async fn spawn_worker(&self) -> Result<u64, JobError> {
-        // lock the gc
-        let _lock = self.gc_lock.read().await;
-
         if self.pool.len() >= self.max_worker_jobs {
             return Err(JobError::MaxWorkerJobsReached);
         }
@@ -220,7 +158,6 @@ impl WorkerPool {
             status: Arc::new(WorkerStatus::Queued),
         };
 
-        self.usage_map.insert(job_id, chrono::Utc::now());
         self.pool.insert(job_id, worker);
         self.avail_tx.send(job_id).await.unwrap();
 
@@ -273,9 +210,6 @@ impl WorkerPool {
     /// - Some workers may have network issues, in that case, we will trash them and add a new one.
     pub(crate) async fn get_worker(&self) -> Result<WorkerGuard, JobError> {
         async fn helper(wp: &WorkerPool) -> Result<Option<Worker>, JobError> {
-            // lock on gc mutex, so that this call cannot happen while the gc is running.
-            let _lock = wp.gc_lock.read().await;
-
             debug!("Waiting for jobs to be available");
             let job_id = wp.avail_rx.lock().await.recv().await.unwrap();
             debug!("Got job {}", job_id);
@@ -326,7 +260,6 @@ impl WorkerPool {
                             && !node_id.unwrap().contains("login")
                         {
                             debug!("Network is up for worker {}", job_id);
-                            wp.usage_map.insert(job_id, now);
                             Ok(Some(worker))
                         } else {
                             // network is down, remove from pool and add a new worker
@@ -350,7 +283,6 @@ impl WorkerPool {
     /// Replaces the given worker with a new one.
     pub async fn replace_worker(&self, worker: &Worker) -> Result<(), JobError> {
         self.pool.remove(&worker.job_id);
-        self.usage_map.remove(&worker.job_id);
         worker.cancel(&*self.ssh_session).await?;
         self.spawn_worker().await?;
         Ok(())
