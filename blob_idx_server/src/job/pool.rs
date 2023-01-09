@@ -54,7 +54,8 @@ impl WorkerPool {
     ) -> Self {
         let name = pool_name.into();
         assert!(name.len() <= 8, "pool name too long");
-        let (tx, rx): (Sender<u64>, Receiver<u64>) = tokio::sync::mpsc::channel(max_worker_jobs);
+        let (tx, rx): (Sender<u64>, Receiver<u64>) =
+            tokio::sync::mpsc::channel(std::cmp::max(1, max_worker_jobs));
         let gc_lock = Arc::new(RwLock::new(()));
         let usage_map = Arc::new(DashMap::new());
         let pool = Arc::new(DashMap::new());
