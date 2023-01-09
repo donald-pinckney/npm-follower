@@ -147,7 +147,7 @@ pub mod async_pool {
                     FROM   historic_solver.job_inputs
                     WHERE  job_state = 'none'
                     ORDER BY update_from_id, downstream_package_id
-                    LIMIT  ?
+                    LIMIT  $1
                     FOR    UPDATE SKIP LOCKED
                     )
                  SELECT
@@ -210,90 +210,90 @@ pub mod async_pool {
     }
 }
 
-pub mod sync {
-    use diesel::{
-        sql_query,
-        sql_types::{Int8, Text},
-    };
-    use postgres_db::connection::{DbConnection, QueryRunner};
-    use warp::http;
+// pub mod sync {
+//     use diesel::{
+//         sql_query,
+//         sql_types::{Int8, Text},
+//     };
+//     use postgres_db::connection::{DbConnection, QueryRunner};
+//     use warp::http;
 
-    use super::job_results;
-    use super::Job;
-    use super::JobResult;
+//     use super::job_results;
+//     use super::Job;
+//     use super::JobResult;
 
-    pub fn handle_get_jobs(num_jobs: i64, node_name: String, db: &mut DbConnection) -> Vec<Job> {
-        if node_name == "TEST" {
-            // TEST QUERY
-            let query = sql_query(
-                r#"
-                WITH cte AS MATERIALIZED (
-                    SELECT update_from_id, update_to_id, downstream_package_id
-                    FROM   historic_solver.job_inputs
-                    WHERE  job_state = 'none'
-                    ORDER BY update_from_id, downstream_package_id
-                    LIMIT  ?
-                    FOR    UPDATE SKIP LOCKED
-                    )
-                 SELECT
-                 job.update_to_id, 
-                 job.downstream_package_id,
-                 job.update_package_name,
-                 job.update_from_version,
-                 job.update_to_version,
-                 job.update_to_time,
-                 job.downstream_package_name
-                 FROM job_inputs job, cte
-                 WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id;
-            "#
-            )
-            .bind::<Int8, _>(num_jobs);
+//     pub fn handle_get_jobs(num_jobs: i64, node_name: String, db: &mut DbConnection) -> Vec<Job> {
+//         if node_name == "TEST" {
+//             // TEST QUERY
+//             let query = sql_query(
+//                 r#"
+//                 WITH cte AS MATERIALIZED (
+//                     SELECT update_from_id, update_to_id, downstream_package_id
+//                     FROM   historic_solver.job_inputs
+//                     WHERE  job_state = 'none'
+//                     ORDER BY update_from_id, downstream_package_id
+//                     LIMIT  ?
+//                     FOR    UPDATE SKIP LOCKED
+//                     )
+//                  SELECT
+//                  job.update_to_id,
+//                  job.downstream_package_id,
+//                  job.update_package_name,
+//                  job.update_from_version,
+//                  job.update_to_version,
+//                  job.update_to_time,
+//                  job.downstream_package_name
+//                  FROM job_inputs job, cte
+//                  WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id;
+//             "#
+//             )
+//             .bind::<Int8, _>(num_jobs);
 
-            db.get_results(query).unwrap()
-        } else {
-            // REAL QUERY
-            let query = sql_query(
-            r#"
-            WITH cte AS MATERIALIZED (
-                SELECT update_from_id, update_to_id, downstream_package_id
-                FROM   historic_solver.job_inputs
-                WHERE  job_state = 'none'
-                ORDER BY update_from_id, downstream_package_id
-                LIMIT  ?
-                FOR    UPDATE SKIP LOCKED
-                )
-             UPDATE job_inputs job
-             SET    job_state = 'started', start_time = now(), work_node = ?
-             FROM   cte
-             WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id
-             RETURNING job.update_from_id, 
-             job.update_to_id, 
-             job.downstream_package_id,
-             job.update_package_name,
-             job.update_from_version,
-             job.update_to_version,
-             job.update_to_time,
-             job.downstream_package_name;
-            "#
-            )
-            .bind::<Int8, _>(num_jobs)
-            .bind::<Text, _>(node_name);
+//             db.get_results(query).unwrap()
+//         } else {
+//             // REAL QUERY
+//             let query = sql_query(
+//             r#"
+//             WITH cte AS MATERIALIZED (
+//                 SELECT update_from_id, update_to_id, downstream_package_id
+//                 FROM   historic_solver.job_inputs
+//                 WHERE  job_state = 'none'
+//                 ORDER BY update_from_id, downstream_package_id
+//                 LIMIT  ?
+//                 FOR    UPDATE SKIP LOCKED
+//                 )
+//              UPDATE job_inputs job
+//              SET    job_state = 'started', start_time = now(), work_node = ?
+//              FROM   cte
+//              WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id
+//              RETURNING job.update_from_id,
+//              job.update_to_id,
+//              job.downstream_package_id,
+//              job.update_package_name,
+//              job.update_from_version,
+//              job.update_to_version,
+//              job.update_to_time,
+//              job.downstream_package_name;
+//             "#
+//             )
+//             .bind::<Int8, _>(num_jobs)
+//             .bind::<Text, _>(node_name);
 
-            db.get_results(query).unwrap()
-        }
-    }
+//             db.get_results(query).unwrap()
+//         }
+//     }
 
-    pub fn handle_submit_result(
-        job_result: JobResult,
-        db: &mut DbConnection,
-    ) -> Result<impl warp::Reply, warp::Rejection> {
-        let query = diesel::insert_into(job_results::table).values(&job_result);
+//     pub fn handle_submit_result(
+//         job_result: JobResult,
+//         db: &mut DbConnection,
+//     ) -> Result<impl warp::Reply, warp::Rejection> {
+//         let query = diesel::insert_into(job_results::table).values(&job_result);
 
-        db.execute(query).unwrap();
+//         db.execute(query).unwrap();
 
-        Ok(warp::reply::with_status(
-            "Result submitted",
-            http::StatusCode::CREATED,
-        ))
-    }
-}
+//         Ok(warp::reply::with_status(
+//             "Result submitted",
+//             http::StatusCode::CREATED,
+//         ))
+//     }
+// }

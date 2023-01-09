@@ -14,11 +14,13 @@ fi
 
 num_threads=32
 
-NPM_CACHE_DIR=$npm_cache_dir \
-NUM_THREADS=$num_threads \
+export npm_config_cache=$npm_cache_dir
+
+# $(hostname)
+
 TOKIO_WORKER_THREADS=$num_threads \
 REGISTRY_HOST=pinckney2.vpc.ripley.cloud \
-NODE_NAME=$(hostname) \
+NODE_NAME="TEST" \
 MAX_JOB_TIME=$remaining_time \
 cargo run
 # ./target/release/historic_solver_job

@@ -21,7 +21,6 @@ const JOBS_PER_THREAD: i64 = 1000;
 
 #[derive(Debug)]
 struct Configuration {
-    npm_cache_dir: String,
     num_threads: i64,
     registry_host: String,
     node_name: String,
@@ -92,6 +91,10 @@ async fn grab_and_run_job_batch(
 ) {
     let jobs = grab_job_batch(db).await;
 
+    println!("{:?}", jobs);
+
+    return;
+
     *active_jobs += jobs.len() as i64;
 
     for job in jobs {
@@ -143,11 +146,10 @@ fn load_config() -> Configuration {
 
     // TODO: load from env vars
     Configuration {
-        npm_cache_dir: env::var("NPM_CACHE_DIR").expect("NPM_CACHE_DIR"),
-        num_threads: env::var("NUM_THREADS")
-            .expect("NUM_THREADS")
+        num_threads: env::var("TOKIO_WORKER_THREADS")
+            .expect("TOKIO_WORKER_THREADS")
             .parse()
-            .expect("failed to parse NUM_THREADS"),
+            .expect("failed to parse TOKIO_WORKER_THREADS"),
         registry_host: env::var("REGISTRY_HOST").expect("REGISTRY_HOST"),
         node_name: env::var("NODE_NAME").expect("NODE_NAME"),
         max_job_time: Duration::seconds(desired_secs),
