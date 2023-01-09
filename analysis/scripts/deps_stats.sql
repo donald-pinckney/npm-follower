@@ -195,6 +195,7 @@ CREATE TABLE analysis.deps_stats AS WITH computed_stats_wide as (
     min(x),
     max(x),
     stddev_pop(x),
+    mode(x),
     percentile_cont(ARRAY [0.05, 0.25, 0.5, 0.75, 0.95]) within group(
       order by x
     ) as percentiles_5_25_50_75_95
@@ -221,6 +222,11 @@ computed_stats as (
   select count_type,
     'stddev_pop' as statistic_name,
     stddev_pop as value
+  from computed_stats_wide
+  union all
+  select count_type,
+    'mode' as statistic_name,
+    mode as value
   from computed_stats_wide
   union all
   select count_type,
