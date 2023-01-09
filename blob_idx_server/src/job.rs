@@ -36,8 +36,10 @@ pub struct TarballResult {
 pub struct JobManagerConfig {
     /// The ssh factory to use to create ssh sessions.
     pub ssh_factory: Box<dyn SshFactory>,
-    /// The maximum amount of worker jobs that can be running at the same time.
-    pub max_worker_jobs: usize,
+    /// The maximum amount of worker jobs that can be running at the same time for compute workers
+    pub max_comp_worker_jobs: usize,
+    /// The maximum amount of worker jobs that can be running at the same time for transfer workers
+    pub max_xfer_worker_jobs: usize,
 }
 
 pub struct JobManager {
@@ -47,26 +49,24 @@ pub struct JobManager {
 
 impl JobManager {
     pub async fn init(config: JobManagerConfig) -> Self {
-        // distribute config.max_worker_jobs between the two pools,
-        // where is the number is odd, the xfer pool gets the extra job.
-        let (xfer_workers, compute_workers) = if config.max_worker_jobs % 2 == 0 {
-            (config.max_worker_jobs / 2, config.max_worker_jobs / 2)
-        } else {
-            (config.max_worker_jobs / 2 + 1, config.max_worker_jobs / 2)
-        };
         let arc_ssh_factory = Arc::new(config.ssh_factory);
         debug!(
             "Initializing job manager with {} xfer workers and {} compute workers",
-            xfer_workers, compute_workers
+            config.max_xfer_worker_jobs, config.max_comp_worker_jobs
         );
-        let mut xfer_pool =
-            WorkerPool::init(xfer_workers, "wp_xfer", arc_ssh_factory.clone()).await;
+        let mut xfer_pool = WorkerPool::init(
+            config.max_xfer_worker_jobs,
+            "wp_xfer",
+            arc_ssh_factory.clone(),
+        )
+        .await;
         xfer_pool
             .populate()
             .await
             .expect("populate worker pool failed");
 
-        let mut compute_pool = WorkerPool::init(compute_workers, "wp_comp", arc_ssh_factory).await;
+        let mut compute_pool =
+            WorkerPool::init(config.max_comp_worker_jobs, "wp_comp", arc_ssh_factory).await;
         compute_pool
             .populate()
             .await

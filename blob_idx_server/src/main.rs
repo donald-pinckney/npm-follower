@@ -8,11 +8,21 @@ async fn main() {
     let discovery_ssh = std::env::var("DISCOVERY_SSH").expect("DISCOVERY_SSH must be set");
     let (_tx, mut shutdown_signal) = tokio::sync::mpsc::channel::<()>(1);
 
+    let args = std::env::args().collect::<Vec<_>>();
+    if args.len() < 3 {
+        eprintln!(
+            "Usage: {} <num compute workers> <num xfer workers>",
+            args[0]
+        );
+        std::process::exit(1);
+    }
+
     http.start(
         blob::BlobStorageConfig::default(),
         JobManagerConfig {
             ssh_factory: Box::new(SshSessionFactory::new(&discovery_ssh)),
-            max_worker_jobs: 20,
+            max_comp_worker_jobs: args[1].parse().unwrap(),
+            max_xfer_worker_jobs: args[2].parse().unwrap(),
         },
         async move {
             shutdown_signal.recv().await;
