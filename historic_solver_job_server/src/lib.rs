@@ -151,6 +151,7 @@ pub mod async_pool {
                     FOR    UPDATE SKIP LOCKED
                     )
                  SELECT
+                 job.update_from_id,
                  job.update_to_id, 
                  job.downstream_package_id,
                  job.update_package_name,
@@ -181,7 +182,8 @@ pub mod async_pool {
              SET    job_state = 'started', start_time = now(), work_node = $2
              FROM   cte
              WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id
-             RETURNING job.update_from_id, 
+             RETURNING 
+             job.update_from_id, 
              job.update_to_id, 
              job.downstream_package_id,
              job.update_package_name,

@@ -17,10 +17,12 @@ use lazy_static::lazy_static;
 use postgres_db::connection::async_pool::DbConnection;
 use tokio::sync::mpsc::{self, UnboundedSender};
 
+mod run_solve_job;
+
 const JOBS_PER_THREAD: i64 = 1000;
 
 #[derive(Debug)]
-struct Configuration {
+pub struct Configuration {
     num_threads: i64,
     registry_host: String,
     node_name: String,
@@ -39,7 +41,7 @@ trait RunnableJob {
 #[async_trait]
 impl RunnableJob for Job {
     async fn run(self) -> JobResult {
-        todo!()
+        run_solve_job::run_solve_job(self).await
     }
 }
 
@@ -91,9 +93,11 @@ async fn grab_and_run_job_batch(
 ) {
     let jobs = grab_job_batch(db).await;
 
-    println!("{:?}", jobs);
-
-    return;
+    println!(
+        "Fetched new jobs. Queue size {} -> {}",
+        *active_jobs,
+        *active_jobs + jobs.len() as i64
+    );
 
     *active_jobs += jobs.len() as i64;
 
@@ -144,7 +148,6 @@ fn load_config() -> Configuration {
 
     let desired_secs = secs - 60 * 5;
 
-    // TODO: load from env vars
     Configuration {
         num_threads: env::var("TOKIO_WORKER_THREADS")
             .expect("TOKIO_WORKER_THREADS")
