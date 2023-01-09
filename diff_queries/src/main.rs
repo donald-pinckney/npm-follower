@@ -27,13 +27,21 @@ fn main() {
     };
 
     let mut last = None;
+    let mut num_processed = 0;
+    let total_count = postgres_db::diff_analysis::count_diff_analysis(&mut conn).unwrap();
 
     loop {
         println!("Loading {} rows from the table...", chunk_size);
         let time = std::time::Instant::now();
         let table =
             postgres_db::diff_analysis::query_table(&mut conn, Some(chunk_size), last).unwrap();
-        println!("Loaded {} rows in {:?}!", table.len(), time.elapsed());
+        let table_len = table.len();
+        println!("Loaded {} rows in {:?}!", table_len, time.elapsed());
+        num_processed += table_len;
+        println!(
+            "Progress: {:.2}%",
+            num_processed as f64 / total_count as f64 * 100.0
+        );
         if table.is_empty() {
             break;
         }
