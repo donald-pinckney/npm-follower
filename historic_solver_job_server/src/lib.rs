@@ -174,11 +174,11 @@ pub mod async_pool {
                 FROM   historic_solver.job_inputs
                 WHERE  job_state = 'none'
                 ORDER BY update_from_id, downstream_package_id
-                LIMIT  ?
+                LIMIT  $1
                 FOR    UPDATE SKIP LOCKED
                 )
              UPDATE job_inputs job
-             SET    job_state = 'started', start_time = now(), work_node = ?
+             SET    job_state = 'started', start_time = now(), work_node = $2
              FROM   cte
              WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id
              RETURNING job.update_from_id, 
