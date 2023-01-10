@@ -1,4 +1,4 @@
-UPDATE historic_solver.job_inputs
+UPDATE historic_solver_job_inputs
 SET job_state = 'none'
 WHERE job_state = 'started'
     AND ROW(
@@ -9,5 +9,5 @@ WHERE job_state = 'started'
         SELECT update_from_id,
             update_to_id,
             downstream_package_id
-        FROM historic_solver.job_results
+        FROM historic_solver_job_results
     );

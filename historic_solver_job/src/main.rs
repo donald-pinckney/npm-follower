@@ -145,6 +145,7 @@ async fn grab_job_batch(db: &DbConnection) -> Vec<Job> {
 }
 
 async fn write_result_to_postgres(res: JobResult, db: &DbConnection) {
+    // println!("{:#?}", res);
     handle_submit_result(res, db).await.unwrap();
 }
 

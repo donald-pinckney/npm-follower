@@ -1,13 +1,11 @@
-CREATE SCHEMA historic_solver;
-
-CREATE TYPE historic_solver.historic_solver_solve_result_struct AS (
+CREATE TYPE historic_solver_solve_result_struct AS (
     solve_time TIMESTAMP WITH TIME ZONE,
     downstream_version semver_struct,
     present_versions semver_struct []
 );
 
 
-CREATE TABLE historic_solver.job_inputs (
+CREATE TABLE historic_solver_job_inputs (
     update_from_id BIGINT,
     update_to_id BIGINT,
     downstream_package_id BIGINT,
@@ -27,12 +25,12 @@ CREATE TABLE historic_solver.job_inputs (
     )
 );
 
-CREATE TABLE historic_solver.job_results (
+CREATE TABLE historic_solver_job_results (
     update_from_id BIGINT,
     update_to_id BIGINT,
     downstream_package_id BIGINT,
     result_category TEXT NOT NULL,
-    solve_history historic_solver.historic_solver_solve_result_struct [] NOT NULL,
+    solve_history historic_solver_solve_result_struct [] NOT NULL,
     stdout TEXT NOT NULL,
     stderr TEXT NOT NULL,
     -- [(solve_time, [v])]
@@ -43,16 +41,15 @@ CREATE TABLE historic_solver.job_results (
     )
 );
 
-CREATE INDEX state_idx ON historic_solver.job_inputs (job_state);
+CREATE INDEX state_idx ON historic_solver_job_inputs (job_state);
 
 
-GRANT ALL ON SCHEMA historic_solver TO historic_solve_runner;
-GRANT ALL ON historic_solver.job_inputs TO historic_solve_runner;
-GRANT ALL ON historic_solver.job_results TO historic_solve_runner;
+GRANT ALL ON historic_solver_job_inputs TO historic_solve_runner;
+GRANT ALL ON historic_solver_job_results TO historic_solve_runner;
 
-GRANT ALL ON TYPE historic_solver.historic_solver_solve_result_struct TO historic_solve_runner;
+GRANT ALL ON TYPE historic_solver_solve_result_struct TO historic_solve_runner;
+GRANT ALL ON TYPE semver_struct TO historic_solve_runner;
 GRANT USAGE ON SCHEMA public TO historic_solve_runner;
 
-GRANT USAGE ON SCHEMA historic_solver TO data_analyzer;
-GRANT SELECT ON historic_solver.job_inputs TO data_analyzer;
-GRANT SELECT ON historic_solver.job_results TO data_analyzer;
+GRANT SELECT ON historic_solver_job_inputs TO data_analyzer;
+GRANT SELECT ON historic_solver_job_results TO data_analyzer;

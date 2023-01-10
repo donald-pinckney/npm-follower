@@ -14,7 +14,7 @@ use diesel::{
 };
 use historic_solver_job_server::{
     async_pool::{handle_get_jobs, handle_submit_result},
-    job_results, Job, JobResult,
+    historic_solver_job_results, Job, JobResult,
 };
 use postgres_db::{
     connection::async_pool::{DbConnection, QueryRunner},

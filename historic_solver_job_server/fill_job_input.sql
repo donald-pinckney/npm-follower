@@ -1,4 +1,4 @@
-INSERT INTO historic_solver.job_inputs
+INSERT INTO historic_solver_job_inputs
 SELECT u.from_id AS update_from_id,
     u.to_id AS update_to_id,
     d.pkg AS downstream_package_id,

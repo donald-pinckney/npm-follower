@@ -51,11 +51,19 @@ pub(crate) async fn run_solve_job(
 
     let mut solve_history = vec![];
 
-
     let mut stdout_res = vec![];
     let mut stderr_res = vec![];
 
-    match run_solve_job_result(job, req_client, subprocess_semaphore, &mut solve_history, &mut stdout_res, &mut stderr_res).await {
+    match run_solve_job_result(
+        job,
+        req_client,
+        subprocess_semaphore,
+        &mut solve_history,
+        &mut stdout_res,
+        &mut stderr_res,
+    )
+    .await
+    {
         Ok(()) => JobResult {
             update_from_id,
             update_to_id,
@@ -116,6 +124,12 @@ async fn run_solve_job_result(
         stderr_res,
     )
     .await?;
+
+    // println!(
+    //     "job.update_package_name = {}, job.update_from_version = {}",
+    //     &job.update_package_name, &job.update_from_version
+    // );
+    // println!("Received solution: {:#?}", initial_solve);
 
     // 4. If the current downstream doesn't contain current upstream, then we bail
     if !initial_solve.contains(&job.update_package_name, &job.update_from_version) {
@@ -194,8 +208,9 @@ async fn solve_dependencies(
     stdout_res: &mut Vec<u8>,
     stderr_res: &mut Vec<u8>,
 ) -> Result<SolveSolutionMetrics, ResultError> {
-    let (semver_at_time, package_json_at_time) = get_most_recent_leq_time(packument_doc, dt, solve_package_name)
-        .ok_or(ResultError::DownstreamMissingVersion)?;
+    let (semver_at_time, package_json_at_time) =
+        get_most_recent_leq_time(packument_doc, dt, solve_package_name)
+            .ok_or(ResultError::DownstreamMissingVersion)?;
 
     let solve_dir = make_solve_dir(temp_dir);
 
@@ -224,7 +239,11 @@ async fn solve_dependencies_impl(
     stdout_res: &mut Vec<u8>,
     stderr_res: &mut Vec<u8>,
 ) -> Result<SolveSolutionMetrics, ResultError> {
+    // println!("solve_dependencies_impl");
+
     let subprocess_permit = subprocess_semaphore.acquire().await.unwrap();
+
+    // println!("acquired subproc semaphore");
 
     // Write the package json out
     let package_json_file = File::create(solve_dir.join("package.json")).unwrap();
@@ -232,26 +251,31 @@ async fn solve_dependencies_impl(
     serde_json::to_writer(&mut writer, &package_json).unwrap();
     writer.flush().unwrap();
 
+    // println!("wrote json");
+
     let registry_url = format!(
         "http://{}/{}/",
         CONFIG.registry_host,
         urlencoding::encode(&dt.to_string())
     );
 
-    let mut output = Command::new("npm")
-        .arg("install")
-        .arg("--ignore-scripts")
-        .arg("--no-audit")
-        .arg("--no-fund")
-        .arg("--registry")
-        .arg(registry_url)
-        .current_dir(solve_dir)
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .output()
-        .await
-        .unwrap();
+    let mut cmd = Command::new("npm");
+    cmd.arg("install");
+    cmd.arg("--ignore-scripts");
+    cmd.arg("--no-audit");
+    cmd.arg("--no-fund");
+    cmd.arg("--registry");
+    cmd.arg(registry_url);
+    cmd.current_dir(solve_dir);
+    cmd.stdin(Stdio::null());
+    cmd.stdout(Stdio::piped());
+    cmd.stderr(Stdio::piped());
+
+    // println!("about to run: {:#?}", cmd);
+
+    let mut output = cmd.output().await.unwrap();
+
+    // println!("finished command");
 
     if !output.status.success() {
         stdout_res.append(&mut output.stdout);
@@ -278,8 +302,8 @@ async fn solve_dependencies_impl(
 
     let mut solution = SolveSolutionMetrics::new(downstream_v, dt);
 
-    for (dep_name, dep_info) in deps.as_object().unwrap().iter() {
-        if dep_name.is_empty() {
+    for (dep_path, dep_info) in deps.as_object().unwrap().iter() {
+        if dep_path.is_empty() {
             continue;
         }
 
@@ -288,9 +312,12 @@ async fn solve_dependencies_impl(
             continue;
         }
 
+        let dep_name_start_idx = dep_path.rfind("node_modules/").unwrap() + 13;
+        let dep_name = &dep_path[dep_name_start_idx..];
+
         let version = dep_info.get("version").unwrap().as_str().unwrap();
         let version = semver_spec_serialization::parse_semver(version).unwrap();
-        solution.push_dep(dep_name.clone(), version);
+        solution.push_dep(dep_name.to_string(), version);
     }
 
     Ok(solution)
@@ -302,6 +329,7 @@ fn make_solve_dir(in_dir: &TempDir) -> PathBuf {
     solve_dir
 }
 
+#[derive(Debug)]
 struct SolveSolutionMetrics {
     downstream_v: Semver,
     solve_time: DateTime<Utc>,
