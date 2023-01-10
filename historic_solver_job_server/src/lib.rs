@@ -302,8 +302,12 @@ pub mod packument_requests {
     }
 
     pub fn parse_packument(mut j: Map<String, Value>, package_name: &str) -> ParsedPackument<()> {
-        let versions = j.remove("versions").expect("versions must be present");
-        let mut time = j.remove("time").expect("time must be present");
+        let versions = j
+            .remove("versions")
+            .expect(format!("versions must be present: {}", package_name).as_str());
+        let mut time = j
+            .remove("time")
+            .expect(format!("time must be present: {}", package_name).as_str());
 
         let mut versions = match versions {
             Value::Object(o) => o,
