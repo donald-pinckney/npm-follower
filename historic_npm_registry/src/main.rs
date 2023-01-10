@@ -101,10 +101,25 @@ fn parse_packument(mut j: Map<String, Value>) -> ParsedPackument {
     let versions = j.remove("versions").expect("versions must be present");
     let mut time = j.remove("time").expect("time must be present");
 
-    let versions = match versions {
+    let mut versions = match versions {
         Value::Object(o) => o,
         _ => panic!("versions must be an object"),
     };
+
+    // remove checksums from versions
+    for version_blob in versions.values_mut() {
+        if let Some(dist_obj) = version_blob
+            .as_object_mut()
+            .and_then(|version_obj| version_obj.get_mut("dist"))
+            .and_then(|dist_blob| dist_blob.as_object_mut())
+        {
+            if let Some(tarball) = dist_obj.get("tarball") {
+                let tarball = tarball.clone();
+                dist_obj.clear();
+                dist_obj.insert("tarball".to_owned(), tarball);
+            }
+        }
+    }
 
     let time = time.as_object_mut().expect("time must be an object");
     let modified_time = parse_datetime(
@@ -338,36 +353,48 @@ async fn main() {
     let css = warp::path!("static" / "main.css")
         .and(warp::path::end())
         .map(|| StatusCode::NOT_FOUND);
-    let empty_advisories =
-        warp::path!(String / "-" / "npm" / "v1" / "security" / "advisories" / "bulk")
-            .and(warp::path::end())
-            .map(|_t| warp::reply::json(&Value::Object(Map::default())));
+    let empty_advisories = warp::path!(String / "-" / "npm" / "v1" / "security")
+        .map(|_t| warp::reply::json(&Value::Object(Map::default())));
 
     let log = warp::log("http");
 
     let tarball_redirect = warp::path!(String / String / "-" / String)
         .and(warp::path::end())
-        .map(|_time, name, tarball_name| {
-            let uri = Uri::builder()
-                .scheme("https")
-                .authority("registry.npmjs.org")
-                .path_and_query(format!("/{}/-/{}", name, tarball_name))
-                .build()
-                .unwrap();
-            warp::redirect::permanent(uri)
-        });
+        .map(|_time, _name, _tarball_name| ())
+        .untuple_one()
+        .and(warp::fs::file("empty-package.tar"));
+
+    // .untuple_one()
+    // .untuple_one();
+    // .map(|_time, name, tarball_name| {
+
+    //     let bytes = include_bytes!("empty-package.tar");
+    //     warp::reply::
+
+    //     let uri = Uri::builder()
+    //         .scheme("https")
+    //         .authority("registry.npmjs.org")
+    //         .path_and_query(format!("/{}/-/{}", name, tarball_name))
+    //         .build()
+    //         .unwrap();
+    //     warp::redirect::permanent(uri)
+    // });
 
     let tarball_scoped_redirect = warp::path!(String / String / String / "-" / String)
         .and(warp::path::end())
-        .map(|_time, scope, name, tarball_name| {
-            let uri = Uri::builder()
-                .scheme("https")
-                .authority("registry.npmjs.org")
-                .path_and_query(format!("/{}/{}/-/{}", scope, name, tarball_name))
-                .build()
-                .unwrap();
-            warp::redirect::permanent(uri)
-        });
+        .map(|_time, _scope, _name, _tarball_name| ())
+        .untuple_one()
+        .and(warp::fs::file("empty-package.tar"));
+
+    // .map(|_time, scope, name, tarball_name| {
+    //     let uri = Uri::builder()
+    //         .scheme("https")
+    //         .authority("registry.npmjs.org")
+    //         .path_and_query(format!("/{}/{}/-/{}", scope, name, tarball_name))
+    //         .build()
+    //         .unwrap();
+    //     warp::redirect::permanent(uri)
+    // });
 
     warp::serve(
         empty_advisories
