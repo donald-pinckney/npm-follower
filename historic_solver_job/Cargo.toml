@@ -19,6 +19,5 @@ postgres_db = { path = "../postgres_db" }
 async-trait = "0.1.61"
 dotenv = "0.15.0"
 tempfile = "3.3.0"
-async-process = "1.6.0"
 historic_solver_job_server = { path = "../historic_solver_job_server" }
 semver_spec_serialization = { path = "../semver_spec_serialization" }

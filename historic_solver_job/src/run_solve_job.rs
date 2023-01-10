@@ -6,8 +6,8 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use super::CONFIG;
-use async_process::Command;
-use async_process::Stdio;
+use std::process::Stdio;
+use tokio::process::Command;
 use chrono::DateTime;
 use chrono::Duration;
 use chrono::Utc;
