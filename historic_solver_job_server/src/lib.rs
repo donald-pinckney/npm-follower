@@ -63,6 +63,8 @@ diesel::table! {
         downstream_package_id -> Int8,
         result_category -> Text, // see below
         solve_history -> Array<SolveResultSql>, // [(solve_time, [v])]
+        stdout -> Text,
+        stderr -> Text,
     }
 }
 
@@ -87,6 +89,8 @@ pub struct JobResult {
     pub downstream_package_id: i64,
     pub result_category: ResultCategory, // ("FromMissing", "GaveUp", "RemovedDep", "SolveError", "Ok", "MiscError")
     pub solve_history: Vec<SolveResult>,
+    pub stdout: String,
+    pub stderr: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, AsExpression)]

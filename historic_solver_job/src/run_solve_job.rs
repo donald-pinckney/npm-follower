@@ -8,8 +8,6 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use super::CONFIG;
-use std::process::Stdio;
-use tokio::process::Command;
 use chrono::DateTime;
 use chrono::Duration;
 use chrono::Utc;
@@ -24,8 +22,10 @@ use historic_solver_job_server::{Job, JobResult};
 use lazy_static::lazy_static;
 use postgres_db::custom_types::Semver;
 use serde_json::Value;
+use std::process::Stdio;
 use tempfile::tempdir;
 use tempfile::TempDir;
+use tokio::process::Command;
 
 lazy_static! {
     static ref EPSILON: Duration = Duration::seconds(10);
@@ -40,20 +40,30 @@ lazy_static! {
 // 6. Otherwise, I increment T = T_0 + 1 day, select the most recent version of P at time T, say V, and solve V at time T.
 //    If it contains lodash 1.0.1 and no other versions, then the flow is categorized as "non-instant" with dT = T - T_0. Loop 6 until done, or give up.
 
-pub(crate) async fn run_solve_job(job: Job, req_client: MaxConcurrencyClient, subprocess_semaphore: Arc<tokio::sync::Semaphore>) -> JobResult {
+pub(crate) async fn run_solve_job(
+    job: Job,
+    req_client: MaxConcurrencyClient,
+    subprocess_semaphore: Arc<tokio::sync::Semaphore>,
+) -> JobResult {
     let update_from_id = job.update_from_id;
     let update_to_id = job.update_to_id;
     let downstream_package_id = job.downstream_package_id;
 
     let mut solve_history = vec![];
 
-    match run_solve_job_result(job, req_client, subprocess_semaphore, &mut solve_history).await {
+
+    let mut stdout_res = vec![];
+    let mut stderr_res = vec![];
+
+    match run_solve_job_result(job, req_client, subprocess_semaphore, &mut solve_history, &mut stdout_res, &mut stderr_res).await {
         Ok(()) => JobResult {
             update_from_id,
             update_to_id,
             downstream_package_id,
             result_category: ResultCategory::Ok,
             solve_history,
+            stdout: "".to_owned(),
+            stderr: "".to_owned(),
         },
         Err(err) => JobResult {
             update_from_id,
@@ -61,6 +71,8 @@ pub(crate) async fn run_solve_job(job: Job, req_client: MaxConcurrencyClient, su
             downstream_package_id,
             result_category: ResultCategory::Error(err),
             solve_history,
+            stdout: String::from_utf8_lossy(&stdout_res).to_string(),
+            stderr: String::from_utf8_lossy(&stderr_res).to_string(),
         },
     }
 }
@@ -70,6 +82,8 @@ async fn run_solve_job_result(
     req_client: MaxConcurrencyClient,
     subprocess_semaphore: Arc<tokio::sync::Semaphore>,
     history: &mut Vec<SolveResult>,
+    stdout_res: &mut Vec<u8>,
+    stderr_res: &mut Vec<u8>,
 ) -> Result<(), ResultError> {
     // 1. Fetch downstream packument at t=NOW
 
@@ -97,7 +111,9 @@ async fn run_solve_job_result(
         job.update_to_time - *EPSILON,
         &new_tmp_dir,
         &job.downstream_package_name,
-        subprocess_semaphore.as_ref()
+        subprocess_semaphore.as_ref(),
+        stdout_res,
+        stderr_res,
     )
     .await?;
 
@@ -117,7 +133,9 @@ async fn run_solve_job_result(
             dt,
             &new_tmp_dir,
             &job.downstream_package_name,
-            subprocess_semaphore.as_ref()
+            subprocess_semaphore.as_ref(),
+            stdout_res,
+            stderr_res,
         )
         .await?;
         history.push(this_solve.to_solve_result(&job.update_package_name));
@@ -173,14 +191,24 @@ async fn solve_dependencies(
     temp_dir: &TempDir,
     solve_package_name: &str,
     subprocess_semaphore: &tokio::sync::Semaphore,
+    stdout_res: &mut Vec<u8>,
+    stderr_res: &mut Vec<u8>,
 ) -> Result<SolveSolutionMetrics, ResultError> {
-    let (semver_at_time, package_json_at_time) =
-        get_most_recent_leq_time(packument_doc, dt, solve_package_name)
-            .ok_or(ResultError::DownstreamMissingVersion)?;
+    let (semver_at_time, package_json_at_time) = get_most_recent_leq_time(packument_doc, dt, solve_package_name)
+        .ok_or(ResultError::DownstreamMissingVersion)?;
 
     let solve_dir = make_solve_dir(temp_dir);
 
-    let res = solve_dependencies_impl(semver_at_time, package_json_at_time, dt, &solve_dir, subprocess_semaphore).await;
+    let res = solve_dependencies_impl(
+        semver_at_time,
+        package_json_at_time,
+        dt,
+        &solve_dir,
+        subprocess_semaphore,
+        stdout_res,
+        stderr_res,
+    )
+    .await;
 
     std::fs::remove_dir_all(solve_dir).unwrap();
 
@@ -193,6 +221,8 @@ async fn solve_dependencies_impl(
     dt: DateTime<Utc>,
     solve_dir: &PathBuf,
     subprocess_semaphore: &tokio::sync::Semaphore,
+    stdout_res: &mut Vec<u8>,
+    stderr_res: &mut Vec<u8>,
 ) -> Result<SolveSolutionMetrics, ResultError> {
     let subprocess_permit = subprocess_semaphore.acquire().await.unwrap();
 
@@ -202,15 +232,13 @@ async fn solve_dependencies_impl(
     serde_json::to_writer(&mut writer, &package_json).unwrap();
     writer.flush().unwrap();
 
-
     let registry_url = format!(
         "http://{}/{}/",
         CONFIG.registry_host,
         urlencoding::encode(&dt.to_string())
     );
 
-
-    let status = Command::new("npm")
+    let mut output = Command::new("npm")
         .arg("install")
         .arg("--ignore-scripts")
         .arg("--no-audit")
@@ -219,24 +247,28 @@ async fn solve_dependencies_impl(
         .arg(registry_url)
         .current_dir(solve_dir)
         .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
         .await
         .unwrap();
 
+    if !output.status.success() {
+        stdout_res.append(&mut output.stdout);
+        stderr_res.append(&mut output.stderr);
 
-    if !status.success() {
         return Err(ResultError::SolveError);
     }
 
     // Read the package-lock.json
     let mut s = String::new();
-    File::open(solve_dir.join("package-lock.json")).unwrap().read_to_string(&mut s).unwrap();
+    File::open(solve_dir.join("package-lock.json"))
+        .unwrap()
+        .read_to_string(&mut s)
+        .unwrap();
     let mut lock_json: Value = serde_json::from_str(&s).unwrap();
-    
-    drop(subprocess_permit);
 
+    drop(subprocess_permit);
 
     let deps = lock_json
         .as_object_mut()

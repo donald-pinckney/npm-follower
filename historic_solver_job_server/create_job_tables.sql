@@ -33,6 +33,8 @@ CREATE TABLE historic_solver.job_results (
     downstream_package_id BIGINT,
     result_category TEXT NOT NULL,
     solve_history historic_solver.historic_solver_solve_result_struct [] NOT NULL,
+    stdout TEXT NOT NULL,
+    stderr TEXT NOT NULL,
     -- [(solve_time, [v])]
     PRIMARY KEY(
         update_from_id,
