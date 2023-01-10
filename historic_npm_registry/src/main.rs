@@ -24,7 +24,7 @@ use warp::Reply;
 async fn request_package_from_npm(
     full_name: &str,
     client: ClientWithMiddleware,
-) -> Option<ParsedPackument> {
+) -> Option<ParsedPackument<()>> {
     // println!("hitting NPM for: {}", full_name);
 
     let packument_doc = client
@@ -49,7 +49,7 @@ async fn lookup_package(
     full_name: &str,
     client: ClientWithMiddleware,
     cache: NpmCache,
-) -> Option<ParsedPackument> {
+) -> Option<ParsedPackument<String>> {
     // println!("looking up: {}", full_name);
     if let Some(cache_hit) = cache.get(full_name) {
         cache_hit.and_then(|x| restrict_time(&x, maybe_t, full_name))
@@ -70,7 +70,7 @@ fn serialize_datetime(dt: DateTime<Utc>) -> Value {
 
 fn serialize_packument_in_npm_format(
     package_name: &str,
-    packument: Option<ParsedPackument>,
+    packument: Option<ParsedPackument<String>>,
 ) -> Value {
     if packument.is_none() {
         let mut m = Map::new();
@@ -98,26 +98,15 @@ fn serialize_packument_in_npm_format(
     )
     .collect();
 
-    if let Some(latest_tag) = packument.latest_tag {
-        json!({
-            "_id": package_name,
-            "name": package_name,
-            "dist-tags": {
-                "latest": latest_tag
-            },
-            "versions": packument.versions,
-            "time": time_dict
-        })
-    } else {
-        json!({
-            "_id": package_name,
-            "name": package_name,
-            "dist-tags": {
-            },
-            "versions": packument.versions,
-            "time": time_dict
-        })
-    }
+    json!({
+        "_id": package_name,
+        "name": package_name,
+        "dist-tags": {
+            "latest": packument.latest_tag
+        },
+        "versions": packument.versions,
+        "time": time_dict
+    })
 }
 
 async fn handle_request(

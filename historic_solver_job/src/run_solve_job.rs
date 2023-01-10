@@ -145,12 +145,12 @@ fn next_time(initial_time: DateTime<Utc>, current_time: DateTime<Utc>) -> Option
 }
 
 fn get_most_recent_leq_time(
-    pack: &ParsedPackument,
+    pack: &ParsedPackument<()>,
     dt: DateTime<Utc>,
     package_name: &str,
 ) -> Option<(Semver, Value)> {
     let mut restricted = restrict_time(pack, Some(dt), package_name)?;
-    let latest = restricted.latest_tag?;
+    let latest = restricted.latest_tag;
     let mut v_blob = restricted.versions.remove(&latest).unwrap();
     let v_blob_obj = v_blob.as_object_mut().unwrap();
     v_blob_obj.remove("_id");
@@ -164,7 +164,7 @@ fn get_most_recent_leq_time(
 }
 
 async fn solve_dependencies(
-    packument_doc: &ParsedPackument,
+    packument_doc: &ParsedPackument<()>,
     dt: DateTime<Utc>,
     temp_dir: &TempDir,
     solve_package_name: &str,

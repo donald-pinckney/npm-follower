@@ -233,21 +233,21 @@ pub mod packument_requests {
     use serde_json::{Map, Value};
 
     #[derive(Clone)]
-    pub struct ParsedPackument {
-        pub latest_tag: Option<String>,
+    pub struct ParsedPackument<T> {
+        pub latest_tag: T,
         pub versions: Map<String, Value>,
         pub sorted_times: Vec<(String, DateTime<Utc>)>, // sorted by the date
         pub modified_time: DateTime<Utc>,
         pub created_time: DateTime<Utc>,
     }
 
-    pub type NpmCache = Cache<String, Option<Arc<ParsedPackument>>>;
+    pub type NpmCache = Cache<String, Option<Arc<ParsedPackument<()>>>>;
 
     pub fn restrict_time(
-        packument: &ParsedPackument,
+        packument: &ParsedPackument<()>,
         maybe_filter_time: Option<DateTime<Utc>>,
         package_name: &str,
-    ) -> Option<ParsedPackument> {
+    ) -> Option<ParsedPackument<String>> {
         let filter_time = maybe_filter_time.unwrap_or(DateTime::<Utc>::MAX_UTC);
 
         let first_bad_time_idx = packument
@@ -256,9 +256,6 @@ pub mod packument_requests {
         if first_bad_time_idx == 0 {
             // Everything must be filtered out, so we bail early with None
             return None;
-        } else if first_bad_time_idx == packument.sorted_times.len() {
-            // Nothing is filtered out
-            return Some(packument.clone());
         }
 
         let last_good_time_idx = first_bad_time_idx - 1;
@@ -289,7 +286,7 @@ pub mod packument_requests {
             .map(|(v_name, _)| v_name.to_owned());
 
         Some(ParsedPackument {
-            latest_tag: last_non_beta_good_version,
+            latest_tag: last_non_beta_good_version.unwrap(),
             versions: good_versions,
             sorted_times: good_times.to_vec(),
             modified_time: *last_good_time,
@@ -304,21 +301,7 @@ pub mod packument_requests {
         dt.with_timezone(&Utc)
     }
 
-    pub fn parse_packument(mut j: Map<String, Value>, package_name: &str) -> ParsedPackument {
-        let latest_tag = {
-            let dist_tags = j
-                .remove("dist-tags")
-                .expect(&format!("dist-tags must be present: {}", package_name));
-            dist_tags
-                .as_object()
-                .expect("dist-tags must be an object")
-                .get("latest")
-                .expect("latest tag must exist")
-                .as_str()
-                .expect("latest tag must be a string")
-                .to_owned()
-        };
-
+    pub fn parse_packument(mut j: Map<String, Value>, package_name: &str) -> ParsedPackument<()> {
         let versions = j.remove("versions").expect("versions must be present");
         let mut time = j.remove("time").expect("time must be present");
 
@@ -382,7 +365,7 @@ pub mod packument_requests {
         sorted_times.sort_by_key(|(_, dt)| *dt);
 
         ParsedPackument {
-            latest_tag: Some(latest_tag),
+            latest_tag: (),
             versions,
             sorted_times,
             modified_time,
