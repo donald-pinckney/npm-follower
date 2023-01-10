@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::BufWriter;
 use std::io::Write;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use super::CONFIG;
 use std::process::Stdio;
@@ -38,14 +39,14 @@ lazy_static! {
 // 6. Otherwise, I increment T = T_0 + 1 day, select the most recent version of P at time T, say V, and solve V at time T.
 //    If it contains lodash 1.0.1 and no other versions, then the flow is categorized as "non-instant" with dT = T - T_0. Loop 6 until done, or give up.
 
-pub(crate) async fn run_solve_job(job: Job, req_client: MaxConcurrencyClient) -> JobResult {
+pub(crate) async fn run_solve_job(job: Job, req_client: MaxConcurrencyClient, subprocess_semaphore: Arc<tokio::sync::Semaphore>) -> JobResult {
     let update_from_id = job.update_from_id;
     let update_to_id = job.update_to_id;
     let downstream_package_id = job.downstream_package_id;
 
     let mut solve_history = vec![];
 
-    match run_solve_job_result(job, req_client, &mut solve_history).await {
+    match run_solve_job_result(job, req_client, subprocess_semaphore, &mut solve_history).await {
         Ok(()) => JobResult {
             update_from_id,
             update_to_id,
@@ -66,6 +67,7 @@ pub(crate) async fn run_solve_job(job: Job, req_client: MaxConcurrencyClient) ->
 async fn run_solve_job_result(
     job: Job,
     req_client: MaxConcurrencyClient,
+    subprocess_semaphore: Arc<tokio::sync::Semaphore>,
     history: &mut Vec<SolveResult>,
 ) -> Result<(), ResultError> {
     // 1. Fetch downstream packument at t=NOW
@@ -94,6 +96,7 @@ async fn run_solve_job_result(
         job.update_to_time - *EPSILON,
         &new_tmp_dir,
         &job.downstream_package_name,
+        subprocess_semaphore.as_ref()
     )
     .await?;
 
@@ -113,6 +116,7 @@ async fn run_solve_job_result(
             dt,
             &new_tmp_dir,
             &job.downstream_package_name,
+            subprocess_semaphore.as_ref()
         )
         .await?;
         history.push(this_solve.to_solve_result(&job.update_package_name));
@@ -167,6 +171,7 @@ async fn solve_dependencies(
     dt: DateTime<Utc>,
     temp_dir: &TempDir,
     solve_package_name: &str,
+    subprocess_semaphore: &tokio::sync::Semaphore,
 ) -> Result<SolveSolutionMetrics, ResultError> {
     let (semver_at_time, package_json_at_time) =
         get_most_recent_leq_time(packument_doc, dt, solve_package_name)
@@ -174,7 +179,7 @@ async fn solve_dependencies(
 
     let solve_dir = make_solve_dir(temp_dir);
 
-    let res = solve_dependencies_impl(semver_at_time, package_json_at_time, dt, &solve_dir).await;
+    let res = solve_dependencies_impl(semver_at_time, package_json_at_time, dt, &solve_dir, subprocess_semaphore).await;
 
     std::fs::remove_dir_all(solve_dir).unwrap();
 
@@ -186,6 +191,7 @@ async fn solve_dependencies_impl(
     package_json: Value,
     dt: DateTime<Utc>,
     solve_dir: &PathBuf,
+    subprocess_semaphore: &tokio::sync::Semaphore,
 ) -> Result<SolveSolutionMetrics, ResultError> {
     // Write the package json out
     let package_json_file = File::create(solve_dir.join("package.json")).unwrap();
@@ -193,20 +199,14 @@ async fn solve_dependencies_impl(
     serde_json::to_writer(&mut writer, &package_json).unwrap();
     writer.flush().unwrap();
 
-    // Solve with npm
-    // let mut cmd = Command::new("npm");
-    // cmd.arg("install");
-    // cmd.current_dir(solve_dir);
-    // let output = cmd.output().unwrap();
-    // if !output.status.success() {
-    //     return Err(ResultError::NpmFailed);
-    // }
 
     let registry_url = format!(
         "http://{}/{}/",
         CONFIG.registry_host,
         urlencoding::encode(&dt.to_string())
     );
+
+    let subprocess_permit = subprocess_semaphore.acquire().await.unwrap();
 
     let status = Command::new("npm")
         .arg("install")
@@ -222,6 +222,8 @@ async fn solve_dependencies_impl(
         .status()
         .await
         .unwrap();
+
+    drop(subprocess_permit);
 
     if !status.success() {
         return Err(ResultError::SolveError);
