@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufWriter;
+use std::io::Read;
 use std::io::Write;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -193,6 +194,8 @@ async fn solve_dependencies_impl(
     solve_dir: &PathBuf,
     subprocess_semaphore: &tokio::sync::Semaphore,
 ) -> Result<SolveSolutionMetrics, ResultError> {
+    let subprocess_permit = subprocess_semaphore.acquire().await.unwrap();
+
     // Write the package json out
     let package_json_file = File::create(solve_dir.join("package.json")).unwrap();
     let mut writer = BufWriter::new(package_json_file);
@@ -206,7 +209,6 @@ async fn solve_dependencies_impl(
         urlencoding::encode(&dt.to_string())
     );
 
-    let subprocess_permit = subprocess_semaphore.acquire().await.unwrap();
 
     let status = Command::new("npm")
         .arg("install")
@@ -223,16 +225,18 @@ async fn solve_dependencies_impl(
         .await
         .unwrap();
 
-    drop(subprocess_permit);
 
     if !status.success() {
         return Err(ResultError::SolveError);
     }
 
     // Read the package-lock.json
-    let package_lock_file = File::open(solve_dir.join("package-lock.json")).unwrap();
+    let mut s = String::new();
+    File::open(solve_dir.join("package-lock.json")).unwrap().read_to_string(&mut s).unwrap();
+    let mut lock_json: Value = serde_json::from_str(&s).unwrap();
+    
+    drop(subprocess_permit);
 
-    let mut lock_json: Value = serde_json::from_reader(package_lock_file).unwrap();
 
     let deps = lock_json
         .as_object_mut()
