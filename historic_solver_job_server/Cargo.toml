@@ -26,3 +26,4 @@ log = "0.4"
 pretty_env_logger = "0.4"
 postgres_db = { path = "../postgres_db" }
 diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
+moka = { version = "0.9", features = ["future"] }

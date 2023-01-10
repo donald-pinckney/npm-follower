@@ -4,6 +4,10 @@ use std::sync::Arc;
 
 use chrono::DateTime;
 use chrono::Utc;
+use historic_solver_job_server::packument_requests::parse_packument;
+use historic_solver_job_server::packument_requests::restrict_time;
+use historic_solver_job_server::packument_requests::NpmCache;
+use historic_solver_job_server::packument_requests::ParsedPackument;
 use moka::future::Cache;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -16,146 +20,6 @@ use warp::reply;
 use warp::Filter;
 use warp::Rejection;
 use warp::Reply;
-
-#[derive(Clone)]
-struct ParsedPackument {
-    latest_tag: Option<String>,
-    versions: Map<String, Value>,
-    sorted_times: Vec<(String, DateTime<Utc>)>, // sorted by the date
-    modified_time: DateTime<Utc>,
-    created_time: DateTime<Utc>,
-}
-
-type NpmCache = Cache<String, Option<Arc<ParsedPackument>>>;
-
-fn restrict_time(
-    packument: &ParsedPackument,
-    maybe_filter_time: Option<DateTime<Utc>>,
-) -> Option<ParsedPackument> {
-    let filter_time = maybe_filter_time.unwrap_or(DateTime::<Utc>::MAX_UTC);
-
-    let first_bad_time_idx = packument
-        .sorted_times
-        .partition_point(|(_, vt)| *vt <= filter_time);
-    if first_bad_time_idx == 0 {
-        // Everything must be filtered out, so we bail early with None
-        return None;
-    } else if first_bad_time_idx == packument.sorted_times.len() {
-        // Nothing is filtered out
-        return Some(packument.clone());
-    }
-
-    let last_good_time_idx = first_bad_time_idx - 1;
-    let (_, last_good_time) = &packument.sorted_times[last_good_time_idx];
-
-    let good_times = &packument.sorted_times[..first_bad_time_idx];
-    let good_versions: Map<String, Value> = good_times
-        .iter()
-        .map(|(v_name, _)| {
-            (
-                v_name.clone(),
-                packument
-                    .versions
-                    .get(v_name)
-                    .expect("version must exist")
-                    .clone(),
-            )
-        })
-        .collect();
-
-    let last_non_beta_good_version = good_times
-        .iter()
-        .rev()
-        .find(|(v_name, _)| !v_name.contains('-') && !v_name.contains('+'))
-        .map(|(v_name, _)| v_name.to_owned());
-
-    Some(ParsedPackument {
-        latest_tag: last_non_beta_good_version,
-        versions: good_versions,
-        sorted_times: good_times.to_vec(),
-        modified_time: *last_good_time,
-        created_time: packument.created_time,
-    })
-}
-
-fn parse_datetime(x: &str) -> DateTime<Utc> {
-    let dt = DateTime::parse_from_rfc3339(x)
-        .or_else(|_| DateTime::parse_from_rfc3339(&format!("{}Z", x)))
-        .unwrap();
-    dt.with_timezone(&Utc)
-}
-
-fn parse_packument(mut j: Map<String, Value>) -> ParsedPackument {
-    let latest_tag = {
-        let dist_tags = j.remove("dist-tags").expect("dist-tags must be present");
-        dist_tags
-            .as_object()
-            .expect("dist-tags must be an object")
-            .get("latest")
-            .expect("latest tag must exist")
-            .as_str()
-            .expect("latest tag must be a string")
-            .to_owned()
-    };
-
-    let versions = j.remove("versions").expect("versions must be present");
-    let mut time = j.remove("time").expect("time must be present");
-
-    let mut versions = match versions {
-        Value::Object(o) => o,
-        _ => panic!("versions must be an object"),
-    };
-
-    // remove checksums from versions
-    for version_blob in versions.values_mut() {
-        if let Some(dist_obj) = version_blob
-            .as_object_mut()
-            .and_then(|version_obj| version_obj.get_mut("dist"))
-            .and_then(|dist_blob| dist_blob.as_object_mut())
-        {
-            if let Some(tarball) = dist_obj.get("tarball") {
-                let tarball = tarball.clone();
-                dist_obj.clear();
-                dist_obj.insert("tarball".to_owned(), tarball);
-            }
-        }
-    }
-
-    let time = time.as_object_mut().expect("time must be an object");
-    let modified_time = parse_datetime(
-        time.remove("modified")
-            .expect("modified time must exist")
-            .as_str()
-            .expect("time must be a string"),
-    );
-
-    let created_time = parse_datetime(
-        time.remove("created")
-            .expect("created time must exist")
-            .as_str()
-            .expect("time must be a string"),
-    );
-
-    let mut sorted_times: Vec<_> = mem::take(time)
-        .into_iter()
-        .map(|(v, dt_str)| {
-            (
-                v,
-                parse_datetime(dt_str.as_str().expect("dates must be strings")),
-            )
-        })
-        .collect();
-
-    sorted_times.sort_by_key(|(_, dt)| *dt);
-
-    ParsedPackument {
-        latest_tag: Some(latest_tag),
-        versions,
-        sorted_times,
-        modified_time,
-        created_time,
-    }
-}
 
 async fn request_package_from_npm(
     full_name: &str,

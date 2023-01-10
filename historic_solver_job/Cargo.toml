@@ -11,9 +11,12 @@ chrono = { version = "0.4.19" }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
 reqwest = { version = "0.11.13", features = ["json"] }
+reqwest-retry = "0.2.1"
+reqwest-middleware = "0.2.0"
 percent-encoding = "2.2.0"
 lazy_static = "1.4.0"
 postgres_db = { path = "../postgres_db" }
-historic_solver_job_server = { path = "../historic_solver_job_server" }
 async-trait = "0.1.61"
 dotenv = "0.15.0"
+tempfile = "3.3.0"
+historic_solver_job_server = { path = "../historic_solver_job_server" }

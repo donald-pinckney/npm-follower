@@ -1,12 +1,3 @@
-// but yeah, my plan for looking at update flows is:
-// 1. Suppose we want to look at how long it takes for lodash 1.0.0 -> 1.0.1 to flow to downstream packages. Let the upload time of 1.0.1 be T_0.
-// 2. I get the set \mathcal{P} of all transitive downstream packages of lodash.
-// 3. For each package P in \mathcal{P}, I select the most recent version V_0 at time T_0 - \epsilon.
-// 4. Then I solve dependencies for V_0, pretending the time is T_0 - \epsilon. If it doesn't include lodash 1.0.0, then I bail out, since V_0 already out of date.
-// 5. I then solve V_0 at time T_0. If it contains lodash 1.0.1, and no other versions of lodash, then I categorize the flow as "instant", and bail out.
-// 6. Otherwise, I increment T = T_0 + 1 day, select the most recent version of P at time T, say V, and solve V at time T.
-//    If it contains lodash 1.0.1 and no other versions, then the flow is categorized as "non-instant" with dT = T - T_0. Loop 6 until done, or give up.
-
 use async_trait::async_trait;
 use chrono::{DateTime, Duration, Utc};
 use historic_solver_job_server::{
@@ -15,6 +6,8 @@ use historic_solver_job_server::{
 };
 use lazy_static::lazy_static;
 use postgres_db::connection::async_pool::DbConnection;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use tokio::sync::mpsc::{self, UnboundedSender};
 
 mod run_solve_job;
@@ -35,13 +28,13 @@ lazy_static! {
 
 #[async_trait]
 trait RunnableJob {
-    async fn run(self) -> JobResult;
+    async fn run(self, req_client: ClientWithMiddleware) -> JobResult;
 }
 
 #[async_trait]
 impl RunnableJob for Job {
-    async fn run(self) -> JobResult {
-        run_solve_job::run_solve_job(self).await
+    async fn run(self, req_client: ClientWithMiddleware) -> JobResult {
+        run_solve_job::run_solve_job(self, req_client).await
     }
 }
 
@@ -57,7 +50,12 @@ async fn main() {
 
         let db = DbConnection::connect().await;
 
-        grab_and_run_job_batch(&mut active_jobs, &result_tx, &db).await;
+        let retry_policy = ExponentialBackoff::builder().build_with_max_retries(6);
+        let req_client = ClientBuilder::new(reqwest::Client::new())
+            .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+            .build();
+
+        grab_and_run_job_batch(&mut active_jobs, &result_tx, &db, &req_client).await;
 
         if active_jobs == 0 {
             println!("We got no initial jobs to run, exiting.");
@@ -73,7 +71,7 @@ async fn main() {
             let dt = now - start_time;
 
             if active_jobs < schedule_more_jobs_if_fewer_than && dt < CONFIG.max_job_time {
-                grab_and_run_job_batch(&mut active_jobs, &result_tx, &db).await;
+                grab_and_run_job_batch(&mut active_jobs, &result_tx, &db, &req_client).await;
             }
 
             if active_jobs == 0 {
@@ -90,6 +88,7 @@ async fn grab_and_run_job_batch(
     active_jobs: &mut i64,
     result_tx: &UnboundedSender<JobResult>,
     db: &DbConnection,
+    req_client: &ClientWithMiddleware,
 ) {
     let jobs = grab_job_batch(db).await;
 
@@ -103,8 +102,9 @@ async fn grab_and_run_job_batch(
 
     for job in jobs {
         let result_tx = result_tx.clone();
+        let req_client = req_client.clone();
         tokio::task::spawn(async move {
-            let job_result = job.run().await;
+            let job_result = job.run(req_client).await;
             result_tx.send(job_result).unwrap();
         });
     }
