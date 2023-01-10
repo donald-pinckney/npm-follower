@@ -5,8 +5,6 @@ use std::io::BufWriter;
 use std::io::Write;
 use std::path::PathBuf;
 
-use crate::MaxConcurrencyClient;
-
 use super::CONFIG;
 use async_process::Command;
 use async_process::Stdio;
@@ -16,6 +14,7 @@ use chrono::Utc;
 use historic_solver_job_server::packument_requests::parse_packument;
 use historic_solver_job_server::packument_requests::restrict_time;
 use historic_solver_job_server::packument_requests::ParsedPackument;
+use historic_solver_job_server::MaxConcurrencyClient;
 use historic_solver_job_server::ResultCategory;
 use historic_solver_job_server::ResultError;
 use historic_solver_job_server::SolveResult;
@@ -83,8 +82,8 @@ async fn run_solve_job_result(
         _ => panic!("non-object packument"),
     };
 
-    let packument_doc = Some(parse_packument(packument_doc, &job.downstream_package_name))
-        .expect("Downstream missing");
+    let packument_doc = parse_packument(packument_doc, &job.downstream_package_name)
+        .ok_or(ResultError::DownstreamMissingPackage)?;
 
     // 2. Allocate temp dir to work in
     let new_tmp_dir = tempdir().unwrap();
@@ -171,7 +170,7 @@ async fn solve_dependencies(
 ) -> Result<SolveSolutionMetrics, ResultError> {
     let (semver_at_time, package_json_at_time) =
         get_most_recent_leq_time(packument_doc, dt, solve_package_name)
-            .ok_or(ResultError::DownstreamMissing)?;
+            .ok_or(ResultError::DownstreamMissingVersion)?;
 
     let solve_dir = make_solve_dir(temp_dir);
 

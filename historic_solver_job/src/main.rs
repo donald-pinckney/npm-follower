@@ -1,10 +1,10 @@
-use std::sync::Arc;
+use std::{borrow::BorrowMut, sync::Arc};
 
 use async_trait::async_trait;
 use chrono::{DateTime, Duration, Utc};
 use historic_solver_job_server::{
     async_pool::{handle_get_jobs, handle_submit_result},
-    Job, JobResult,
+    Job, JobResult, MaxConcurrencyClient,
 };
 use lazy_static::lazy_static;
 use postgres_db::connection::async_pool::DbConnection;
@@ -12,7 +12,10 @@ use reqwest::IntoUrl;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware, RequestBuilder};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde_json::Value;
-use tokio::sync::mpsc::{self, UnboundedSender};
+use tokio::sync::{
+    mpsc::{self, UnboundedSender},
+    RwLock,
+};
 
 mod run_solve_job;
 
@@ -42,36 +45,6 @@ impl RunnableJob for Job {
     }
 }
 
-#[derive(Clone)]
-struct MaxConcurrencyClient {
-    client: ClientWithMiddleware,
-    semaphore: Arc<tokio::sync::Semaphore>,
-}
-
-impl MaxConcurrencyClient {
-    fn new(client: ClientWithMiddleware, max_concurrency: usize) -> Self {
-        MaxConcurrencyClient {
-            client,
-            semaphore: Arc::new(tokio::sync::Semaphore::new(max_concurrency)),
-        }
-    }
-
-    async fn get<U: IntoUrl>(&self, url: U) -> Value {
-        let permit = self.semaphore.acquire().await.unwrap();
-        let res = self
-            .client
-            .get(url)
-            .send()
-            .await
-            .unwrap()
-            .json::<Value>()
-            .await
-            .unwrap();
-        drop(permit);
-        res
-    }
-}
-
 #[tokio::main]
 async fn main() {
     let (result_tx, mut result_rx) = mpsc::unbounded_channel();
@@ -79,9 +52,19 @@ async fn main() {
     let schedule_more_jobs_if_fewer_than = JOBS_PER_THREAD * CONFIG.num_threads / 10;
     let start_time = Utc::now();
 
-    tokio::spawn(async move {
-        let mut active_jobs: i64 = 0;
+    let active_jobs: Arc<RwLock<i64>> = Arc::new(tokio::sync::RwLock::new(0));
+    let active_jobs2 = active_jobs.clone();
 
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(30));
+
+        loop {
+            interval.tick().await;
+            println!("queue size: {}", active_jobs2.read().await);
+        }
+    });
+
+    tokio::spawn(async move {
         let db = DbConnection::connect().await;
 
         let retry_policy = ExponentialBackoff::builder().build_with_max_retries(6);
@@ -90,9 +73,9 @@ async fn main() {
             .build();
         let req_client = MaxConcurrencyClient::new(req_client, CONFIG.num_threads as usize);
 
-        grab_and_run_job_batch(&mut active_jobs, &result_tx, &db, &req_client).await;
+        grab_and_run_job_batch(active_jobs.as_ref(), &result_tx, &db, &req_client).await;
 
-        if active_jobs == 0 {
+        if *active_jobs.read().await == 0 {
             println!("We got no initial jobs to run, exiting.");
             return;
         }
@@ -100,16 +83,20 @@ async fn main() {
         while let Some(result) = result_rx.recv().await {
             write_result_to_postgres(result, &db).await;
 
-            active_jobs -= 1;
+            let new_active_jobs = {
+                let mut active_jobs_lock = active_jobs.write().await;
+                *active_jobs_lock -= 1;
+                *active_jobs_lock
+            };
 
             let now = Utc::now();
             let dt = now - start_time;
 
-            if active_jobs < schedule_more_jobs_if_fewer_than && dt < CONFIG.max_job_time {
-                grab_and_run_job_batch(&mut active_jobs, &result_tx, &db, &req_client).await;
+            if new_active_jobs < schedule_more_jobs_if_fewer_than && dt < CONFIG.max_job_time {
+                grab_and_run_job_batch(active_jobs.as_ref(), &result_tx, &db, &req_client).await;
             }
 
-            if active_jobs == 0 {
+            if *active_jobs.read().await == 0 {
                 println!("No jobs left to run, exiting");
                 return;
             }
@@ -120,20 +107,23 @@ async fn main() {
 }
 
 async fn grab_and_run_job_batch(
-    active_jobs: &mut i64,
+    active_jobs: &RwLock<i64>,
     result_tx: &UnboundedSender<JobResult>,
     db: &DbConnection,
     req_client: &MaxConcurrencyClient,
 ) {
     let jobs = grab_job_batch(db).await;
 
-    println!(
-        "Fetched new jobs. Queue size {} -> {}",
-        *active_jobs,
-        *active_jobs + jobs.len() as i64
-    );
+    {
+        let mut active_jobs = active_jobs.write().await;
+        println!(
+            "Fetched new jobs. Queue size {} -> {}",
+            *active_jobs,
+            *active_jobs + jobs.len() as i64
+        );
 
-    *active_jobs += jobs.len() as i64;
+        *active_jobs += jobs.len() as i64;
+    }
 
     for job in jobs {
         let result_tx = result_tx.clone();

@@ -16,13 +16,16 @@ num_threads=32
 
 export npm_config_cache=$npm_cache_dir
 
+echo "using npm cache dir: $npm_cache_dir"
+
 # $(hostname)
+# REGISTRY_HOST=pinckney2.vpc.ripley.cloud \
 
 TOKIO_WORKER_THREADS=$num_threads \
 REGISTRY_HOST=pinckney2.vpc.ripley.cloud \
-NODE_NAME="TEST" \
+NODE_NAME=$(hostname) \
 MAX_JOB_TIME=$remaining_time \
-cargo run
+cargo run --release
 # ./target/release/historic_solver_job
 
 rm -rf $npm_cache_dir

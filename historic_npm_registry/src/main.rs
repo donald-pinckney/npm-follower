@@ -8,6 +8,7 @@ use historic_solver_job_server::packument_requests::parse_packument;
 use historic_solver_job_server::packument_requests::restrict_time;
 use historic_solver_job_server::packument_requests::NpmCache;
 use historic_solver_job_server::packument_requests::ParsedPackument;
+use historic_solver_job_server::MaxConcurrencyClient;
 use moka::future::Cache;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -23,31 +24,26 @@ use warp::Reply;
 
 async fn request_package_from_npm(
     full_name: &str,
-    client: ClientWithMiddleware,
+    client: MaxConcurrencyClient,
 ) -> Option<ParsedPackument<()>> {
     // println!("hitting NPM for: {}", full_name);
 
     let packument_doc = client
         .get(format!("https://registry.npmjs.org/{}", full_name))
-        .send()
-        .await
-        .unwrap()
-        .json::<Value>()
-        .await
-        .unwrap();
+        .await;
 
     let packument_doc = match packument_doc {
         Value::Object(o) => o,
         _ => panic!("non-object packument"),
     };
 
-    Some(parse_packument(packument_doc, full_name))
+    parse_packument(packument_doc, full_name)
 }
 
 async fn lookup_package(
     maybe_t: Option<DateTime<Utc>>,
     full_name: &str,
-    client: ClientWithMiddleware,
+    client: MaxConcurrencyClient,
     cache: NpmCache,
 ) -> Option<ParsedPackument<String>> {
     // println!("looking up: {}", full_name);
@@ -113,7 +109,7 @@ async fn handle_request(
     t_str_url_encoded: String,
     scope: Option<String>,
     name: String,
-    client: ClientWithMiddleware,
+    client: MaxConcurrencyClient,
     cache: NpmCache,
 ) -> warp::reply::Json {
     // println!("handle_request");
@@ -173,6 +169,7 @@ async fn main() {
     let req_client = ClientBuilder::new(reqwest::Client::new())
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build();
+    let req_client = MaxConcurrencyClient::new(req_client, 64);
     let req_client2 = req_client.clone();
 
     let cache = Cache::new(4_194_304);

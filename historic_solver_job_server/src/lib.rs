@@ -10,7 +10,12 @@ use diesel::{
 };
 use moka::future::Cache;
 use postgres_db::{custom_types::Semver, schema::sql_types::SemverStruct};
+use reqwest::IntoUrl;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::sync::Arc;
 
 // job input table:
 // update_from_id   |   update_to_id   |   downstream_package_id   |  state ("none", "started", "done")  |  start_time  |  work_node  |  update_package_name    |   update_from_version    |    update_to_version    |   update_to_time    |    downstream_package_name
@@ -93,7 +98,8 @@ pub enum ResultCategory {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ResultError {
-    DownstreamMissing,
+    DownstreamMissingPackage,
+    DownstreamMissingVersion,
     FromMissing,
     GaveUp,
     RemovedDep,
@@ -105,7 +111,12 @@ impl ToSql<diesel::sql_types::Text, Pg> for ResultCategory {
     fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let as_str: &'static [u8] = match self {
             ResultCategory::Ok => b"Ok",
-            ResultCategory::Error(ResultError::DownstreamMissing) => b"DownstreamMissing",
+            ResultCategory::Error(ResultError::DownstreamMissingPackage) => {
+                b"DownstreamMissingPackage"
+            }
+            ResultCategory::Error(ResultError::DownstreamMissingVersion) => {
+                b"DownstreamMissingVersion"
+            }
             ResultCategory::Error(ResultError::FromMissing) => b"FromMissing",
             ResultCategory::Error(ResultError::GaveUp) => b"GaveUp",
             ResultCategory::Error(ResultError::RemovedDep) => b"RemovedDep",
@@ -217,9 +228,9 @@ pub mod async_pool {
         job_result: JobResult,
         db: &DbConnection,
     ) -> Result<(), String> {
-        // let query = diesel::insert_into(job_results::table).values(&job_result);
+        let query = diesel::insert_into(job_results::table).values(&job_result);
 
-        // db.execute(query).await.unwrap();
+        db.execute(query).await.unwrap();
 
         Ok(())
     }
@@ -301,10 +312,12 @@ pub mod packument_requests {
         dt.with_timezone(&Utc)
     }
 
-    pub fn parse_packument(mut j: Map<String, Value>, package_name: &str) -> ParsedPackument<()> {
-        let versions = j
-            .remove("versions")
-            .expect(format!("versions must be present: {}", package_name).as_str());
+    pub fn parse_packument(
+        mut j: Map<String, Value>,
+        package_name: &str,
+    ) -> Option<ParsedPackument<()>> {
+        let versions = j.remove("versions")?;
+
         let mut time = j
             .remove("time")
             .expect(format!("time must be present: {}", package_name).as_str());
@@ -368,15 +381,48 @@ pub mod packument_requests {
 
         sorted_times.sort_by_key(|(_, dt)| *dt);
 
-        ParsedPackument {
+        Some(ParsedPackument {
             latest_tag: (),
             versions,
             sorted_times,
             modified_time,
             created_time,
-        }
+        })
     }
 }
+
+#[derive(Clone)]
+pub struct MaxConcurrencyClient {
+    client: ClientWithMiddleware,
+    semaphore: Arc<tokio::sync::Semaphore>,
+}
+
+impl MaxConcurrencyClient {
+    pub fn new(client: ClientWithMiddleware, max_concurrency: usize) -> Self {
+        MaxConcurrencyClient {
+            client,
+            semaphore: Arc::new(tokio::sync::Semaphore::new(max_concurrency)),
+        }
+    }
+
+    pub async fn get<U: IntoUrl + std::fmt::Debug>(&self, url: U) -> Value {
+        let permit = self.semaphore.acquire().await.unwrap();
+        // println!("GET: {:?}", url);
+        let res = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .unwrap()
+            .json::<Value>()
+            .await
+            .unwrap();
+        // println!("{}", res);
+        drop(permit);
+        res
+    }
+}
+
 // pub mod sync {
 //     use diesel::{
 //         sql_query,
