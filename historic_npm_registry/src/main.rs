@@ -4,11 +4,15 @@ use std::sync::Arc;
 
 use chrono::DateTime;
 use chrono::Utc;
+use headers::ContentLength;
+use headers::ContentType;
+use headers::HeaderMapExt;
 use historic_solver_job_server::packument_requests::parse_packument;
 use historic_solver_job_server::packument_requests::restrict_time;
 use historic_solver_job_server::packument_requests::NpmCache;
 use historic_solver_job_server::packument_requests::ParsedPackument;
 use historic_solver_job_server::MaxConcurrencyClient;
+use mime::Mime;
 use moka::future::Cache;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -16,8 +20,11 @@ use serde_json::json;
 use serde_json::Map;
 use serde_json::Value;
 use warp::http::StatusCode;
+use warp::hyper::body::Bytes;
+use warp::hyper::Body;
 use warp::hyper::Uri;
 use warp::reply;
+use warp::reply::Response;
 use warp::Filter;
 use warp::Rejection;
 use warp::Reply;
@@ -161,6 +168,19 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
     ))
 }
 
+fn handle_tarball_empty() -> Response {
+    let empty_tarball_bytes = Bytes::from_static(include_bytes!("../empty-package.tar"));
+    let len = empty_tarball_bytes.len();
+    let mut resp = Response::new(Body::from(empty_tarball_bytes));
+
+    resp.headers_mut().typed_insert(ContentLength(len as u64));
+    resp.headers_mut().typed_insert(ContentType::from(
+        "application/gzip".parse::<Mime>().unwrap(),
+    ));
+
+    resp
+}
+
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
@@ -208,11 +228,15 @@ async fn main() {
 
     let log = warp::log("http");
 
+    // let file_semaphore
+
     let tarball_redirect = warp::path!(String / String / "-" / String)
         .and(warp::path::end())
         .map(|_time, _name, _tarball_name| ())
         .untuple_one()
-        .and(warp::fs::file("empty-package.tar"));
+        .map(handle_tarball_empty);
+
+    // .and(warp::fs::file("empty-package.tar"));
 
     // .untuple_one()
     // .untuple_one();
