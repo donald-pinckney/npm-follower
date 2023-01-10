@@ -258,7 +258,7 @@ async fn main() {
         .and(warp::path::end())
         .map(|_time, _scope, _name, _tarball_name| ())
         .untuple_one()
-        .and(warp::fs::file("empty-package.tar"));
+        .map(handle_tarball_empty);
 
     // .map(|_time, scope, name, tarball_name| {
     //     let uri = Uri::builder()
