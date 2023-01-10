@@ -171,7 +171,7 @@ fn load_config() -> Configuration {
         24 * 60 * 60 * dash_comps[0].parse::<i64>().unwrap() + non_day_secs
     };
 
-    let desired_secs = secs - 60 * 5;
+    let desired_secs = secs - 60 * 20;
 
     Configuration {
         num_threads: env::var("TOKIO_WORKER_THREADS")

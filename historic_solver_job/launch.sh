@@ -25,7 +25,7 @@ TOKIO_WORKER_THREADS=$num_threads \
 REGISTRY_HOST=pinckney2.vpc.ripley.cloud \
 NODE_NAME=$(hostname) \
 MAX_JOB_TIME=$remaining_time \
-cargo run --release
-# ./target/release/historic_solver_job
+../target/release/historic_solver_job
+# cargo run --release
 
 rm -rf $npm_cache_dir
