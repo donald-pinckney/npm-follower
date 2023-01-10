@@ -203,7 +203,7 @@ pub mod async_pool {
                 SELECT update_from_id, update_to_id, downstream_package_id
                 FROM   historic_solver_job_inputs
                 WHERE  job_state = 'none'
-                ORDER BY update_from_id, downstream_package_id
+                ORDER BY update_from_id desc, downstream_package_id desc
                 LIMIT  $1
                 FOR    UPDATE SKIP LOCKED
                 )
