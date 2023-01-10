@@ -304,9 +304,11 @@ pub mod packument_requests {
         dt.with_timezone(&Utc)
     }
 
-    pub fn parse_packument(mut j: Map<String, Value>) -> ParsedPackument {
+    pub fn parse_packument(mut j: Map<String, Value>, package_name: &str) -> ParsedPackument {
         let latest_tag = {
-            let dist_tags = j.remove("dist-tags").expect("dist-tags must be present");
+            let dist_tags = j
+                .remove("dist-tags")
+                .expect(&format!("dist-tags must be present: {}", package_name));
             dist_tags
                 .as_object()
                 .expect("dist-tags must be an object")

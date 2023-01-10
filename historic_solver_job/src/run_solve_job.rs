@@ -83,7 +83,8 @@ async fn run_solve_job_result(
         _ => panic!("non-object packument"),
     };
 
-    let packument_doc = Some(parse_packument(packument_doc)).expect("Downstream missing");
+    let packument_doc = Some(parse_packument(packument_doc, &job.downstream_package_name))
+        .expect("Downstream missing");
 
     // 2. Allocate temp dir to work in
     let new_tmp_dir = tempdir().unwrap();

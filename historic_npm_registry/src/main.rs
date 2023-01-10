@@ -41,7 +41,7 @@ async fn request_package_from_npm(
         _ => panic!("non-object packument"),
     };
 
-    Some(parse_packument(packument_doc))
+    Some(parse_packument(packument_doc, full_name))
 }
 
 async fn lookup_package(
