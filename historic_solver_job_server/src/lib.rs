@@ -43,20 +43,20 @@ diesel::table! {
 #[diesel(postgres_type(name = "historic_solver_solve_result_struct"))]
 pub struct SolveResultSql;
 
-#[derive(diesel::sql_types::SqlType)]
-#[diesel(postgres_type(name = "Text"))]
-pub struct ResultCategorySql;
+// #[derive(diesel::sql_types::SqlType)]
+// #[diesel(postgres_type(name = "Text"))]
+// pub struct ResultCategorySql;
 
 diesel::table! {
     use diesel::sql_types::*;
     use postgres_db::schema::sql_types::SemverStruct;
-    use super::{SolveResultSql, ResultCategorySql};
+    use super::{SolveResultSql};
 
     job_results (update_from_id, update_to_id, downstream_package_id) {
         update_from_id -> Int8,
         update_to_id -> Int8,
         downstream_package_id -> Int8,
-        result_category -> ResultCategorySql, // see below
+        result_category -> Text, // see below
         solve_history -> Array<SolveResultSql>, // [(solve_time, [v])]
     }
 }
@@ -85,7 +85,7 @@ pub struct JobResult {
 }
 
 #[derive(Debug, Serialize, Deserialize, AsExpression)]
-#[diesel(sql_type = ResultCategorySql)]
+#[diesel(sql_type = diesel::sql_types::Text)]
 pub enum ResultCategory {
     Ok,
     Error(ResultError),
@@ -101,7 +101,7 @@ pub enum ResultError {
     MiscError,
 }
 
-impl ToSql<ResultCategorySql, Pg> for ResultCategory {
+impl ToSql<diesel::sql_types::Text, Pg> for ResultCategory {
     fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let as_str: &'static [u8] = match self {
             ResultCategory::Ok => b"Ok",
@@ -122,14 +122,19 @@ impl ToSql<ResultCategorySql, Pg> for ResultCategory {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SolveResult {
     pub solve_time: DateTime<Utc>,
+    pub downstream_version: Semver,
     pub update_versions: Vec<Semver>,
 }
 
-type SolveResultRecordSql = (Timestamptz, Array<SemverStruct>);
+type SolveResultRecordSql = (Timestamptz, SemverStruct, Array<SemverStruct>);
 
 impl ToSql<SolveResultSql, Pg> for SolveResult {
     fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
-        let record: (&DateTime<Utc>, &Vec<Semver>) = (&self.solve_time, &self.update_versions);
+        let record: (&DateTime<Utc>, &Semver, &Vec<Semver>) = (
+            &self.solve_time,
+            &self.downstream_version,
+            &self.update_versions,
+        );
         WriteTuple::<SolveResultRecordSql>::write_tuple(&record, out)
     }
 }
@@ -212,9 +217,9 @@ pub mod async_pool {
         job_result: JobResult,
         db: &DbConnection,
     ) -> Result<(), String> {
-        let query = diesel::insert_into(job_results::table).values(&job_result);
+        // let query = diesel::insert_into(job_results::table).values(&job_result);
 
-        db.execute(query).await.unwrap();
+        // db.execute(query).await.unwrap();
 
         Ok(())
     }
@@ -241,6 +246,7 @@ pub mod packument_requests {
     pub fn restrict_time(
         packument: &ParsedPackument,
         maybe_filter_time: Option<DateTime<Utc>>,
+        package_name: &str,
     ) -> Option<ParsedPackument> {
         let filter_time = maybe_filter_time.unwrap_or(DateTime::<Utc>::MAX_UTC);
 
@@ -267,7 +273,10 @@ pub mod packument_requests {
                     packument
                         .versions
                         .get(v_name)
-                        .expect("version must exist")
+                        .expect(&format!(
+                            "version must exist, pkg = {}, v = {}",
+                            package_name, v_name
+                        ))
                         .clone(),
                 )
             })
@@ -331,6 +340,7 @@ pub mod packument_requests {
             }
         }
 
+        // Get modified & created times
         let time = time.as_object_mut().expect("time must be an object");
         let modified_time = parse_datetime(
             time.remove("modified")
@@ -345,6 +355,17 @@ pub mod packument_requests {
                 .as_str()
                 .expect("time must be a string"),
         );
+
+        // Remove all betas, and interesect time versions and verion versions
+        time.retain(|v_name, _| {
+            if v_name.contains('-') || v_name.contains('+') {
+                false
+            } else {
+                versions.contains_key(v_name)
+            }
+        });
+
+        versions.retain(|v_name, _| time.contains_key(v_name));
 
         let mut sorted_times: Vec<_> = std::mem::take(time)
             .into_iter()

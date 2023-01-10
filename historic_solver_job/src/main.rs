@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use chrono::{DateTime, Duration, Utc};
 use historic_solver_job_server::{
@@ -6,8 +8,10 @@ use historic_solver_job_server::{
 };
 use lazy_static::lazy_static;
 use postgres_db::connection::async_pool::DbConnection;
-use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest::IntoUrl;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware, RequestBuilder};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+use serde_json::Value;
 use tokio::sync::mpsc::{self, UnboundedSender};
 
 mod run_solve_job;
@@ -28,13 +32,43 @@ lazy_static! {
 
 #[async_trait]
 trait RunnableJob {
-    async fn run(self, req_client: ClientWithMiddleware) -> JobResult;
+    async fn run(self, req_client: MaxConcurrencyClient) -> JobResult;
 }
 
 #[async_trait]
 impl RunnableJob for Job {
-    async fn run(self, req_client: ClientWithMiddleware) -> JobResult {
+    async fn run(self, req_client: MaxConcurrencyClient) -> JobResult {
         run_solve_job::run_solve_job(self, req_client).await
+    }
+}
+
+#[derive(Clone)]
+struct MaxConcurrencyClient {
+    client: ClientWithMiddleware,
+    semaphore: Arc<tokio::sync::Semaphore>,
+}
+
+impl MaxConcurrencyClient {
+    fn new(client: ClientWithMiddleware, max_concurrency: usize) -> Self {
+        MaxConcurrencyClient {
+            client,
+            semaphore: Arc::new(tokio::sync::Semaphore::new(max_concurrency)),
+        }
+    }
+
+    async fn get<U: IntoUrl>(&self, url: U) -> Value {
+        let permit = self.semaphore.acquire().await.unwrap();
+        let res = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .unwrap()
+            .json::<Value>()
+            .await
+            .unwrap();
+        drop(permit);
+        res
     }
 }
 
@@ -54,6 +88,7 @@ async fn main() {
         let req_client = ClientBuilder::new(reqwest::Client::new())
             .with(RetryTransientMiddleware::new_with_policy(retry_policy))
             .build();
+        let req_client = MaxConcurrencyClient::new(req_client, CONFIG.num_threads as usize);
 
         grab_and_run_job_batch(&mut active_jobs, &result_tx, &db, &req_client).await;
 
@@ -88,7 +123,7 @@ async fn grab_and_run_job_batch(
     active_jobs: &mut i64,
     result_tx: &UnboundedSender<JobResult>,
     db: &DbConnection,
-    req_client: &ClientWithMiddleware,
+    req_client: &MaxConcurrencyClient,
 ) {
     let jobs = grab_job_batch(db).await;
 

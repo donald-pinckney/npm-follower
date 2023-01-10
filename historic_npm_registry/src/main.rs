@@ -52,7 +52,7 @@ async fn lookup_package(
 ) -> Option<ParsedPackument> {
     // println!("looking up: {}", full_name);
     if let Some(cache_hit) = cache.get(full_name) {
-        cache_hit.and_then(|x| restrict_time(&x, maybe_t))
+        cache_hit.and_then(|x| restrict_time(&x, maybe_t, full_name))
     } else {
         let npm_response = request_package_from_npm(full_name, client).await;
         let npm_response = npm_response.map(Arc::new);
@@ -60,7 +60,7 @@ async fn lookup_package(
         cache
             .insert(full_name.to_owned(), npm_response.clone())
             .await;
-        npm_response.and_then(|x| restrict_time(&x, maybe_t))
+        npm_response.and_then(|x| restrict_time(&x, maybe_t, full_name))
     }
 }
 
