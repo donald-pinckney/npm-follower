@@ -192,7 +192,7 @@ async fn main() {
     let req_client = MaxConcurrencyClient::new(req_client, 64);
     let req_client2 = req_client.clone();
 
-    let cache = Cache::new(4_194_304);
+    let cache = Cache::new(32_768);
     let cache2 = cache.clone();
 
     let non_scoped = warp::path::param::<String>()
