@@ -10,7 +10,7 @@ use diesel::{
 };
 use moka::future::Cache;
 use postgres_db::{custom_types::Semver, schema::sql_types::SemverStruct};
-use reqwest::IntoUrl;
+use reqwest::{IntoUrl, Url};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
@@ -446,17 +446,24 @@ impl MaxConcurrencyClient {
     pub async fn get<U: IntoUrl + std::fmt::Debug>(&self, url: U) -> Value {
         let permit = self.semaphore.acquire().await.unwrap();
         // println!("GET: {:?}", url);
-        let res = self
-            .client
-            .get(url)
-            .send()
-            .await
-            .unwrap()
-            .json::<Value>()
-            .await
-            .unwrap();
+
+        let res = self.get_retry(url).await;
+
         // println!("{}", res);
         drop(permit);
         res
+    }
+
+    async fn get_retry<U: IntoUrl + std::fmt::Debug>(&self, url: U) -> Value {
+        let u: Url = url.into_url().unwrap();
+        loop {
+            if let Ok(send_ok) = self.client.get(u.clone()).send().await {
+                if let Ok(this_resp) = send_ok.json::<Value>().await {
+                    return this_resp;
+                }
+            }
+
+            tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
+        }
     }
 }
