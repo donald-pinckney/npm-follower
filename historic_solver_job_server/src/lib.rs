@@ -62,9 +62,9 @@ diesel::table! {
         update_to_id -> Int8,
         downstream_package_id -> Int8,
         result_category -> Text, // see below
-        solve_history -> Array<SolveResultSql>, // [(solve_time, [v])]
         stdout -> Text,
         stderr -> Text,
+        solve_history -> Array<SolveResultSql>, // [(solve_time, v, [v], json)]
     }
 }
 

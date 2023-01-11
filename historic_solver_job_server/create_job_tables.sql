@@ -4,6 +4,13 @@ CREATE TYPE historic_solver_solve_result_struct AS (
     present_versions semver_struct []
 );
 
+CREATE TYPE historic_solver_solve_result_struct_new AS (
+    solve_time TIMESTAMP WITH TIME ZONE,
+    downstream_version semver_struct,
+    present_versions semver_struct [],
+    full_package_lock jsonb
+);
+
 
 CREATE TABLE historic_solver_job_inputs (
     update_from_id BIGINT,
@@ -30,9 +37,9 @@ CREATE TABLE historic_solver_job_results (
     update_to_id BIGINT,
     downstream_package_id BIGINT,
     result_category TEXT NOT NULL,
-    solve_history historic_solver_solve_result_struct [] NOT NULL,
     stdout TEXT NOT NULL,
     stderr TEXT NOT NULL,
+    solve_history historic_solver_solve_result_struct [] NOT NULL,
     -- [(solve_time, [v])]
     PRIMARY KEY(
         update_from_id,
