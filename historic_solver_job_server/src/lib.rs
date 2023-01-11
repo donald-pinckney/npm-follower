@@ -456,12 +456,19 @@ impl MaxConcurrencyClient {
 
     async fn get_retry<U: IntoUrl + std::fmt::Debug>(&self, url: U) -> Value {
         let u: Url = url.into_url().unwrap();
+        let mut i = 0;
         loop {
+            if i >= 10 {
+                panic!("stoping after 10 retries");
+            }
+            
             if let Ok(send_ok) = self.client.get(u.clone()).send().await {
                 if let Ok(this_resp) = send_ok.json::<Value>().await {
                     return this_resp;
                 }
             }
+
+            i += 1;
 
             tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
         }
