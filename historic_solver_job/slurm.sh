@@ -8,4 +8,5 @@
 #SBATCH --partition=short
 
 ssh -L 5431:localhost:5432  pinckney@pinckney2.vpc.ripley.cloud -N -f
+module unload discovery
 ./launch.sh
