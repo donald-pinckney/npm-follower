@@ -161,6 +161,8 @@ pub mod async_pool {
     };
     use postgres_db::connection::async_pool::{DbConnection, QueryRunner};
 
+    // use crate::historic_solver_job_inputs;
+
     use super::historic_solver_job_results;
     use super::Job;
     use super::JobResult;
@@ -233,9 +235,24 @@ pub mod async_pool {
         job_result: JobResult,
         db: &DbConnection,
     ) -> Result<(), String> {
+        use crate::historic_solver_job_inputs::dsl::*;
+        use diesel::prelude::*;
+
         let query = diesel::insert_into(historic_solver_job_results::table).values(&job_result);
 
         db.execute(query).await.unwrap();
+
+        let done_query = diesel::update(
+            historic_solver_job_inputs.filter(
+                update_from_id
+                    .eq(job_result.update_from_id)
+                    .and(update_to_id.eq(job_result.update_to_id))
+                    .and(downstream_package_id.eq(job_result.downstream_package_id)),
+            ),
+        )
+        .set(job_state.eq("done".to_string()));
+
+        db.execute(done_query).await.unwrap();
 
         Ok(())
     }
@@ -359,7 +376,6 @@ pub mod packument_requests {
                         || k == "peerDependenciesMeta"
                         || k == "overrides"
                         || k == "bundleDependencies"
-
                 });
             }
         }
