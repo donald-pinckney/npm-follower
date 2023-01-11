@@ -133,7 +133,11 @@ async fn run_solve_job_result(
 
     // 4. If the current downstream doesn't contain current upstream, then we bail
     if !initial_solve.contains(&job.update_package_name, &job.update_from_version) {
-        return Err(ResultError::FromMissing);
+        if initial_solve.are_deps_removed(&job.update_package_name) {
+            return Err(ResultError::FromMissingPackage);
+        } else {
+            return Err(ResultError::FromMissingVersion);
+        }
     }
 
     history.push(initial_solve.to_solve_result(&job.update_package_name));
@@ -295,13 +299,15 @@ async fn solve_dependencies_impl(
 
     drop(subprocess_permit);
 
+    let lock_json_copy = lock_json.clone();
+
     let deps = lock_json
         .as_object_mut()
         .unwrap()
         .remove("packages")
         .unwrap();
 
-    let mut solution = SolveSolutionMetrics::new(downstream_v, dt);
+    let mut solution = SolveSolutionMetrics::new(downstream_v, dt, lock_json_copy);
 
     for (dep_path, dep_info) in deps.as_object().unwrap().iter() {
         if dep_path.is_empty() {
@@ -335,14 +341,16 @@ struct SolveSolutionMetrics {
     downstream_v: Semver,
     solve_time: DateTime<Utc>,
     deps: HashMap<String, HashSet<Semver>>,
+    full_package_lock: Value,
 }
 
 impl SolveSolutionMetrics {
-    fn new(downstream_v: Semver, solve_time: DateTime<Utc>) -> Self {
+    fn new(downstream_v: Semver, solve_time: DateTime<Utc>, full_package_lock: Value) -> Self {
         Self {
             downstream_v,
             solve_time,
             deps: HashMap::new(),
+            full_package_lock
         }
     }
 
@@ -370,6 +378,7 @@ impl SolveSolutionMetrics {
             solve_time: self.solve_time,
             downstream_version: self.downstream_v.clone(),
             update_versions: versions,
+            full_package_lock: self.full_package_lock.clone()
         }
     }
 

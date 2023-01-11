@@ -5,7 +5,7 @@ use diesel::{
     pg::Pg,
     prelude::*,
     serialize::{self, Output, ToSql, WriteTuple},
-    sql_types::{Array, Timestamptz},
+    sql_types::{Array, Jsonb, Timestamptz},
     AsExpression,
 };
 use moka::future::Cache;
@@ -87,7 +87,7 @@ pub struct JobResult {
     pub update_from_id: i64,
     pub update_to_id: i64,
     pub downstream_package_id: i64,
-    pub result_category: ResultCategory, // ("FromMissing", "GaveUp", "RemovedDep", "SolveError", "Ok", "MiscError")
+    pub result_category: ResultCategory,
     pub solve_history: Vec<SolveResult>,
     pub stdout: String,
     pub stderr: String,
@@ -104,7 +104,8 @@ pub enum ResultCategory {
 pub enum ResultError {
     DownstreamMissingPackage,
     DownstreamMissingVersion,
-    FromMissing,
+    FromMissingPackage,
+    FromMissingVersion,
     GaveUp,
     RemovedDep,
     SolveError,
@@ -121,7 +122,8 @@ impl ToSql<diesel::sql_types::Text, Pg> for ResultCategory {
             ResultCategory::Error(ResultError::DownstreamMissingVersion) => {
                 b"DownstreamMissingVersion"
             }
-            ResultCategory::Error(ResultError::FromMissing) => b"FromMissing",
+            ResultCategory::Error(ResultError::FromMissingPackage) => b"FromMissingPackage",
+            ResultCategory::Error(ResultError::FromMissingVersion) => b"FromMissingVersion",
             ResultCategory::Error(ResultError::GaveUp) => b"GaveUp",
             ResultCategory::Error(ResultError::RemovedDep) => b"RemovedDep",
             ResultCategory::Error(ResultError::SolveError) => b"SolveError",
@@ -139,16 +141,18 @@ pub struct SolveResult {
     pub solve_time: DateTime<Utc>,
     pub downstream_version: Semver,
     pub update_versions: Vec<Semver>,
+    pub full_package_lock: Value,
 }
 
-type SolveResultRecordSql = (Timestamptz, SemverStruct, Array<SemverStruct>);
+type SolveResultRecordSql = (Timestamptz, SemverStruct, Array<SemverStruct>, Jsonb);
 
 impl ToSql<SolveResultSql, Pg> for SolveResult {
     fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
-        let record: (&DateTime<Utc>, &Semver, &Vec<Semver>) = (
+        let record: (&DateTime<Utc>, &Semver, &Vec<Semver>, &Value) = (
             &self.solve_time,
             &self.downstream_version,
             &self.update_versions,
+            &self.full_package_lock,
         );
         WriteTuple::<SolveResultRecordSql>::write_tuple(&record, out)
     }
@@ -461,7 +465,7 @@ impl MaxConcurrencyClient {
             if i >= 10 {
                 panic!("stoping after 10 retries");
             }
-            
+
             if let Ok(send_ok) = self.client.get(u.clone()).send().await {
                 if let Ok(this_resp) = send_ok.json::<Value>().await {
                     return this_resp;
