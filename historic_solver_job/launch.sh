@@ -19,9 +19,12 @@ export npm_config_cache=$npm_cache_dir
 echo "using npm cache dir: $npm_cache_dir"
 
 
+module load discovery
 ../target/release/historic_npm_registry &
 
 sleep 5
+
+module unload discovery
 
 curl http://127.0.0.1:8372/now/react > /tmp/react_result.json
 

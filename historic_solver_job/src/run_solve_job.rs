@@ -264,6 +264,7 @@ async fn solve_dependencies_impl(
     cmd.arg("--ignore-scripts");
     cmd.arg("--no-audit");
     cmd.arg("--no-fund");
+    cmd.arg("--no-update-notifier");
     cmd.arg("--registry");
     cmd.arg(registry_url);
     cmd.current_dir(solve_dir);
