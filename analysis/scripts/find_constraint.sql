@@ -16,9 +16,9 @@ BEGIN
     ELSIF constraint_string LIKE '% - %' THEN
         constraint_type := '-';
     ELSIF constraint_string LIKE '"^%' OR constraint_string LIKE '" ^%' THEN
-        constraint_type := '^';
+        constraint_type := 'minor';
     ELSIF constraint_string LIKE '"~%' OR constraint_string LIKE '" ~%' THEN
-        constraint_type := '~';
+        constraint_type := 'patch';
     ELSIF constraint_string LIKE '"<=%' OR constraint_string LIKE '" <=%' THEN
         constraint_type := '<=';
     ELSIF constraint_string LIKE '">=%' OR constraint_string LIKE '" >=%' THEN
@@ -30,25 +30,29 @@ BEGIN
     ELSIF constraint_string LIKE '"=%' OR constraint_string LIKE '" =%' THEN
         constraint_type := '=';
     ELSIF constraint_string ~ '^"\ *v?[0-9]+\.[0-9]+\.[x||X||\*]"$' THEN
-        constraint_type := 'x';
+        constraint_type := 'patch';
     ELSIF constraint_string ~ '^"\ *v?[0-9]+\.[x||X||\*](\.[x||X||\*])?"$' THEN
-        constraint_type := 'xx';
+        constraint_type := 'minor';
     ELSIF constraint_string ~ '^"\ *v?[x||X||\*]\.[x||X||\*]\.[x||X||\*]"$' THEN
-        constraint_type := '*'; -- same thing as '*'
+        constraint_type := 'major'; -- same thing as '*'
     ELSIF constraint_string ~ '^"\ *v?[0-9]+\.[0-9]+"$' THEN
-        constraint_type := 'x';
+        constraint_type := 'patch';
     ELSIF constraint_string ~ '^"\ *v?[0-9]+"$' THEN
-        constraint_type := 'xx';
+        constraint_type := 'minor';
     ELSIF constraint_string ~ '^"\ *v?[0-9]+\.[0-9]+\.[0-9]+-?.*"$' THEN
         constraint_type := '='; -- essentially a `=`
     ELSIF constraint_string LIKE '"*"' 
       OR constraint_string LIKE '" *"' 
       OR constraint_string LIKE '""' 
       OR constraint_string LIKE '"x"' 
-      OR constraint_string LIKE '" x"' THEN 
-        constraint_type := '*';
+      OR constraint_string LIKE '" x"'
+      OR constraint_string LIKE '"x.*"'
+      OR constraint_string LIKE '" x.*"'
+      OR constraint_string LIKE '"x.x"'
+      OR constraint_string LIKE '" x.x"' THEN 
+        constraint_type := 'major';
     ELSE
-        constraint_type := NULL;
+        constraint_type := 'invalid';
     END IF;
     RETURN constraint_type;
 END;
