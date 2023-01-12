@@ -119,7 +119,8 @@ async fn run_test_server(cfg: BlobStorageConfig) -> TestServer {
             cfg.clone(),
             JobManagerConfig {
                 ssh_factory: Box::new(FakeSshFactory {}),
-                max_worker_jobs: 2,
+                max_comp_worker_jobs: 1,
+                max_xfer_worker_jobs: 1,
             },
             async move {
                 rx.recv().await;

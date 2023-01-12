@@ -5,9 +5,8 @@ use lazy_static::__Deref;
 
 use tokio::sync::{
     mpsc::{Receiver, Sender},
-    Mutex,
+    Mutex, RwLock,
 };
-use tokio::task::spawn;
 
 use crate::{
     debug,
@@ -49,17 +48,20 @@ impl WorkerPool {
     ) -> Self {
         let name = pool_name.into();
         assert!(name.len() <= 8, "pool name too long");
-        let (tx, rx): (Sender<u64>, Receiver<u64>) = tokio::sync::mpsc::channel(max_worker_jobs);
+        let (tx, rx): (Sender<u64>, Receiver<u64>) =
+            tokio::sync::mpsc::channel(std::cmp::max(1, max_worker_jobs));
+        let pool = Arc::new(DashMap::new());
+        let ssh_session = ssh_factory
+            .spawn()
+            .await
+            .expect("failed to create ssh session");
         Self {
             name,
-            pool: Arc::new(DashMap::new()),
+            pool,
             avail_tx: tx,
             avail_rx: Mutex::new(rx),
             max_worker_jobs,
-            ssh_session: ssh_factory
-                .spawn()
-                .await
-                .expect("failed to create ssh session"),
+            ssh_session,
             ssh_factory,
         }
     }
@@ -139,7 +141,6 @@ impl WorkerPool {
 
     /// Spawns a new worker and adds it to the pool. This worker will be queued on discovery,
     /// so it won't be available for work until discovery is done.
-    /// `do_send` determines whether we should notify the channel that a worker is available.
     pub(crate) async fn spawn_worker(&self) -> Result<u64, JobError> {
         if self.pool.len() >= self.max_worker_jobs {
             return Err(JobError::MaxWorkerJobsReached);
@@ -201,8 +202,8 @@ impl WorkerPool {
 
     /// Returns a worker from the pool, if there is no worker available, it will wait until one is
     /// available.
-    /// - A worker lives for 24 hours, after that it will be dropped.
-    ///   We want to get workers that are maximum 23 hours old, so we can reuse them.
+    /// - A worker lives for 8 hours, after that it will be dropped.
+    ///   We want to get workers that are maximum 7 hours old, so we can reuse them.
     ///   Therefore, this function will also check for expired workers and remove them from the pool,
     ///   adding a new worker to the pool.
     /// - Workers processed may still be queued, in that case we will wait until they are running.
@@ -243,7 +244,7 @@ impl WorkerPool {
                         worker_age.num_minutes(),
                         worker_age.num_hours()
                     );
-                    if worker_age > chrono::Duration::hours(23) {
+                    if worker_age > chrono::Duration::hours(7) {
                         // expired, remove from pool and add a new worker
                         debug!("Found expired worker {}, removing", job_id);
                         wp.replace_worker(&worker).await.ok();
