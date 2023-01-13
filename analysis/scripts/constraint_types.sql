@@ -5,7 +5,7 @@
 -- the string contains either of them, and return the first one we find. if none are found,
 -- we return NULL.
 -- also, we have `A || B`, `A, B`, `A - B`, and others.
-CREATE OR REPLACE FUNCTION find_constraint(constraint_string text) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION analysis.check_constraint_type(constraint_string text) RETURNS text AS $$
 DECLARE
     constraint_type text;
 BEGIN
@@ -57,3 +57,25 @@ BEGIN
     RETURN constraint_type;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE TABLE analysis.constraint_types AS
+SELECT 
+    id as dependency_id, 
+    CASE (spec).dep_type WHEN 'range' THEN analysis.check_constraint_type(raw_spec)
+                         ELSE NULL
+    END as constraint_type
+FROM dependencies;
+
+
+
+CREATE INDEX constraint_types_idx ON analysis.constraint_types (dependency_id);
+
+ANALYZE analysis.constraint_types;
+
+GRANT SELECT ON analysis.constraint_types TO data_analyzer;
+GRANT ALL ON analysis.constraint_types TO pinckney;
+GRANT ALL ON analysis.constraint_types TO federico;
+
+
+    
