@@ -35,12 +35,20 @@ lazy_static! {
 
 #[async_trait]
 trait RunnableJob {
-    async fn run(self, req_client: MaxConcurrencyClient, subprocess_semaphore: Arc<tokio::sync::Semaphore>) -> JobResult;
+    async fn run(
+        self,
+        req_client: MaxConcurrencyClient,
+        subprocess_semaphore: Arc<tokio::sync::Semaphore>,
+    ) -> JobResult;
 }
 
 #[async_trait]
 impl RunnableJob for Job {
-    async fn run(self, req_client: MaxConcurrencyClient, subprocess_semaphore: Arc<tokio::sync::Semaphore>) -> JobResult {
+    async fn run(
+        self,
+        req_client: MaxConcurrencyClient,
+        subprocess_semaphore: Arc<tokio::sync::Semaphore>,
+    ) -> JobResult {
         run_solve_job::run_solve_job(self, req_client, subprocess_semaphore).await
     }
 }
@@ -67,8 +75,8 @@ async fn main() {
     tokio::spawn(async move {
         let db = DbConnection::connect().await;
 
-        let subprocess_semaphore = Arc::new(tokio::sync::Semaphore::new(CONFIG.num_threads as usize));
-
+        let subprocess_semaphore =
+            Arc::new(tokio::sync::Semaphore::new(CONFIG.num_threads as usize));
 
         let retry_policy = ExponentialBackoff::builder().build_with_max_retries(6);
         let req_client = ClientBuilder::new(reqwest::Client::new())
@@ -76,7 +84,14 @@ async fn main() {
             .build();
         let req_client = MaxConcurrencyClient::new(req_client, CONFIG.num_threads as usize);
 
-        grab_and_run_job_batch(active_jobs.as_ref(), &result_tx, &db, &req_client, &subprocess_semaphore).await;
+        grab_and_run_job_batch(
+            active_jobs.as_ref(),
+            &result_tx,
+            &db,
+            &req_client,
+            &subprocess_semaphore,
+        )
+        .await;
 
         if *active_jobs.read().await == 0 {
             println!("We got no initial jobs to run, exiting.");
@@ -96,7 +111,14 @@ async fn main() {
             let dt = now - start_time;
 
             if new_active_jobs < schedule_more_jobs_if_fewer_than && dt < CONFIG.max_job_time {
-                grab_and_run_job_batch(active_jobs.as_ref(), &result_tx, &db, &req_client, &subprocess_semaphore).await;
+                grab_and_run_job_batch(
+                    active_jobs.as_ref(),
+                    &result_tx,
+                    &db,
+                    &req_client,
+                    &subprocess_semaphore,
+                )
+                .await;
             }
 
             if *active_jobs.read().await == 0 {

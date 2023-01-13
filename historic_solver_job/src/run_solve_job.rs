@@ -132,7 +132,7 @@ async fn run_solve_job_result(
     // println!("Received solution: {:#?}", initial_solve);
 
     history.push(initial_solve.to_solve_result(&job.update_package_name));
-    
+
     // 4. If the current downstream doesn't contain current upstream, then we bail
     if !initial_solve.contains(&job.update_package_name, &job.update_from_version) {
         if initial_solve.are_deps_removed(&job.update_package_name) {
@@ -141,7 +141,6 @@ async fn run_solve_job_result(
             return Err(ResultError::FromMissingVersion);
         }
     }
-
 
     let mut dt = job.update_to_time + *EPSILON;
 
@@ -351,7 +350,7 @@ impl SolveSolutionMetrics {
             downstream_v,
             solve_time,
             deps: HashMap::new(),
-            full_package_lock
+            full_package_lock,
         }
     }
 
@@ -379,7 +378,7 @@ impl SolveSolutionMetrics {
             solve_time: self.solve_time,
             downstream_version: self.downstream_v.clone(),
             update_versions: versions,
-            full_package_lock: self.full_package_lock.clone()
+            full_package_lock: self.full_package_lock.clone(),
         }
     }
 
