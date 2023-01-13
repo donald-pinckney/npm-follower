@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#mkdir /dev/shm/$JOB_ID
+#npm_cache_dir="/dev/shm/$JOB_ID"
+
 npm_cache_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir')
 
 
