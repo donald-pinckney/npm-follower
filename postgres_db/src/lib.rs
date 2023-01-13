@@ -13,7 +13,7 @@ pub mod internal_state;
 pub mod packages;
 pub mod packument;
 #[allow(unused_imports)]
-mod schema;
+pub mod schema;
 pub mod versions;
 
 pub mod connection;

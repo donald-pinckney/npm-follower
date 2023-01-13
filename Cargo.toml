@@ -15,6 +15,8 @@ members = [
     "ghsa_scraper", 
     "analysis",
     "historic_npm_registry",
+    "historic_solver_job",
+    "historic_solver_job_server",
     "diff_analysis",
     "diff_analysis/diff_analysis_client",
     "diff_queries"
