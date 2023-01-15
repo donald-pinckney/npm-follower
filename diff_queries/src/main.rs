@@ -22,7 +22,7 @@ fn main() {
     }
     let chunk_size = args[1].parse::<i64>().unwrap();
     let conn: DbConnection = DbConnection::connect();
-    process_diff_analysis(conn, chunk_size);
+    process_diff_all_updates(conn, chunk_size);
 }
 
 fn process_diff_analysis(mut conn: DbConnection, chunk_size: i64) {
