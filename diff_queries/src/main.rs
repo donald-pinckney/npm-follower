@@ -287,7 +287,10 @@ fn changed_file(
                         None => continue,
                     };
 
-                    if ext == "d.ts" && (diff.added > 0 || diff.removed > 0) {
+                    // NOTE: can't use ext for .d.ts
+                    if (path.ends_with(".d.ts") || path.ends_with(".d.tsx"))
+                        && (diff.added > 0 || diff.removed > 0)
+                    {
                         did_change_types = true;
                     } else if (ext == "js" || ext == "jsx" || ext == "ts" || ext == "tsx")
                         && (diff.added > 0 || diff.removed > 0)
