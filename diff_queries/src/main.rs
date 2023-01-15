@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use diesel::QueryableByName;
 use postgres_db::{
     connection::{DbConnection, QueryRunner},
+    custom_types::Semver,
     diff_analysis::{DiffAnalysis, DiffAnalysisJobResult},
 };
 use serde::{Deserialize, Serialize};
@@ -20,8 +21,11 @@ fn main() {
         print_usage_exit(args[0].as_str());
     }
     let chunk_size = args[1].parse::<i64>().unwrap();
-    let mut conn: DbConnection = DbConnection::connect();
+    let conn: DbConnection = DbConnection::connect();
+    process_diff_analysis(conn, chunk_size);
+}
 
+fn process_diff_analysis(mut conn: DbConnection, chunk_size: i64) {
     let mut last = None;
     let mut num_processed = 0;
     let total_count = postgres_db::diff_analysis::count_diff_analysis(&mut conn).unwrap();
@@ -49,6 +53,95 @@ fn main() {
 
         // insert here queries to write
         changed_file(&mut conn, &table).expect("Failed to write to file");
+
+        println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
+    }
+}
+
+//  package_id | from_group_base_semver | to_group_base_semver | from_id |  to_id  | from_semver | to_semver |        from_created        |         to_created         |  ty
+
+#[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
+struct Update {
+    #[sql_type = "diesel::sql_types::BigInt"]
+    package_id: i64,
+    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    from_group_base_semver: Semver,
+    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    to_group_base_semver: Semver,
+    #[sql_type = "diesel::sql_types::BigInt"]
+    from_id: i64,
+    #[sql_type = "diesel::sql_types::BigInt"]
+    to_id: i64,
+    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    from_semver: Semver,
+    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    to_semver: Semver,
+    #[sql_type = "diesel::sql_types::Timestamp"]
+    from_created: chrono::NaiveDateTime,
+    #[sql_type = "diesel::sql_types::Timestamp"]
+    to_created: chrono::NaiveDateTime,
+    #[sql_type = "diesel::sql_types::Text"]
+    ty: String,
+}
+
+fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
+    let mut last = None;
+    let mut num_processed = 0;
+    let total_count = postgres_db::diff_analysis::count_diff_analysis(&mut conn).unwrap();
+
+    loop {
+        println!("Loading {} rows from the table...", chunk_size);
+        let time = std::time::Instant::now();
+        let query = diesel::sql_query(format!(
+            "
+            SELECT
+                package_id,
+                from_group_base_semver,
+                to_group_base_semver,
+                from_id,
+                to_id,
+                from_semver,
+                to_semver,
+                from_created,
+                to_created,
+                ty
+            FROM analysis.all_updates
+            ORDER BY from_id, to_id{}
+            LIMIT {}",
+            {
+                if let Some((from_id, to_id)) = last {
+                    format!(
+                        "
+                WHERE (from_id, to_id) > ({}, {})",
+                        from_id, to_id
+                    )
+                } else {
+                    "".to_string()
+                }
+            },
+            chunk_size,
+        ));
+
+        let table: Vec<Update> = conn
+            .get_results(query)
+            .expect("Failed to load the table from the database");
+        let table_len = table.len();
+        println!("Loaded {} rows in {:?}!", table_len, time.elapsed());
+        num_processed += table_len;
+        println!(
+            "Progress: {:.2}%",
+            num_processed as f64 / total_count as f64 * 100.0
+        );
+        if table.is_empty() {
+            break;
+        }
+        last = table.last().map(|d| (d.from_id, d.to_id));
+
+        println!("Writing {} rows to the file...", table.len());
+        let time = std::time::Instant::now();
+        let len_table = table.len();
+
+        // insert here queries to write
 
         println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
     }
