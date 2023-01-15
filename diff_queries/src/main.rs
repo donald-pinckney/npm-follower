@@ -46,9 +46,10 @@ fn main() {
         println!("Writing {} rows to the file...", table.len());
         let time = std::time::Instant::now();
         let len_table = table.len();
-        num_files(&mut conn, &table).unwrap();
-        num_lines(&mut conn, &table).unwrap();
-        ext_count(&mut conn, &table).unwrap();
+
+        // insert here queries to write
+        changed_file(&mut conn, &table).expect("Failed to write to file");
+
         println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
     }
 }
@@ -251,6 +252,88 @@ fn ext_count(
         " ON CONFLICT (ext) DO UPDATE SET count = analysis.diff_ext_count.count + excluded.count",
     );
     println!("Inserting {} rows into diff_ext_count...", ext_counts.len());
+    let diesel_query = diesel::sql_query(query);
+    conn.execute(diesel_query)?;
+    Ok(())
+}
+
+#[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
+struct ChangedFile {
+    #[sql_type = "diesel::sql_types::BigInt"]
+    from_id: i64,
+    #[sql_type = "diesel::sql_types::BigInt"]
+    to_id: i64,
+    #[sql_type = "diesel::sql_types::Bool"]
+    did_change_types: bool,
+    #[sql_type = "diesel::sql_types::Bool"]
+    did_change_code: bool,
+}
+
+fn changed_file(
+    conn: &mut DbConnection,
+    diffs: &Vec<DiffAnalysis>,
+) -> Result<(), diesel::result::Error> {
+    let mut changed_files: Vec<ChangedFile> = vec![];
+    for diff in diffs {
+        match &diff.job_result {
+            DiffAnalysisJobResult::Diff(map) => {
+                let mut did_change_types = false;
+                let mut did_change_code = false;
+                for (path, diff) in map.iter() {
+                    // if file ends with .d.ts and it has been changed, then it's a type change
+                    // if file ends with .js, .jsx, .ts, .tsx and it has been changed, then it's a code change
+                    let ext = match get_extension(path) {
+                        Some(e) => e,
+                        None => continue,
+                    };
+
+                    if ext == "d.ts" && (diff.added > 0 || diff.removed > 0) {
+                        did_change_types = true;
+                    } else if (ext == "js" || ext == "jsx" || ext == "ts" || ext == "tsx")
+                        && (diff.added > 0 || diff.removed > 0)
+                    {
+                        did_change_code = true;
+                    }
+
+                    if did_change_types && did_change_code {
+                        break;
+                    }
+                }
+                changed_files.push(ChangedFile {
+                    from_id: diff.from_id,
+                    to_id: diff.to_id,
+                    did_change_types,
+                    did_change_code,
+                });
+            }
+            _ => continue,
+        }
+    }
+
+    if changed_files.is_empty() {
+        return Ok(());
+    }
+
+    // insert into analysis.diff_changed_files
+    let query = r#"
+        INSERT INTO analysis.diff_changed_files (from_id, to_id, did_change_types, did_change_code)
+        VALUES
+        "#;
+    let mut query = query.to_string();
+    for (i, cf) in changed_files.iter().enumerate() {
+        if i > 0 {
+            query.push_str(", ");
+        }
+        query.push_str(&format!(
+            "({}, {}, {}, {})",
+            cf.from_id, cf.to_id, cf.did_change_types, cf.did_change_code,
+        ));
+    }
+    query.push_str(" ON CONFLICT (from_id, to_id) DO NOTHING");
+    println!(
+        "Inserting {} rows into diff_changed_files...",
+        changed_files.len()
+    );
     let diesel_query = diesel::sql_query(query);
     conn.execute(diesel_query)?;
     Ok(())
