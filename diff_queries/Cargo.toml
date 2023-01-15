@@ -13,3 +13,4 @@ diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
 
 postgres_db = { path = "../postgres_db" }
 utils = { path = "../utils" }
+chrono = "0.4.23"
