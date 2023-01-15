@@ -87,7 +87,6 @@ struct Update {
 fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
     let mut last = None;
     let mut num_processed = 0;
-    let total_count = postgres_db::diff_analysis::count_diff_analysis(&mut conn).unwrap();
 
     loop {
         println!("Loading {} rows from the table...", chunk_size);
@@ -128,10 +127,6 @@ fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
         let table_len = table.len();
         println!("Loaded {} rows in {:?}!", table_len, time.elapsed());
         num_processed += table_len;
-        println!(
-            "Progress: {:.2}%",
-            num_processed as f64 / total_count as f64 * 100.0
-        );
         if table.is_empty() {
             break;
         }
