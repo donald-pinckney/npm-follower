@@ -104,8 +104,8 @@ fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
                 from_created,
                 to_created,
                 ty
-            FROM analysis.all_updates
-            ORDER BY from_id, to_id{}
+            FROM analysis.all_updates{}
+            ORDER BY from_id, to_id
             LIMIT {}",
             {
                 if let Some((from_id, to_id)) = last {
