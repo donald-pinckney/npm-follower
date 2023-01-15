@@ -3,8 +3,10 @@ use std::collections::HashMap;
 use diesel::QueryableByName;
 use postgres_db::{
     connection::{DbConnection, QueryRunner},
-    custom_types::Semver,
+    custom_types::{ParsedSpec, Semver},
+    dependencies::Dependency,
     diff_analysis::{DiffAnalysis, DiffAnalysisJobResult},
+    versions::Version,
 };
 use serde::{Deserialize, Serialize};
 
@@ -132,14 +134,95 @@ fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
         }
         last = table.last().map(|d| (d.from_id, d.to_id));
 
+        println!("Progress: {} rows", num_processed);
         println!("Writing {} rows to the file...", table.len());
         let time = std::time::Instant::now();
         let len_table = table.len();
 
         // insert here queries to write
+        dep_update_changes(&mut conn, table).unwrap();
 
         println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
     }
+}
+
+fn dep_update_changes(
+    conn: &mut DbConnection,
+    table: Vec<Update>,
+) -> Result<(), diesel::result::Error> {
+    struct UpdateDep {
+        from_id: i64,
+        to_id: i64,
+        did_add_dep: bool,
+        did_remove_dep: bool,
+        did_change_dep_constraint: bool,
+    }
+    let mut rows: Vec<UpdateDep> = Vec::new();
+    for update in table {
+        let from_ver = postgres_db::versions::get_version_by_id(conn, update.from_id);
+        let to_ver = postgres_db::versions::get_version_by_id(conn, update.to_id);
+        let mut from_deps = HashMap::new();
+        let mut to_deps = HashMap::new();
+        let mut fn_add_deps = |deps: &mut HashMap<String, ParsedSpec>, ver: &Version| {
+            for dep_id in ver
+                .prod_dependencies
+                .iter()
+                .chain(ver.dev_dependencies.iter())
+                .chain(ver.peer_dependencies.iter())
+                .chain(ver.optional_dependencies.iter())
+            {
+                let dep = postgres_db::dependencies::get_dependency_by_id(conn, *dep_id);
+                deps.insert(dep.dst_package_name, dep.spec);
+            }
+        };
+        fn_add_deps(&mut from_deps, &from_ver);
+        fn_add_deps(&mut to_deps, &to_ver);
+
+        let mut did_add_dep = false;
+        let mut did_remove_dep = false;
+        let mut did_change_dep_constraint = false;
+        for (dep_name, from_spec) in from_deps {
+            if let Some(to_spec) = to_deps.remove(&dep_name) {
+                if from_spec != to_spec {
+                    did_change_dep_constraint = true;
+                }
+            } else {
+                did_remove_dep = true;
+            }
+        }
+        if !to_deps.is_empty() {
+            did_add_dep = true;
+        }
+
+        rows.push(UpdateDep {
+            from_id: update.from_id,
+            to_id: update.to_id,
+            did_add_dep,
+            did_remove_dep,
+            did_change_dep_constraint,
+        });
+    }
+
+    // insert into analysis.update_dep_changes
+    let query = r#"
+        INSERT INTO analysis.update_dep_changes (from_id, to_id, did_add_dep, did_remove_dep, did_change_dep_constraint)
+        VALUES
+    "#;
+    let mut query = query.to_string();
+    for (i, nf) in rows.iter().enumerate() {
+        if i > 0 {
+            query.push_str(", ");
+        }
+        query.push_str(&format!(
+            "({}, {}, {}, {}, {})",
+            nf.from_id, nf.to_id, nf.did_add_dep, nf.did_remove_dep, nf.did_change_dep_constraint
+        ));
+    }
+    query.push_str(" ON CONFLICT (from_id, to_id) DO NOTHING");
+    println!("Inserting {} rows into the table...", rows.len());
+    let diesel_query = diesel::sql_query(query);
+    conn.execute(diesel_query)?;
+    Ok(())
 }
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
