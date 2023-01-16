@@ -49,7 +49,7 @@ fn process_diff_analysis(mut conn: DbConnection, chunk_size: i64) {
         }
         last = table.last().map(|d| (d.from_id, d.to_id));
 
-        println!("Writing {} rows to the file...", table.len());
+        println!("Writing {} rows to the table...", table.len());
         let time = std::time::Instant::now();
         let len_table = table.len();
 
@@ -141,6 +141,37 @@ fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
 
         // insert here queries to write
         dep_update_changes(&mut conn, table).unwrap();
+
+        println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
+    }
+}
+
+fn process_historic_solver(mut conn: DbConnection, chunk_size: i64) {
+    let mut last = None;
+    let mut num_processed = 0;
+
+    loop {
+        println!("Loading {} rows from the table...", chunk_size);
+        let time = std::time::Instant::now();
+        let query = diesel::sql_query("");
+
+        let table: Vec<Update> = conn
+            .get_results(query)
+            .expect("Failed to load the table from the database");
+        let table_len = table.len();
+        println!("Loaded {} rows in {:?}!", table_len, time.elapsed());
+        num_processed += table_len;
+        if table.is_empty() {
+            break;
+        }
+        last = table.last().map(|d| (d.from_id, d.to_id));
+
+        println!("Progress: {} rows", num_processed);
+        println!("Writing {} rows to the file...", table.len());
+        let time = std::time::Instant::now();
+        let len_table = table.len();
+
+        // insert here queries to write
 
         println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
     }
