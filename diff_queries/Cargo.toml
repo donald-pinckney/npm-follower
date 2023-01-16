@@ -10,6 +10,8 @@ serde = "1.0.147"
 serde_json = "1.0.87"
 dotenvy = "0.15.6"
 diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
+chrono = "0.4.23"
 
 postgres_db = { path = "../postgres_db" }
 utils = { path = "../utils" }
+historic_solver_job = { path = "../historic_solver_job" }
