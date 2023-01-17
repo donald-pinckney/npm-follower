@@ -19,7 +19,7 @@ use tokio::sync::{
 
 mod run_solve_job;
 
-const JOBS_PER_THREAD: i64 = 100;
+const JOBS_PER_THREAD: i64 = 1000;
 
 #[derive(Debug)]
 pub struct Configuration {
@@ -79,7 +79,7 @@ async fn main() {
     let nuke_cache_lock2 = nuke_cache_lock.clone();
 
     tokio::spawn(async move {
-        let mut interval = tokio::time::interval(std::time::Duration::from_secs(20 * 60));
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(5 * 60 * 60));
 
         loop {
             interval.tick().await;
