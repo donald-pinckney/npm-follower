@@ -6,7 +6,7 @@ use diesel::{
     pg::{Pg, PgValue},
     prelude::*,
     serialize::{self, Output, ToSql, WriteTuple},
-    sql_types::{Array, Jsonb, Timestamptz, Record},
+    sql_types::{Array, Jsonb, Record, Timestamptz},
     AsExpression,
 };
 use moka::future::Cache;

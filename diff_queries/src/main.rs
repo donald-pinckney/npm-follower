@@ -194,14 +194,15 @@ fn process_historic_solver(mut conn: DbConnection, chunk_size: i64) {
                 update_to_id, 
                 downstream_package_id, 
                 solve_history
-            FROM historic_solver_job_results{}
+            FROM historic_solver_job_results
+            WHERE ROW(update_from_id, update_to_id, downstream_package_id) NOT IN (SELECT update_from_id, update_to_id, downstream_package_id FROM historic_solver_job_results_oldnesses){}
             ORDER BY update_from_id, update_to_id, downstream_package_id
             LIMIT {}",
             {
                 if let Some((update_from_id, update_to_id, downstream_package_id)) = last {
                     format!(
                         "
-                WHERE (update_from_id, update_to_id, downstream_package_id) > ({}, {}, {})",
+                AND (update_from_id, update_to_id, downstream_package_id) > ({}, {}, {})",
                         update_from_id, update_to_id, downstream_package_id
                     )
                 } else {

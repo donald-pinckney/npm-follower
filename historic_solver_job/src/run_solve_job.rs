@@ -22,11 +22,11 @@ use historic_solver_job_server::{Job, JobResult};
 use lazy_static::lazy_static;
 use postgres_db::custom_types::Semver;
 use serde_json::Value;
-use tokio::sync::RwLock;
 use std::process::Stdio;
 use tempfile::tempdir;
 use tempfile::TempDir;
 use tokio::process::Command;
+use tokio::sync::RwLock;
 
 lazy_static! {
     static ref EPSILON: Duration = Duration::seconds(10);
@@ -359,7 +359,7 @@ struct SolveSolutionMetrics {
     deps: HashMap<String, HashSet<Semver>>,
     full_package_lock: Value,
 }
- 
+
 impl SolveSolutionMetrics {
     fn new(downstream_v: Semver, solve_time: DateTime<Utc>, full_package_lock: Value) -> Self {
         Self {

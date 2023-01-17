@@ -52,7 +52,13 @@ impl RunnableJob for Job {
         subprocess_semaphore: Arc<tokio::sync::Semaphore>,
         nuke_process_semaphore: Arc<RwLock<()>>,
     ) -> JobResult {
-        run_solve_job::run_solve_job(self, req_client, subprocess_semaphore, nuke_process_semaphore).await
+        run_solve_job::run_solve_job(
+            self,
+            req_client,
+            subprocess_semaphore,
+            nuke_process_semaphore,
+        )
+        .await
     }
 }
 
@@ -114,7 +120,7 @@ async fn main() {
             &db,
             &req_client,
             &subprocess_semaphore,
-            &nuke_cache_lock
+            &nuke_cache_lock,
         )
         .await;
 
@@ -142,7 +148,7 @@ async fn main() {
                     &db,
                     &req_client,
                     &subprocess_semaphore,
-                    &nuke_cache_lock
+                    &nuke_cache_lock,
                 )
                 .await;
             }
@@ -163,7 +169,7 @@ async fn grab_and_run_job_batch(
     db: &DbConnection,
     req_client: &MaxConcurrencyClient,
     subprocess_semaphore: &Arc<tokio::sync::Semaphore>,
-    nuke_cache_lock: &Arc<RwLock<()>>
+    nuke_cache_lock: &Arc<RwLock<()>>,
 ) {
     let jobs = grab_job_batch(db).await;
 
@@ -184,7 +190,9 @@ async fn grab_and_run_job_batch(
         let subprocess_semaphore = subprocess_semaphore.clone();
         let nuke_cache_lock = nuke_cache_lock.clone();
         tokio::task::spawn(async move {
-            let job_result = job.run(req_client, subprocess_semaphore, nuke_cache_lock).await;
+            let job_result = job
+                .run(req_client, subprocess_semaphore, nuke_cache_lock)
+                .await;
             result_tx.send(job_result).unwrap();
         });
     }
