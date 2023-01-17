@@ -22,6 +22,7 @@ use historic_solver_job_server::{Job, JobResult};
 use lazy_static::lazy_static;
 use postgres_db::custom_types::Semver;
 use serde_json::Value;
+use tokio::sync::RwLock;
 use std::process::Stdio;
 use tempfile::tempdir;
 use tempfile::TempDir;
@@ -44,6 +45,7 @@ pub(crate) async fn run_solve_job(
     job: Job,
     req_client: MaxConcurrencyClient,
     subprocess_semaphore: Arc<tokio::sync::Semaphore>,
+    nuke_cache_lock: Arc<RwLock<()>>,
 ) -> JobResult {
     let update_from_id = job.update_from_id;
     let update_to_id = job.update_to_id;
@@ -58,6 +60,7 @@ pub(crate) async fn run_solve_job(
         job,
         req_client,
         subprocess_semaphore,
+        nuke_cache_lock,
         &mut solve_history,
         &mut stdout_res,
         &mut stderr_res,
@@ -68,7 +71,7 @@ pub(crate) async fn run_solve_job(
             update_from_id,
             update_to_id,
             downstream_package_id,
-            result_category: ResultCategory::Ok,
+            result_category: ResultCategory::Ok.into_str().to_owned(),
             solve_history,
             stdout: "".to_owned(),
             stderr: "".to_owned(),
@@ -77,7 +80,7 @@ pub(crate) async fn run_solve_job(
             update_from_id,
             update_to_id,
             downstream_package_id,
-            result_category: ResultCategory::Error(err),
+            result_category: ResultCategory::Error(err).into_str().to_owned(),
             solve_history,
             stdout: String::from_utf8_lossy(&stdout_res).to_string(),
             stderr: String::from_utf8_lossy(&stderr_res).to_string(),
@@ -89,6 +92,7 @@ async fn run_solve_job_result(
     job: Job,
     req_client: MaxConcurrencyClient,
     subprocess_semaphore: Arc<tokio::sync::Semaphore>,
+    nuke_cache_lock: Arc<RwLock<()>>,
     history: &mut Vec<SolveResult>,
     stdout_res: &mut Vec<u8>,
     stderr_res: &mut Vec<u8>,
@@ -120,6 +124,7 @@ async fn run_solve_job_result(
         &new_tmp_dir,
         &job.downstream_package_name,
         subprocess_semaphore.as_ref(),
+        nuke_cache_lock.as_ref(),
         stdout_res,
         stderr_res,
     )
@@ -152,6 +157,7 @@ async fn run_solve_job_result(
             &new_tmp_dir,
             &job.downstream_package_name,
             subprocess_semaphore.as_ref(),
+            nuke_cache_lock.as_ref(),
             stdout_res,
             stderr_res,
         )
@@ -209,6 +215,7 @@ async fn solve_dependencies(
     temp_dir: &TempDir,
     solve_package_name: &str,
     subprocess_semaphore: &tokio::sync::Semaphore,
+    nuke_cache_lock: &RwLock<()>,
     stdout_res: &mut Vec<u8>,
     stderr_res: &mut Vec<u8>,
 ) -> Result<SolveSolutionMetrics, ResultError> {
@@ -224,6 +231,7 @@ async fn solve_dependencies(
         dt,
         &solve_dir,
         subprocess_semaphore,
+        nuke_cache_lock,
         stdout_res,
         stderr_res,
     )
@@ -240,10 +248,13 @@ async fn solve_dependencies_impl(
     dt: DateTime<Utc>,
     solve_dir: &PathBuf,
     subprocess_semaphore: &tokio::sync::Semaphore,
+    nuke_cache_lock: &RwLock<()>,
     stdout_res: &mut Vec<u8>,
     stderr_res: &mut Vec<u8>,
 ) -> Result<SolveSolutionMetrics, ResultError> {
     // println!("solve_dependencies_impl");
+
+    let cache_permit = nuke_cache_lock.read().await;
 
     let subprocess_permit = subprocess_semaphore.acquire().await.unwrap();
 
@@ -298,6 +309,7 @@ async fn solve_dependencies_impl(
     let mut lock_json: Value = serde_json::from_str(&s).unwrap();
 
     drop(subprocess_permit);
+    drop(cache_permit);
 
     let lock_json_copy = lock_json.clone();
 
@@ -343,7 +355,7 @@ struct SolveSolutionMetrics {
     deps: HashMap<String, HashSet<Semver>>,
     full_package_lock: Value,
 }
-
+ 
 impl SolveSolutionMetrics {
     fn new(downstream_v: Semver, solve_time: DateTime<Utc>, full_package_lock: Value) -> Self {
         Self {

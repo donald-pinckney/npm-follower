@@ -8,6 +8,7 @@ fn main() -> Result<(), std::io::Error> {
     let dependencies: BTreeMap<&'static str, Vec<&'static str>> = [
         ("setup_analysis", vec![]),
         ("constraint_types", vec!["setup_analysis"]),
+        ("unique_package_deps", vec!["constraint_types"]),
         ("version_ordering_validation", vec!["setup_analysis"]),
         ("build_updates", vec!["version_ordering_validation"]),
         ("find_patches", vec!["build_updates"]),

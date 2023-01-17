@@ -2,10 +2,11 @@ use std::io::Write;
 
 use chrono::{DateTime, Utc};
 use diesel::{
-    pg::Pg,
+    deserialize::{self, FromSql},
+    pg::{Pg, PgValue},
     prelude::*,
     serialize::{self, Output, ToSql, WriteTuple},
-    sql_types::{Array, Jsonb, Timestamptz},
+    sql_types::{Array, Jsonb, Timestamptz, Record},
     AsExpression,
 };
 use moka::future::Cache;
@@ -48,6 +49,10 @@ diesel::table! {
 #[diesel(postgres_type(name = "historic_solver_solve_result_struct"))]
 pub struct SolveResultSql;
 
+#[derive(diesel::sql_types::SqlType)]
+#[diesel(sql_type = diesel::sql_types::Text)]
+pub struct ResultCategorySql;
+
 // #[derive(diesel::sql_types::SqlType)]
 // #[diesel(postgres_type(name = "Text"))]
 // pub struct ResultCategorySql;
@@ -55,16 +60,16 @@ pub struct SolveResultSql;
 diesel::table! {
     use diesel::sql_types::*;
     use postgres_db::schema::sql_types::SemverStruct;
-    use super::{SolveResultSql};
+    use super::{SolveResultSql, ResultCategorySql};
 
     historic_solver_job_results (update_from_id, update_to_id, downstream_package_id) {
         update_from_id -> Int8,
         update_to_id -> Int8,
         downstream_package_id -> Int8,
         result_category -> Text, // see below
+        solve_history -> Array<SolveResultSql>, // [(solve_time, v, [v], json)]
         stdout -> Text,
         stderr -> Text,
-        solve_history -> Array<SolveResultSql>, // [(solve_time, v, [v], json)]
     }
 }
 
@@ -81,23 +86,43 @@ pub struct Job {
     pub downstream_package_name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Insertable)]
+#[derive(Debug, Serialize, Deserialize, Insertable, Queryable, QueryableByName)]
 #[diesel(table_name = historic_solver_job_results)]
 pub struct JobResult {
     pub update_from_id: i64,
     pub update_to_id: i64,
     pub downstream_package_id: i64,
-    pub result_category: ResultCategory,
+    pub result_category: String,
     pub solve_history: Vec<SolveResult>,
     pub stdout: String,
     pub stderr: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, AsExpression)]
-#[diesel(sql_type = diesel::sql_types::Text)]
+#[diesel(sql_type = ResultCategorySql)]
 pub enum ResultCategory {
     Ok,
     Error(ResultError),
+}
+
+impl ResultCategory {
+    pub fn into_str(self) -> &'static str {
+        match self {
+            ResultCategory::Ok => "Ok",
+            ResultCategory::Error(ResultError::DownstreamMissingPackage) => {
+                "DownstreamMissingPackage"
+            }
+            ResultCategory::Error(ResultError::DownstreamMissingVersion) => {
+                "DownstreamMissingVersion"
+            }
+            ResultCategory::Error(ResultError::FromMissingPackage) => "FromMissingPackage",
+            ResultCategory::Error(ResultError::FromMissingVersion) => "FromMissingVersion",
+            ResultCategory::Error(ResultError::GaveUp) => "GaveUp",
+            ResultCategory::Error(ResultError::RemovedDep) => "RemovedDep",
+            ResultCategory::Error(ResultError::SolveError) => "SolveError",
+            ResultCategory::Error(ResultError::MiscError) => "MiscError",
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -112,7 +137,7 @@ pub enum ResultError {
     MiscError,
 }
 
-impl ToSql<diesel::sql_types::Text, Pg> for ResultCategory {
+impl ToSql<ResultCategorySql, Pg> for ResultCategory {
     fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let as_str: &'static [u8] = match self {
             ResultCategory::Ok => b"Ok",
@@ -136,7 +161,31 @@ impl ToSql<diesel::sql_types::Text, Pg> for ResultCategory {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+impl FromSql<ResultCategorySql, Pg> for ResultCategory {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let bytes = bytes.as_bytes();
+
+        match bytes {
+            b"Ok" => Ok(ResultCategory::Ok),
+            b"DownstreamMissingPackage" => {
+                Ok(ResultCategory::Error(ResultError::DownstreamMissingPackage))
+            }
+            b"DownstreamMissingVersion" => {
+                Ok(ResultCategory::Error(ResultError::DownstreamMissingVersion))
+            }
+            b"FromMissingPackage" => Ok(ResultCategory::Error(ResultError::FromMissingPackage)),
+            b"FromMissingVersion" => Ok(ResultCategory::Error(ResultError::FromMissingVersion)),
+            b"GaveUp" => Ok(ResultCategory::Error(ResultError::GaveUp)),
+            b"RemovedDep" => Ok(ResultCategory::Error(ResultError::RemovedDep)),
+            b"SolveError" => Ok(ResultCategory::Error(ResultError::SolveError)),
+            b"MiscError" => Ok(ResultCategory::Error(ResultError::MiscError)),
+
+            _ => Err("Unrecognized enum variant".into()),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct SolveResult {
     pub solve_time: DateTime<Utc>,
     pub downstream_version: Semver,
@@ -155,6 +204,25 @@ impl ToSql<SolveResultSql, Pg> for SolveResult {
             &self.full_package_lock,
         );
         WriteTuple::<SolveResultRecordSql>::write_tuple(&record, out)
+    }
+}
+
+impl FromSql<SolveResultSql, Pg> for SolveResult {
+    fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
+        let (solve_time, downstream_version, update_versions, full_package_lock): (
+            DateTime<Utc>,
+            Semver,
+            Vec<Semver>,
+            Value,
+        ) = FromSql::<Record<(Timestamptz, SemverStruct, Array<SemverStruct>, Jsonb)>, Pg>::from_sql(
+            bytes,
+        )?;
+        Ok(SolveResult {
+            solve_time,
+            downstream_version,
+            update_versions,
+            full_package_lock,
+        })
     }
 }
 

@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute setup_analysis subsampled_possible_install_deps subsampled_updates version_ordering_validation vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -23,7 +23,7 @@ makefile_state/constraint_types.touch: makefile_state/setup_analysis.touch
 constraint_types: makefile_state/constraint_types.touch
 
 .PHONY: clean_constraint_types
-clean_constraint_types: 
+clean_constraint_types: clean_unique_package_deps
 	if [ -f makefile_state/constraint_types.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/constraint_types.sql; else true; fi
 	rm -f makefile_state/constraint_types.touch
 
@@ -156,6 +156,19 @@ subsampled_updates: makefile_state/subsampled_updates.touch
 clean_subsampled_updates: 
 	if [ -f makefile_state/subsampled_updates.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/subsampled_updates.sql; else true; fi
 	rm -f makefile_state/subsampled_updates.touch
+
+# -------- unique_package_deps --------
+makefile_state/unique_package_deps.touch: makefile_state/constraint_types.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/unique_package_deps.sql
+	touch makefile_state/unique_package_deps.touch
+
+.PHONY: unique_package_deps
+unique_package_deps: makefile_state/unique_package_deps.touch
+
+.PHONY: clean_unique_package_deps
+clean_unique_package_deps: 
+	if [ -f makefile_state/unique_package_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/unique_package_deps.sql; else true; fi
+	rm -f makefile_state/unique_package_deps.touch
 
 # -------- version_ordering_validation --------
 makefile_state/version_ordering_validation.touch: makefile_state/setup_analysis.touch

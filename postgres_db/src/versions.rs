@@ -71,6 +71,15 @@ pub fn get_version_id_by_semver<R: QueryRunner>(conn: &mut R, package_id: i64, v
     conn.get_result(query).expect("Error getting version")
 }
 
+pub fn get_version_times<R: QueryRunner>(conn: &mut R, package_id: i64) -> Vec<(Semver, DateTime<Utc>)> {
+    let query = versions::table
+        .filter(
+            versions::package_id
+                .eq(package_id),
+        ).select((versions::semver, versions::created));
+    conn.get_results(query).expect("Error with postgres")
+}
+
 // impl Version {
 //     pub fn create(
 //         package_id: i64,

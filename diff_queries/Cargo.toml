@@ -15,3 +15,8 @@ chrono = "0.4.23"
 postgres_db = { path = "../postgres_db" }
 utils = { path = "../utils" }
 historic_solver_job = { path = "../historic_solver_job" }
+historic_solver_job_server = { path = "../historic_solver_job_server" }
+semver_spec_serialization = { path = "../semver_spec_serialization" }
+lru = { git = "https://github.com/donald-pinckney/lru-rs" }
+
+

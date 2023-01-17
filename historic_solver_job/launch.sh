@@ -3,7 +3,9 @@
 #mkdir /dev/shm/$JOB_ID
 #npm_cache_dir="/dev/shm/$JOB_ID"
 
-npm_cache_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir')
+npm_cache_dir_root=$(mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir')
+npm_cache_dir=$npm_cache_dir_root/the_npm_cache
+mkdir $npm_cache_dir
 
 
 if [[ -z "$SLURM_JOB_ID" ]];

@@ -189,6 +189,13 @@ GRANT ALL ON analysis.all_dep_counts TO pinckney;
 GRANT ALL ON analysis.all_dep_counts TO federico;
 
 
+ALTER TABLE analysis.all_dep_counts
+ADD PRIMARY KEY (pkg, count_type);
+
+ANALYZE analysis.all_dep_counts;
+
+
+
 CREATE TABLE analysis.deps_stats AS WITH computed_stats_wide as (
   select count_type,
     avg(x),

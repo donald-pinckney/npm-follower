@@ -405,3 +405,6 @@ CREATE INDEX dependencies_dst_package_id_if_exists_idx ON dependencies (dst_pack
 CREATE INDEX dependencies_md5digest_idx ON dependencies (md5digest) WHERE dst_package_id_if_exists IS NULL;
 -- CREATE INDEX dependencies_md5digest_with_version_idx ON dependencies (md5digest_with_version);
 ALTER TABLE dependencies ADD CONSTRAINT dependencies_md5digest_with_version_unique UNIQUE (md5digest_with_version);
+
+
+CREATE INDEX dependencies_idx_from_id ON dependencies (dst_package_id_if_exists);

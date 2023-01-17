@@ -14,18 +14,19 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde_json::Value;
 use tokio::sync::{
     mpsc::{self, UnboundedSender},
-    RwLock,
+    RwLock, Semaphore,
 };
 
 mod run_solve_job;
 
-const JOBS_PER_THREAD: i64 = 1000;
+const JOBS_PER_THREAD: i64 = 100;
 
 #[derive(Debug)]
 pub struct Configuration {
     num_threads: i64,
     registry_host: String,
     node_name: String,
+    npm_config_cache: String,
     max_job_time: Duration,
 }
 
@@ -39,6 +40,7 @@ trait RunnableJob {
         self,
         req_client: MaxConcurrencyClient,
         subprocess_semaphore: Arc<tokio::sync::Semaphore>,
+        nuke_process_semaphore: Arc<RwLock<()>>,
     ) -> JobResult;
 }
 
@@ -48,8 +50,9 @@ impl RunnableJob for Job {
         self,
         req_client: MaxConcurrencyClient,
         subprocess_semaphore: Arc<tokio::sync::Semaphore>,
+        nuke_process_semaphore: Arc<RwLock<()>>,
     ) -> JobResult {
-        run_solve_job::run_solve_job(self, req_client, subprocess_semaphore).await
+        run_solve_job::run_solve_job(self, req_client, subprocess_semaphore, nuke_process_semaphore).await
     }
 }
 
@@ -72,8 +75,29 @@ async fn main() {
         }
     });
 
+    let nuke_cache_lock = Arc::new(RwLock::new(()));
+    let nuke_cache_lock2 = nuke_cache_lock.clone();
+
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(1 * 60 * 60));
+
+        loop {
+            interval.tick().await;
+            let permit = nuke_cache_lock2.write().await;
+            println!("Clearing npm cache!");
+
+            // TODO: nuke cache
+            std::fs::remove_dir_all(&CONFIG.npm_config_cache).unwrap();
+            std::fs::create_dir(&CONFIG.npm_config_cache).unwrap();
+
+            drop(permit)
+        }
+    });
+
     tokio::spawn(async move {
         let db = DbConnection::connect().await;
+
+        let nuke_cache_lock = nuke_cache_lock;
 
         let subprocess_semaphore =
             Arc::new(tokio::sync::Semaphore::new(CONFIG.num_threads as usize));
@@ -90,6 +114,7 @@ async fn main() {
             &db,
             &req_client,
             &subprocess_semaphore,
+            &nuke_cache_lock
         )
         .await;
 
@@ -117,6 +142,7 @@ async fn main() {
                     &db,
                     &req_client,
                     &subprocess_semaphore,
+                    &nuke_cache_lock
                 )
                 .await;
             }
@@ -137,6 +163,7 @@ async fn grab_and_run_job_batch(
     db: &DbConnection,
     req_client: &MaxConcurrencyClient,
     subprocess_semaphore: &Arc<tokio::sync::Semaphore>,
+    nuke_cache_lock: &Arc<RwLock<()>>
 ) {
     let jobs = grab_job_batch(db).await;
 
@@ -155,8 +182,9 @@ async fn grab_and_run_job_batch(
         let result_tx = result_tx.clone();
         let req_client = req_client.clone();
         let subprocess_semaphore = subprocess_semaphore.clone();
+        let nuke_cache_lock = nuke_cache_lock.clone();
         tokio::task::spawn(async move {
-            let job_result = job.run(req_client, subprocess_semaphore).await;
+            let job_result = job.run(req_client, subprocess_semaphore, nuke_cache_lock).await;
             result_tx.send(job_result).unwrap();
         });
     }
@@ -208,6 +236,7 @@ fn load_config() -> Configuration {
             .expect("failed to parse TOKIO_WORKER_THREADS"),
         registry_host: env::var("REGISTRY_HOST").expect("REGISTRY_HOST"),
         node_name: env::var("NODE_NAME").expect("NODE_NAME"),
+        npm_config_cache: env::var("npm_config_cache").expect("npm_config_cache"),
         max_job_time: Duration::seconds(desired_secs),
     }
 }

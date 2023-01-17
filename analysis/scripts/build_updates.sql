@@ -72,6 +72,11 @@ FROM inter_group_updates;
 
 CREATE INDEX analysis_all_updates_idx_package_id ON analysis.all_updates (package_id);
 CREATE INDEX analysis_all_updates_idx_to_semver ON analysis.all_updates (to_semver);
+CREATE INDEX analysis_all_updates_idx_to_id ON analysis.all_updates (to_id);
+CREATE INDEX analysis_all_updates_idx_from_id ON analysis.all_updates (from_id);
+
+ALTER TABLE analysis.all_updates
+ADD PRIMARY KEY (from_id, to_id);
 
 ANALYZE analysis.all_updates;
 
