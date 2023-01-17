@@ -331,6 +331,10 @@ async fn solve_dependencies_impl(
             continue;
         }
 
+        if !dep_path.contains("node_modules/") {
+            continue;
+        }
+
         let dep_name_start_idx = dep_path.rfind("node_modules/").unwrap() + 13;
         let dep_name = &dep_path[dep_name_start_idx..];
 
