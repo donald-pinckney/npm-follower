@@ -79,7 +79,7 @@ async fn main() {
     let nuke_cache_lock2 = nuke_cache_lock.clone();
 
     tokio::spawn(async move {
-        let mut interval = tokio::time::interval(std::time::Duration::from_secs(1 * 60 * 60));
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(20 * 60));
 
         loop {
             interval.tick().await;
