@@ -334,8 +334,12 @@ fn parse_lockfile_json(mut lock_json: Value) -> Result<SolveSolutionMetrics, ()>
         if dep_info.contains_key("link") {
             continue;
         }
+        
+        if !dep_path.contains("node_modules/") {
+            continue;
+        }
 
-        let dep_name_start_idx = dep_path.rfind("node_modules/").ok_or(())? + 13;
+        let dep_name_start_idx = dep_path.rfind("node_modules/").ok_or(()).unwrap() + 13;
         let dep_name = &dep_path[dep_name_start_idx..];
 
         let version = dep_info.get("version").ok_or(())?.as_str().ok_or(())?;
@@ -437,6 +441,7 @@ fn solve_oldness(
     for row in table {
         if let Some(first_solve) = row.solve_history.first() {
             let solve_time = first_solve.solve_time;
+            // println!("{},{},{}", row.update_from_id, row.update_to_id, row.downstream_package_id);
             let all_deps =
                 parse_lockfile_json(first_solve.full_package_lock.clone())?.into_all_deps();
             let oldnesses = all_deps
