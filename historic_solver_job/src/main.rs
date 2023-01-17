@@ -19,7 +19,7 @@ use tokio::sync::{
 
 mod run_solve_job;
 
-const JOBS_PER_THREAD: i64 = 1000;
+const JOBS_PER_THREAD: i64 = 200;
 
 #[derive(Debug)]
 pub struct Configuration {
