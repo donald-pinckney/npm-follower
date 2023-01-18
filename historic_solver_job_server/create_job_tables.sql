@@ -1,12 +1,6 @@
 CREATE TYPE historic_solver_solve_result_struct AS (
     solve_time TIMESTAMP WITH TIME ZONE,
     downstream_version semver_struct,
-    present_versions semver_struct []
-);
-
-CREATE TYPE historic_solver_solve_result_struct_new AS (
-    solve_time TIMESTAMP WITH TIME ZONE,
-    downstream_version semver_struct,
     present_versions semver_struct [],
     full_package_lock jsonb
 );
