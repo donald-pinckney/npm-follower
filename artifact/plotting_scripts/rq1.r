@@ -6,6 +6,34 @@ library(DBI)
 library(ggplot2)
 library(tidyverse)
 
+mytheme <- function() {
+  return(theme_minimal() +
+           theme(
+             # NOTE: UNCOMMENT WHEN RENDING PLOTS FOR THE PAPER
+             # (can't get the CM fonts to work in artifact VM...)
+             text = element_text(family = "Times", size=10),
+              # panel.grid.major = element_blank(),
+             # panel.grid.minor = element_blank(),
+             # panel.grid.major = element_line(colour="gray", size=0.1),
+             # panel.grid.minor =
+             #  element_line(colour="gray", size=0.1, linetype='dotted'),
+            #  axis.ticks = element_line(size=0.05),
+            #  axis.ticks.length=unit("-0.05", "in"),
+            #  axis.text.y = element_text(margin = margin(r = 5)),
+             axis.text.x = element_text(family = "Times", size=5),
+             legend.key = element_rect(colour=NA),
+             legend.spacing = unit(0.001, "in"),
+             legend.key.size = unit(0.2, "in"),
+            #  legend.title = element_blank(),
+            #  legend.position = c(0.75, .7),
+             legend.background = element_blank()))
+}
+
+mysave <- function(filename) {
+  ggsave(filename, width=4, height=3, units=c("in"))
+}
+
+
 con <- dbConnect(
     RPostgres::Postgres(),
     dbname = 'npm_data', 
@@ -70,58 +98,11 @@ ggplot(dep_by_year_percs, aes(x=yearFact, y=percentage, fill=composite_constrain
     scale_x_discrete() +
     scale_fill_brewer(palette="Set1") +
     scale_y_continuous(labels = scales::percent) + 
-    theme_minimal() +
+    # theme_minimal() +
     # theme(legend.position="bottom") +
-    labs(x="Year", y="Percentage of dependencies", fill="Constraint type")
+    labs(x="Year", y="Percentage of dependencies", fill="Constraint type") +
+    mytheme()
 
-ggsave("plots/rq1/constraint_usage_over_time.pdf")
-
-
-
-dep_by_year_percs
-
-ggplot(data = head(unique_deps_across_versions, 1000), aes(x = year)) +
-    geom_area(aes(fill = composite_constraint_typeFact), position="fill") +
-    scale_x_discrete()
-
-# Takes about 20 seconds
-ggplot(data = unique_deps_across_versions, aes(x = composite_constraint_typeFact, fill=dep_type)) +
-    geom_bar()
-
-# creates a data frame with one row per package, and columns for count of each update type
-# constraintCountsByPackage <- 
-total_unqiue_deps <- unique_deps_across_versions %>%
-    group_by(package_id,composite_constraint_typeFact) %>%
-    summarise(
-        count = n()
-    ) %>%
-    group_by(package_id) %>%
-    summarise(
-        total = sum(count),
-    )
-
-
-head(total_unqiue_deps)
-
-constraintCountsByPackageAndDepType <- unique_deps_across_versions %>%
-    group_by(package_id,composite_constraint_typeFact) %>%
-    summarise(
-        count = n()
-    ) %>%
-    inner_join(total_unqiue_deps, by=c('package_id')) %>%
-    mutate(pct = count / total) %>%
-    pivot_wider(names_from = composite_constraint_typeFact, values_from = c(count, pct), values_fill=0)
-
-
-# box plots of the percentage of updates that are each type
-ggplot(data = constraintCountsByPackageAndDepType %>% pivot_longer(cols=starts_with("pct"), names_to="constraint_type", values_to="val"), aes(x = constraint_type, y = val)) +
-    geom_boxplot() +
-    #sets the labels for the x-axis:
-    # scale_x_discrete(labels=c("bug", "major", "minor", "zero")) +
-    # scale_y_continuous(labels = scales::percent) + 
-    #sets the title of the plot
-    labs(title = "Percentage of updates that are each type")
-
-
+mysave("plots/rq1/constraint_usage_over_time.pdf")
 
 
