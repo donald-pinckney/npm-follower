@@ -28,5 +28,5 @@ RUN Rscript /r_packages.r
 RUN service postgresql start && su -c 'psql -c "create database npm_data;"' postgres
 
 COPY --chown=postgres npm-follower-postgres-analysis-dump-latest/ /npm-follower-postgres-analysis-dump-latest/
-RUN service postgresql start && su -c 'pg_restore -d npm_data -e -O -j 4 /npm-follower-postgres-analysis-dump-latest/' postgres
+RUN service postgresql start && su -c 'pg_restore -d npm_data -e -O -j 4 /npm-follower-postgres-analysis-dump-latest/ && psql -c "checkpoint; create user data_analyzer; grant select on all tables in schema public to data_analyzer; grant select on all tables in schema analysis to data_analyzer;"' postgres
 

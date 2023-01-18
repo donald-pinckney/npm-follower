@@ -6,6 +6,57 @@ library(DBI)
 library(ggplot2)
 library(tidyverse)
 
+mytheme <- function() {
+  return(theme_bw() +
+           theme(
+             # NOTE: UNCOMMENT WHEN RENDING PLOTS FOR THE PAPER
+             # (can't get the CM fonts to work in artifact VM...)
+             text = element_text(family = "Times", size=10),
+              panel.grid.major = element_blank(),
+             # panel.grid.minor = element_blank(),
+             # panel.grid.major = element_line(colour="gray", size=0.1),
+             # panel.grid.minor =
+             #  element_line(colour="gray", size=0.1, linetype='dotted'),
+             axis.ticks = element_line(size=0.05),
+             axis.ticks.length=unit("-0.05", "in"),
+             axis.text.y = element_text(margin = margin(r = 5)),
+             axis.text.x = element_text(hjust=1),
+             legend.key = element_rect(colour=NA),
+             legend.spacing = unit(0.001, "in"),
+             legend.key.size = unit(0.2, "in"),
+             legend.title = element_blank(),
+             legend.position = c(0.75, .7),
+             legend.background = element_blank()))
+}
+
+mythemeboxplot <- function() {
+  return(theme_bw() +
+           theme(
+             # NOTE: UNCOMMENT WHEN RENDING PLOTS FOR THE PAPER
+             # (can't get the CM fonts to work in artifact VM...)
+             text = element_text(family = "Times", size=10),
+              panel.grid.major = element_blank(),
+             # panel.grid.minor = element_blank(),
+             # panel.grid.major = element_line(colour="gray", size=0.1),
+             # panel.grid.minor =
+             #  element_line(colour="gray", size=0.1, linetype='dotted'),
+             axis.ticks = element_line(size=0.05),
+             axis.ticks.length=unit("-0.05", "in"),
+             axis.text.y = element_text(margin = margin(r = 5)),
+            #  axis.text.x = element_text(hjust=1),
+             legend.key = element_rect(colour=NA),
+             legend.spacing = unit(0.001, "in"),
+             legend.key.size = unit(0.2, "in"),
+            #  legend.title = element_blank(),
+            #  legend.position = c(0.75, .7),
+             legend.background = element_blank()))
+}
+
+mysave <- function(filename) {
+  ggsave(filename, width=6, height=4.5, units=c("in"))
+  # embed_font(path)
+}
+
 con <- dbConnect(
     RPostgres::Postgres(),
     dbname = 'npm_data', 
@@ -83,9 +134,9 @@ ggplot(data = updateCountsByPackageLong, aes(x = update_action, y = pct, fill=ty
     # scale_x_discrete(limits=c("normal", "introduce vuln", "patch vuln")) +
     scale_y_continuous(labels = scales::percent) + 
     #sets the title of the plot
-    labs(title = "Percentage of each semver increment type across security effects", fill='Semver Increment Type', x='Update Security Effect', y = 'Percentage of each package\'s updates')
+    labs(fill='Semver Increment Type', x='Update Security Effect', y = 'Percentage of each package\'s updates') + 
+    mythemeboxplot()
 
-ggsave("plots/rq2/update_type_with_security.pdf")
-ggsave("plots/rq2/update_type_with_security.png")
+mysave("plots/rq2/update_type_with_security.png")
 
 

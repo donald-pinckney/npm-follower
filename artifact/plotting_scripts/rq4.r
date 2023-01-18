@@ -8,6 +8,34 @@ library(tidyverse)
 library(caret)
 library(scales)
 
+mytheme <- function() {
+  return(theme_bw() +
+           theme(
+             # NOTE: UNCOMMENT WHEN RENDING PLOTS FOR THE PAPER
+             # (can't get the CM fonts to work in artifact VM...)
+             text = element_text(family = "Times", size=10),
+              panel.grid.major = element_blank(),
+             # panel.grid.minor = element_blank(),
+             # panel.grid.major = element_line(colour="gray", size=0.1),
+             # panel.grid.minor =
+             #  element_line(colour="gray", size=0.1, linetype='dotted'),
+             axis.ticks = element_line(size=0.05),
+             axis.ticks.length=unit("-0.05", "in"),
+             axis.text.y = element_text(margin = margin(r = 5)),
+             axis.text.x = element_text(hjust=1),
+             legend.key = element_rect(colour=NA),
+             legend.spacing = unit(0.001, "in"),
+             legend.key.size = unit(0.2, "in"),
+            #  legend.title = element_blank(),
+            #  legend.position = c(0.75, .7),
+             legend.background = element_blank()))
+}
+
+mysave <- function(filename) {
+  ggsave(filename, width=6, height=4.5, units=c("in"))
+  # embed_font(path)
+}
+
 con <- dbConnect(
     RPostgres::Postgres(),
     dbname = 'npm_data', 
@@ -35,45 +63,6 @@ all_updates <- all_updates %>% mutate(
     only_change_types = (did_add_dep | did_remove_dep | did_modify_dep_constraint) & !(did_change_types | did_change_code | did_change_json_scripts)
 )
 
-all_updates %>% group_by(tyFact) %>% summarise(
-    n = n(), 
-    # var_num_did_intro_vuln = sum(did_intro_vuln),
-    # var_num_did_patch_vuln = sum(did_patch_vuln),
-    var_num_did_change_types = sum(did_change_types),
-    var_num_did_change_code = sum(did_change_code),
-    var_num_did_add_dep = sum(did_add_dep),
-    var_num_did_remove_dep = sum(did_remove_dep),
-    var_num_did_modify_dep_constraint = sum(did_modify_dep_constraint),
-    var_num_did_change_json_scripts = sum(did_change_json_scripts)
-) %>%
-mutate(
-    # var_pct_did_intro_vuln = var_num_did_intro_vuln / n,
-    # var_pct_did_patch_vuln = var_num_did_patch_vuln / n,
-    var_pct_did_change_types = var_num_did_change_types / n,
-    var_pct_did_change_code = var_num_did_change_code / n,
-    var_pct_did_add_dep = var_num_did_add_dep / n,
-    var_pct_did_remove_dep = var_num_did_remove_dep / n,
-    var_pct_did_modify_dep_constraint = var_num_did_modify_dep_constraint / n,
-    var_pct_did_change_json_scripts = var_num_did_change_json_scripts / n
-) %>% pivot_longer(
-    cols = starts_with("var_pct_"),
-    names_to = "var",
-    values_to = "val"
-) %>% ggplot(aes(x = tyFact, y = val, fill = var)) +
-    geom_col(position="dodge") +
-    # facet_wrap(~var, scales = "free_y") +
-    # theme_minimal() +
-    # theme(legend.position = "none") +
-    labs(x = "Type of update", y = "Percentage of updates within type", title = "What is changed by each update type?")
-
-#  %>% ggplot(aes(x = tyFact, y = pct, fill = tyFact)) + 
-#     geom_bar(stat = "identity") + 
-#     facet_wrap(~var, scales = "free_y") + 
-#     theme_minimal() + 
-#     theme(legend.position = "none") + 
-#     labs(x = "Type of update", y = "Proportion of updates", title = "What proportion of updates change each type of thing?")
-
-
 all_updates %>% summarize(total_did_change_deps=sum(did_change_deps))
 
 as.data.frame(confusionMatrix(factor(all_updates$did_change_deps), factor(all_updates$did_change_code))$table)
@@ -95,10 +84,10 @@ plot_change_deps_vs_code <- function(df, update_type) {
         ggsave(paste("plots/rq4/contents_heat_", update_type, ".pdf", sep=""))
 }
 
-plot_change_deps_vs_code(all_updates, "all")
-plot_change_deps_vs_code(all_updates %>% filter(ty == "bug"), "bug")
-plot_change_deps_vs_code(all_updates %>% filter(ty == "minor"), "minor")
-plot_change_deps_vs_code(all_updates %>% filter(ty == "major"), "major")
+# plot_change_deps_vs_code(all_updates, "all")
+# plot_change_deps_vs_code(all_updates %>% filter(ty == "bug"), "bug")
+# plot_change_deps_vs_code(all_updates %>% filter(ty == "minor"), "minor")
+# plot_change_deps_vs_code(all_updates %>% filter(ty == "major"), "major")
 
 # creates a data frame with one row per package, and columns for count of each update type
 update_changes_by_pkg <- all_updates %>%
@@ -159,10 +148,12 @@ ggplot(data = update_changes_by_pkg, aes(x = tyFact, y = pct, fill=change)) +
     # scale_x_discrete(limits=c("normal", "introduce vuln", "patch vuln")) +
     scale_y_continuous(labels = scales::percent) + 
     #sets the title of the plot
-    labs(title = "Percentage of each category of update contents across semver increment types", fill='Contents of Update', x='Semver Increment Type', y = 'Percentage of each packages\' updates')
+    labs(
+        # title = "Percentage of each category of update contents across semver increment types", 
+        fill='Contents of Update', x='Semver Increment Type', y = 'Percentage of each packages\' updates') +
+    mytheme()
 
-ggsave("plots/rq4/contents_box_plot.pdf")
-ggsave("plots/rq4/contents_box_plot.png")
+mysave("plots/rq4/contents_box_plot.png")
 
 ggplot(data = update_changes_by_pkg, aes(x = tyFact, y = pct, fill=change)) +
     geom_boxplot() +
@@ -176,7 +167,10 @@ ggplot(data = update_changes_by_pkg, aes(x = tyFact, y = pct, fill=change)) +
     # scale_x_discrete(limits=c("normal", "introduce vuln", "patch vuln")) +
     scale_y_continuous(labels = scales::percent) + 
     #sets the title of the plot
-    labs(title = "Percentage of each category of update contents across semver increment types", fill='Contents of Update', x='Semver Increment Type', y = 'Percentage of each packages\' updates')
+    labs(
+        title = "Percentage of each category of update contents across semver increment types", 
+        fill='Contents of Update', x='Semver Increment Type', 
+        y = 'Percentage of each packages\' updates')
 
 
 
