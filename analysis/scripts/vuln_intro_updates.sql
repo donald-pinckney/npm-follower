@@ -30,5 +30,3 @@ from analysis.all_updates u
     AND v_o.semver = u.to_semver
     AND v_o.smaller_vers_order = 1;
 GRANT SELECT ON analysis.vuln_intro_updates TO data_analyzer;
-GRANT ALL ON analysis.vuln_intro_updates TO pinckney;
-GRANT ALL ON analysis.vuln_intro_updates TO federico;

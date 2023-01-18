@@ -14,7 +14,7 @@ lazy_static = "1.4.0"
 diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
 dotenv = "0.15.0"
 sha2 = "0.10.6"
-deepsize = { git = "https://github.com/donald-pinckney/deepsize", features = ["chrono", "serde_json"] }
+deepsize = { git = "https://github.com/anonymous-submit-1/deepsize", features = ["chrono", "serde_json"] }
 bb8 = "0.8.0"
 bb8-diesel = { git = "https://github.com/overdrivenpotato/bb8-diesel.git", version = "0.2.1" }
 tokio = { version = "1", features = ["full"] }

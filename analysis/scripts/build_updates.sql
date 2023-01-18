@@ -81,8 +81,6 @@ ADD PRIMARY KEY (from_id, to_id);
 ANALYZE analysis.all_updates;
 
 GRANT SELECT ON analysis.all_updates TO data_analyzer;
-GRANT ALL ON analysis.all_updates TO pinckney;
-GRANT ALL ON analysis.all_updates TO federico;
 
 
 CREATE TABLE analysis.all_overlaps AS
@@ -99,5 +97,3 @@ FROM analysis.valid_group_ranges x
     AND x.end_created >= y.start_created;
 
 GRANT SELECT ON analysis.all_overlaps TO data_analyzer;
-GRANT ALL ON analysis.all_overlaps TO pinckney;
-GRANT ALL ON analysis.all_overlaps TO federico;

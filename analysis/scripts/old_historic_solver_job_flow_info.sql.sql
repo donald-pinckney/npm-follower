@@ -20,6 +20,4 @@ and result_category <> 'MiscError'
 
 
 GRANT SELECT ON analysis.old_historic_solver_job_flow_info TO data_analyzer;
-GRANT ALL ON analysis.old_historic_solver_job_flow_info TO pinckney;
-GRANT ALL ON analysis.old_historic_solver_job_flow_info TO federico;
 

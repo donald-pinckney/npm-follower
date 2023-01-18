@@ -22,5 +22,3 @@ ANALYZE analysis.possible_direct_dev_deps;
 
 
 GRANT SELECT ON analysis.possible_direct_dev_deps TO data_analyzer;
-GRANT ALL ON analysis.possible_direct_dev_deps TO pinckney;
-GRANT ALL ON analysis.possible_direct_dev_deps TO federico;

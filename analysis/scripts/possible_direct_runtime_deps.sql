@@ -24,5 +24,3 @@ ANALYZE analysis.possible_direct_runtime_deps;
 
 
 GRANT SELECT ON analysis.possible_direct_runtime_deps TO data_analyzer;
-GRANT ALL ON analysis.possible_direct_runtime_deps TO pinckney;
-GRANT ALL ON analysis.possible_direct_runtime_deps TO federico;

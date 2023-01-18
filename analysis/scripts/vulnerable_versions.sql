@@ -70,5 +70,3 @@ from versions vers
 
 
 GRANT SELECT ON analysis.vulnerable_versions TO data_analyzer;
-GRANT ALL ON analysis.vulnerable_versions TO pinckney;
-GRANT ALL ON analysis.vulnerable_versions TO federico;

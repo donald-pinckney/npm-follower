@@ -23,5 +23,3 @@ ADD CONSTRAINT analysis_subsampled_possible_install_deps_fkey_depends_on_pkg FOR
 ANALYZE analysis.subsampled_possible_install_deps;
 
 GRANT SELECT ON analysis.subsampled_possible_install_deps TO data_analyzer;
-GRANT ALL ON analysis.subsampled_possible_install_deps TO pinckney;
-GRANT ALL ON analysis.subsampled_possible_install_deps TO federico;

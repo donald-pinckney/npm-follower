@@ -44,8 +44,6 @@ on d.id = pd.dep;
 
 
 GRANT SELECT ON analysis.unique_deps_across_versions TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_across_versions TO pinckney;
-GRANT ALL ON analysis.unique_deps_across_versions TO federico;
 
 
 
@@ -104,9 +102,6 @@ on d.id = pd.dep;
 
 
 GRANT SELECT ON analysis.unique_deps_of_latest TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_of_latest TO pinckney;
-GRANT ALL ON analysis.unique_deps_of_latest TO federico;
-
 
 
 
@@ -178,8 +173,6 @@ on d.id = pd.dep;
 
 
 GRANT SELECT ON analysis.unique_deps_yearly_latest TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_yearly_latest TO pinckney;
-GRANT ALL ON analysis.unique_deps_yearly_latest TO federico;
 
 
 
@@ -256,9 +249,6 @@ on d.id = pd.dep;
 
 
 GRANT SELECT ON analysis.unique_deps_yearly_latest_depended_on_only TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_yearly_latest_depended_on_only TO pinckney;
-GRANT ALL ON analysis.unique_deps_yearly_latest_depended_on_only TO federico;
-
 
 
 
@@ -339,6 +329,3 @@ on d.id = pd.dep and d.dst_package_id_if_exists IN (select * from pkgs_with_vuln
 
 
 GRANT SELECT ON analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO pinckney;
-GRANT ALL ON analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO federico;
-

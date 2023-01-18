@@ -25,8 +25,8 @@ serde_json = { version = "1.0.79", features = ["preserve_order"] }
 indicatif = "0.16.2"
 chrono = { version = "0.4.19", features = ["serde"] }
 url = "2.3.0"
-deepsize = { git = "https://github.com/donald-pinckney/deepsize", features = ["chrono", "serde_json"] }
-lru = { git = "https://github.com/donald-pinckney/lru-rs" }
+deepsize = { git = "https://github.com/anonymous-submit-1/deepsize", features = ["chrono", "serde_json"] }
+lru = { git = "https://github.com/anonymous-submit-1/lru-rs" }
 kdam = "0.3.0"
 
 [dev-dependencies]

@@ -76,8 +76,6 @@ CREATE INDEX constraint_types_idx ON analysis.constraint_types (dependency_id);
 ANALYZE analysis.constraint_types;
 
 GRANT SELECT ON analysis.constraint_types TO data_analyzer;
-GRANT ALL ON analysis.constraint_types TO pinckney;
-GRANT ALL ON analysis.constraint_types TO federico;
 
 
     

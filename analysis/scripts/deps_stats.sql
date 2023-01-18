@@ -185,8 +185,6 @@ transitive_runtime_rev_dep_counts as (
 
 
 GRANT SELECT ON analysis.all_dep_counts TO data_analyzer;
-GRANT ALL ON analysis.all_dep_counts TO pinckney;
-GRANT ALL ON analysis.all_dep_counts TO federico;
 
 
 ALTER TABLE analysis.all_dep_counts
@@ -291,5 +289,3 @@ order by s.count_type,
 
 
 GRANT SELECT ON analysis.deps_stats TO data_analyzer;
-GRANT ALL ON analysis.deps_stats TO pinckney;
-GRANT ALL ON analysis.deps_stats TO federico;

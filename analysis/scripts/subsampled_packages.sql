@@ -37,5 +37,3 @@ ADD PRIMARY KEY (from_id, to_id);
 ANALYZE analysis.subsampled_packages;
 
 GRANT SELECT ON analysis.subsampled_packages TO data_analyzer;
-GRANT ALL ON analysis.subsampled_packages TO pinckney;
-GRANT ALL ON analysis.subsampled_packages TO federico;

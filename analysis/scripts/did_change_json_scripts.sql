@@ -17,8 +17,6 @@ inner join versions to_v on u.to_id = to_v.id;
 -- where analysis.get_install_scripts(from_v.extra_metadata -> 'scripts') <>  analysis.get_install_scripts(to_v.extra_metadata -> 'scripts')
 
 GRANT SELECT ON analysis.update_did_change_json_scripts TO data_analyzer;
-GRANT ALL ON analysis.update_did_change_json_scripts TO pinckney;
-GRANT ALL ON analysis.update_did_change_json_scripts TO federico;
 
 ALTER TABLE analysis.update_did_change_json_scripts
 ADD PRIMARY KEY (from_id, to_id);

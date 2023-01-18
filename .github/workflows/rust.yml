@@ -8,8 +8,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  DATABASE_URL: postgres://donald:password@localhost/npm_data
-  TESTING_DATABASE_URL: postgres://donald:password@localhost/testing_npm_data
+  DATABASE_URL: postgres://db_ci_user:password@localhost/npm_data
+  TESTING_DATABASE_URL: postgres://db_ci_user:password@localhost/testing_npm_data
   
 jobs:
   build:
@@ -26,7 +26,7 @@ jobs:
         # Version of PostgreSQL to use
         postgresql version: 15
         postgresql db: npm_data
-        postgresql user: donald 
+        postgresql user: db_ci_user 
         postgresql password: password
     - name: Setup Node.js environment
       uses: actions/setup-node@v3.3.0

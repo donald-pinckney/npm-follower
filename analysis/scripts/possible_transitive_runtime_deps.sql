@@ -26,5 +26,3 @@ ADD CONSTRAINT analysis_possible_transitive_runtime_deps_fkey_depends_on_pkg FOR
 ANALYZE analysis.possible_transitive_runtime_deps;
 
 GRANT SELECT ON analysis.possible_transitive_runtime_deps TO data_analyzer;
-GRANT ALL ON analysis.possible_transitive_runtime_deps TO pinckney;
-GRANT ALL ON analysis.possible_transitive_runtime_deps TO federico;

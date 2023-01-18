@@ -22,8 +22,7 @@ INNER JOIN analysis.update_did_change_json_scripts s ON u.from_id = s.from_id AN
 
 
 GRANT SELECT ON analysis.what_did_updates_change TO data_analyzer;
-GRANT ALL ON analysis.what_did_updates_change TO pinckney;
-GRANT ALL ON analysis.what_did_updates_change TO federico;
+
 
 ALTER TABLE analysis.what_did_updates_change
 ADD PRIMARY KEY (from_id, to_id);

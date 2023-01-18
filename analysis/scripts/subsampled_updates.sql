@@ -90,5 +90,3 @@ ADD PRIMARY KEY (from_id, to_id);
 ANALYZE analysis.subsampled_updates;
 
 GRANT SELECT ON analysis.subsampled_updates TO data_analyzer;
-GRANT ALL ON analysis.subsampled_updates TO pinckney;
-GRANT ALL ON analysis.subsampled_updates TO federico;

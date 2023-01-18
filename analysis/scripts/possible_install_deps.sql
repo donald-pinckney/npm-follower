@@ -28,6 +28,4 @@ ADD CONSTRAINT analysis_possible_install_deps_fkey_depends_on_pkg FOREIGN KEY (d
 ANALYZE analysis.possible_install_deps;
 
 GRANT SELECT ON analysis.possible_install_deps TO data_analyzer;
-GRANT ALL ON analysis.possible_install_deps TO pinckney;
-GRANT ALL ON analysis.possible_install_deps TO federico;
 

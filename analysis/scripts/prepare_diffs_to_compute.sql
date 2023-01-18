@@ -20,8 +20,6 @@ ADD PRIMARY KEY (from_id, to_id);
 
 DELETE FROM analysis.diffs_to_compute WHERE ROW(from_id, to_id) IN (SELECT from_id, to_id FROM diff_analysis);
 
-GRANT ALL ON analysis.diffs_to_compute TO pinckney;
-GRANT ALL ON analysis.diffs_to_compute TO federico;
 GRANT SELECT ON analysis.diffs_to_compute TO data_analyzer;
 
 ANALYZE analysis.diffs_to_compute;
