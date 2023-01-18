@@ -7,5 +7,5 @@
 #SBATCH --job-name=historic_solver_job
 #SBATCH --partition=short
 
-ssh -L 5431:localhost:5432  pinckney@pinckney2.vpc.ripley.cloud -N -f
+ssh -L 5431:localhost:5432  XXXXXX@XXXXXX -N -f
 ./launch.sh

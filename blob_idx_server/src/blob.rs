@@ -176,7 +176,7 @@ pub struct BlobStorage {
     cleanup_tasks: DashMap<u32, CleanerInstance>,
 }
 
-/// INFO: https://github.com/donald-pinckney/npm-follower/wiki/Design-of-the-Blob-Storage-Index-Server
+/// INFO: https://XXXXXX
 impl BlobStorage {
     /// NOTE: with redis, on new we fully load the file pools.
     /// meanwhile for the k/v map, we lazily load it on first access.

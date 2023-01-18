@@ -1,8 +1,4 @@
-# NPM Scraping Scripts
-
-[![Rust](https://github.com/donald-pinckney/npm-follower/actions/workflows/rust.yml/badge.svg)](https://github.com/donald-pinckney/npm-follower/actions/workflows/rust.yml)
-
-[DASHBOARD](https://grafana.apps.in.ripley.cloud/public-dashboards/23a7905953e5448f9e2732a75e9d01f0)
+# NPM Follower Database - Metadata & Full Package Tarball, Scraping & Analysis
 
 ## Prerequisites
 

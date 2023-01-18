@@ -131,7 +131,7 @@ fn spawn_diff_worker(
 
             let job = SubmitJobRequest {
                 job_type: JobType::ComputeMulti {
-                    binary: "/scratch/cassano.f/blob_bins/diff_analysis_client".to_string(),
+                    binary: "/scratch/XXXXXX/blob_bins/diff_analysis_client".to_string(),
                     tarball_chunks,
                     timeout: Some(600),
                 },

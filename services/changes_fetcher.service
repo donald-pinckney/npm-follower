@@ -9,7 +9,7 @@ StandardError=journal
 Restart=always
 RestartSec=10
 
-ExecStart=/zfs-raidz1/federico/npm-follower/services/changes_fetcher_start.sh
+ExecStart=/zfs-raidz1/XXXXXX/npm-follower/services/changes_fetcher_start.sh
 
 [Install]
 WantedBy=default.target

@@ -6,7 +6,7 @@ Type=simple
 StandardOutput=journal
 StandardError=journal
 
-ExecStart=/zfs-raidz1/federico/npm-follower/services/downloader_start.sh
+ExecStart=/zfs-raidz1/XXXXXX/npm-follower/services/downloader_start.sh
 
 [Install]
 WantedBy=default.target
