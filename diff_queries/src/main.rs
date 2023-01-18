@@ -334,7 +334,7 @@ fn parse_lockfile_json(mut lock_json: Value) -> Result<SolveSolutionMetrics, ()>
         if dep_info.contains_key("link") {
             continue;
         }
-        
+
         if !dep_path.contains("node_modules/") {
             continue;
         }
