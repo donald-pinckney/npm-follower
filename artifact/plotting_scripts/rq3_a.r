@@ -28,7 +28,7 @@ mytheme <- function() {
 }
 
 mysave <- function(filename) {
-  ggsave(filename, width=4, height=3, units=c("in"))
+  ggsave(filename, width=6, height=4.5, units=c("in"))
   # embed_font(path)
 }
 
@@ -95,5 +95,60 @@ summarise(mean(as.numeric(mean_old_secs))) / (60 * 60 * 24)
 downstream_oldness_stats %>% 
 filter(perc_old > 0) %>% 
 summarise(mean(as.numeric(mean_old_secs))) / (60 * 60 * 24)
+
+as.data.frame(quantile((downstream_oldness_stats %>% filter(perc_old > 0))$mean_old_secs / 60 / 60 / 24, c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99)))
+
+
+ggplot(data=downstream_oldness_stats %>% filter(perc_old > 0), aes(x=mean_old_secs / 60 / 60 / 24)) + 
+    stat_ecdf() +
+    scale_y_continuous(labels = scales::percent) +
+    ylab("Cumulative percentage of out-of-date packages") +
+    xlab("Average time dependencies are out-of-date (days)") +
+    mytheme()
+    
+mysave("plots/rq3/out_of_date_ecdf.pdf")
+
+ggplot(data=downstream_oldness_stats, aes(x=n)) + 
+    geom_histogram() +
+    # scale_x_continuous(labels = scales::percent) +
+    xlab("Number of installed dependencies") +
+    ylab("Number of packages") +
+    mytheme()
+
+mysave("plots/general/num_installed_deps_hist.pdf")
+
+ggplot(data=downstream_oldness_stats, aes(x=n)) + 
+    stat_ecdf() +
+    scale_y_continuous(labels = scales::percent) +
+    ylab("Cumulative percentage of packages") +
+    xlab("Number of installed dependencies") +
+    mytheme()
+    
+mysave("plots/general/num_installed_deps_ecdf.pdf")
+
+as.data.frame(quantile(downstream_oldness_stats$n, c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99)))
+
+rev_dep_counts <- df %>% 
+    group_by(dep_pkg_id) %>% 
+    summarise(
+        n = n()
+    )# %>% arrange(desc(n))
+
+rev_dep_counts %>% arrange(desc(n))
+
+ggplot(data=rev_dep_counts, aes(x=n)) + 
+    stat_ecdf() +
+    scale_y_continuous(labels = scales::percent) +
+    scale_x_continuous(trans = log2_trans(),
+    breaks = trans_breaks("log2", function(x) 2^x),
+    labels = trans_format("log2", math_format(2^.x))) +
+    # coord_trans(x="log2") +
+    ylab("Cumulative percentage of packages") +
+    xlab("Number of reverse dependencies (log scale)") +
+    mytheme()
+    
+mysave("plots/general/num_rev_deps_ecdf.pdf")
+
+as.data.frame(quantile(rev_dep_counts$n, c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99)))
 
 
