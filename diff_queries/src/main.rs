@@ -372,7 +372,7 @@ fn how_old(
 
     let most_recent_before_solve_time = versions
         .iter()
-        .filter(|v| v.1 <= solve_time)
+        .filter(|v| v.1 <= solve_time && v.0 >= solved_version.0)
         .max_by_key(|v| v.1)?;
 
     Some(OldnessPair {
