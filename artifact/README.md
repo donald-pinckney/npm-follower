@@ -69,6 +69,7 @@ and you can proceed to the next step.
 
 ```bash
 cd /
+Rscript plotting_scripts/rq1.r # this will create plots inside /plots/general
 Rscript plotting_scripts/rq1.r # this will create plots inside /plots/rq1
 Rscript plotting_scripts/rq2.r # this will create plots inside /plots/rq2
 Rscript plotting_scripts/rq3_a.r # this will create plots inside /plots/rq3
