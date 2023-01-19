@@ -1,40 +1,59 @@
 # Artifact for A Large Scale Analysis of Semantic Versioning in NPM
 
-## 1. Import the Docker image
+## Overview of What is Included in the Artifact
 
-## 2. Run and Login to the Docker image
+This artifact contains the following:
+
+- This README file with instructions for reproducing the plots in the paper.
+- A Docker image containing a dump of our Postgres database, and the R scripts used to generate the plots in the paper.
+- The Postgres database only contains package metadata, and not the full package tarballs, as we do not currently know how to distribute 19TB easily and anonymously.
+- In addition, to make the artifact download smaller, we have removed a handful of large tables from the database that are not used in the analysis in the paper, and are only used by the underlying scraping system.
+- `npm-follower-anon/`: an anonymized clone of the repository, which contains the full code for the system used to collect the data in the paper.
+
+The Postgres database is structured in two parts:
+
+- The `public` schema (the default schema) contains the tables that are the product of scraping, and the product of very compute heavy jobs that are very time-consuming to recompute.
+- The `analysis` schema contains tables that have been derived, primarily using SQL scripts in `npm-follower-anon/analysis/scripts/`.
+
+## Instructions for Reproducing the Plots in the Paper
+
+### 0. Prerequisites
+
+- Docker
+
+### 1. Import the Docker image
+
+### 2. Run and Login to the Docker image
 
 ```bash
-# You made need to prepend `sudo` to the following commands, depending on your system
+# You made need to prepend `sudo` to docker commands, depending on your system
 docker run -it -d --name artifact-npm-follower-container artifact-npm-follower-image bash
 docker exec -it artifact-npm-follower-container /bin/bash
 ```
 
 You should now be in a shell inside the Docker container.
 
-## 3. Start Postgres
+### 3. Start Postgres
 
 ```bash
 service postgresql start
 ```
 
-Postgres may fail to start at first, and it may take a while to start.
-If there is an error when running the above command, try running it again.
 Once it responds with `[ OK ]`, then proceed to the next step.
 
-## 4. Wait for Postgres to finish starting
+### 4. Test database connection
 
-Postgres may take some time (up to 15+ minutes) to start.
-You can check the status of Postgres by running the following command:
+Before proceeding, briefly check that the database is running correctly and is accepting connections.
+Test this by running the following command:
 
 ```bash
 psql -U data_analyzer npm_data -c "\dt"
 ```
 
-Once you see a response listing the tables in the database, then you know that Postgres has finished starting,
+Once you see a response listing the tables in the database, then you know that Postgres is ready to go,
 and you can proceed to the next step.
 
-## 5. Recreate the plots
+### 5. Recreate the plots
 
 ```bash
 cd /
@@ -45,8 +64,19 @@ Rscript plotting_scripts/rq3_b.r # this will create plots inside /plots/rq3
 Rscript plotting_scripts/rq4.r # this will create plots inside /plots/rq4
 ```
 
+Please note that each script takes a couple of minutes to run.
 
-## 6. Exit the Docker container
+### 6. Copying Plots to the Host Machine to View
+
+You may run a command like the following **on the host machine** to copy the plots directory to the host machine:
+
+```bash
+docker cp artifact-npm-follower-container:/plots .
+```
+
+Then you may view the plots and compare to the plots in the paper.
+
+### 7. Stopping the Docker container
 
 In a shell on the host machine, run:
 

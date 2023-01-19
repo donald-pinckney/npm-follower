@@ -6,5 +6,6 @@ for f in ../analysis/notebooks/*.ipynb; do
     jupyter nbconvert --output-dir=plotting_scripts/ --to script $f
 done
 
-sudo docker build -t artifact .
+# sudo docker build -t artifact .
+sudo docker build -t artifact-npm-follower-image .
 # sudo docker run -it artifact bash
