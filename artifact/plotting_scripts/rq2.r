@@ -140,3 +140,22 @@ ggplot(data = updateCountsByPackageLong, aes(x = update_action, y = pct, fill=ty
 mysave("plots/rq2/update_type_with_security.png")
 
 
+
+# box plots of the percentage of updates that are each type
+ggplot(data = updateCountsByPackageLong, aes(x = update_action, y = pct, fill=ty)) +
+    geom_boxplot() +
+    stat_summary(geom="text", fun.y=quantile,
+               aes(label=sprintf("%1.4f", ..y..), x=update_action, color=ty),
+               position=position_nudge(x=0.45), 
+               size=3.5) +
+
+    #sets the labels for the x-axis:
+    # scale_x_discrete(limits=c("normal", "introduce vuln", "patch vuln")) +
+    scale_y_continuous(labels = scales::percent) + 
+    #sets the title of the plot
+    labs(fill='Semver Increment Type', x='Update Security Effect', y = 'Percentage of each package\'s updates') + 
+    mythemeboxplot()
+
+# mysave("plots/rq2/update_type_with_security.png")
+
+

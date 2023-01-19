@@ -17,6 +17,7 @@ COPY npm-follower-anon /npm-follower-anon
 COPY plotting_scripts /plotting_scripts
 COPY r_packages.r /r_packages.r
 
+RUN mkdir -p /plots/general
 RUN mkdir -p /plots/rq1
 RUN mkdir -p /plots/rq2
 RUN mkdir -p /plots/rq3

@@ -105,4 +105,6 @@ ggplot(dep_by_year_percs, aes(x=yearFact, y=percentage, fill=composite_constrain
 
 mysave("plots/rq1/constraint_usage_over_time.pdf")
 
+dep_by_year_percs
+
 
