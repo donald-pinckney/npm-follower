@@ -5,7 +5,7 @@
 This artifact contains the following:
 
 - This README file with instructions for reproducing the plots in the paper.
-- A Docker image containing a dump of our Postgres database, and the R scripts used to generate the plots in the paper.
+- A Dockerfile to build an image containing a dump of our Postgres database, and the R scripts used to generate the plots in the paper.
 - The Postgres database only contains package metadata, and not the full package tarballs, as we do not currently know how to distribute 19TB easily and anonymously.
 - In addition, to make the artifact download smaller, we have removed a handful of large tables from the database that are not used in the analysis in the paper, and are only used by the underlying scraping system.
 - `npm-follower-anon/`: an anonymized clone of the repository, which contains the full code for the system used to collect the data in the paper.
@@ -20,10 +20,22 @@ The Postgres database is structured in two parts:
 ### 0. Prerequisites
 
 - Docker
+- 500 GB of free disk space
 
-### 1. Import the Docker image
+### 1. Build the Docker image
+
+In this directory, run:
+
+```bash
+# You made need to prepend `sudo` to docker commands, depending on your system
+docker build -t artifact-npm-follower-image .
+```
+
+This command will take several hours to run, as it must install all dependencies for R, copy the compressed database dump into the image, and then restore the database.
 
 ### 2. Run and Login to the Docker image
+
+Once you've built the Docker image, you can run it and login to it with the following commands:
 
 ```bash
 # You made need to prepend `sudo` to docker commands, depending on your system
@@ -71,6 +83,7 @@ Please note that each script takes a couple of minutes to run.
 You may run a command like the following **on the host machine** to copy the plots directory to the host machine:
 
 ```bash
+# You made need to prepend `sudo` to docker commands, depending on your system
 docker cp artifact-npm-follower-container:/plots .
 ```
 
@@ -81,6 +94,7 @@ Then you may view the plots and compare to the plots in the paper.
 In a shell on the host machine, run:
 
 ```bash
+# You made need to prepend `sudo` to docker commands, depending on your system
 docker stop artifact-npm-follower-container
 ```
 
