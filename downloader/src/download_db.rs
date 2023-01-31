@@ -1,9 +1,11 @@
+use blob_idx_server::http::JobType;
 use postgres_db::connection::DbConnection;
 use postgres_db::download_queue::{
     get_total_tasks_num, load_chunk_init, load_chunk_next, update_from_error, update_from_tarballs,
     DownloadTask, TASKS_CHUNK_SIZE,
 };
 use postgres_db::download_tarball::DownloadedTarball;
+use std::collections::HashMap;
 use std::{os::unix::prelude::PermissionsExt, sync::mpsc::channel};
 
 use crate::{
@@ -91,7 +93,7 @@ pub fn download_to_dest(
 
     // the last url of the task that was queried
     let mut last_url = tasks.last().unwrap().url.clone();
-    // the last chunk size that was quried
+    // the last chunk size that was queried
     let mut last_chunk_size = tasks.len();
     // the counter of downloads per chunk (gets reset on each chunk)
     let mut download_counter = 0;
@@ -143,6 +145,65 @@ pub fn download_to_dest(
     }
 
     update_from_tarball_queue(conn, &mut tarballs_queue);
+
+    println!("Done downloading tasks");
+
+    Ok(())
+}
+
+/// Downloads all present tasks to the computing cluster. Inserts each task completed in the
+/// downloaded_tarballs table, and removes the completed tasks from the download_tasks table.
+/// The given number of parallel dls represent the number of tarballs per worker that will be
+/// downloaded in parallel. The retry_failed flag indicates whether to retry failed downloads.
+pub async fn download_to_cluster(
+    conn: &mut DbConnection,
+    num_parallel_dl: usize,
+    retry_failed: bool,
+) -> std::io::Result<()> {
+    let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL not set");
+    let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY not set");
+    let client = reqwest::Client::new();
+
+    let req_chunk_size = TASKS_CHUNK_SIZE / 4; // make chunk smaller due to cluster overhead
+
+    // get all tasks with no failed downloads if retry_failed is false
+    let tasks_len = get_total_tasks_num(conn, retry_failed);
+    println!("{} tasks to download", tasks_len);
+
+    let mut tasks: Vec<DownloadTask> = load_chunk_init(conn, retry_failed);
+    println!("Got {} tasks", tasks.len());
+    while !tasks.is_empty() {
+        let mut handles = vec![];
+        let mut tb_url_to_task = HashMap::new();
+
+        for chunk in tasks.chunks(req_chunk_size as usize) {
+            let blob_api_url = blob_api_url.clone();
+            let blob_api_key = blob_api_key.clone();
+            let client = client.clone();
+
+            let mut urls = vec![];
+            for task in chunk {
+                urls.push(task.url.to_string());
+                tb_url_to_task.insert(task.url.as_str(), task);
+            }
+
+            let handle = tokio::spawn(async move {
+                let data = JobType::DownloadURLs { urls };
+                client
+                    .post(&format!("{}/job/submit", blob_api_url))
+                    .header("Authorization", blob_api_key.clone())
+                    .json(&data)
+                    .send()
+                    .await
+            });
+            handles.push(handle);
+        }
+
+        todo!("wait for all handles to finish");
+
+        // refill tasks
+        tasks = load_chunk_next(conn, &tasks.last().unwrap().url, retry_failed);
+    }
 
     println!("Done downloading tasks");
 

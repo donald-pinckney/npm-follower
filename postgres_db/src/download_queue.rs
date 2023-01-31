@@ -12,7 +12,7 @@ use diesel::pg::upsert::excluded;
 use diesel::prelude::*;
 use diesel::Queryable;
 
-#[derive(Queryable, Insertable, Debug)]
+#[derive(Queryable, Insertable, Debug, Clone)]
 #[diesel(table_name = download_tasks)]
 pub struct DownloadTask {
     pub url: String,
