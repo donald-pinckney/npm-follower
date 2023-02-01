@@ -47,6 +47,24 @@ impl DownloadedTarball {
             blob_storage_key: None,
         }
     }
+
+    pub fn from_task_cluster(task: &DownloadTask, cluster_key: String) -> DownloadedTarball {
+        DownloadedTarball {
+            tarball_url: task.url.clone(),
+            downloaded_at: Utc::now(),
+
+            shasum: task.shasum.clone(),
+            unpacked_size: task.unpacked_size,
+            file_count: task.file_count,
+            integrity: task.integrity.clone(),
+            signature0_sig: task.signature0_sig.clone(),
+            signature0_keyid: task.signature0_keyid.clone(),
+            npm_signature: task.npm_signature.clone(),
+
+            tgz_local_path: None,
+            blob_storage_key: Some(cluster_key),
+        }
+    }
 }
 
 pub fn get_downloaded_urls_matching_tasks(

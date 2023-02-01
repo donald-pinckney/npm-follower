@@ -1,3 +1,4 @@
+use blob_idx_server::errors::{BlobError, ClientError};
 use blob_idx_server::http::JobType;
 use postgres_db::connection::DbConnection;
 use postgres_db::download_queue::{
@@ -7,6 +8,7 @@ use postgres_db::download_queue::{
 use postgres_db::download_tarball::DownloadedTarball;
 use std::collections::HashMap;
 use std::{os::unix::prelude::PermissionsExt, sync::mpsc::channel};
+use tokio::task::JoinHandle;
 
 use crate::{
     download_error::DownloadError,
@@ -174,32 +176,89 @@ pub async fn download_to_cluster(
     println!("Got {} tasks", tasks.len());
     while !tasks.is_empty() {
         let mut handles = vec![];
-        let mut tb_url_to_task = HashMap::new();
 
-        for chunk in tasks.chunks(req_chunk_size as usize) {
+        for (worker_id, chunk) in tasks.chunks(req_chunk_size as usize).enumerate() {
             let blob_api_url = blob_api_url.clone();
             let blob_api_key = blob_api_key.clone();
             let client = client.clone();
 
+            let mut local_tb_url_to_task = HashMap::new();
+
             let mut urls = vec![];
             for task in chunk {
                 urls.push(task.url.to_string());
-                tb_url_to_task.insert(task.url.as_str(), task);
+                local_tb_url_to_task.insert(task.url.clone(), task.clone());
             }
+            // essentially, we could have two types of errors:
+            // 1. Per-tarball errors (e.g. 404, 500, etc)
+            // 2. Per-chunk, cluster-related errors, which make a whole chunk invalid
+            type ClusterResult =
+                Result<Vec<Result<DownloadedTarball, DownloadError>>, (DownloadError, Vec<String>)>;
 
-            let handle = tokio::spawn(async move {
-                let data = JobType::DownloadURLs { urls };
-                client
-                    .post(&format!("{}/job/submit", blob_api_url))
-                    .header("Authorization", blob_api_key.clone())
-                    .json(&data)
-                    .send()
-                    .await
+            let handle: JoinHandle<ClusterResult> = tokio::spawn(async move {
+                let mut data = JobType::DownloadURLs { urls: urls.clone() };
+                let thunk = async {
+                    loop {
+                        // loop so we can retry in case of cluster-based errors
+                        let res = client
+                            .post(&format!("{}/job/submit", blob_api_url))
+                            .header("Authorization", blob_api_key.clone())
+                            .json(&data)
+                            .send()
+                            .await?;
+                        let txt = res.text().await?;
+                        if txt.is_empty() {
+                            // success
+                            let mut tbs = vec![];
+                            println!("[{}] Downloaded {} tarballs", worker_id, urls.len());
+
+                            for url in urls.iter() {
+                                let task = match local_tb_url_to_task.get(url.as_str()) {
+                                    Some(t) => t,
+                                    None => continue,
+                                };
+                                let downloaded =
+                                    DownloadedTarball::from_task_cluster(task, url.to_string());
+                                tbs.push(Ok(downloaded));
+                            }
+                            return Ok(tbs);
+                        } else {
+                            // error
+                            println!("[{}] Error downloading tarballs: {}", worker_id, txt);
+                            let obj: serde_json::Value = serde_json::from_str(&txt)
+                                .map_err(|_| DownloadError::ClusterError)?;
+                            let err: ClientError = serde_json::from_value(obj)
+                                .map_err(|_| DownloadError::ClusterError)?;
+                            match err {
+                                ClientError::BlobError(BlobError::AlreadyExists(file)) => {
+                                    todo!("handle already exists error")
+                                }
+                                ClientError::DownloadFailed { urls } => {
+                                    todo!("handle download failed error")
+                                }
+                                _ => return Err(DownloadError::ClusterError),
+                            }
+                        }
+                    }
+                };
+                let res = thunk.await;
+                res.map_err(|e| (e, urls))
             });
             handles.push(handle);
         }
 
-        todo!("wait for all handles to finish");
+        for handle in handles {
+            match handle.await.unwrap() {
+                Ok(tbs) => {
+                    // do something
+                }
+                Err((e, urls)) => {
+                    // do something
+                }
+            }
+        }
+
+        // TODO: the tarballs remaining in the map are the ones that failed to download.
 
         // refill tasks
         tasks = load_chunk_next(conn, &tasks.last().unwrap().url, retry_failed);

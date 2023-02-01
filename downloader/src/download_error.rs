@@ -6,6 +6,7 @@ pub enum DownloadError {
     StatusNotOk(reqwest::StatusCode),
     Io(std::io::Error),
     BadlyFormattedUrl,
+    ClusterError,
 }
 
 impl std::error::Error for DownloadError {}
@@ -17,6 +18,7 @@ impl std::fmt::Display for DownloadError {
             DownloadError::StatusNotOk(e) => write!(f, "Status not OK: {}", e),
             DownloadError::Io(e) => write!(f, "IO error: {}", e),
             DownloadError::BadlyFormattedUrl => write!(f, "Badly formatted URL"),
+            DownloadError::ClusterError => write!(f, "Cluster error"),
         }
     }
 }

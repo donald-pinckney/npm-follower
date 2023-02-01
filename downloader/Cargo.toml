@@ -19,3 +19,5 @@ utils = { path = "../utils" }
 reqwest = "0.11.11"
 futures = "0.3"
 tokio = { version = "1.19.2", features = ["full"] }
+serde = "1.0.152"
+serde_json = "1.0.91"
