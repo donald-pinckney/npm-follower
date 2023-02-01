@@ -171,10 +171,19 @@ pub async fn download_to_cluster(
 
     // get all tasks with no failed downloads if retry_failed is false
     let tasks_len = get_total_tasks_num(conn, retry_failed);
+    let mut current_count = 0;
     println!("[MAIN] {} tasks to download", tasks_len);
 
     let mut tasks: Vec<DownloadTask> = load_chunk_init(conn, retry_failed);
-    println!("[MAIN] Got {} tasks", tasks.len());
+    let mut print_progress = |len| {
+        println!(
+            "[MAIN] Got {} tasks. Progress: {}/{}",
+            len, current_count, tasks_len
+        );
+        current_count += len;
+    };
+    print_progress(tasks.len());
+
     while !tasks.is_empty() {
         let mut handles = vec![];
 
@@ -329,6 +338,7 @@ pub async fn download_to_cluster(
 
         // refill tasks
         tasks = load_chunk_next(conn, &tasks.last().unwrap().url, retry_failed);
+        print_progress(tasks.len());
     }
 
     println!("Done downloading tasks");
