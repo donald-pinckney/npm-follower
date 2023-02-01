@@ -171,10 +171,10 @@ pub async fn download_to_cluster(
 
     // get all tasks with no failed downloads if retry_failed is false
     let tasks_len = get_total_tasks_num(conn, retry_failed);
-    println!("{} tasks to download", tasks_len);
+    println!("[MAIN] {} tasks to download", tasks_len);
 
     let mut tasks: Vec<DownloadTask> = load_chunk_init(conn, retry_failed);
-    println!("Got {} tasks", tasks.len());
+    println!("[MAIN] Got {} tasks", tasks.len());
     while !tasks.is_empty() {
         let mut handles = vec![];
 
@@ -311,6 +311,7 @@ pub async fn download_to_cluster(
                 // means cluster error, not per-tarball error
                 Err((e, tasks)) => {
                     let sql_err: DownloadFailed = e.into();
+                    println!("[MAIN] Updating {} failed tasks", tasks.len());
                     for task in tasks {
                         update_from_error(conn, &task, sql_err.clone());
                     }
@@ -318,6 +319,7 @@ pub async fn download_to_cluster(
             }
 
             if !good_tbs.is_empty() {
+                println!("[MAIN] Updating {} tarballs", good_tbs.len());
                 update_from_tarballs(conn, &good_tbs);
             }
         }
