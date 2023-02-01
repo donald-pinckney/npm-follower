@@ -75,7 +75,7 @@ pub fn download_to_dest(
     num_workers: usize,
     retry_failed: bool,
 ) -> std::io::Result<()> {
-    assert!(TASKS_CHUNK_SIZE > num_workers as i64 && num_workers > 0);
+    assert!(TASKS_CHUNK_SIZE > num_workers && num_workers > 0);
 
     // get all tasks with no failed downloads
     let tasks_len = get_total_tasks_num(conn, retry_failed);
@@ -167,7 +167,7 @@ pub async fn download_to_cluster(
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY not set");
     let client = reqwest::Client::new();
 
-    let req_chunk_size = TASKS_CHUNK_SIZE / 4; // make chunk smaller due to cluster overhead
+    let req_chunk_size = (TASKS_CHUNK_SIZE as usize) / num_parallel_dl; // make chunk smaller due to cluster overhead
 
     // get all tasks with no failed downloads if retry_failed is false
     let tasks_len = get_total_tasks_num(conn, retry_failed);
@@ -204,6 +204,7 @@ pub async fn download_to_cluster(
                 let thunk = async {
                     // loop so we can retry in case of blob-related errors
                     loop {
+                        println!("[{}] Sending job to cluster", worker_id);
                         let res = client
                             .post(&format!("{}/job/submit", blob_api_url))
                             .header("Authorization", blob_api_key.clone())
