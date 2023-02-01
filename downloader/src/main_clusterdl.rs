@@ -18,7 +18,7 @@ pub async fn main() {
     let mut conn = DbConnection::connect();
     let num_parallel_dl = args[1].parse::<usize>().unwrap();
     let retry = if args.len() > 2 {
-        args[3] == "true"
+        args[2] == "true"
     } else {
         false
     };
