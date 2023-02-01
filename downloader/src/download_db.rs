@@ -1,5 +1,5 @@
 use blob_idx_server::errors::{BlobError, ClientError};
-use blob_idx_server::http::JobType;
+use blob_idx_server::http::{JobType, SubmitJobRequest};
 use postgres_db::connection::DbConnection;
 use postgres_db::custom_types::DownloadFailed;
 use postgres_db::download_queue::{
@@ -199,7 +199,9 @@ pub async fn download_to_cluster(
             >;
 
             let handle: JoinHandle<ClusterResult> = tokio::spawn(async move {
-                let data = JobType::DownloadURLs { urls: urls.clone() };
+                let data = SubmitJobRequest {
+                    job_type: JobType::DownloadURLs { urls: urls.clone() },
+                };
                 let mut tbs = vec![];
                 let thunk = async {
                     // loop so we can retry in case of blob-related errors
