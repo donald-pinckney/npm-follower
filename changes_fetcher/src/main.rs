@@ -56,7 +56,10 @@ async fn listen_for_npm_changes_forever(conn: &mut DbConnection) {
         None => "https://replicate.npmjs.com/_changes?feed=continuous&style=main_only&include_docs=true".to_string(),
     };
 
-    let mut changes = ChangesStream::new(changes_url).await.unwrap();
+    let mut changes = match ChangesStream::new(changes_url).await {
+        Ok(c) => c,
+        Err(_) => return,
+    };
     while let Some(event) = changes.next().await {
         match event {
             Ok(Event::Change(change_json)) => {
