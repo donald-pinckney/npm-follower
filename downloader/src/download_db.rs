@@ -231,6 +231,7 @@ pub async fn download_to_cluster(
                                 .map_err(|_| DownloadError::ClusterError)?;
                             let err: ClientError = serde_json::from_value(obj)
                                 .map_err(|_| DownloadError::ClusterError)?;
+                            println!("[{}] Error downloading tarballs: {}", worker_id, err);
 
                             match err {
                                 // this kind of error is benign, we need to make the assumption
