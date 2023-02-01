@@ -230,7 +230,7 @@ pub async fn download_to_cluster(
                             println!("[{}] Error downloading tarballs: {}", worker_id, txt);
                             let obj: serde_json::Value = serde_json::from_str(&txt)
                                 .map_err(|_| DownloadError::ClusterError)?;
-                            let err: ClientError = serde_json::from_value(obj)
+                            let err: ClientError = serde_json::from_value(obj["error"].clone())
                                 .map_err(|_| DownloadError::ClusterError)?;
 
                             match err {
