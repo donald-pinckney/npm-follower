@@ -227,11 +227,11 @@ pub async fn download_to_cluster(
                             return Ok(tbs);
                         } else {
                             // unravel the error (yes, it's a bad API)
+                            println!("[{}] Error downloading tarballs: {}", worker_id, txt);
                             let obj: serde_json::Value = serde_json::from_str(&txt)
                                 .map_err(|_| DownloadError::ClusterError)?;
                             let err: ClientError = serde_json::from_value(obj)
                                 .map_err(|_| DownloadError::ClusterError)?;
-                            println!("[{}] Error downloading tarballs: {}", worker_id, err);
 
                             match err {
                                 // this kind of error is benign, we need to make the assumption
