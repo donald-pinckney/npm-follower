@@ -28,42 +28,35 @@ pub struct DownloadedTarball {
 }
 
 impl DownloadedTarball {
+    fn from_task_help(
+        task: &DownloadTask,
+        tgz_local_path: Option<String>,
+        blob_storage_key: Option<String>,
+    ) -> Self {
+        Self {
+            tarball_url: task.url.clone(),
+            downloaded_at: Utc::now(),
+            shasum: task.shasum.clone(),
+            unpacked_size: task.unpacked_size,
+            file_count: task.file_count,
+            integrity: task.integrity.clone(),
+            signature0_sig: task.signature0_sig.clone(),
+            signature0_keyid: task.signature0_keyid.clone(),
+            npm_signature: task.npm_signature.clone(),
+            tgz_local_path,
+            blob_storage_key,
+        }
+    }
     /// Creates the downloaded tarball struct from the given download task and local path (full
     /// path to file). Sets the time of download to now.
     pub fn from_task(task: &DownloadTask, local_path: String) -> DownloadedTarball {
-        DownloadedTarball {
-            tarball_url: task.url.clone(),
-            downloaded_at: Utc::now(),
-
-            shasum: task.shasum.clone(),
-            unpacked_size: task.unpacked_size,
-            file_count: task.file_count,
-            integrity: task.integrity.clone(),
-            signature0_sig: task.signature0_sig.clone(),
-            signature0_keyid: task.signature0_keyid.clone(),
-            npm_signature: task.npm_signature.clone(),
-
-            tgz_local_path: Some(local_path),
-            blob_storage_key: None,
-        }
+        Self::from_task_help(task, Some(local_path), None)
     }
 
-    pub fn from_task_cluster(task: &DownloadTask, cluster_key: String) -> DownloadedTarball {
-        DownloadedTarball {
-            tarball_url: task.url.clone(),
-            downloaded_at: Utc::now(),
-
-            shasum: task.shasum.clone(),
-            unpacked_size: task.unpacked_size,
-            file_count: task.file_count,
-            integrity: task.integrity.clone(),
-            signature0_sig: task.signature0_sig.clone(),
-            signature0_keyid: task.signature0_keyid.clone(),
-            npm_signature: task.npm_signature.clone(),
-
-            tgz_local_path: None,
-            blob_storage_key: Some(cluster_key),
-        }
+    /// Creates the downloaded tarball struct from the given download task and blob storage key.
+    /// Sets the time of download to now.
+    pub fn from_task_blob(task: &DownloadTask, blob_key: String) -> DownloadedTarball {
+        Self::from_task_help(task, None, Some(blob_key))
     }
 }
 
