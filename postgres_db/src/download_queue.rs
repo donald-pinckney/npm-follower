@@ -278,7 +278,7 @@ pub fn load_chunk_next(
 }
 
 pub fn update_from_tarballs(conn: &mut DbConnection, tarballs: &Vec<DownloadedTarball>) {
-    println!("Inserting {} tarballs", tarballs.len());
+    println!("[MAIN] Updating {} tarballs", tarballs.len());
 
     // insert all the tarballs from download_queue in the db
     {

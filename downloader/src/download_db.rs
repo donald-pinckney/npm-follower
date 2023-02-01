@@ -167,7 +167,7 @@ pub async fn download_to_cluster(
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY not set");
     let client = reqwest::Client::new();
 
-    let req_chunk_size = (TASKS_CHUNK_SIZE as usize) / num_parallel_dl; // make chunk smaller due to cluster overhead
+    let req_chunk_size = ((TASKS_CHUNK_SIZE as usize) / num_parallel_dl) + 1; // make chunk smaller due to cluster overhead
 
     // get all tasks with no failed downloads if retry_failed is false
     let tasks_len = get_total_tasks_num(conn, retry_failed);
@@ -322,7 +322,7 @@ pub async fn download_to_cluster(
             }
 
             if !good_tbs.is_empty() {
-                println!("[MAIN] Updating {} tarballs", good_tbs.len());
+                // NOTE: there is a print statement in update_from_tarballs
                 update_from_tarballs(conn, &good_tbs);
             }
         }
