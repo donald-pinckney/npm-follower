@@ -253,12 +253,13 @@ pub async fn download_to_cluster(
                                         url.to_string(),
                                     )));
 
-                                    if urls.len() == 1 {
+                                    if urls.len() <= 1 {
                                         // here we actually return.
                                         return Ok(tbs);
                                     } else {
                                         urls.retain(|u| u != &url);
                                     }
+                                    println!("[{}] URLs left: {}", worker_id, urls.len());
                                 }
                                 ClientError::DownloadFailed { urls: failed_urls } => {
                                     println!(
