@@ -213,83 +213,71 @@ pub async fn download_to_cluster(
                 };
                 let mut tbs = vec![];
                 let thunk = async {
-                    // loop so we can retry in case of blob-related errors
-                    loop {
-                        println!("[{}] Sending job to cluster", worker_id);
-                        let res = client
-                            .post(&format!("{}/job/submit", blob_api_url))
-                            .header("Authorization", blob_api_key.clone())
-                            .json(&data)
-                            .send()
-                            .await?;
-                        let txt = res.text().await?;
-                        if txt.is_empty() {
-                            // success
-                            println!("[{}] Downloaded {} tarballs", worker_id, urls.len());
+                    println!("[{}] Sending job to cluster", worker_id);
+                    let res = client
+                        .post(&format!("{}/job/submit", blob_api_url))
+                        .header("Authorization", blob_api_key.clone())
+                        .json(&data)
+                        .send()
+                        .await?;
+                    let txt = res.text().await?;
+                    if txt.is_empty() {
+                        // success
+                        println!("[{}] Downloaded {} tarballs", worker_id, urls.len());
 
-                            for url in urls.iter() {
-                                let task = url_to_task.get(url.as_str()).unwrap();
-                                let downloaded =
-                                    DownloadedTarball::from_task_blob(task, url.to_string());
-                                tbs.push(Ok(downloaded));
+                        for url in urls.iter() {
+                            let task = url_to_task.get(url.as_str()).unwrap();
+                            let downloaded =
+                                DownloadedTarball::from_task_blob(task, url.to_string());
+                            tbs.push(Ok(downloaded));
+                        }
+                        Ok(tbs)
+                    } else {
+                        // unravel the error (yes, it's a bad API)
+                        println!("[{}] Error downloading tarballs: {}", worker_id, txt);
+                        let obj: serde_json::Value =
+                            serde_json::from_str(&txt).map_err(|_| DownloadError::ClusterError)?;
+                        let err: ClientError = serde_json::from_value(obj["error"].clone())
+                            .map_err(|_| DownloadError::ClusterError)?;
+
+                        match err {
+                            // this kind of error is benign, we need to make the assumption
+                            // that the tarballs were downloaded correctly here. yet,
+                            // we need to resubmit the job with the missing tarballs.
+                            ClientError::BlobError(BlobError::AlreadyExists(url)) => {
+                                println!("[{}] Already downloaded {}", worker_id, url);
+                                tbs.push(Ok(DownloadedTarball::from_task_blob(
+                                    url_to_task.get(&url).unwrap(),
+                                    url.to_string(),
+                                )));
+
+                                return Ok(tbs);
                             }
-                            return Ok(tbs);
-                        } else {
-                            // unravel the error (yes, it's a bad API)
-                            println!("[{}] Error downloading tarballs: {}", worker_id, txt);
-                            let obj: serde_json::Value = serde_json::from_str(&txt)
-                                .map_err(|_| DownloadError::ClusterError)?;
-                            let err: ClientError = serde_json::from_value(obj["error"].clone())
-                                .map_err(|_| DownloadError::ClusterError)?;
-
-                            match err {
-                                // this kind of error is benign, we need to make the assumption
-                                // that the tarballs were downloaded correctly here. yet,
-                                // we need to resubmit the job with the missing tarballs.
-                                ClientError::BlobError(BlobError::AlreadyExists(url)) => {
-                                    println!("[{}] Already downloaded {}", worker_id, url);
-                                    tbs.push(Ok(DownloadedTarball::from_task_blob(
-                                        url_to_task.get(&url).unwrap(),
-                                        url.to_string(),
+                            ClientError::DownloadFailed { urls: failed_urls } => {
+                                println!(
+                                    "[{}] {}/{} tarball downloads failed",
+                                    worker_id,
+                                    failed_urls.len(),
+                                    urls.len()
+                                );
+                                for (url, status) in failed_urls.iter() {
+                                    let task = url_to_task.get(url.as_str()).unwrap();
+                                    tbs.push(Err((
+                                        task.clone(),
+                                        DownloadError::StatusNotOk((*status).into()),
                                     )));
-
-                                    if urls.len() <= 1 {
-                                        // here we actually return.
-                                        return Ok(tbs);
-                                    } else {
-                                        urls.retain(|u| u != &url);
-                                    }
-                                    println!("[{}] URLs left: {:?}", worker_id, urls);
+                                    urls.retain(|u| u != url);
                                 }
-                                ClientError::DownloadFailed { urls: failed_urls } => {
-                                    println!(
-                                        "[{}] {}/{} tarball downloads failed",
-                                        worker_id,
-                                        failed_urls.len(),
-                                        urls.len()
-                                    );
-                                    for (url, status) in failed_urls.iter() {
-                                        let task = url_to_task.get(url.as_str()).unwrap();
-                                        tbs.push(Err((
-                                            task.clone(),
-                                            DownloadError::StatusNotOk((*status).into()),
-                                        )));
-                                        urls.retain(|u| u != url);
-                                    }
-                                    println!("[{}] URLs left: {}", worker_id, urls.len());
 
-                                    for url in urls.iter() {
-                                        let task = url_to_task.get(url.as_str()).unwrap();
-                                        let downloaded = DownloadedTarball::from_task_blob(
-                                            task,
-                                            url.to_string(),
-                                        );
-                                        tbs.push(Ok(downloaded));
-                                    }
-                                    return Ok(tbs);
+                                for url in urls.iter() {
+                                    let task = url_to_task.get(url.as_str()).unwrap();
+                                    let downloaded =
+                                        DownloadedTarball::from_task_blob(task, url.to_string());
+                                    tbs.push(Ok(downloaded));
                                 }
-                                _ => return Err(DownloadError::ClusterError),
+                                Ok(tbs)
                             }
+                            _ => Err(DownloadError::ClusterError),
                         }
                     }
                 };
