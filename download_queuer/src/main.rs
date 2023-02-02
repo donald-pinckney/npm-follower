@@ -16,6 +16,7 @@ fn main() {
 
     let num_changes_total = change_log::query_num_changes_after_seq(queued_up_to, &mut conn);
     let mut num_changes_so_far = 0;
+    let mut first_time = true;
 
     loop {
         println!(
@@ -42,9 +43,10 @@ fn main() {
         internal_state::set_queued_downloads_seq(last_seq_in_page, &mut conn);
         queued_up_to = last_seq_in_page;
 
-        if num_changes < PAGE_SIZE {
+        if num_changes < PAGE_SIZE && !first_time {
             break;
         }
+        first_time = false;
     }
 }
 
