@@ -259,7 +259,7 @@ pub async fn download_to_cluster(
                                     } else {
                                         urls.retain(|u| u != &url);
                                     }
-                                    println!("[{}] URLs left: {}", worker_id, urls.len());
+                                    println!("[{}] URLs left: {:?}", worker_id, urls);
                                 }
                                 ClientError::DownloadFailed { urls: failed_urls } => {
                                     println!(
@@ -276,6 +276,7 @@ pub async fn download_to_cluster(
                                         )));
                                         urls.retain(|u| u != url);
                                     }
+                                    println!("[{}] URLs left: {}", worker_id, urls.len());
 
                                     for url in urls.iter() {
                                         let task = url_to_task.get(url.as_str()).unwrap();
