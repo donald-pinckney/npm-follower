@@ -36,11 +36,14 @@ while true; do
   cargo run --release --bin download_queuer || exit 1
 
   # if downloader returns "0 tasks to download" then sleep for 30 seconds
-  OUTPUT=$(cargo run --release --bin $RUST_BIN -- $WORKERS || exit 1)
+  exec 5>&1
+  set -o pipefail
+  OUTPUT=$(cargo run --release --bin $RUST_BIN -- $WORKERS 2>&1 | tee >(cat - >&5))
   # check $? for exit code
   if [ $? -eq 1 ]; then
     exit 1
   fi
+  set +o pipefail
   # check if first 1000 lines of output contains "0 tasks to download"
   if echo "$OUTPUT" | head -n 1000 | grep -q "0 tasks to download"; then
     echo "Sleeping for 30 seconds"
