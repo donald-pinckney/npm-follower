@@ -44,7 +44,11 @@ pub trait RemoveInto {
     where
         T: for<'de> serde::de::Deserialize<'de>,
     {
-        self.remove_key(key).map(|x| x.unwrap())
+        match self.remove_key(key) {
+            Some(Ok(value)) => Some(value),
+            Some(Err(err)) => panic!("Failed to deserialize value for key '{}': {}", key, err),
+            None => None,
+        }
     }
 }
 
