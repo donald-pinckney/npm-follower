@@ -39,6 +39,7 @@ pub trait RemoveInto {
         T: for<'de> serde::de::Deserialize<'de>;
 
     #[inline]
+    #[track_caller]
     fn remove_key_unwrap_type<T>(&mut self, key: &'static str) -> Option<T>
     where
         T: for<'de> serde::de::Deserialize<'de>,
