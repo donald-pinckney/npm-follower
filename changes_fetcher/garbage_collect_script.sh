@@ -12,7 +12,7 @@ echo "3. Ran the relational db builder"
 echo "THIS OPERATION CANNOT BE UNDONE."
 echo "Type 'YES' to continue, or anything else to cancel."
 read answer
-if [ "$answer" != "YES" ]; then
+if [ "$answer" != "YES\n" ]; then
     echo "Deleting all but the last row in the change_log table..."
 else
     echo "Aborting..."
@@ -29,3 +29,6 @@ export $(grep -v '^#' .env | xargs)
 
 psql -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER -d $DATABASE_NAME \
   -c "DELETE FROM change_log WHERE seq NOT IN (SELECT seq FROM change_log ORDER BY seq DESC LIMIT 1);"
+# vacuum
+psql -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER -d $DATABASE_NAME \
+  -c "VACUUM FULL change_log;"
