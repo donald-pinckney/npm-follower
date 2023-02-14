@@ -29,16 +29,20 @@ SCRIPT_PATH=$(dirname $(readlink -f $0))
 # cd to parent of this script
 cd $SCRIPT_PATH/..
 
+# build download_queuer and downloader
+cargo build --release --bin download_queuer
+cargo build --release --bin $RUST_BIN
+
 
 # loop forever
 while true; do 
   # exit if download_queuer or downloader exit with error.
-  cargo run --release --bin download_queuer || exit 1
+  ./target/release/download_queuer || exit 1
 
   # if downloader returns "0 tasks to download" then sleep for 30 seconds
   exec 5>&1
   set -o pipefail
-  OUTPUT=$(cargo run --release --bin $RUST_BIN -- $WORKERS 2>&1 | tee >(cat - >&5))
+  OUTPUT=$(./target/release/$RUST_BIN $WORKERS 2>&1 | tee >(cat - >&5))
   # check $? for exit code
   if [ $? -eq 1 ]; then
     exit 1
