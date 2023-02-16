@@ -46,8 +46,8 @@ const COUNT_QUERY: &str = r#"
 SELECT COUNT(*) FROM size_analysis_to_compute
 "#;
 
-const CHUNK_SIZE: usize = 5000;
-const NUM_WORKERS: usize = 50;
+const CHUNK_SIZE: usize = 2500;
+const NUM_WORKERS: usize = 30;
 const NUM_LOCAL_WORKERS: usize = 3;
 
 #[tokio::main]
