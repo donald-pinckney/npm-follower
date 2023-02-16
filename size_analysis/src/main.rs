@@ -46,12 +46,17 @@ const COUNT_QUERY: &str = r#"
 SELECT COUNT(*) FROM size_analysis_to_compute
 "#;
 
-const CHUNK_SIZE: usize = 2500;
-const NUM_WORKERS: usize = 30;
 const NUM_LOCAL_WORKERS: usize = 3;
 
 #[tokio::main]
 async fn main() {
+    let args = std::env::args().collect::<Vec<_>>();
+    if args.len() != 3 {
+        panic!("Usage: {} <num_workers> <chunk_size>", args[0]);
+    }
+    let num_workers: usize = args[1].parse().unwrap();
+    let chunk_size: usize = args[2].parse().unwrap();
+
     utils::check_no_concurrent_processes("size_analysis");
     dotenvy::dotenv().ok();
     let mut conn: DbConnection = DbConnection::connect();
@@ -60,13 +65,14 @@ async fn main() {
     let mut res: Vec<QRes> = conn.load(q).unwrap();
     res.shuffle(&mut rand::thread_rng());
 
-    let (data_tx, data_rx) = tokio::sync::mpsc::channel(NUM_WORKERS);
+    let (data_tx, data_rx) = tokio::sync::mpsc::channel(num_workers);
     let data_rx = Arc::new(Mutex::new(data_rx));
-    let (db_tx, db_rx) = tokio::sync::mpsc::channel(NUM_WORKERS);
+    let (db_tx, db_rx) = tokio::sync::mpsc::channel(num_workers);
 
+    let chunk_ratio = chunk_size / num_workers;
     let mut chunk_workers = Vec::new();
     for id in 0..NUM_LOCAL_WORKERS {
-        chunk_workers.push(spawn_compute_worker(data_rx.clone(), db_tx.clone(), id));
+        chunk_workers.push(spawn_compute_worker(data_rx.clone(), db_tx.clone(), id, chunk_ratio));
     }
     let db_worker = spawn_db_worker(db_rx, DbConnection::connect());
 
@@ -74,7 +80,7 @@ async fn main() {
     println!("[MANAGER] Total count: {}", total_count[0].count);
 
     let mut total = 0;
-    for chunk in res.chunks(CHUNK_SIZE) {
+    for chunk in res.chunks(chunk_size) {
         let chunk = chunk.to_vec();
         total += chunk.len();
         data_tx.send(chunk).await.unwrap();
@@ -96,6 +102,7 @@ fn spawn_compute_worker(
     data_rx: Arc<Mutex<Receiver<Vec<QRes>>>>,
     db_tx: Sender<Vec<SizeAnalysisTarball>>,
     worker_id: usize,
+    chunk_ratio: usize,
 ) -> JoinHandle<()> {
     let thunk = async move {
         let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL not set");
@@ -112,7 +119,7 @@ fn spawn_compute_worker(
 
             let mut tarball_chunks = vec![];
             let mut lookup = HashMap::new();
-            for chunk in chunk.chunks(CHUNK_SIZE / NUM_WORKERS) {
+            for chunk in chunk.chunks(chunk_ratio) {
                 let mut tb_chunk = vec![];
                 for qres in chunk {
                     tb_chunk.push(qres.blob_storage_key.clone());
@@ -167,7 +174,7 @@ fn spawn_compute_worker(
                                         };
                                         res.tarball_url = tarball_url.clone();
                                         results.push(res)
-                                    },
+                                    }
                                     Err(_) => {
                                         eprintln!(
                                             "[{worker_id}] Failed to deserialize stdout: {stdout:?}"
@@ -248,8 +255,7 @@ fn delete_rows_after_compute(
         urls.pop();
         urls.pop();
 
-        let query =
-            format!("DELETE FROM size_analysis_to_compute WHERE (tarball_url) IN ({urls})");
+        let query = format!("DELETE FROM size_analysis_to_compute WHERE (tarball_url) IN ({urls})");
         conn.execute(diesel::sql_query(query)).unwrap();
     }
 }
