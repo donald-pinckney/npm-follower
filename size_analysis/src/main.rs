@@ -72,7 +72,12 @@ async fn main() {
     let chunk_ratio = chunk_size / num_workers;
     let mut chunk_workers = Vec::new();
     for id in 0..NUM_LOCAL_WORKERS {
-        chunk_workers.push(spawn_compute_worker(data_rx.clone(), db_tx.clone(), id, chunk_ratio));
+        chunk_workers.push(spawn_compute_worker(
+            data_rx.clone(),
+            db_tx.clone(),
+            id,
+            chunk_ratio,
+        ));
     }
     let db_worker = spawn_db_worker(db_rx, DbConnection::connect());
 
@@ -228,8 +233,10 @@ fn spawn_db_worker(
                         "INSERT INTO size_analysis_tarball (tarball_url, total_files, total_size, total_size_code) VALUES {insert} ON CONFLICT DO NOTHING",
                     );
 
-                    let q = diesel::sql_query(query);
-                    c.execute(q).unwrap();
+                    let q = diesel::sql_query(query.clone());
+                    c.execute(q).unwrap_or_else(|e| {
+                        panic!("[DB] Failed to insert results: {e} - {query}");
+                    });
 
                     Ok(((), true))
                 })
