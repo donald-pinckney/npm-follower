@@ -206,7 +206,7 @@ fn spawn_db_worker(
                     let mut insert = String::new();
                     for res in &results {
                         insert.push_str(&format!(
-                            "({}, {}, {}, {}), ",
+                            "('{}', {}, {}, {}), ",
                             res.tarball_url, res.total_files, res.total_size, res.total_size_code
                         ));
                     }
