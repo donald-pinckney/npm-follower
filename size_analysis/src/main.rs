@@ -28,6 +28,8 @@ use tokio::{
 struct QRes {
     #[sql_type = "diesel::sql_types::Text"]
     tarball_url: String,
+    #[sql_type = "diesel::sql_types::Text"]
+    blob_storage_key: String,
 }
 
 #[derive(QueryableByName, Debug, Clone)]
@@ -109,10 +111,12 @@ fn spawn_compute_worker(
             };
 
             let mut tarball_chunks = vec![];
+            let mut lookup = HashMap::new();
             for chunk in chunk.chunks(CHUNK_SIZE / NUM_WORKERS) {
                 let mut tb_chunk = vec![];
                 for qres in chunk {
-                    tb_chunk.push(qres.tarball_url.clone());
+                    tb_chunk.push(qres.blob_storage_key.clone());
+                    lookup.insert(qres.blob_storage_key.clone(), qres.tarball_url.clone());
                 }
                 tarball_chunks.push(tb_chunk);
             }
@@ -153,7 +157,17 @@ fn spawn_compute_worker(
                             if res.exit_code == 0 && !res.stdout.is_empty() {
                                 let stdout = base64::decode(&res.stdout).expect("Failed to decode");
                                 match serde_json::from_slice::<SizeAnalysisTarball>(&stdout) {
-                                    Ok(res) => results.push(res),
+                                    Ok(mut res) => {
+                                        let tarball_url = match lookup.get(&tb) {
+                                            Some(u) => u,
+                                            None => {
+                                                eprintln!("[{worker_id}] Failed to find tarball url for {tb}");
+                                                continue;
+                                            }
+                                        };
+                                        res.tarball_url = tarball_url.clone();
+                                        results.push(res)
+                                    },
                                     Err(_) => {
                                         eprintln!(
                                             "[{worker_id}] Failed to deserialize stdout: {stdout:?}"
@@ -202,7 +216,7 @@ fn spawn_db_worker(
                     insert.pop();
 
                     let query = format!(
-                        "INSERT INTO size_analysis_tarball (tarball_url, total_files, total_size, total_size_code) VALUES {insert}"
+                        "INSERT INTO size_analysis_tarball (tarball_url, total_files, total_size, total_size_code) VALUES {insert} ON CONFLICT DO NOTHING",
                     );
 
                     let q = diesel::sql_query(query);
