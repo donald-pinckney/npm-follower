@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashSet},
+    collections::HashSet,
     os::unix::prelude::PermissionsExt,
     path::{Path, PathBuf},
 };
