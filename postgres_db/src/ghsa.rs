@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use super::connection::DbConnection;
 use super::schema;
 use super::schema::ghsa;
@@ -100,11 +98,11 @@ pub fn query_ghsa_by_id(conn: &mut DbConnection, ghsa_id: &str) -> (Ghsa, Vec<Gh
 
     let adv: Ghsa = conn
         .first(ghsa.filter(id.eq(ghsa_id)))
-        .unwrap_or_else(|err| panic!("Failed to find ghsa with id {}", ghsa_id));
+        .unwrap_or_else(|_err| panic!("Failed to find ghsa with id {}", ghsa_id));
 
     let vuln_rows: Vec<GhsaVulnerabilityRow> = conn
         .load(vulnerabilities::table.filter(vulnerabilities::ghsa_id.eq(ghsa_id)))
-        .unwrap_or_else(|err| {
+        .unwrap_or_else(|_err| {
             panic!(
                 "Failed to query vulnerabilities for ghsa with id {}",
                 ghsa_id

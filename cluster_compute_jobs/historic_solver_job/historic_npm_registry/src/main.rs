@@ -1,4 +1,3 @@
-use std::mem;
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -14,7 +13,7 @@ use historic_solver_job::packument_requests::ParsedPackument;
 use historic_solver_job::MaxConcurrencyClient;
 use mime::Mime;
 use moka::future::Cache;
-use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use serde_json::json;
 use serde_json::Map;
@@ -22,7 +21,6 @@ use serde_json::Value;
 use warp::http::StatusCode;
 use warp::hyper::body::Bytes;
 use warp::hyper::Body;
-use warp::hyper::Uri;
 use warp::reply;
 use warp::reply::Response;
 use warp::Filter;

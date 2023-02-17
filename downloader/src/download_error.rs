@@ -56,7 +56,7 @@ impl From<DownloadError> for DownloadFailed {
     fn from(e: DownloadError) -> Self {
         #[allow(clippy::collapsible_match)]
         match e {
-            DownloadError::StatusNotOk(e) => DownloadFailed::Res(e.into()),
+            DownloadError::StatusNotOk(e) => DownloadFailed::Res(e),
             DownloadError::Io(_) => DownloadFailed::Io,
             DownloadError::BadlyFormattedUrl => DownloadFailed::BadlyFormattedUrl,
             _ => DownloadFailed::Other,

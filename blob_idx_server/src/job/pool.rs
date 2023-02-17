@@ -5,7 +5,7 @@ use lazy_static::__Deref;
 
 use tokio::sync::{
     mpsc::{Receiver, Sender},
-    Mutex, RwLock,
+    Mutex,
 };
 
 use crate::{

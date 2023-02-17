@@ -9,11 +9,9 @@ use diesel::{
     sql_types::{Array, Jsonb, Record, Timestamptz},
     AsExpression,
 };
-use moka::future::Cache;
 use postgres_db::{custom_types::Semver, schema::sql_types::SemverStruct};
 use reqwest::{IntoUrl, Url};
-use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
-use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::sync::Arc;
@@ -375,10 +373,9 @@ pub mod packument_requests {
                     packument
                         .versions
                         .get(v_name)
-                        .expect(&format!(
-                            "version must exist, pkg = {}, v = {}",
-                            package_name, v_name
-                        ))
+                        .unwrap_or_else(|| {
+                            panic!("version must exist, pkg = {}, v = {}", package_name, v_name)
+                        })
                         .clone(),
                 )
             })
@@ -414,7 +411,7 @@ pub mod packument_requests {
 
         let mut time = j
             .remove("time")
-            .expect(format!("time must be present: {}", package_name).as_str());
+            .unwrap_or_else(|| panic!("time must be present: {}", package_name));
 
         let mut versions = match versions {
             Value::Object(o) => o,

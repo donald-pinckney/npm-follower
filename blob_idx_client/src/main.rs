@@ -272,7 +272,7 @@ async fn compute_run_bin_multi(
         .map(|s| s.split('&').map(|s| s.to_string()).collect())
         .collect();
 
-    let mut handles: Vec<JoinHandle<Result<(Vec<String>, Vec<String>), ClientError>>> = Vec::new();
+    let mut handles = Vec::new();
     // map of [Vec<tmp slice path>] -> [Vec<original tarball url>]
     let mut slice_map = HashMap::new();
     let thunk = async {
@@ -296,7 +296,7 @@ async fn compute_run_bin_multi(
                     slice_paths.push(slice_path);
                     original_tarball_urls.push(tarball_url_key);
                 }
-                Ok((slice_paths, original_tarball_urls))
+                Ok::<_, ClientError>((slice_paths, original_tarball_urls))
             });
             handles.push(handle);
         }
@@ -440,8 +440,7 @@ async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
 
     // the join handles will hold the name of the file and it's contents
     // the result, if failed, will return the url that failed
-    let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), (String, std::num::NonZeroU16)>>> =
-        vec![];
+    let mut handles = vec![];
     let client = make_client()?;
 
     for url in urls {
@@ -631,7 +630,7 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
         .collect::<Vec<_>>();
 
     // read all the files into memory
-    let mut handles: Vec<JoinHandle<Result<(String, Vec<u8>), ClientError>>> = vec![];
+    let mut handles = vec![];
     for filepath in filepaths.clone() {
         handles.push(tokio::spawn(async move {
             let mut file = tokio::fs::File::open(&filepath).await?;
@@ -643,7 +642,7 @@ async fn store_from_local(args: Vec<String>) -> Result<(), ClientError> {
                 .to_str()
                 .ok_or_else(|| ClientError::IoError("Bad filename".to_string()))?
                 .to_string();
-            Ok((filename, bytes))
+            Ok::<_, ClientError>((filename, bytes))
         }));
     }
 

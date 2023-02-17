@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
 use lazy_static::lazy_static;
 use tokio::sync::Mutex;
@@ -46,9 +46,9 @@ fn make_config(max_files: u32, lock_timeout: u64) -> BlobStorageConfig {
     }
 }
 
-fn simple_config() -> BlobStorageConfig {
-    make_config(2, 5)
-}
+// fn simple_config() -> BlobStorageConfig {
+//     make_config(2, 5)
+// }
 
 fn redis_cleanup() {
     let client = bb8_redis::redis::Client::open(REDIS_TEST_DB.to_string()).unwrap();

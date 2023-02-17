@@ -43,7 +43,7 @@ type ParsedSpecStructRecordRust = (
     Option<String>,
 );
 
-impl<'a> ToSql<ParsedSpecStruct, Pg> for ParsedSpec {
+impl ToSql<ParsedSpecStruct, Pg> for ParsedSpec {
     fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         let record: ParsedSpecStructRecordRust = match self {
             ParsedSpec::Range(vc) => (
@@ -187,7 +187,7 @@ impl<'a> ToSql<ParsedSpecStruct, Pg> for ParsedSpec {
     }
 }
 
-impl<'a> FromSql<ParsedSpecStruct, Pg> for ParsedSpec {
+impl FromSql<ParsedSpecStruct, Pg> for ParsedSpec {
     fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let tup: ParsedSpecStructRecordRust =
             FromSql::<Record<ParsedSpecStructRecordSql>, Pg>::from_sql(bytes)?;

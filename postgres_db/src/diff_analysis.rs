@@ -9,7 +9,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Insertable, Debug, Clone)]
-#[table_name = "diff_analysis"]
+#[diesel(table_name = diff_analysis)]
 struct DiffAnalysisSql {
     pub from_id: i64,
     pub to_id: i64,

@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
 use blob_idx_server::{
-    errors::{BlobError, ClientError, HTTPError},
+    errors::{BlobError, ClientError},
     http::{JobType, SubmitJobRequest},
-    job::ClientResponse,
 };
 use postgres_db::{
     connection::DbConnection,
@@ -28,7 +27,7 @@ async fn main() {
 
     let mut workers = Vec::new();
     let (tb_tx, tb_rx) = mpsc::channel(num_workers);
-    let (db_tx, mut db_rx) = mpsc::channel(num_workers);
+    let (db_tx, db_rx) = mpsc::channel(num_workers);
     let tb_rx = Arc::new(tokio::sync::Mutex::new(tb_rx));
     for id in 0..num_workers {
         let spawned = spawn_transfer_worker(tb_rx.clone(), db_tx.clone(), id);
@@ -36,7 +35,7 @@ async fn main() {
     }
 
     let db_worker_conn = DbConnection::connect(); // double the connections, double the fun
-    let mut db_worker = spawn_db_worker(db_rx, db_worker_conn);
+    let db_worker = spawn_db_worker(db_rx, db_worker_conn);
 
     let mut first_ever_tb = Some(
         download_tarball::query_first_tarball_by_url(&mut conn)
@@ -46,7 +45,7 @@ async fn main() {
         .unwrap_or((first_ever_tb.as_ref().unwrap().tarball_url.to_string(), 0));
 
     let num_tarballs_total = internal_state::query_queued_downloads_seq(&mut conn).unwrap_or(0);
-    let mut num_tarballs_so_far = 0;
+    let mut _num_tarballs_so_far = 0;
 
     loop {
         println!(
@@ -63,7 +62,7 @@ async fn main() {
             tarballs.insert(0, std::mem::take(&mut first_ever_tb).unwrap());
         }
         let num_tarballs = tarballs.len() as i64;
-        num_tarballs_so_far += num_tarballs;
+        _num_tarballs_so_far += num_tarballs;
         if num_tarballs == 0 {
             break;
         }

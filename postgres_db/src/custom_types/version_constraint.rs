@@ -21,7 +21,7 @@ impl<'a> ToSql<ConstraintConjunctsSql, Pg> for ConstraintConjunctsBorrowed<'a> {
     }
 }
 
-impl<'a> FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjunctsOwned {
+impl FromSql<ConstraintConjunctsSql, Pg> for ConstraintConjunctsOwned {
     fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
         let (stuff,): (Vec<VersionComparator>,) =
             FromSql::<Record<(Array<VersionComparatorSql>,)>, Pg>::from_sql(bytes)?;

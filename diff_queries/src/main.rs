@@ -82,25 +82,25 @@ fn process_diff_analysis(mut conn: DbConnection, chunk_size: i64) {
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 struct Update {
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     package_id: i64,
-    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    #[diesel(sql_type = postgres_db::schema::sql_types::SemverStruct)]
     from_group_base_semver: Semver,
-    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    #[diesel(sql_type = postgres_db::schema::sql_types::SemverStruct)]
     to_group_base_semver: Semver,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     from_id: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     to_id: i64,
-    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    #[diesel(sql_type = postgres_db::schema::sql_types::SemverStruct)]
     from_semver: Semver,
-    #[sql_type = "postgres_db::schema::sql_types::SemverStruct"]
+    #[diesel(sql_type = postgres_db::schema::sql_types::SemverStruct)]
     to_semver: Semver,
-    #[sql_type = "diesel::sql_types::Timestamp"]
+    #[diesel(sql_type = diesel::sql_types::Timestamp)]
     from_created: chrono::NaiveDateTime,
-    #[sql_type = "diesel::sql_types::Timestamp"]
+    #[diesel(sql_type = diesel::sql_types::Timestamp)]
     to_created: chrono::NaiveDateTime,
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     ty: String,
 }
 
@@ -358,9 +358,7 @@ fn how_old(
     solve_time: DateTime<Utc>,
 ) -> Option<OldnessPair> {
     let versions_pkg_id = db.get_package_version_times(conn, package);
-    if versions_pkg_id.1.is_none() {
-        return None;
-    }
+    versions_pkg_id.1?;
 
     let versions = &versions_pkg_id.0;
     let dep_pkg_id = versions_pkg_id.1.unwrap();
@@ -560,15 +558,15 @@ fn dep_update_changes(
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 struct NumFiles {
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     from_id: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     to_id: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     num_files_added: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     num_files_modified: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     num_files_deleted: i64,
 }
 
@@ -636,13 +634,13 @@ fn num_files(
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 struct NumLines {
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     from_id: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     to_id: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     num_lines_added: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     num_lines_deleted: i64,
 }
 
@@ -699,9 +697,9 @@ fn num_lines(
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 struct ExtCount {
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     ext: String,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     count: i64,
 }
 
@@ -763,13 +761,13 @@ fn ext_count(
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 struct ChangedFile {
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     from_id: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     to_id: i64,
-    #[sql_type = "diesel::sql_types::Bool"]
+    #[diesel(sql_type = diesel::sql_types::Bool)]
     did_change_types: bool,
-    #[sql_type = "diesel::sql_types::Bool"]
+    #[diesel(sql_type = diesel::sql_types::Bool)]
     did_change_code: bool,
 }
 

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
@@ -7,7 +7,7 @@ use crate::{
     debug,
     errors::{ClientError, JobError},
     job::worker::WorkerStatus,
-    ssh::{Ssh, SshFactory},
+    ssh::SshFactory,
 };
 
 use self::pool::WorkerPool;

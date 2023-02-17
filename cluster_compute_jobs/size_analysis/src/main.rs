@@ -8,17 +8,13 @@ use blob_idx_server::{
     job::{ClientResponse, TarballResult},
 };
 use diesel::QueryableByName;
-use postgres_db::{
-    connection::{DbConnection, DbConnectionInTransaction, QueryRunner},
-    download_tarball::{self, DownloadedTarball},
-    internal_state,
-};
+use postgres_db::connection::{DbConnection, DbConnectionInTransaction, QueryRunner};
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use size_analysis::SizeAnalysisTarball;
 use tokio::{
     sync::{
-        mpsc::{self, Receiver, Sender},
+        mpsc::{Receiver, Sender},
         Mutex,
     },
     task::JoinHandle,
@@ -26,15 +22,15 @@ use tokio::{
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 struct QRes {
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     tarball_url: String,
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     blob_storage_key: String,
 }
 
 #[derive(QueryableByName, Debug, Clone)]
 struct QCount {
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     count: i64,
 }
 

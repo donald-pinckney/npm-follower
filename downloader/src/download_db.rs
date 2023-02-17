@@ -251,7 +251,7 @@ pub async fn download_to_cluster(
                                     url.to_string(),
                                 )));
 
-                                return Ok(tbs);
+                                Ok(tbs)
                             }
                             ClientError::DownloadFailed { urls: failed_urls } => {
                                 println!(

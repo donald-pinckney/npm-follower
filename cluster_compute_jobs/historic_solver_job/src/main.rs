@@ -1,21 +1,17 @@
-use std::{borrow::BorrowMut, sync::Arc};
+use std::sync::Arc;
 
 use async_trait::async_trait;
-use chrono::{DateTime, Duration, Utc};
+use chrono::{Duration, Utc};
 use historic_solver_job::{
     async_pool::{handle_get_jobs, handle_submit_result},
     Job, JobResult, MaxConcurrencyClient,
 };
 use lazy_static::lazy_static;
 use postgres_db::connection::async_pool::DbConnection;
-use reqwest::IntoUrl;
-use reqwest_middleware::{ClientBuilder, ClientWithMiddleware, RequestBuilder};
+use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
-use serde_json::Value;
-use tokio::sync::{
-    mpsc::{self, UnboundedSender},
-    RwLock, Semaphore,
-};
+use tokio::sync::mpsc;
+use tokio::sync::RwLock;
 
 mod run_solve_job;
 
@@ -165,7 +161,7 @@ async fn main() {
 
 async fn grab_and_run_job_batch(
     active_jobs: &RwLock<i64>,
-    result_tx: &UnboundedSender<JobResult>,
+    result_tx: &mpsc::UnboundedSender<JobResult>,
     db: &DbConnection,
     req_client: &MaxConcurrencyClient,
     subprocess_semaphore: &Arc<tokio::sync::Semaphore>,

@@ -1,19 +1,14 @@
-use std::{collections::HashSet, num::NonZeroUsize, rc::Rc};
+use std::{num::NonZeroUsize, rc::Rc};
 
 use chrono::{DateTime, Utc};
-use diesel::backend::sql_dialect::returning_clause::PgLikeReturningClause;
+
 use lru::LruCache;
-use postgres_db::{
-    connection::QueryRunner,
-    custom_types::Semver,
-    dependencies::{Dependency, NewDependency},
-    packages::{NewPackage, Package, PackageUpdate},
-    versions::{NewVersion, Version},
-};
-use serde_json::Value;
+use postgres_db::{connection::QueryRunner, custom_types::Semver};
+
+type VersionCacheValue = (Vec<(Semver, DateTime<Utc>)>, Option<i64>);
 
 pub struct RelationalDbAccessor {
-    versions_cache: LruCache<String, Rc<(Vec<(Semver, DateTime<Utc>)>, Option<i64>)>>,
+    versions_cache: LruCache<String, Rc<VersionCacheValue>>,
 }
 
 impl RelationalDbAccessor {
@@ -35,7 +30,7 @@ impl RelationalDbAccessor {
         &mut self,
         conn: &mut R,
         package: &str,
-    ) -> Rc<(Vec<(Semver, DateTime<Utc>)>, Option<i64>)> {
+    ) -> Rc<VersionCacheValue> {
         if let Some(versions) = self.versions_cache.get(package) {
             return versions.clone();
         }

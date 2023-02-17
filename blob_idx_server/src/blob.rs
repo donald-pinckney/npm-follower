@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    sync::Arc,
-};
+use std::{collections::HashSet, sync::Arc};
 
 use bb8_redis::redis::AsyncCommands;
 use dashmap::DashMap;
@@ -270,48 +267,48 @@ impl BlobStorage {
         );
     }
 
-    pub(crate) async fn debug_print(&self, prefix: &str) {
-        println!("{}", prefix);
-        let mut map_str = String::new();
-        for a in self.map.iter() {
-            map_str.push_str(&format!(
-                "\t\t{}: ({}, {})\n",
-                a.key(),
-                serde_json::to_string(a.value()).unwrap(),
-                if a.value().lock.is_some() {
-                    a.value().lock.as_ref().unwrap().to_string()
-                } else {
-                    "free".to_string()
-                }
-            ));
-        }
-        println!("\tmap:\n{}", map_str);
+    // pub(crate) async fn debug_print(&self, prefix: &str) {
+    //     println!("{}", prefix);
+    //     let mut map_str = String::new();
+    //     for a in self.map.iter() {
+    //         map_str.push_str(&format!(
+    //             "\t\t{}: ({}, {})\n",
+    //             a.key(),
+    //             serde_json::to_string(a.value()).unwrap(),
+    //             if a.value().lock.is_some() {
+    //                 a.value().lock.as_ref().unwrap().to_string()
+    //             } else {
+    //                 "free".to_string()
+    //             }
+    //         ));
+    //     }
+    //     println!("\tmap:\n{}", map_str);
 
-        let mut file_pool_str = String::new();
-        for a in self.file_pool.iter() {
-            file_pool_str.push_str(&format!(
-                "\t\t{}: {}\n",
-                a.key(),
-                serde_json::to_string(a.value()).unwrap()
-            ));
-        }
+    //     let mut file_pool_str = String::new();
+    //     for a in self.file_pool.iter() {
+    //         file_pool_str.push_str(&format!(
+    //             "\t\t{}: {}\n",
+    //             a.key(),
+    //             serde_json::to_string(a.value()).unwrap()
+    //         ));
+    //     }
 
-        println!("\tfile_pool:\n{}", file_pool_str);
+    //     println!("\tfile_pool:\n{}", file_pool_str);
 
-        let mut locked_files_str = String::new();
-        for a in self.locked_files.iter() {
-            locked_files_str.push_str(&format!("\t\t{}: {:?}\n", a.key(), a.value()));
-        }
+    //     let mut locked_files_str = String::new();
+    //     for a in self.locked_files.iter() {
+    //         locked_files_str.push_str(&format!("\t\t{}: {:?}\n", a.key(), a.value()));
+    //     }
 
-        println!("\tlocked_files:\n{}", locked_files_str);
+    //     println!("\tlocked_files:\n{}", locked_files_str);
 
-        let mut cleaners_str = String::new();
-        for a in self.cleanup_tasks.iter() {
-            cleaners_str.push_str(&format!("{} ", a.key()));
-        }
+    //     let mut cleaners_str = String::new();
+    //     for a in self.cleanup_tasks.iter() {
+    //         cleaners_str.push_str(&format!("{} ", a.key()));
+    //     }
 
-        println!("\tcleaners: {}\n", cleaners_str);
-    }
+    //     println!("\tcleaners: {}\n", cleaners_str);
+    // }
 
     async fn map_lookup(&self, key: &str) -> Result<LockWrapper, BlobError> {
         // there is a key that is prohitibed from being used:

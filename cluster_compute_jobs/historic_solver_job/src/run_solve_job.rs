@@ -125,8 +125,7 @@ async fn run_solve_job_result(
         &job.downstream_package_name,
         subprocess_semaphore.as_ref(),
         nuke_cache_lock.as_ref(),
-        stdout_res,
-        stderr_res,
+        (stdout_res, stderr_res),
     )
     .await?;
 
@@ -158,8 +157,7 @@ async fn run_solve_job_result(
             &job.downstream_package_name,
             subprocess_semaphore.as_ref(),
             nuke_cache_lock.as_ref(),
-            stdout_res,
-            stderr_res,
+            (stdout_res, stderr_res),
         )
         .await?;
         history.push(this_solve.to_solve_result(&job.update_package_name));
@@ -216,8 +214,7 @@ async fn solve_dependencies(
     solve_package_name: &str,
     subprocess_semaphore: &tokio::sync::Semaphore,
     nuke_cache_lock: &RwLock<()>,
-    stdout_res: &mut Vec<u8>,
-    stderr_res: &mut Vec<u8>,
+    stdout_stderr_res: (&mut Vec<u8>, &mut Vec<u8>),
 ) -> Result<SolveSolutionMetrics, ResultError> {
     let (semver_at_time, package_json_at_time) =
         get_most_recent_leq_time(packument_doc, dt, solve_package_name)
@@ -232,8 +229,7 @@ async fn solve_dependencies(
         &solve_dir,
         subprocess_semaphore,
         nuke_cache_lock,
-        stdout_res,
-        stderr_res,
+        stdout_stderr_res,
     )
     .await;
 
@@ -249,9 +245,10 @@ async fn solve_dependencies_impl(
     solve_dir: &PathBuf,
     subprocess_semaphore: &tokio::sync::Semaphore,
     nuke_cache_lock: &RwLock<()>,
-    stdout_res: &mut Vec<u8>,
-    stderr_res: &mut Vec<u8>,
+    stdout_stderr_res: (&mut Vec<u8>, &mut Vec<u8>),
 ) -> Result<SolveSolutionMetrics, ResultError> {
+    let (stdout_res, stderr_res) = stdout_stderr_res;
+
     // println!("solve_dependencies_impl");
 
     let cache_permit = nuke_cache_lock.read().await;

@@ -89,7 +89,7 @@ impl FromSql<PackageState, Pg> for PackageStateTimePoint {
 use crate::schema::sql_types::VersionState;
 use crate::schema::sql_types::VersionStateEnum;
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression)]
 #[diesel(sql_type = VersionStateEnum)]
 pub enum VersionStateType {
     Normal,
@@ -121,7 +121,7 @@ impl FromSql<VersionStateEnum, Pg> for VersionStateType {
     }
 }
 
-#[derive(Debug, PartialEq, FromSqlRow, AsExpression)]
+#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression)]
 #[diesel(sql_type = VersionState)]
 pub struct VersionStateTimePoint {
     pub state: VersionStateType,

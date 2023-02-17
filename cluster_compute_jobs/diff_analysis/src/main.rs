@@ -10,15 +10,13 @@ use blob_idx_server::{
 use diesel::QueryableByName;
 use postgres_db::{
     connection::{DbConnection, DbConnectionInTransaction, QueryRunner},
-    diff_analysis::{self, insert_diff_analysis, DiffAnalysis, DiffAnalysisJobResult, FileDiff},
-    download_tarball::{self, DownloadedTarball},
-    internal_state,
+    diff_analysis::{self, DiffAnalysis, DiffAnalysisJobResult, FileDiff},
 };
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use tokio::{
     sync::{
-        mpsc::{self, Receiver, Sender},
+        mpsc::{Receiver, Sender},
         Mutex,
     },
     task::JoinHandle,
@@ -26,23 +24,23 @@ use tokio::{
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 struct QRes {
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     from_id: i64,
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     to_id: i64,
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     from_url: String,
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     to_url: String,
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     from_key: String,
-    #[sql_type = "diesel::sql_types::Text"]
+    #[diesel(sql_type = diesel::sql_types::Text)]
     to_key: String,
 }
 
 #[derive(QueryableByName, Debug, Clone)]
 struct QCount {
-    #[sql_type = "diesel::sql_types::BigInt"]
+    #[diesel(sql_type = diesel::sql_types::BigInt)]
     count: i64,
 }
 
