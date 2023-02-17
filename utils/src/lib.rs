@@ -38,11 +38,17 @@ pub trait RemoveInto {
     where
         T: for<'de> serde::de::Deserialize<'de>;
 
+    #[inline]
+    #[track_caller]
     fn remove_key_unwrap_type<T>(&mut self, key: &'static str) -> Option<T>
     where
         T: for<'de> serde::de::Deserialize<'de>,
     {
-        self.remove_key(key).map(|x| x.unwrap())
+        match self.remove_key(key) {
+            Some(Ok(value)) => Some(value),
+            Some(Err(err)) => panic!("Failed to deserialize value for key '{}': {}", key, err),
+            None => None,
+        }
     }
 }
 

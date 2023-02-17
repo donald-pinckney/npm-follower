@@ -3,11 +3,21 @@ name = "downloader"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "downloader"
+path = "src/main_localdl.rs"
+
+[[bin]]
+name = "cluster_downloader"
+path = "src/main_clusterdl.rs"
 
 [dependencies]
 postgres_db = { path = "../postgres_db" }
+blob_idx_server = { path = "../blob_idx_server" }
 utils = { path = "../utils" }
+
 reqwest = "0.11.11"
 futures = "0.3"
 tokio = { version = "1.19.2", features = ["full"] }
+serde = "1.0.152"
+serde_json = "1.0.91"

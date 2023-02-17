@@ -12,7 +12,7 @@ use diesel::pg::upsert::excluded;
 use diesel::prelude::*;
 use diesel::Queryable;
 
-#[derive(Queryable, Insertable, Debug)]
+#[derive(Queryable, Insertable, Debug, Clone)]
 #[diesel(table_name = download_tasks)]
 pub struct DownloadTask {
     pub url: String,
@@ -218,7 +218,7 @@ fn enqueue_chunk(conn: &mut DbConnection, chunk: &[DownloadTask]) -> usize {
     */
 }
 
-pub const TASKS_CHUNK_SIZE: i64 = 2048;
+pub const TASKS_CHUNK_SIZE: usize = 2048;
 
 pub fn get_total_tasks_num(conn: &mut DbConnection, retry_failed: bool) -> i64 {
     use schema::download_tasks::dsl::*;
@@ -238,7 +238,7 @@ pub fn load_chunk_init(conn: &mut DbConnection, retry_failed: bool) -> Vec<Downl
         conn.load(
             download_tasks
                 .order(url.asc()) // order by the time they got queued, in ascending order
-                .limit(TASKS_CHUNK_SIZE),
+                .limit(TASKS_CHUNK_SIZE as i64),
         )
         .expect("Failed to load download tasks from DB")
     } else {
@@ -246,7 +246,7 @@ pub fn load_chunk_init(conn: &mut DbConnection, retry_failed: bool) -> Vec<Downl
             download_tasks
                 .order(url.asc()) // order by the time they got queued, in ascending order
                 .filter(failed.is_null())
-                .limit(TASKS_CHUNK_SIZE),
+                .limit(TASKS_CHUNK_SIZE as i64),
         )
         .expect("Failed to load download tasks from DB")
     }
@@ -263,7 +263,7 @@ pub fn load_chunk_next(
             download_tasks
                 .order(url.asc()) // order by the time they got queued, in ascending order
                 .filter(url.gt(last_url))
-                .limit(TASKS_CHUNK_SIZE),
+                .limit(TASKS_CHUNK_SIZE as i64),
         )
         .expect("Failed to load download tasks from DB")
     } else {
@@ -271,14 +271,14 @@ pub fn load_chunk_next(
             download_tasks
                 .order(url.asc()) // order by the time they got queued, in ascending order
                 .filter(failed.is_null().and(url.gt(last_url)))
-                .limit(TASKS_CHUNK_SIZE),
+                .limit(TASKS_CHUNK_SIZE as i64),
         )
         .expect("Failed to load download tasks from DB")
     }
 }
 
 pub fn update_from_tarballs(conn: &mut DbConnection, tarballs: &Vec<DownloadedTarball>) {
-    println!("Inserting {} tarballs", tarballs.len());
+    println!("[MAIN] Updating {} tarballs", tarballs.len());
 
     // insert all the tarballs from download_queue in the db
     {

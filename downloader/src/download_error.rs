@@ -3,9 +3,10 @@ use postgres_db::custom_types::DownloadFailed;
 #[derive(Debug)]
 pub enum DownloadError {
     Request(reqwest::Error),
-    StatusNotOk(reqwest::StatusCode),
+    StatusNotOk(u16),
     Io(std::io::Error),
     BadlyFormattedUrl,
+    ClusterError,
 }
 
 impl std::error::Error for DownloadError {}
@@ -17,6 +18,7 @@ impl std::fmt::Display for DownloadError {
             DownloadError::StatusNotOk(e) => write!(f, "Status not OK: {}", e),
             DownloadError::Io(e) => write!(f, "IO error: {}", e),
             DownloadError::BadlyFormattedUrl => write!(f, "Badly formatted URL"),
+            DownloadError::ClusterError => write!(f, "Cluster error"),
         }
     }
 }
@@ -36,9 +38,7 @@ impl From<std::io::Error> for DownloadError {
 impl From<DownloadFailed> for DownloadError {
     fn from(e: DownloadFailed) -> Self {
         match e {
-            DownloadFailed::Res(code) => {
-                DownloadError::StatusNotOk(reqwest::StatusCode::from_u16(code).unwrap())
-            }
+            DownloadFailed::Res(code) => DownloadError::StatusNotOk(code),
             DownloadFailed::Io => {
                 DownloadError::Io(std::io::Error::new(std::io::ErrorKind::Other, "IO error"))
             }

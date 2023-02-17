@@ -299,7 +299,9 @@ fn deserialize_repo_check_git_type_str(repo: String) -> Option<RepoInfo> {
 pub fn deserialize_repo_blob(repo_blob: Value) -> Option<RepositoryInfo> {
     fn deserialize_help(mut repo_obj: serde_json::Map<String, Value>) -> Option<RepoInfo> {
         let t = repo_obj.remove_key_unwrap_type::<String>("type");
-        let dir = repo_obj.remove_key_unwrap_type::<String>("directory");
+        let dir = repo_obj
+            .remove_key::<String>("directory")
+            .and_then(|r| r.ok());
         let url = repo_obj.remove_key_unwrap_type::<String>("url")?;
 
         let info = match t.as_deref() {
