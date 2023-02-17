@@ -2,7 +2,7 @@ use std::{borrow::BorrowMut, sync::Arc};
 
 use async_trait::async_trait;
 use chrono::{DateTime, Duration, Utc};
-use historic_solver_job_server::{
+use historic_solver_job::{
     async_pool::{handle_get_jobs, handle_submit_result},
     Job, JobResult, MaxConcurrencyClient,
 };

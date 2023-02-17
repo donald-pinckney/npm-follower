@@ -12,11 +12,10 @@ dotenvy = "0.15.6"
 diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
 chrono = "0.4.23"
 
+lru = { git = "https://github.com/donald-pinckney/lru-rs" }
 postgres_db = { path = "../postgres_db" }
 utils = { path = "../utils" }
-historic_solver_job = { path = "../historic_solver_job" }
-historic_solver_job_server = { path = "../historic_solver_job_server" }
+historic_solver_job = { path = "../cluster_compute_jobs/historic_solver_job" }
 semver_spec_serialization = { path = "../semver_spec_serialization" }
-lru = { git = "https://github.com/donald-pinckney/lru-rs" }
 
 
