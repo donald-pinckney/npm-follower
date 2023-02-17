@@ -1,37 +1,24 @@
 [package]
-name = "historic_solver_job"
+name = "historic_npm_registry"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-
-[lib]
-name = "historic_solver_job"
-path = "src/lib.rs"
-
-[[bin]]
-name = "historic_solver_job"
-path = "src/main.rs"
-
-
 [dependencies]
 tokio = { version = "1", features = ["full"] }
+warp = "0.3.3"
 chrono = { version = "0.4.19" }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = { version = "1.0.79", features = ["preserve_order"] }
 reqwest = { version = "0.11.13", features = ["json"] }
 reqwest-retry = "0.2.1"
 reqwest-middleware = "0.2.0"
-urlencoding = "2.1.2"
-lazy_static = "1.4.0"
-async-trait = "0.1.61"
-dotenv = "0.15.0"
-tempfile = "3.3.0"
+percent-encoding = "2.2.0"
+moka = { version = "0.9", features = ["future"] }
 futures-util = "0.3"
 log = "0.4"
 pretty_env_logger = "0.4"
-diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
-moka = { version = "0.9", features = ["future"] }
-postgres_db = { path = "../postgres_db" }
-semver_spec_serialization = { path = "../semver_spec_serialization" }
+headers = "0.3.8"
+mime = "0.3.16"
+historic_solver_job = { path = "../../historic_solver_job" }
