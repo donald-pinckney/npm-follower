@@ -19,6 +19,8 @@ members = [
     "historic_solver_job_server",
     "diff_analysis",
     "diff_analysis/diff_analysis_client",
+    "size_analysis",
+    "size_analysis/size_analysis_client",
     "diff_queries"
 ]
 
