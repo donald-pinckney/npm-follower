@@ -14,8 +14,8 @@ dotenvy = "0.15.6"
 diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
 base64 = "0.13.1"
 
-postgres_db = { path = "../postgres_db" }
-utils = { path = "../utils" }
-blob_idx_server = { path = "../blob_idx_server" }
+postgres_db = { path = "../../postgres_db" }
+utils = { path = "../../utils" }
+blob_idx_server = { path = "../../blob_idx_server" }
 chrono = "0.4.23"
 rand = "0.8.5"
