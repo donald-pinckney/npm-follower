@@ -255,7 +255,7 @@ fn delete_rows_after_compute(
     let mut urls = String::new();
 
     for res in results {
-        urls.push_str(&format!("'{}', ", res.tarball_url));
+        urls.push_str(&format!("E'{}', ", res.tarball_url.replace('\'', "\\'")));
     }
 
     // we may have all Errs, in which case we don't need to delete anything
