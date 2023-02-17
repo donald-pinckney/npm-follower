@@ -16,7 +16,6 @@ members = [
     "analysis",
     "historic_npm_registry",
     "historic_solver_job",
-    "historic_solver_job_server",
     "cluster_compute_jobs/diff_analysis",
     "cluster_compute_jobs/diff_analysis/diff_analysis_client",
     "cluster_compute_jobs/size_analysis",

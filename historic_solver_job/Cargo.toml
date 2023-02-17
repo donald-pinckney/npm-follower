@@ -5,6 +5,16 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+
+[lib]
+name = "historic_solver_job"
+path = "src/lib.rs"
+
+[[bin]]
+name = "historic_solver_job"
+path = "src/main.rs"
+
+
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 chrono = { version = "0.4.19" }
@@ -15,9 +25,13 @@ reqwest-retry = "0.2.1"
 reqwest-middleware = "0.2.0"
 urlencoding = "2.1.2"
 lazy_static = "1.4.0"
-postgres_db = { path = "../postgres_db" }
 async-trait = "0.1.61"
 dotenv = "0.15.0"
 tempfile = "3.3.0"
-historic_solver_job_server = { path = "../historic_solver_job_server" }
+futures-util = "0.3"
+log = "0.4"
+pretty_env_logger = "0.4"
+diesel = { version = "2.0", features = ["postgres", "serde_json", "chrono"] }
+moka = { version = "0.9", features = ["future"] }
+postgres_db = { path = "../postgres_db" }
 semver_spec_serialization = { path = "../semver_spec_serialization" }

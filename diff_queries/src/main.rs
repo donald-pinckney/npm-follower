@@ -15,7 +15,7 @@ use diesel::serialize::WriteTuple;
 use diesel::sql_types::Int8;
 use diesel::sql_types::Record;
 use diesel::QueryableByName;
-use historic_solver_job_server::{JobResult, SolveResult, SolveResultSql};
+use historic_solver_job::{JobResult, SolveResult, SolveResultSql};
 use postgres_db::{
     connection::{DbConnection, QueryRunner},
     custom_types::{ParsedSpec, Semver},
