@@ -20,7 +20,7 @@ members = [
     "cluster_compute_jobs/diff_analysis/diff_analysis_client",
     "cluster_compute_jobs/size_analysis",
     "cluster_compute_jobs/size_analysis/size_analysis_client",
-    "diff_queries"
+    "rust_sql_analysis"
 ]
 
 [profile.bench]
