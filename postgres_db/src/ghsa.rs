@@ -39,7 +39,7 @@ pub struct GhsaVulnerability {
 #[derive(Queryable, Debug, Clone)]
 #[diesel(table_name = vulnerabilities)]
 struct GhsaVulnerabilityRow {
-    id: i64,
+    _id: i64,
     ghsa_id: String,
     package_name: String,
     vulnerable_version_lower_bound: Option<Semver>,

@@ -37,9 +37,7 @@ pub struct InternalDiffLogVersionStateElem {
     pub deleted: bool,
 }
 
-impl<'a> ToSql<schema::sql_types::InternalDiffLogVersionState, Pg>
-    for InternalDiffLogVersionStateElem
-{
+impl ToSql<schema::sql_types::InternalDiffLogVersionState, Pg> for InternalDiffLogVersionStateElem {
     fn to_sql(&self, out: &mut serialize::Output<Pg>) -> serialize::Result {
         let record: (&Semver, &String, bool) = (&self.v, &self.pack_hash, self.deleted);
         serialize::WriteTuple::<(
@@ -50,7 +48,7 @@ impl<'a> ToSql<schema::sql_types::InternalDiffLogVersionState, Pg>
     }
 }
 
-impl<'a> FromSql<schema::sql_types::InternalDiffLogVersionState, Pg>
+impl FromSql<schema::sql_types::InternalDiffLogVersionState, Pg>
     for InternalDiffLogVersionStateElem
 {
     fn from_sql(bytes: PgValue) -> deserialize::Result<Self> {
