@@ -15,11 +15,11 @@ pub struct DbConnection {
     pool: Pool<DieselConnectionManager<PgConnection>>,
 }
 
-// pub struct DbConnectionInTransaction<'conn> {
-//     conn: &'conn mut DieselConnection<PgConnection>,
-// }
+pub struct DbConnectionInTransaction<'conn> {
+    conn: &'conn mut DieselConnection<PgConnection>,
+}
 
-// #[cfg(not(test))]
+#[cfg(not(test))]
 impl DbConnection {
     pub async fn connect() -> DbConnection {
         use dotenv::dotenv;
@@ -39,39 +39,44 @@ impl DbConnection {
     }
 }
 
-// impl DbConnection {
-//     pub async fn run_psql_transaction<F, R, Fut>(
-//         &mut self,
-//         transaction: F,
-//     ) -> Result<R, diesel::result::Error>
-//     where
-//         F: FnOnce(DbConnectionInTransaction) -> Fut,
-//         Fut: Future<Output = Result<(R, bool), diesel::result::Error>>,
-//     {
-//         let mut res: Option<R> = None;
+impl DbConnection {
+    pub async fn run_psql_transaction<F, R, Fut>(
+        &mut self,
+        transaction: F,
+    ) -> Result<R, diesel::result::Error>
+    where
+        F: FnOnce(DbConnectionInTransaction) -> Fut,
+        Fut: Future<Output = Result<(R, bool), diesel::result::Error>>,
+    {
+        let mut res: Option<R> = None;
 
-//         let mut conn = self.pool.get().await.unwrap();
+        let mut conn = self.pool.get().await.unwrap();
 
-//         let maybe_err = conn
-//             .transaction(|trans_conn| {
-//                 let borrowed_self = DbConnectionInTransaction { conn: trans_conn };
-//                 let (result, should_commit) = transaction(borrowed_self).await?;
+        let maybe_err = conn
+            .transaction(|trans_conn| {
+                let rt = tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build()
+                    .unwrap();
 
-//                 res = Some(result);
-//                 if !should_commit {
-//                     return Err(diesel::result::Error::RollbackTransaction);
-//                 }
-//                 Ok(())
-//             })
-//             .err();
+                let borrowed_self = DbConnectionInTransaction { conn: trans_conn };
+                let (result, should_commit) = rt.block_on(transaction(borrowed_self))?;
 
-//         if let Some(r) = res {
-//             Ok(r)
-//         } else {
-//             Err(maybe_err.unwrap())
-//         }
-//     }
-// }
+                res = Some(result);
+                if !should_commit {
+                    return Err(diesel::result::Error::RollbackTransaction);
+                }
+                Ok(())
+            })
+            .err();
+
+        if let Some(r) = res {
+            Ok(r)
+        } else {
+            Err(maybe_err.unwrap())
+        }
+    }
+}
 
 #[async_trait]
 pub trait QueryRunner {
@@ -167,56 +172,55 @@ impl QueryRunner for DbConnection {
     }
 }
 
-// #[async_trait]
-// impl<'conn> QueryRunner for DbConnectionInTransaction<'conn> {
-//     async fn execute<Q>(&mut self, query: Q) -> QueryResult<usize>
-//     where
-//         Q: RunQueryDsl<PgConnection> + ExecuteDsl<PgConnection> + Send,
-//     {
-//         query.execute(self.conn)
-//     }
+impl<'conn> super::QueryRunner for DbConnectionInTransaction<'conn> {
+    fn execute<Q>(&mut self, query: Q) -> QueryResult<usize>
+    where
+        Q: RunQueryDsl<PgConnection> + ExecuteDsl<PgConnection>,
+    {
+        query.execute(self.conn)
+    }
 
-//     async fn load<'query, Q, U>(&mut self, query: Q) -> QueryResult<Vec<U>>
-//     where
-//         Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U> + Send,
-//     {
-//         query.load(self.conn)
-//     }
+    fn load<'query, Q, U>(&mut self, query: Q) -> QueryResult<Vec<U>>
+    where
+        Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U>,
+    {
+        query.load(self.conn)
+    }
 
-//     // fn load_iter<'query: 'conn, Q, U, B>(
-//     //     &'conn mut self,
-//     //     query: Q,
-//     // ) -> QueryResult<LoadIter<'conn, 'query, Q, PgConnection, U, B>>
-//     // where
-//     //     U: 'conn,
-//     //     Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U, B> + 'conn,
-//     // {
-//     //     query.load_iter(self.conn)
-//     // }
+    // fn load_iter<'query: 'conn, Q, U, B>(
+    //     &'conn self,
+    //     query: Q,
+    // ) -> QueryResult<LoadIter<'conn, 'query, Q, PgConnection, U, B>>
+    // where
+    //     U: 'conn,
+    //     Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U, B> + 'conn,
+    // {
+    //     query.load_iter(self.conn)
+    // }
 
-//     async fn get_result<'query, Q, U>(&mut self, query: Q) -> QueryResult<U>
-//     where
-//         Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U> + Send,
-//     {
-//         query.get_result(self.conn)
-//     }
+    fn get_result<'query, Q, U>(&mut self, query: Q) -> QueryResult<U>
+    where
+        Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U>,
+    {
+        query.get_result(self.conn)
+    }
 
-//     async fn get_results<'query, Q, U>(&mut self, query: Q) -> QueryResult<Vec<U>>
-//     where
-//         Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U> + Send,
-//     {
-//         query.get_results(self.conn)
-//     }
+    fn get_results<'query, Q, U>(&mut self, query: Q) -> QueryResult<Vec<U>>
+    where
+        Q: RunQueryDsl<PgConnection> + LoadQuery<'query, PgConnection, U>,
+    {
+        query.get_results(self.conn)
+    }
 
-//     async fn first<'query, Q, U>(&mut self, query: Q) -> QueryResult<U>
-//     where
-//         Q: RunQueryDsl<PgConnection> + LimitDsl + Send,
-//         Limit<Q>: LoadQuery<'query, PgConnection, U>,
-//     {
-//         query.first(self.conn)
-//     }
+    fn first<'query, Q, U>(&mut self, query: Q) -> QueryResult<U>
+    where
+        Q: RunQueryDsl<PgConnection> + LimitDsl,
+        Limit<Q>: LoadQuery<'query, PgConnection, U>,
+    {
+        query.first(self.conn)
+    }
 
-//     async fn batch_execute(&mut self, query: &str) -> QueryResult<()> {
-//         self.conn.batch_execute(query)
-//     }
-// }
+    fn batch_execute(&mut self, query: &str) -> QueryResult<()> {
+        self.conn.batch_execute(query)
+    }
+}
