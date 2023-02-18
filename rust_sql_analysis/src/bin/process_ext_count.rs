@@ -4,6 +4,7 @@ use postgres_db::{
     connection::{DbConnection, QueryRunner},
     diff_analysis::{DiffAnalysis, DiffAnalysisJobResult},
 };
+use rust_sql_analysis::process_diff_analysis;
 
 fn print_usage_exit(argv0: &str) -> ! {
     eprintln!("Usage: {} chunk_size", argv0);
@@ -19,11 +20,7 @@ fn main() {
     }
     let chunk_size = args[1].parse::<i64>().unwrap();
     let conn: DbConnection = DbConnection::connect();
-    process_ext_count(conn, chunk_size);
-}
-
-fn process_ext_count(mut conn: DbConnection, chunk_size: i64) {
-    todo!(); // Should this be like the process_diff_all_updates skeleton, or the process_diff_analysis skeleton?
+    process_diff_analysis(conn, chunk_size, ext_count);
 }
 
 fn get_extension(path: &str) -> Option<&str> {
