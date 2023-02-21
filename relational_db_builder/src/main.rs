@@ -30,8 +30,10 @@ fn main() {
 
     println!("Initial queries:");
     println!("query_num_changes_after_seq");
-    let num_changes_total =
-        postgres_db::change_log::query_num_changes_after_seq(processed_up_to_seq, &mut conn);
+    let num_changes_total = postgres_db::diff_log::query_num_changes_after_seq_in_diff_log(
+        processed_up_to_seq,
+        &mut conn,
+    );
     println!("query_num_diff_entries_after_seq");
     let num_entries_total =
         diff_log::query_num_diff_entries_after_seq(processed_up_to_seq, &mut conn);

@@ -9,8 +9,7 @@ use crate::packument::VersionOnlyPackument;
 
 use super::schema;
 use super::schema::diff_log;
-use diesel::Insertable;
-use diesel::Queryable;
+use diesel::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::Value;
@@ -158,29 +157,30 @@ pub fn query_diff_entries_after_seq(
     limit_size: i64,
     conn: &mut DbConnection,
 ) -> Vec<DiffLogEntry> {
-    use super::schema::change_log;
-
     use diesel::prelude::*;
-    use schema::change_log::dsl::*;
+    use schema::diff_log::dsl::*;
 
-    let seq_subquery = change_log
-        .filter(change_log::seq.gt(after_seq))
-        .select(change_log::seq)
-        .order(change_log::seq)
+    let diff_log_alias = alias!(schema::diff_log as diff_log_alias);
+
+    let seq_subquery = diff_log_alias
+        .filter(seq.gt(after_seq))
+        .select(diff_log_alias.field(seq))
+        .distinct()
+        .order(diff_log_alias.field(seq))
         .limit(limit_size);
 
-    let join_query = diff_log::table
-        .filter(diff_log::seq.eq_any(seq_subquery))
+    let join_query = diff_log
+        .filter(seq.eq_any(seq_subquery))
         .select((
-            diff_log::id,
-            diff_log::seq,
-            diff_log::package_name,
-            diff_log::dt,
-            diff_log::package_only_packument,
-            diff_log::v,
-            diff_log::version_packument,
+            id,
+            seq,
+            package_name,
+            dt,
+            package_only_packument,
+            v,
+            version_packument,
         ))
-        .order(diff_log::id);
+        .order(id);
 
     let rows: Vec<DiffLogRow> = conn.load(join_query).unwrap_or_else(|err| {
         panic!(
@@ -190,6 +190,24 @@ pub fn query_diff_entries_after_seq(
     });
 
     rows.into_iter().map(|e| e.into()).collect()
+}
+
+pub fn query_num_changes_after_seq_in_diff_log(after_seq: i64, conn: &mut DbConnection) -> i64 {
+    use schema::diff_log::dsl::*;
+
+    conn.first(
+        diff_log
+            .filter(seq.gt(after_seq))
+            .select(seq)
+            .distinct()
+            .count(),
+    )
+    .unwrap_or_else(|_| {
+        panic!(
+            "Error querying DB for number of changes after seq: {}",
+            after_seq
+        )
+    })
 }
 
 const INSERT_CHUNK_SIZE: usize = 2048;
