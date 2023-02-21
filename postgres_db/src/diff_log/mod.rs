@@ -9,8 +9,7 @@ use crate::packument::VersionOnlyPackument;
 
 use super::schema;
 use super::schema::diff_log;
-use diesel::Insertable;
-use diesel::Queryable;
+use diesel::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::Value;
@@ -191,6 +190,24 @@ pub fn query_diff_entries_after_seq(
     });
 
     rows.into_iter().map(|e| e.into()).collect()
+}
+
+pub fn query_num_changes_after_seq_in_diff_log(after_seq: i64, conn: &mut DbConnection) -> i64 {
+    use schema::diff_log::dsl::*;
+
+    conn.first(
+        diff_log
+            .filter(seq.gt(after_seq))
+            .select(seq)
+            .distinct()
+            .count(),
+    )
+    .unwrap_or_else(|_| {
+        panic!(
+            "Error querying DB for number of changes after seq: {}",
+            after_seq
+        )
+    })
 }
 
 const INSERT_CHUNK_SIZE: usize = 2048;
