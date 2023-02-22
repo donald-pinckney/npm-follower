@@ -17,7 +17,7 @@ use postgres_db::internal_state;
 use relational_db_builder::EntryProcessor;
 use utils::check_no_concurrent_processes;
 
-const TARGET_PAGE_SIZE_NUM_ENTRIES: i64 = 32000;
+const TARGET_PAGE_SIZE_NUM_ENTRIES: i64 = 8000;
 
 fn main() {
     check_no_concurrent_processes("relational_db_builder");

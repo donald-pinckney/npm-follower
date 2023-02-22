@@ -42,11 +42,11 @@ pub struct RelationalDbAccessor {
 impl RelationalDbAccessor {
     pub fn new() -> Self {
         Self {
-            package_id_cache: LruCache::new(NonZeroUsize::new(0x40000).unwrap()), // about 1/4 million entries
-            package_data_cache: LruCache::new(NonZeroUsize::new(250_000_000).unwrap()), // 1/4 GB max memory usage
-            version_id_cache: LruCache::new(NonZeroUsize::new(0x40000).unwrap()), // about 1/4 million entries
-            dependency_states_cache: LruCache::new(NonZeroUsize::new(0x400000).unwrap()), // about 4 million entries
-            need_flush_set: HashSet::with_capacity(0x400000),
+            package_id_cache: LruCache::new(NonZeroUsize::new(0x10000).unwrap()), // about 65 K entries
+            package_data_cache: LruCache::new(NonZeroUsize::new(62_500_000).unwrap()), // 62.5 MB max memory usage
+            version_id_cache: LruCache::new(NonZeroUsize::new(0x20000).unwrap()), // about 131 K entries
+            dependency_states_cache: LruCache::new(NonZeroUsize::new(0x100000).unwrap()), // about 1 M entries
+            need_flush_set: HashSet::with_capacity(0x100000),
         }
     }
 }
