@@ -65,16 +65,32 @@ fn main() {
     let history_size = 4;
     let mut batch_size_history: VecDeque<(i64, i64)> = VecDeque::new();
 
+    let mut num_loops = 0;
+
     // TODO: Extract this into function (duplicated in download_queuer/src/main.rs)
     loop {
         let batch_start = Instant::now();
         let batch_start_time = Utc::now();
+
+        if num_loops <= 3 {
+            println!(
+                "Starting read from diff_log, page size = {}",
+                current_page_size_seqs
+            );
+        }
 
         let entries = diff_log::query_diff_entries_after_seq(
             processed_up_to_seq,
             current_page_size_seqs,
             &mut conn,
         );
+
+        if num_loops <= 3 {
+            println!(
+                "Completed read from diff_log, page size = {}",
+                current_page_size_seqs
+            );
+        }
 
         let unique_seqs: HashSet<_> = entries.iter().map(|entry| entry.seq).collect();
         let num_changes = unique_seqs.len() as i64;
@@ -162,6 +178,8 @@ fn main() {
             let page_size_seq_est = ((TARGET_PAGE_SIZE_NUM_ENTRIES as f64) / ratio_est) as i64;
             current_page_size_seqs = page_size_seq_est.max(16).min(16384);
         }
+
+        num_loops += 1;
     }
 
     let session_end_time = Utc::now();

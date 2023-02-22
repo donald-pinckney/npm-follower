@@ -163,7 +163,7 @@ pub fn query_diff_entries_after_seq(
     let diff_log_alias = alias!(schema::diff_log as diff_log_alias);
 
     let seq_subquery = diff_log_alias
-        .filter(seq.gt(after_seq))
+        .filter(diff_log_alias.field(seq).gt(after_seq))
         .select(diff_log_alias.field(seq))
         .distinct()
         .order(diff_log_alias.field(seq))
@@ -195,14 +195,11 @@ pub fn query_diff_entries_after_seq(
 pub fn query_num_changes_after_seq_in_diff_log(after_seq: i64, conn: &mut DbConnection) -> i64 {
     use schema::diff_log::dsl::*;
 
-    conn.first(
-        diff_log
-            .filter(seq.gt(after_seq))
-            .select(seq)
-            .distinct()
-            .count(),
-    )
-    .unwrap_or_else(|_| {
+    let query = diff_log
+        .filter(seq.gt(after_seq))
+        .select(diesel::dsl::count_distinct(seq));
+
+    conn.first(query).unwrap_or_else(|_| {
         panic!(
             "Error querying DB for number of changes after seq: {}",
             after_seq
