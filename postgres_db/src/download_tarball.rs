@@ -98,6 +98,15 @@ pub fn query_first_tarball_by_url(conn: &mut DbConnection) -> Option<DownloadedT
         .pop()
 }
 
+pub fn get_tarball_by_url(conn: &mut DbConnection, url: &str) -> Option<DownloadedTarball> {
+    use schema::downloaded_tarballs::dsl::*;
+
+    let query = downloaded_tarballs.filter(tarball_url.eq(url));
+    conn.load(query)
+        .expect("Error querying tarball by url")
+        .pop()
+}
+
 pub fn num_total_downloaded_tarballs(conn: &mut DbConnection) -> i64 {
     use schema::downloaded_tarballs::dsl::*;
 
