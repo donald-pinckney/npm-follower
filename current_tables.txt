@@ -43,8 +43,8 @@ experimental stuff:
 
 job inputs or state for tarball analysis:
 
- *deleted* public   | size_analysis_to_compute                      | table       | federico | permanent   | heap          | 4518 MB    | created ad hoc, used as input to make size_analysis_tarball
- *deleted* analysis | diffs_to_compute                              | table       | pinckney | permanent   | heap          | 4093 MB    | analysis/scripts/prepare_diffs_to_compute.sql             temporary queue, gets deleted by cluster_compute_jobs/diff_analysis/src/main.rs
+ *deleted* tarball_analysis | size_analysis_to_compute                      | table       | federico | permanent   | heap          | 4518 MB    | created ad hoc, used as input to make size_analysis_tarball
+ *deleted* tarball_analysis | diffs_to_compute                              | table       | pinckney | permanent   | heap          | 4093 MB    | analysis/scripts/prepare_diffs_to_compute.sql             temporary queue, gets deleted by cluster_compute_jobs/diff_analysis/src/main.rs
 
 
 transitive outputs of tarball analysis:

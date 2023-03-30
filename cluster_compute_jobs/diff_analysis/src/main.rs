@@ -45,11 +45,11 @@ struct QCount {
 }
 
 const QUERY: &str = r#"
-SELECT * FROM analysis.diffs_to_compute
+SELECT * FROM tarball_analysis.diffs_to_compute
 "#;
 
 const COUNT_QUERY: &str = r#"
-SELECT COUNT(*) FROM analysis.diffs_to_compute
+SELECT COUNT(*) FROM tarball_analysis.diffs_to_compute
 "#;
 
 const CHUNK_SIZE: usize = 2500;
@@ -245,7 +245,7 @@ fn delete_rows_after_compute(diffs: &[DiffAnalysis], conn: &mut DbConnectionInTr
 
         // we have to delete (from_id, to_id) pairs, as alone they are not unique
         let query = format!(
-            "DELETE FROM analysis.diffs_to_compute WHERE (from_id, to_id) IN ({})",
+            "DELETE FROM tarball_analysis.diffs_to_compute WHERE (from_id, to_id) IN ({})",
             pairs
         );
         conn.execute(diesel::sql_query(query)).unwrap();

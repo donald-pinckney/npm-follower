@@ -35,11 +35,11 @@ struct QCount {
 }
 
 const QUERY: &str = r#"
-SELECT * FROM size_analysis_to_compute
+SELECT * FROM tarball_analysis.size_analysis_to_compute
 "#;
 
 const COUNT_QUERY: &str = r#"
-SELECT COUNT(*) FROM size_analysis_to_compute
+SELECT COUNT(*) FROM tarball_analysis.size_analysis_to_compute
 "#;
 
 const NUM_LOCAL_WORKERS: usize = 3;
@@ -260,7 +260,9 @@ fn delete_rows_after_compute(
         urls.pop();
         urls.pop();
 
-        let query = format!("DELETE FROM size_analysis_to_compute WHERE (tarball_url) IN ({urls})");
+        let query = format!(
+            "DELETE FROM tarball_analysis.size_analysis_to_compute WHERE (tarball_url) IN ({urls})"
+        );
         conn.execute(diesel::sql_query(query)).unwrap();
     }
 }

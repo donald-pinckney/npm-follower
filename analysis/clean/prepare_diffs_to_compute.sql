@@ -1,1 +1,1 @@
-DROP TABLE analysis.diffs_to_compute;
+DROP TABLE tarball_analysis.diffs_to_compute;
