@@ -1,4 +1,4 @@
-CREATE TABLE diff_analysis (
+CREATE TABLE tarball_analysis.diff_analysis (
   from_id BIGINT NOT NULL,
   to_id BIGINT NOT NULL,
   job_result JSONB NOT NULL,

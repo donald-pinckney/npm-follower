@@ -226,7 +226,7 @@ fn spawn_db_worker(
                     insert.pop();
 
                     let query = format!(
-                        "INSERT INTO size_analysis_tarball (tarball_url, total_files, total_size, total_size_code) VALUES {insert} ON CONFLICT DO NOTHING",
+                        "INSERT INTO tarball_analysis.size_analysis_tarball (tarball_url, total_files, total_size, total_size_code) VALUES {insert} ON CONFLICT DO NOTHING",
                     );
 
                     let q = diesel::sql_query(query.clone());

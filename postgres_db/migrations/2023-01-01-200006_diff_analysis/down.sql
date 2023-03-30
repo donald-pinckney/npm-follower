@@ -1,1 +1,1 @@
-DROP TABLE diff_analysis;
+DROP TABLE tarball_analysis.diff_analysis;

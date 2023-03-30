@@ -66,7 +66,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    diff_analysis (from_id, to_id) {
+    tarball_analysis.diff_analysis (from_id, to_id) {
         from_id -> Int8,
         to_id -> Int8,
         job_result -> Jsonb,

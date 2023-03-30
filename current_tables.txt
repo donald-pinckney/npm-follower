@@ -1,0 +1,71 @@
+pure metadata analysis tables:
+
+ analysis           | all_overlaps                                  | table       | pinckney | permanent   | heap          | 4032 kB    | analysis/scripts/build_updates.sql
+ analysis           | all_updates                                   | table       | pinckney | permanent   | heap          | 4304 MB    | analysis/scripts/build_updates.sql
+ analysis           | constraint_types                              | table       | pinckney | permanent   | heap          | 376 MB     | analysis/scripts/constraint_types.sql
+ analysis           | malformed_packages                            | table       | pinckney | permanent   | heap          | 1888 kB    | analysis/scripts/version_ordering_validation.sql
+ analysis           | unique_deps_across_versions                   | table       | pinckney | permanent   | heap          | 3692 MB    | analysis/scripts/unique_package_deps.sql
+ analysis           | unique_deps_of_latest                         | table       | pinckney | permanent   | heap          | 1306 MB    | analysis/scripts/unique_package_deps.sql
+ analysis           | unique_deps_yearly_dep_on_vuln_pkg_only       | table       | pinckney | permanent   | heap          | 259 MB     | analysis/scripts/unique_package_deps.sql
+ analysis           | unique_deps_yearly_latest                     | table       | pinckney | permanent   | heap          | 2103 MB    | analysis/scripts/unique_package_deps.sql
+ analysis           | unique_deps_yearly_latest_depended_on_only    | table       | pinckney | permanent   | heap          | 771 MB     | analysis/scripts/unique_package_deps.sql
+ analysis           | valid_group_ranges                            | table       | pinckney | permanent   | heap          | 835 MB     | analysis/scripts/version_ordering_validation.sql
+ analysis           | valid_non_betas_with_ordering                 | table       | pinckney | permanent   | heap          | 3231 MB    | analysis/scripts/version_ordering_validation.sql
+ analysis           | valid_packages                                | table       | pinckney | permanent   | heap          | 71 MB      | analysis/scripts/version_ordering_validation.sql
+ analysis           | vuln_intro_updates                            | table       | pinckney | permanent   | heap          | 72 kB      | analysis/scripts/vuln_intro_updates.sql
+ analysis           | vuln_patch_updates                            | table       | pinckney | permanent   | heap          | 320 kB     | analysis/scripts/find_patches.sql
+ analysis           | vulnerable_versions                           | table       | pinckney | permanent   | heap          | 9352 kB    | analysis/scripts/vulnerable_versions.sql
+ analysis           | update_did_change_json_scripts                | table       | pinckney | permanent   | heap          | 7510 MB    | analysis/scripts/did_change_json_scripts.sql
+ analysis           | update_dep_changes                            | table       | federico | permanent   | heap          | 826 MB     | rust_sql_analysis/src/bin/process_diff_all_updates.rs   inserts, but doesn't create
+
+
+core system tables:
+
+ public             | __diesel_schema_migrations                    | table       | postgres | permanent   | heap          | 8192 bytes | core system
+ public             | change_log                                    | table       | pinckney | permanent   | heap          | 44 GB      | core system
+ public             | dependencies                                  | table       | postgres | permanent   | heap          | 6792 MB    | core system
+ public             | diff_log                                      | table       | postgres | permanent   | heap          | 149 GB     | core system
+ public             | download_tasks                                | table       | postgres | permanent   | heap          | 224 MB     | core system
+ public             | downloaded_tarballs                           | table       | postgres | permanent   | heap          | 42 GB      | core system
+ public             | ghsa                                          | table       | pinckney | permanent   | heap          | 2744 kB    | core system
+ public             | internal_diff_log_state                       | table       | postgres | permanent   | heap          | 4253 MB    | core system
+ public             | internal_state                                | table       | postgres | permanent   | heap          | 56 kB      | core system
+ public             | packages                                      | table       | postgres | permanent   | heap          | 1059 MB    | core system
+ public             | versions                                      | table       | postgres | permanent   | heap          | 63 GB      | core system
+ public             | vulnerabilities                               | table       | pinckney | permanent   | heap          | 568 kB     | core system
+
+
+experimental stuff:
+ 
+ public             | possibly_malware_versions                     | table       | federico | permanent   | heap          | 1232 kB    | rust_sql_analysis/src/bin/process_security_replaced.rs on federico's fork
+ public             | security_replaced_versions                    | table       | federico | permanent   | heap          | 4912 kB    | analysis/scripts/generate_security_replaced_table.sql on federico's fork
+
+
+job inputs or state for tarball analysis:
+ *deleted* public             | size_analysis_to_compute                      | table       | federico | permanent   | heap          | 4518 MB    | created ad hoc, used as input to make size_analysis_tarball
+ *deleted* analysis           | diffs_to_compute                              | table       | pinckney | permanent   | heap          | 4093 MB    | analysis/scripts/prepare_diffs_to_compute.sql             temporary queue, gets deleted by cluster_compute_jobs/diff_analysis/src/main.rs
+
+
+transitive outputs of tarball analysis:
+ tarball_analysis   | size_analysis_tarball                         | table       | federico | permanent   | heap          | 4045 MB    | cluster_compute_jobs/size_analysis/src/main.rs
+ tarball_analysis   | what_did_updates_change                       | table       | pinckney | permanent   | heap          | 1204 MB    | analysis/scripts/what_did_updates_change.sql
+ tarball_analysis   | diff_analysis                                 | table       | federico | permanent   | heap          | 16 GB      | postgres_db/src/diff_analysis.rs and cluster_compute_jobs/diff_analysis/src/main.rs
+ tarball_analysis   | diff_changed_files                            | table       | federico | permanent   | heap          | 744 MB     | rust_sql_analysis/src/bin/process_diff_analysis.rs
+ tarball_analysis   | diff_ext_count                                | table       | federico | permanent   | heap          | 48 kB      | rust_sql_analysis/src/bin/process_ext_count.rs
+ tarball_analysis   | diff_num_files                                | table       | federico | permanent   | heap          | 974 MB     | rust_sql_analysis/src/bin/process_num_files.rs
+ tarball_analysis   | diff_num_lines                                | table       | federico | permanent   | heap          | 859 MB     | rust_sql_analysis/src/bin/process_num_lines.rs
+
+
+job inputs or state for solving experiments:
+ analysis           | subsampled_packages                           | table       | pinckney | permanent   | heap          | 204 MB     | analysis/scripts/subsampled_packages.sql                  used as input to populate historic_solver_job_inputs when preparing uniform experiment 
+ analysis           | subsampled_updates                            | table       | pinckney | permanent   | heap          | 250 MB     | analysis/scripts/subsampled_updates.sql                   used as input to populate historic_solver_job_inputs when preparing flow experiment
+ public             | historic_solver_job_inputs                    | table       | pinckney | permanent   | heap          | 328 MB     | cluster_compute_jobs/historic_solver_job/sql_scripts/create_job_tables.sql
+
+
+transitive outputs of solving experiments:
+ analysis           | flow_historic_solver_job_flow_info            | table       | pinckney | permanent   | heap          | 6553 MB    | analysis/scripts/flow_historic_solver_job_flow_info.sql   post-processing of flow_historic_solver_job_results
+ public             | flow_historic_solver_job_results              | table       | postgres | permanent   | heap          | 29 GB      | cluster_compute_jobs/historic_solver_job/src/lib.rs creates historic_solver_job_results, which we manually renamed
+ public             | uniform_historic_solver_job_results           | table       | pinckney | permanent   | heap          | 14 GB      | cluster_compute_jobs/historic_solver_job/src/lib.rs creates historic_solver_job_results, which we manually renamed
+ public             | uniform_historic_solver_job_results_oldnesses | table       | pinckney | permanent   | heap          | 1011 MB    | /home/pinckney/npm-follower/rust_sql_analysis/src/bin/process_historic_solver.rs creates historic_solver_job_results_oldnesses, which we manually renamed
+
+

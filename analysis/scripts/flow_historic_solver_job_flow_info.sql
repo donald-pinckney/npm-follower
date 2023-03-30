@@ -1,4 +1,4 @@
-CREATE TABLE analysis.old_historic_solver_job_flow_info AS
+CREATE TABLE analysis.flow_historic_solver_job_flow_info AS
 select 
   array_length(solve_history, 1) = 2 as instant_update,
   array_length(solve_history, 1) - 2 as update_days,
@@ -7,7 +7,7 @@ select
   ROW(update_from_id, update_to_id) IN (select from_id, to_id from analysis.vuln_patch_updates) and ROW(update_from_id, update_to_id) NOT IN (select from_id, to_id from analysis.vuln_intro_updates) as is_patch,
   ROW(update_from_id, update_to_id) NOT IN (select from_id, to_id from analysis.vuln_patch_updates) and ROW(update_from_id, update_to_id) NOT IN (select from_id, to_id from analysis.vuln_intro_updates) as is_neutral,
   *
-from old_historic_solver_job_results
+from flow_historic_solver_job_results
 
 where result_category <> 'SolveError' 
 and result_category <> 'DownstreamMissingVersion'
@@ -19,7 +19,7 @@ and result_category <> 'MiscError'
 ;
 
 
-GRANT SELECT ON analysis.old_historic_solver_job_flow_info TO data_analyzer;
-GRANT ALL ON analysis.old_historic_solver_job_flow_info TO pinckney;
-GRANT ALL ON analysis.old_historic_solver_job_flow_info TO federico;
+GRANT SELECT ON analysis.flow_historic_solver_job_flow_info TO data_analyzer;
+GRANT ALL ON analysis.flow_historic_solver_job_flow_info TO pinckney;
+GRANT ALL ON analysis.flow_historic_solver_job_flow_info TO federico;
 

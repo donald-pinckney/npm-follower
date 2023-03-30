@@ -18,7 +18,7 @@ FROM updates_with_urls u
 ALTER TABLE analysis.diffs_to_compute
 ADD PRIMARY KEY (from_id, to_id);
 
-DELETE FROM analysis.diffs_to_compute WHERE ROW(from_id, to_id) IN (SELECT from_id, to_id FROM diff_analysis);
+DELETE FROM analysis.diffs_to_compute WHERE ROW(from_id, to_id) IN (SELECT from_id, to_id FROM tarball_analysis.diff_analysis);
 
 GRANT ALL ON analysis.diffs_to_compute TO pinckney;
 GRANT ALL ON analysis.diffs_to_compute TO federico;

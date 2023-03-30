@@ -92,9 +92,9 @@ fn changed_file(
         return Ok(());
     }
 
-    // insert into analysis.diff_changed_files
+    // insert into tarball_analysis.diff_changed_files
     let query = r#"
-        INSERT INTO analysis.diff_changed_files (from_id, to_id, did_change_types, did_change_code)
+        INSERT INTO tarball_analysis.diff_changed_files (from_id, to_id, did_change_types, did_change_code)
         VALUES
         "#;
     let mut query = query.to_string();

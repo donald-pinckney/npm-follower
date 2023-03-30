@@ -45,7 +45,7 @@ con <- dbConnect(
 # This takes about 40 seconds to load (when running on the VM!), and takes about 4GB of memory
 all_updates <- dbGetQuery(con, "
     SELECT *
-    FROM analysis.what_did_updates_change
+    FROM tarball_analysis.what_did_updates_change
 ")
 
 all_updates_sub <- all_updates[sample(nrow(all_updates), 100000),] 

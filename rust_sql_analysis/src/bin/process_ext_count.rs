@@ -57,9 +57,9 @@ fn ext_count(
         return Ok(());
     }
 
-    // insert into analysis.diff_ext_count
+    // insert into tarball_analysis.diff_ext_count
     let query = r#"
-        INSERT INTO analysis.diff_ext_count (ext, count)
+        INSERT INTO tarball_analysis.diff_ext_count (ext, count)
         VALUES
         "#;
     let mut query = query.to_string();
@@ -71,7 +71,7 @@ fn ext_count(
     }
     // on conflict, update count += excluded.count
     query.push_str(
-        " ON CONFLICT (ext) DO UPDATE SET count = analysis.diff_ext_count.count + excluded.count",
+        " ON CONFLICT (ext) DO UPDATE SET count = tarball_analysis.diff_ext_count.count + excluded.count",
     );
     println!("Inserting {} rows into diff_ext_count...", ext_counts.len());
     let diesel_query = diesel::sql_query(query);

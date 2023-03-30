@@ -78,9 +78,9 @@ fn num_files(
         return Ok(());
     }
 
-    // insert into analysis.diff_num_files
+    // insert into tarball_analysis.diff_num_files
     let query = r#"
-        INSERT INTO analysis.diff_num_files (from_id, to_id, num_files_added, num_files_modified, num_files_deleted)
+        INSERT INTO tarball_analysis.diff_num_files (from_id, to_id, num_files_added, num_files_modified, num_files_deleted)
         VALUES
         "#;
     let mut query = query.to_string();

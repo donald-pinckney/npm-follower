@@ -65,9 +65,9 @@ fn num_lines(
         return Ok(());
     }
 
-    // insert into analysis.diff_num_lines
+    // insert into tarball_analysis.diff_num_lines
     let query = r#"
-        INSERT INTO analysis.diff_num_lines (from_id, to_id, num_lines_added, num_lines_deleted)
+        INSERT INTO tarball_analysis.diff_num_lines (from_id, to_id, num_lines_added, num_lines_deleted)
         VALUES
         "#;
     let mut query = query.to_string();
