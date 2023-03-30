@@ -1,22 +1,22 @@
 pure metadata analysis tables:
 
- analysis           | all_overlaps                                  | table       | pinckney | permanent   | heap          | 4032 kB    | analysis/scripts/build_updates.sql
- analysis           | all_updates                                   | table       | pinckney | permanent   | heap          | 4304 MB    | analysis/scripts/build_updates.sql
- analysis           | constraint_types                              | table       | pinckney | permanent   | heap          | 376 MB     | analysis/scripts/constraint_types.sql
- analysis           | malformed_packages                            | table       | pinckney | permanent   | heap          | 1888 kB    | analysis/scripts/version_ordering_validation.sql
- analysis           | unique_deps_across_versions                   | table       | pinckney | permanent   | heap          | 3692 MB    | analysis/scripts/unique_package_deps.sql
- analysis           | unique_deps_of_latest                         | table       | pinckney | permanent   | heap          | 1306 MB    | analysis/scripts/unique_package_deps.sql
- analysis           | unique_deps_yearly_dep_on_vuln_pkg_only       | table       | pinckney | permanent   | heap          | 259 MB     | analysis/scripts/unique_package_deps.sql
- analysis           | unique_deps_yearly_latest                     | table       | pinckney | permanent   | heap          | 2103 MB    | analysis/scripts/unique_package_deps.sql
- analysis           | unique_deps_yearly_latest_depended_on_only    | table       | pinckney | permanent   | heap          | 771 MB     | analysis/scripts/unique_package_deps.sql
- analysis           | valid_group_ranges                            | table       | pinckney | permanent   | heap          | 835 MB     | analysis/scripts/version_ordering_validation.sql
- analysis           | valid_non_betas_with_ordering                 | table       | pinckney | permanent   | heap          | 3231 MB    | analysis/scripts/version_ordering_validation.sql
- analysis           | valid_packages                                | table       | pinckney | permanent   | heap          | 71 MB      | analysis/scripts/version_ordering_validation.sql
- analysis           | vuln_intro_updates                            | table       | pinckney | permanent   | heap          | 72 kB      | analysis/scripts/vuln_intro_updates.sql
- analysis           | vuln_patch_updates                            | table       | pinckney | permanent   | heap          | 320 kB     | analysis/scripts/find_patches.sql
- analysis           | vulnerable_versions                           | table       | pinckney | permanent   | heap          | 9352 kB    | analysis/scripts/vulnerable_versions.sql
- analysis           | update_did_change_json_scripts                | table       | pinckney | permanent   | heap          | 7510 MB    | analysis/scripts/did_change_json_scripts.sql
- analysis           | update_dep_changes                            | table       | federico | permanent   | heap          | 826 MB     | rust_sql_analysis/src/bin/process_diff_all_updates.rs   inserts, but doesn't create
+ metadata_analysis  | all_overlaps                                  | table       | pinckney | permanent   | heap          | 4032 kB    | analysis/scripts/build_updates.sql
+ metadata_analysis  | all_updates                                   | table       | pinckney | permanent   | heap          | 4304 MB    | analysis/scripts/build_updates.sql
+ metadata_analysis  | constraint_types                              | table       | pinckney | permanent   | heap          | 376 MB     | analysis/scripts/constraint_types.sql
+ metadata_analysis  | malformed_packages                            | table       | pinckney | permanent   | heap          | 1888 kB    | analysis/scripts/version_ordering_validation.sql
+ metadata_analysis  | unique_deps_across_versions                   | table       | pinckney | permanent   | heap          | 3692 MB    | analysis/scripts/unique_package_deps.sql
+ metadata_analysis  | unique_deps_of_latest                         | table       | pinckney | permanent   | heap          | 1306 MB    | analysis/scripts/unique_package_deps.sql
+ metadata_analysis  | unique_deps_yearly_dep_on_vuln_pkg_only       | table       | pinckney | permanent   | heap          | 259 MB     | analysis/scripts/unique_package_deps.sql
+ metadata_analysis  | unique_deps_yearly_latest                     | table       | pinckney | permanent   | heap          | 2103 MB    | analysis/scripts/unique_package_deps.sql
+ metadata_analysis  | unique_deps_yearly_latest_depended_on_only    | table       | pinckney | permanent   | heap          | 771 MB     | analysis/scripts/unique_package_deps.sql
+ metadata_analysis  | valid_group_ranges                            | table       | pinckney | permanent   | heap          | 835 MB     | analysis/scripts/version_ordering_validation.sql
+ metadata_analysis  | valid_non_betas_with_ordering                 | table       | pinckney | permanent   | heap          | 3231 MB    | analysis/scripts/version_ordering_validation.sql
+ metadata_analysis  | valid_packages                                | table       | pinckney | permanent   | heap          | 71 MB      | analysis/scripts/version_ordering_validation.sql
+ metadata_analysis  | vuln_intro_updates                            | table       | pinckney | permanent   | heap          | 72 kB      | analysis/scripts/vuln_intro_updates.sql
+ metadata_analysis  | vuln_patch_updates                            | table       | pinckney | permanent   | heap          | 320 kB     | analysis/scripts/find_patches.sql
+ metadata_analysis  | vulnerable_versions                           | table       | pinckney | permanent   | heap          | 9352 kB    | analysis/scripts/vulnerable_versions.sql
+ metadata_analysis  | update_did_change_json_scripts                | table       | pinckney | permanent   | heap          | 7510 MB    | analysis/scripts/did_change_json_scripts.sql
+ metadata_analysis  | update_dep_changes                            | table       | federico | permanent   | heap          | 826 MB     | rust_sql_analysis/src/bin/process_diff_all_updates.rs   inserts, but doesn't create
 
 
 core system tables:
