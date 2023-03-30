@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS analysis.vuln_intro_updates;
+DROP TABLE IF EXISTS metadata_analysis.vuln_intro_updates;

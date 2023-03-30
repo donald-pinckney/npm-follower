@@ -1,57 +1,57 @@
-CREATE TABLE analysis.all_dep_counts AS with direct_runtime_dep_counts_exist as (
+CREATE TABLE metadata_analysis.all_dep_counts AS with direct_runtime_dep_counts_exist as (
   select pkg,
     count(*) as x,
     'num_direct_runtime_deps' as count_type
-  from analysis.possible_direct_runtime_deps
+  from metadata_analysis.possible_direct_runtime_deps
   group by pkg
 ),
 direct_runtime_rev_dep_counts_exist as (
   select depends_on_pkg as pkg,
     count(*) as x,
     'num_direct_runtime_rev_deps' as count_type
-  from analysis.possible_direct_runtime_deps
+  from metadata_analysis.possible_direct_runtime_deps
   group by depends_on_pkg
 ),
 direct_dev_dep_counts_exist as (
   select pkg,
     count(*) as x,
     'num_direct_dev_deps' as count_type
-  from analysis.possible_direct_dev_deps
+  from metadata_analysis.possible_direct_dev_deps
   group by pkg
 ),
 direct_dev_rev_dep_counts_exist as (
   select depends_on_pkg as pkg,
     count(*) as x,
     'num_direct_dev_rev_deps' as count_type
-  from analysis.possible_direct_dev_deps
+  from metadata_analysis.possible_direct_dev_deps
   group by depends_on_pkg
 ),
 install_dep_counts_exist as (
   select pkg,
     count(*) as x,
     'num_install_deps' as count_type
-  from analysis.possible_install_deps
+  from metadata_analysis.possible_install_deps
   group by pkg
 ),
 install_rev_dep_counts_exist as (
   select depends_on_pkg as pkg,
     count(*) as x,
     'num_install_rev_deps' as count_type
-  from analysis.possible_install_deps
+  from metadata_analysis.possible_install_deps
   group by depends_on_pkg
 ),
 transitive_runtime_dep_counts_exist as (
   select pkg,
     count(*) as x,
     'num_transitive_runtime_deps' as count_type
-  from analysis.possible_transitive_runtime_deps
+  from metadata_analysis.possible_transitive_runtime_deps
   group by pkg
 ),
 transitive_runtime_rev_dep_counts_exist as (
   select depends_on_pkg as pkg,
     count(*) as x,
     'num_transitive_runtime_rev_deps' as count_type
-  from analysis.possible_transitive_runtime_deps
+  from metadata_analysis.possible_transitive_runtime_deps
   group by depends_on_pkg
 ),
 direct_runtime_dep_counts as (
@@ -184,19 +184,19 @@ transitive_runtime_rev_dep_counts as (
 );
 
 
-GRANT SELECT ON analysis.all_dep_counts TO data_analyzer;
-GRANT ALL ON analysis.all_dep_counts TO pinckney;
-GRANT ALL ON analysis.all_dep_counts TO federico;
+GRANT SELECT ON metadata_analysis.all_dep_counts TO data_analyzer;
+GRANT ALL ON metadata_analysis.all_dep_counts TO pinckney;
+GRANT ALL ON metadata_analysis.all_dep_counts TO federico;
 
 
-ALTER TABLE analysis.all_dep_counts
+ALTER TABLE metadata_analysis.all_dep_counts
 ADD PRIMARY KEY (pkg, count_type);
 
-ANALYZE analysis.all_dep_counts;
+ANALYZE metadata_analysis.all_dep_counts;
 
 
 
-CREATE TABLE analysis.deps_stats AS WITH computed_stats_wide as (
+CREATE TABLE metadata_analysis.deps_stats AS WITH computed_stats_wide as (
   select count_type,
     avg(x),
     min(x),
@@ -208,7 +208,7 @@ CREATE TABLE analysis.deps_stats AS WITH computed_stats_wide as (
     percentile_cont(ARRAY [0.05, 0.25, 0.5, 0.75, 0.95]) within group(
       order by x
     ) as percentiles_5_25_50_75_95
-  from analysis.all_dep_counts
+  from metadata_analysis.all_dep_counts
   group by count_type
 ),
 computed_stats as (
@@ -268,7 +268,7 @@ nearest_example_values as (
     s.value,
     c.x as nearest_real_value
   from computed_stats s
-    inner join analysis.all_dep_counts c on s.count_type = c.count_type
+    inner join metadata_analysis.all_dep_counts c on s.count_type = c.count_type
     and s.statistic_name <> 'stddev_pop'
   order by s.count_type,
     s.statistic_name,
@@ -283,13 +283,13 @@ select distinct on (s.count_type, s.statistic_name) s.count_type,
 from computed_stats s
   left join nearest_example_values e on s.count_type = e.count_type
   and s.statistic_name = e.statistic_name
-  left join analysis.all_dep_counts c on c.count_type = s.count_type
+  left join metadata_analysis.all_dep_counts c on c.count_type = s.count_type
   and e.nearest_real_value = c.x
   left join packages p on c.pkg = p.id
 order by s.count_type,
   s.statistic_name;
 
 
-GRANT SELECT ON analysis.deps_stats TO data_analyzer;
-GRANT ALL ON analysis.deps_stats TO pinckney;
-GRANT ALL ON analysis.deps_stats TO federico;
+GRANT SELECT ON metadata_analysis.deps_stats TO data_analyzer;
+GRANT ALL ON metadata_analysis.deps_stats TO pinckney;
+GRANT ALL ON metadata_analysis.deps_stats TO federico;

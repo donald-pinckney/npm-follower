@@ -3,7 +3,7 @@ SELECT u.from_id AS from_id,
     u.to_id AS to_id,
     from_v.tarball_url AS from_url,
     to_v.tarball_url AS to_url
-FROM analysis.all_updates u
+FROM metadata_analysis.all_updates u
     INNER JOIN versions from_v ON u.from_id = from_v.id
     INNER JOIN versions to_v ON u.to_id = to_v.id;
 

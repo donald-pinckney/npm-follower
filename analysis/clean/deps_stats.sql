@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS analysis.deps_stats;
-DROP TABLE IF EXISTS analysis.all_dep_counts;
+DROP TABLE IF EXISTS metadata_analysis.deps_stats;
+DROP TABLE IF EXISTS metadata_analysis.all_dep_counts;

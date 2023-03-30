@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS analysis.possible_direct_dev_deps;
+DROP TABLE IF EXISTS metadata_analysis.possible_direct_dev_deps;

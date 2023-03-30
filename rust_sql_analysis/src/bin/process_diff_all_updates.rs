@@ -71,7 +71,7 @@ fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
                 from_created,
                 to_created,
                 ty
-            FROM analysis.all_updates{}
+            FROM metadata_analysis.all_updates{}
             ORDER BY from_id, to_id
             LIMIT {}",
             {
@@ -168,9 +168,9 @@ fn dep_update_changes(
         });
     }
 
-    // insert into analysis.update_dep_changes
+    // insert into metadata_analysis.update_dep_changes
     let query = r#"
-        INSERT INTO analysis.update_dep_changes (from_id, to_id, did_add_dep, did_remove_dep, did_change_dep_constraint)
+        INSERT INTO metadata_analysis.update_dep_changes (from_id, to_id, did_add_dep, did_remove_dep, did_change_dep_constraint)
         VALUES
     "#;
     let mut query = query.to_string();

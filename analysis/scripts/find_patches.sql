@@ -1,4 +1,4 @@
-CREATE TABLE analysis.vuln_patch_updates AS with valid_vulns as (
+CREATE TABLE metadata_analysis.vuln_patch_updates AS with valid_vulns as (
     select v.*,
         pkg.id as package_id
     from vulnerabilities v
@@ -16,13 +16,13 @@ vuln_patch_updates as (
         u.to_created,
         u.ty,
         v.ghsa_id as patched_ghsa
-    from analysis.all_updates u
+    from metadata_analysis.all_updates u
         inner join valid_vulns v on u.package_id = v.package_id
         and v.first_patched_version = u.to_semver
 )
 select *
 from vuln_patch_updates;
 
-GRANT SELECT ON analysis.vuln_patch_updates TO data_analyzer;
-GRANT ALL ON analysis.vuln_patch_updates TO pinckney;
-GRANT ALL ON analysis.vuln_patch_updates TO federico;
+GRANT SELECT ON metadata_analysis.vuln_patch_updates TO data_analyzer;
+GRANT ALL ON metadata_analysis.vuln_patch_updates TO pinckney;
+GRANT ALL ON metadata_analysis.vuln_patch_updates TO federico;

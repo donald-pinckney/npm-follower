@@ -2,13 +2,13 @@ CREATE TABLE solving_analysis.subsampled_packages AS
 
 WITH filtered_updates as (
   SELECT *
-  from analysis.all_updates
+  from metadata_analysis.all_updates
   where ty <> 'zero_to_something' and 
   (from_semver).prerelease is null and
   (to_semver).prerelease is null and
   (from_semver).build is null and
   (to_semver).build is null and
-  package_id IN (select pkg from analysis.possible_install_deps)
+  package_id IN (select pkg from metadata_analysis.possible_install_deps)
 ),
 ranked_updates as (
   SELECT *,

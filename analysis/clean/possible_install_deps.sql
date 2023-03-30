@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS analysis.possible_install_deps;
+DROP TABLE IF EXISTS metadata_analysis.possible_install_deps;

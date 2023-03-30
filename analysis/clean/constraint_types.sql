@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS analysis.constraint_types;
-DROP FUNCTION IF EXISTS analysis.check_constraint_type;
+DROP TABLE IF EXISTS metadata_analysis.constraint_types;
+DROP FUNCTION IF EXISTS metadata_analysis.check_constraint_type;

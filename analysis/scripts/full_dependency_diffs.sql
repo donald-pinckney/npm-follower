@@ -1,4 +1,4 @@
-CREATE TABLE analysis.full_dependency_diffs AS (
+CREATE TABLE metadata_analysis.full_dependency_diffs AS (
 
 with deps_long as (
   select v.id as v_id, 'prod' as dep_type, unnest(v.prod_dependencies) as dep_id from versions v
@@ -28,7 +28,7 @@ select
     from_v.dep_on_pkg as dep_on_pkg, 
     from_v.raw_spec as from_spec, 
     to_v.raw_spec as to_spec
-from analysis.all_updates u
+from metadata_analysis.all_updates u
 inner join deps_long_full_info from_v on u.from_id = from_v.v_id
 inner join deps_long_full_info to_v on u.to_id = to_v.v_id and to_v.dep_type = from_v.dep_type and to_v.dep_on_pkg = from_v.dep_on_pkg
 where from_v.raw_spec <> to_v.raw_spec
@@ -42,7 +42,7 @@ select
     from_v.dep_on_pkg as dep_on_pkg, 
     from_v.raw_spec as from_spec, 
     NULL as to_spec
-from analysis.all_updates u
+from metadata_analysis.all_updates u
 inner join deps_long_full_info from_v on u.from_id = from_v.v_id
 where ROW(u.to_id, from_v.dep_type, from_v.dep_on_pkg) NOT IN (select v_id, dep_type, dep_on_pkg from deps_long_full_info)
 
@@ -55,7 +55,7 @@ select
     to_v.dep_on_pkg as dep_on_pkg, 
     NULL as from_spec, 
     to_v.raw_spec as to_spec
-from analysis.all_updates u
+from metadata_analysis.all_updates u
 inner join deps_long_full_info to_v on u.to_id = to_v.v_id
 where ROW(u.from_id, to_v.dep_type, to_v.dep_on_pkg) NOT IN (select v_id, dep_type, dep_on_pkg from deps_long_full_info)
 

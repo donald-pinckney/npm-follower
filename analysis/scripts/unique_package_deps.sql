@@ -1,4 +1,4 @@
-CREATE TABLE analysis.unique_deps_across_versions AS
+CREATE TABLE metadata_analysis.unique_deps_across_versions AS
 
 with 
 distinct_deps as
@@ -37,22 +37,22 @@ distinct_deps as
 
 select package_id, dependency_id, pd.dep_type, (spec).dep_type || coalesce('-' || constraint_type, '') as composite_constraint_type
 from distinct_deps pd
-inner join analysis.constraint_types ct
+inner join metadata_analysis.constraint_types ct
 on pd.dep = ct.dependency_id
 inner join dependencies d
 on d.id = pd.dep;
 
 
-GRANT SELECT ON analysis.unique_deps_across_versions TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_across_versions TO pinckney;
-GRANT ALL ON analysis.unique_deps_across_versions TO federico;
+GRANT SELECT ON metadata_analysis.unique_deps_across_versions TO data_analyzer;
+GRANT ALL ON metadata_analysis.unique_deps_across_versions TO pinckney;
+GRANT ALL ON metadata_analysis.unique_deps_across_versions TO federico;
 
 
 
 
 
 
-CREATE TABLE analysis.unique_deps_of_latest AS
+CREATE TABLE metadata_analysis.unique_deps_of_latest AS
 
 with versions_to_use as (
     select v.* 
@@ -97,21 +97,21 @@ distinct_deps as
 
 select package_id, dependency_id, pd.dep_type, (spec).dep_type || coalesce('-' || constraint_type, '') as composite_constraint_type
 from distinct_deps pd
-inner join analysis.constraint_types ct
+inner join metadata_analysis.constraint_types ct
 on pd.dep = ct.dependency_id
 inner join dependencies d
 on d.id = pd.dep;
 
 
-GRANT SELECT ON analysis.unique_deps_of_latest TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_of_latest TO pinckney;
-GRANT ALL ON analysis.unique_deps_of_latest TO federico;
+GRANT SELECT ON metadata_analysis.unique_deps_of_latest TO data_analyzer;
+GRANT ALL ON metadata_analysis.unique_deps_of_latest TO pinckney;
+GRANT ALL ON metadata_analysis.unique_deps_of_latest TO federico;
 
 
 
 
 
-CREATE TABLE analysis.unique_deps_yearly_latest AS
+CREATE TABLE metadata_analysis.unique_deps_yearly_latest AS
 
 with ranked_vers as (
     select 
@@ -171,25 +171,25 @@ distinct_deps as
 
 select package_id, pd.year, dependency_id, pd.dep_type, (spec).dep_type || coalesce('-' || constraint_type, '') as composite_constraint_type
 from distinct_deps pd
-inner join analysis.constraint_types ct
+inner join metadata_analysis.constraint_types ct
 on pd.dep = ct.dependency_id
 inner join dependencies d
 on d.id = pd.dep;
 
 
-GRANT SELECT ON analysis.unique_deps_yearly_latest TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_yearly_latest TO pinckney;
-GRANT ALL ON analysis.unique_deps_yearly_latest TO federico;
+GRANT SELECT ON metadata_analysis.unique_deps_yearly_latest TO data_analyzer;
+GRANT ALL ON metadata_analysis.unique_deps_yearly_latest TO pinckney;
+GRANT ALL ON metadata_analysis.unique_deps_yearly_latest TO federico;
 
 
 
 
 
 
-CREATE TABLE analysis.unique_deps_yearly_latest_depended_on_only AS
+CREATE TABLE metadata_analysis.unique_deps_yearly_latest_depended_on_only AS
 
 with depdended_on_pkgs as (
-    select distinct depends_on_pkg from analysis.possible_install_deps
+    select distinct depends_on_pkg from metadata_analysis.possible_install_deps
 ),
 
 ranked_vers as (
@@ -249,15 +249,15 @@ distinct_deps as
 
 select package_id, pd.year, dependency_id, pd.dep_type, (spec).dep_type || coalesce('-' || constraint_type, '') as composite_constraint_type
 from distinct_deps pd
-inner join analysis.constraint_types ct
+inner join metadata_analysis.constraint_types ct
 on pd.dep = ct.dependency_id
 inner join dependencies d
 on d.id = pd.dep;
 
 
-GRANT SELECT ON analysis.unique_deps_yearly_latest_depended_on_only TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_yearly_latest_depended_on_only TO pinckney;
-GRANT ALL ON analysis.unique_deps_yearly_latest_depended_on_only TO federico;
+GRANT SELECT ON metadata_analysis.unique_deps_yearly_latest_depended_on_only TO data_analyzer;
+GRANT ALL ON metadata_analysis.unique_deps_yearly_latest_depended_on_only TO pinckney;
+GRANT ALL ON metadata_analysis.unique_deps_yearly_latest_depended_on_only TO federico;
 
 
 
@@ -266,7 +266,7 @@ GRANT ALL ON analysis.unique_deps_yearly_latest_depended_on_only TO federico;
 
 
 
-CREATE TABLE analysis.unique_deps_yearly_dep_on_vuln_pkg_only AS
+CREATE TABLE metadata_analysis.unique_deps_yearly_dep_on_vuln_pkg_only AS
 
 with pkgs_with_vulns as (
     select distinct p.id 
@@ -332,13 +332,13 @@ distinct_deps as
 
 select package_id, pd.year, dependency_id, pd.dep_type, (spec).dep_type || coalesce('-' || constraint_type, '') as composite_constraint_type
 from distinct_deps pd
-inner join analysis.constraint_types ct
+inner join metadata_analysis.constraint_types ct
 on pd.dep = ct.dependency_id
 inner join dependencies d
 on d.id = pd.dep and d.dst_package_id_if_exists IN (select * from pkgs_with_vulns);
 
 
-GRANT SELECT ON analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO data_analyzer;
-GRANT ALL ON analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO pinckney;
-GRANT ALL ON analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO federico;
+GRANT SELECT ON metadata_analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO data_analyzer;
+GRANT ALL ON metadata_analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO pinckney;
+GRANT ALL ON metadata_analysis.unique_deps_yearly_dep_on_vuln_pkg_only TO federico;
 

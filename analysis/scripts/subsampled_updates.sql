@@ -1,17 +1,17 @@
 CREATE TABLE solving_analysis.subsampled_updates AS WITH filtered_updates as (
   SELECT *
-  from analysis.all_updates
+  from metadata_analysis.all_updates
   where to_created < TIMESTAMP WITH TIME ZONE '2021-01-01 00:00:00+00'
     and ty <> 'zero_to_something'
     and ROW(from_id, to_id) NOT IN (
       SELECT from_id,
         to_id
-      FROM analysis.vuln_patch_updates
+      FROM metadata_analysis.vuln_patch_updates
     )
     and ROW(from_id, to_id) NOT IN (
       SELECT from_id,
         to_id
-      FROM analysis.vuln_intro_updates
+      FROM metadata_analysis.vuln_intro_updates
     )
 ),
 ranked_updates as (
@@ -46,11 +46,11 @@ SELECT DISTINCT package_id,
   ty,
   TRUE as patches_vuln,
   FALSE as introduced_vuln
-FROM analysis.vuln_patch_updates
+FROM metadata_analysis.vuln_patch_updates
 where ROW(from_id, to_id) NOT IN (
     SELECT from_id,
       to_id
-    FROM analysis.vuln_intro_updates
+    FROM metadata_analysis.vuln_intro_updates
   )
 UNION ALL
 SELECT DISTINCT package_id,
@@ -63,11 +63,11 @@ SELECT DISTINCT package_id,
   ty,
   FALSE as patches_vuln,
   TRUE as introduced_vuln
-FROM analysis.vuln_intro_updates
+FROM metadata_analysis.vuln_intro_updates
 where ROW(from_id, to_id) NOT IN (
     SELECT from_id,
       to_id
-    FROM analysis.vuln_patch_updates
+    FROM metadata_analysis.vuln_patch_updates
   )
 UNION ALL
 SELECT DISTINCT i.package_id,
@@ -80,8 +80,8 @@ SELECT DISTINCT i.package_id,
   i.ty,
   TRUE as patches_vuln,
   TRUE as introduced_vuln
-FROM analysis.vuln_intro_updates i
-  inner join analysis.vuln_patch_updates p on i.from_id = p.from_id
+FROM metadata_analysis.vuln_intro_updates i
+  inner join metadata_analysis.vuln_patch_updates p on i.from_id = p.from_id
   and i.to_id = p.to_id;
 
 ALTER TABLE solving_analysis.subsampled_updates

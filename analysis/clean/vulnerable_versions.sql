@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS analysis.vulnerable_versions;
+DROP TABLE IF EXISTS metadata_analysis.vulnerable_versions;

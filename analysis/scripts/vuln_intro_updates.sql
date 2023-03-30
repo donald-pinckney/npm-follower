@@ -1,4 +1,4 @@
-CREATE TABLE analysis.vuln_intro_updates AS with valid_vulns as (
+CREATE TABLE metadata_analysis.vuln_intro_updates AS with valid_vulns as (
     select v.*,
         pkg.id as package_id
     from vulnerabilities v
@@ -13,7 +13,7 @@ vuln_vers_ordering as (
             partition by vuln_id
             order by semver
         ) as smaller_vers_order
-    from analysis.vulnerable_versions
+    from metadata_analysis.vulnerable_versions
 )
 select u.package_id,
     u.from_id,
@@ -24,11 +24,11 @@ select u.package_id,
     u.to_created,
     u.ty,
     v.ghsa_id as introduced_ghsa
-from analysis.all_updates u
+from metadata_analysis.all_updates u
     inner join valid_vulns v on u.package_id = v.package_id
     inner join vuln_vers_ordering v_o ON v_o.vuln_id = v.id
     AND v_o.semver = u.to_semver
     AND v_o.smaller_vers_order = 1;
-GRANT SELECT ON analysis.vuln_intro_updates TO data_analyzer;
-GRANT ALL ON analysis.vuln_intro_updates TO pinckney;
-GRANT ALL ON analysis.vuln_intro_updates TO federico;
+GRANT SELECT ON metadata_analysis.vuln_intro_updates TO data_analyzer;
+GRANT ALL ON metadata_analysis.vuln_intro_updates TO pinckney;
+GRANT ALL ON metadata_analysis.vuln_intro_updates TO federico;

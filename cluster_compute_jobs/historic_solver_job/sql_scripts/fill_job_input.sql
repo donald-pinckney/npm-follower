@@ -11,7 +11,7 @@
 --     u.to_created AS update_to_time,
 --     dp.name AS downstream_package_name
 -- FROM solving_analysis.subsampled_updates u
---     INNER JOIN analysis.subsampled_possible_install_deps d ON u.package_id = d.depends_on_pkg
+--     INNER JOIN metadata_analysis.subsampled_possible_install_deps d ON u.package_id = d.depends_on_pkg
 --     INNER JOIN packages up ON up.id = u.package_id
 --     INNER JOIN packages dp ON dp.id = d.pkg;
 

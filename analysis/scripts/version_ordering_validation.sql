@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION analysis.base_compatible_semver(semver) RETURNS semver AS $$
+CREATE OR REPLACE FUNCTION metadata_analysis.base_compatible_semver(semver) RETURNS semver AS $$
 SELECT CASE
     WHEN ($1).prerelease IS NOT NULL
     OR ($1).build IS NOT NULL THEN NULL
@@ -20,10 +20,10 @@ CREATE TEMP TABLE non_betas_with_ordering AS WITH non_betas AS (
     --   OR package_id = 2717929
     -- )
 )
-SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
+SELECT metadata_analysis.base_compatible_semver(semver) AS group_base_semver,
   ROW_NUMBER() OVER(
     PARTITION BY package_id,
-    analysis.base_compatible_semver(semver)
+    metadata_analysis.base_compatible_semver(semver)
     ORDER BY created
   ) AS chron_order_within_group,
   ROW_NUMBER() OVER(
@@ -32,7 +32,7 @@ SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
   ) AS chron_order_global,
   ROW_NUMBER() OVER(
     PARTITION BY package_id,
-    analysis.base_compatible_semver(semver)
+    metadata_analysis.base_compatible_semver(semver)
     ORDER BY semver
   ) AS semver_order_within_group,
   ROW_NUMBER() OVER(
@@ -41,11 +41,11 @@ SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
   ) AS semver_order_global,
   DENSE_RANK() OVER(
     PARTITION BY package_id
-    ORDER BY analysis.base_compatible_semver(semver)
+    ORDER BY metadata_analysis.base_compatible_semver(semver)
   ) AS inter_group_order,
   ROW_NUMBER() OVER(
     PARTITION BY package_id,
-    analysis.base_compatible_semver(semver)
+    metadata_analysis.base_compatible_semver(semver)
     ORDER BY semver DESC
   ) AS rev_semver_order_within_group,
   id,
@@ -54,10 +54,10 @@ SELECT analysis.base_compatible_semver(semver) AS group_base_semver,
   created
 FROM non_betas;
 
-CREATE INDEX analysis_non_betas_with_ordering_idx_package_id ON non_betas_with_ordering (package_id);
-CREATE INDEX analysis_non_betas_with_ordering_idx_group_base_semver ON non_betas_with_ordering (group_base_semver);
-CREATE INDEX analysis_non_betas_with_ordering_idx_semver_order_within_group ON non_betas_with_ordering (semver_order_within_group);
-CREATE INDEX analysis_non_betas_with_ordering_idx_rev ON non_betas_with_ordering (rev_semver_order_within_group);
+CREATE INDEX metadata_analysis_non_betas_with_ordering_idx_package_id ON non_betas_with_ordering (package_id);
+CREATE INDEX metadata_analysis_non_betas_with_ordering_idx_group_base_semver ON non_betas_with_ordering (group_base_semver);
+CREATE INDEX metadata_analysis_non_betas_with_ordering_idx_semver_order_within_group ON non_betas_with_ordering (semver_order_within_group);
+CREATE INDEX metadata_analysis_non_betas_with_ordering_idx_rev ON non_betas_with_ordering (rev_semver_order_within_group);
 
 ANALYZE non_betas_with_ordering;
 
@@ -89,7 +89,7 @@ FROM non_betas_with_ordering group_start
 
 ANALYZE group_ranges;
 
-CREATE TABLE analysis.valid_packages AS WITH intra_group_correct_version_order_counts AS (
+CREATE TABLE metadata_analysis.valid_packages AS WITH intra_group_correct_version_order_counts AS (
   SELECT package_id,
     COUNT(*) AS correct_version_count
   FROM non_betas_with_ordering
@@ -112,28 +112,28 @@ FROM version_counts
 WHERE correct_version_count = version_count
   AND coalesce(group_trans_count, 0) + 1 = group_count;
 
-ANALYZE analysis.valid_packages;
+ANALYZE metadata_analysis.valid_packages;
 
-GRANT SELECT ON analysis.valid_packages TO data_analyzer;
-GRANT ALL ON analysis.valid_packages TO pinckney;
-GRANT ALL ON analysis.valid_packages TO federico;
+GRANT SELECT ON metadata_analysis.valid_packages TO data_analyzer;
+GRANT ALL ON metadata_analysis.valid_packages TO pinckney;
+GRANT ALL ON metadata_analysis.valid_packages TO federico;
 
 -- 2068382  
-CREATE TABLE analysis.malformed_packages AS
+CREATE TABLE metadata_analysis.malformed_packages AS
 SELECT package_id
 FROM version_counts
 WHERE package_id NOT IN (
     SELECT *
-    FROM analysis.valid_packages
+    FROM metadata_analysis.valid_packages
   );
 
-ANALYZE analysis.malformed_packages;
+ANALYZE metadata_analysis.malformed_packages;
 
-GRANT SELECT ON analysis.malformed_packages TO data_analyzer;
-GRANT ALL ON analysis.malformed_packages TO pinckney;
-GRANT ALL ON analysis.malformed_packages TO federico;
+GRANT SELECT ON metadata_analysis.malformed_packages TO data_analyzer;
+GRANT ALL ON metadata_analysis.malformed_packages TO pinckney;
+GRANT ALL ON metadata_analysis.malformed_packages TO federico;
 
-CREATE TABLE analysis.valid_non_betas_with_ordering AS
+CREATE TABLE metadata_analysis.valid_non_betas_with_ordering AS
 SELECT group_base_semver,
   inter_group_order,
   semver_order_within_group AS order_within_group,
@@ -146,28 +146,28 @@ SELECT group_base_semver,
 FROM non_betas_with_ordering
 WHERE package_id IN (
     SELECT *
-    FROM analysis.valid_packages
+    FROM metadata_analysis.valid_packages
   );
 
 
 -- We will probably want to add more indices here?
-ANALYZE analysis.valid_non_betas_with_ordering;
+ANALYZE metadata_analysis.valid_non_betas_with_ordering;
 
-GRANT SELECT ON analysis.valid_non_betas_with_ordering TO data_analyzer;
-GRANT ALL ON analysis.valid_non_betas_with_ordering TO pinckney;
-GRANT ALL ON analysis.valid_non_betas_with_ordering TO federico;
+GRANT SELECT ON metadata_analysis.valid_non_betas_with_ordering TO data_analyzer;
+GRANT ALL ON metadata_analysis.valid_non_betas_with_ordering TO pinckney;
+GRANT ALL ON metadata_analysis.valid_non_betas_with_ordering TO federico;
 
 
-CREATE TABLE analysis.valid_group_ranges AS
+CREATE TABLE metadata_analysis.valid_group_ranges AS
 SELECT *
 FROM group_ranges
 WHERE package_id IN (
     SELECT *
-    FROM analysis.valid_packages
+    FROM metadata_analysis.valid_packages
   );
 
-ANALYZE analysis.valid_group_ranges;
+ANALYZE metadata_analysis.valid_group_ranges;
 
-GRANT SELECT ON analysis.valid_group_ranges TO data_analyzer;
-GRANT ALL ON analysis.valid_group_ranges TO pinckney;
-GRANT ALL ON analysis.valid_group_ranges TO federico;
+GRANT SELECT ON metadata_analysis.valid_group_ranges TO data_analyzer;
+GRANT ALL ON metadata_analysis.valid_group_ranges TO pinckney;
+GRANT ALL ON metadata_analysis.valid_group_ranges TO federico;
