@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS analysis.subsampled_updates;
+DROP TABLE IF EXISTS solving_analysis.subsampled_updates;

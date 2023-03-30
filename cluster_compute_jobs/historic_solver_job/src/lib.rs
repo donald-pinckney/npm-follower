@@ -28,7 +28,7 @@ diesel::table! {
     use diesel::sql_types::*;
     use postgres_db::schema::sql_types::SemverStruct;
 
-    historic_solver_job_inputs (update_from_id, update_to_id, downstream_package_id) {
+    solving_analysis.historic_solver_job_inputs (update_from_id, update_to_id, downstream_package_id) {
         update_from_id -> Int8,
         update_to_id -> Int8,
         downstream_package_id -> Int8,
@@ -244,7 +244,7 @@ pub mod async_pool {
                 r#"
                 WITH cte AS MATERIALIZED (
                     SELECT update_from_id, update_to_id, downstream_package_id
-                    FROM   historic_solver_job_inputs
+                    FROM   solving_analysis.historic_solver_job_inputs
                     WHERE  job_state = 'none'
                     AND    update_from_id = 29256283 AND update_to_id = 29528818 AND downstream_package_id = 2465926
                     ORDER BY update_from_id, downstream_package_id
@@ -260,7 +260,7 @@ pub mod async_pool {
                  job.update_to_version,
                  job.update_to_time,
                  job.downstream_package_name
-                 FROM historic_solver_job_inputs job, cte
+                 FROM solving_analysis.historic_solver_job_inputs job, cte
                  WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id;
             "#
             )
@@ -273,13 +273,13 @@ pub mod async_pool {
             r#"
             WITH cte AS MATERIALIZED (
                 SELECT update_from_id, update_to_id, downstream_package_id
-                FROM   historic_solver_job_inputs
+                FROM   solving_analysis.historic_solver_job_inputs
                 WHERE  job_state = 'none'
                 ORDER BY update_from_id desc, downstream_package_id desc
                 LIMIT  $1
                 FOR    UPDATE SKIP LOCKED
                 )
-             UPDATE historic_solver_job_inputs job
+             UPDATE solving_analysis.historic_solver_job_inputs job
              SET    job_state = 'started', start_time = now(), work_node = $2
              FROM   cte
              WHERE  job.update_from_id = cte.update_from_id AND job.update_to_id = cte.update_to_id AND job.downstream_package_id = cte.downstream_package_id

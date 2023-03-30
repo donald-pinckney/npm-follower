@@ -1,4 +1,4 @@
-CREATE TABLE analysis.subsampled_updates AS WITH filtered_updates as (
+CREATE TABLE solving_analysis.subsampled_updates AS WITH filtered_updates as (
   SELECT *
   from analysis.all_updates
   where to_created < TIMESTAMP WITH TIME ZONE '2021-01-01 00:00:00+00'
@@ -84,11 +84,11 @@ FROM analysis.vuln_intro_updates i
   inner join analysis.vuln_patch_updates p on i.from_id = p.from_id
   and i.to_id = p.to_id;
 
-ALTER TABLE analysis.subsampled_updates
+ALTER TABLE solving_analysis.subsampled_updates
 ADD PRIMARY KEY (from_id, to_id);
 
-ANALYZE analysis.subsampled_updates;
+ANALYZE solving_analysis.subsampled_updates;
 
-GRANT SELECT ON analysis.subsampled_updates TO data_analyzer;
-GRANT ALL ON analysis.subsampled_updates TO pinckney;
-GRANT ALL ON analysis.subsampled_updates TO federico;
+GRANT SELECT ON solving_analysis.subsampled_updates TO data_analyzer;
+GRANT ALL ON solving_analysis.subsampled_updates TO pinckney;
+GRANT ALL ON solving_analysis.subsampled_updates TO federico;

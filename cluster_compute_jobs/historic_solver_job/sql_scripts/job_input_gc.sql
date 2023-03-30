@@ -1,4 +1,4 @@
-UPDATE historic_solver_job_inputs
+UPDATE solving_analysis.historic_solver_job_inputs
 SET job_state = 'done'
 WHERE job_state = 'started'
     AND ROW(

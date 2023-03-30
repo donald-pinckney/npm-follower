@@ -36,17 +36,19 @@ core system tables:
 
 
 experimental stuff:
- 
+
  public             | possibly_malware_versions                     | table       | federico | permanent   | heap          | 1232 kB    | rust_sql_analysis/src/bin/process_security_replaced.rs on federico's fork
  public             | security_replaced_versions                    | table       | federico | permanent   | heap          | 4912 kB    | analysis/scripts/generate_security_replaced_table.sql on federico's fork
 
 
 job inputs or state for tarball analysis:
- *deleted* public             | size_analysis_to_compute                      | table       | federico | permanent   | heap          | 4518 MB    | created ad hoc, used as input to make size_analysis_tarball
- *deleted* analysis           | diffs_to_compute                              | table       | pinckney | permanent   | heap          | 4093 MB    | analysis/scripts/prepare_diffs_to_compute.sql             temporary queue, gets deleted by cluster_compute_jobs/diff_analysis/src/main.rs
+
+ *deleted* public   | size_analysis_to_compute                      | table       | federico | permanent   | heap          | 4518 MB    | created ad hoc, used as input to make size_analysis_tarball
+ *deleted* analysis | diffs_to_compute                              | table       | pinckney | permanent   | heap          | 4093 MB    | analysis/scripts/prepare_diffs_to_compute.sql             temporary queue, gets deleted by cluster_compute_jobs/diff_analysis/src/main.rs
 
 
 transitive outputs of tarball analysis:
+
  tarball_analysis   | size_analysis_tarball                         | table       | federico | permanent   | heap          | 4045 MB    | cluster_compute_jobs/size_analysis/src/main.rs
  tarball_analysis   | what_did_updates_change                       | table       | pinckney | permanent   | heap          | 1204 MB    | analysis/scripts/what_did_updates_change.sql
  tarball_analysis   | diff_analysis                                 | table       | federico | permanent   | heap          | 16 GB      | postgres_db/src/diff_analysis.rs and cluster_compute_jobs/diff_analysis/src/main.rs
@@ -57,15 +59,17 @@ transitive outputs of tarball analysis:
 
 
 job inputs or state for solving experiments:
- analysis           | subsampled_packages                           | table       | pinckney | permanent   | heap          | 204 MB     | analysis/scripts/subsampled_packages.sql                  used as input to populate historic_solver_job_inputs when preparing uniform experiment 
- analysis           | subsampled_updates                            | table       | pinckney | permanent   | heap          | 250 MB     | analysis/scripts/subsampled_updates.sql                   used as input to populate historic_solver_job_inputs when preparing flow experiment
- public             | historic_solver_job_inputs                    | table       | pinckney | permanent   | heap          | 328 MB     | cluster_compute_jobs/historic_solver_job/sql_scripts/create_job_tables.sql
+
+ solving_analysis   | subsampled_packages                           | table       | pinckney | permanent   | heap          | 204 MB     | analysis/scripts/subsampled_packages.sql                  used as input to populate historic_solver_job_inputs when preparing uniform experiment 
+ solving_analysis   | subsampled_updates                            | table       | pinckney | permanent   | heap          | 250 MB     | analysis/scripts/subsampled_updates.sql                   used as input to populate historic_solver_job_inputs when preparing flow experiment
+ solving_analysis   | historic_solver_job_inputs                    | table       | pinckney | permanent   | heap          | 328 MB     | cluster_compute_jobs/historic_solver_job/sql_scripts/create_job_tables.sql
 
 
 transitive outputs of solving experiments:
- analysis           | flow_historic_solver_job_flow_info            | table       | pinckney | permanent   | heap          | 6553 MB    | analysis/scripts/flow_historic_solver_job_flow_info.sql   post-processing of flow_historic_solver_job_results
- public             | flow_historic_solver_job_results              | table       | postgres | permanent   | heap          | 29 GB      | cluster_compute_jobs/historic_solver_job/src/lib.rs creates historic_solver_job_results, which we manually renamed
- public             | uniform_historic_solver_job_results           | table       | pinckney | permanent   | heap          | 14 GB      | cluster_compute_jobs/historic_solver_job/src/lib.rs creates historic_solver_job_results, which we manually renamed
- public             | uniform_historic_solver_job_results_oldnesses | table       | pinckney | permanent   | heap          | 1011 MB    | /home/pinckney/npm-follower/rust_sql_analysis/src/bin/process_historic_solver.rs creates historic_solver_job_results_oldnesses, which we manually renamed
 
+ solving_analysis   | flow_historic_solver_job_flow_info            | table       | pinckney | permanent   | heap          | 6553 MB    | analysis/scripts/flow_historic_solver_job_flow_info.sql   post-processing of flow_historic_solver_job_results
+ solving_analysis   | flow_historic_solver_job_results              | table       | postgres | permanent   | heap          | 29 GB      | cluster_compute_jobs/historic_solver_job/src/lib.rs creates historic_solver_job_results, which we manually renamed
+ solving_analysis   | uniform_historic_solver_job_results           | table       | pinckney | permanent   | heap          | 14 GB      | cluster_compute_jobs/historic_solver_job/src/lib.rs creates historic_solver_job_results, which we manually renamed
+ solving_analysis   | uniform_historic_solver_job_results_oldnesses | table       | pinckney | permanent   | heap          | 1011 MB    | /home/pinckney/npm-follower/rust_sql_analysis/src/bin/process_historic_solver.rs creates historic_solver_job_results_oldnesses, which we manually renamed
+ *deleted* public   | historic_solver_job_results_oldnesses         | table       | pinckney | permanent   | heap          | ???        | /home/pinckney/npm-follower/analysis/scripts/setup_oldness.sql and /home/pinckney/npm-follower/rust_sql_analysis/src/bin/process_historic_solver.rs
 

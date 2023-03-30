@@ -1,4 +1,4 @@
-CREATE TABLE analysis.subsampled_packages AS 
+CREATE TABLE solving_analysis.subsampled_packages AS 
 
 WITH filtered_updates as (
   SELECT *
@@ -31,11 +31,11 @@ SELECT package_id,
 FROM ranked_updates
 WHERE date_rank = 1;
 
-ALTER TABLE analysis.subsampled_packages
+ALTER TABLE solving_analysis.subsampled_packages
 ADD PRIMARY KEY (from_id, to_id);
 
-ANALYZE analysis.subsampled_packages;
+ANALYZE solving_analysis.subsampled_packages;
 
-GRANT SELECT ON analysis.subsampled_packages TO data_analyzer;
-GRANT ALL ON analysis.subsampled_packages TO pinckney;
-GRANT ALL ON analysis.subsampled_packages TO federico;
+GRANT SELECT ON solving_analysis.subsampled_packages TO data_analyzer;
+GRANT ALL ON solving_analysis.subsampled_packages TO pinckney;
+GRANT ALL ON solving_analysis.subsampled_packages TO federico;
