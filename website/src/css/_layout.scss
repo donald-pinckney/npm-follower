@@ -1,0 +1,95 @@
+@use "theme" as *;
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: tdbc-color("background");
+  color: $tdbc-color-body;
+  font-family: $tdbc-font-family;
+}
+
+main,
+main.tdbc-container {
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+}
+
+footer {
+  margin-top: auto;
+}
+
+article {
+  max-width: 80ch;
+
+  >img {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.tdbc-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 120ch;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 1rem;
+}
+
+.tdbc-column-container {
+  display: grid;
+  grid-gap: 2em;
+  grid-template-columns: repeat(auto-fit, minmax(25ch, 1fr));
+}
+
+ul.tdbc-column-container {
+  padding-left: 0;
+}
+
+.tdbc-section {
+  width: 100%;
+
+  &--padded {
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+  }
+
+  *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.tdbc-hero {
+  display: grid;
+  min-height: 10vh;
+  place-content: center;
+  padding-top: 10vh;
+  padding-bottom: 5vh;
+  text-align: center;
+}
+
+.tdbc-row {
+  display: grid;
+  grid-gap: 1rem;
+
+  @media (min-width: 80ch) {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+  }
+
+  &--center-content {
+    justify-content: center;
+  }
+
+  &--center-alignitems {
+    align-items: center;
+  }
+}
+
+hr {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+  border: 1px solid tdbc-color("secondary");
+}

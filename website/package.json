@@ -1,0 +1,17 @@
+{
+  "name": "website",
+  "version": "0.1.0",
+  "main": "index.html",
+  "scripts": {
+    "start": "eleventy --serve",
+    "build": "eleventy"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.0",
+    "@11ty/eleventy-plugin-rss": "^1.2.0",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^4.2.0",
+    "markdown-it": "^13.0.1",
+    "markdown-it-anchor": "^8.6.7",
+    "@11tyrocks/eleventy-plugin-sass-lightningcss": "^1.0.1"
+  }
+}
