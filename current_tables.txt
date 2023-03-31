@@ -1,3 +1,19 @@
+core system tables:
+
+ public             | __diesel_schema_migrations                    | table       | postgres | permanent   | heap          | 8192 bytes | core system
+ public             | change_log                                    | table       | pinckney | permanent   | heap          | 44 GB      | core system
+ public             | dependencies                                  | table       | postgres | permanent   | heap          | 6792 MB    | core system
+ public             | diff_log                                      | table       | postgres | permanent   | heap          | 149 GB     | core system
+ public             | download_tasks                                | table       | postgres | permanent   | heap          | 224 MB     | core system
+ public             | downloaded_tarballs                           | table       | postgres | permanent   | heap          | 42 GB      | core system
+ public             | ghsa                                          | table       | pinckney | permanent   | heap          | 2744 kB    | core system
+ public             | internal_diff_log_state                       | table       | postgres | permanent   | heap          | 4253 MB    | core system
+ public             | internal_state                                | table       | postgres | permanent   | heap          | 56 kB      | core system
+ public             | packages                                      | table       | postgres | permanent   | heap          | 1059 MB    | core system
+ public             | versions                                      | table       | postgres | permanent   | heap          | 63 GB      | core system
+ public             | vulnerabilities                               | table       | pinckney | permanent   | heap          | 568 kB     | core system
+
+
 pure metadata analysis tables:
 
  metadata_analysis  | all_overlaps                                  | table       | pinckney | permanent   | heap          | 4032 kB    | analysis/scripts/build_updates.sql
@@ -17,22 +33,6 @@ pure metadata analysis tables:
  metadata_analysis  | vulnerable_versions                           | table       | pinckney | permanent   | heap          | 9352 kB    | analysis/scripts/vulnerable_versions.sql
  metadata_analysis  | update_did_change_json_scripts                | table       | pinckney | permanent   | heap          | 7510 MB    | analysis/scripts/did_change_json_scripts.sql
  metadata_analysis  | update_dep_changes                            | table       | federico | permanent   | heap          | 826 MB     | rust_sql_analysis/src/bin/process_diff_all_updates.rs   inserts, but doesn't create
-
-
-core system tables:
-
- public             | __diesel_schema_migrations                    | table       | postgres | permanent   | heap          | 8192 bytes | core system
- public             | change_log                                    | table       | pinckney | permanent   | heap          | 44 GB      | core system
- public             | dependencies                                  | table       | postgres | permanent   | heap          | 6792 MB    | core system
- public             | diff_log                                      | table       | postgres | permanent   | heap          | 149 GB     | core system
- public             | download_tasks                                | table       | postgres | permanent   | heap          | 224 MB     | core system
- public             | downloaded_tarballs                           | table       | postgres | permanent   | heap          | 42 GB      | core system
- public             | ghsa                                          | table       | pinckney | permanent   | heap          | 2744 kB    | core system
- public             | internal_diff_log_state                       | table       | postgres | permanent   | heap          | 4253 MB    | core system
- public             | internal_state                                | table       | postgres | permanent   | heap          | 56 kB      | core system
- public             | packages                                      | table       | postgres | permanent   | heap          | 1059 MB    | core system
- public             | versions                                      | table       | postgres | permanent   | heap          | 63 GB      | core system
- public             | vulnerabilities                               | table       | pinckney | permanent   | heap          | 568 kB     | core system
 
 
 experimental stuff:
