@@ -26,7 +26,6 @@ jobs:
       - name: Build with 11ty
         run: npm install && npm run build
         working-directory: ./website
-        uses: actions/jekyll-build-pages@v1
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
