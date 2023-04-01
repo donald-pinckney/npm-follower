@@ -23,11 +23,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
-      - name: Build with Jekyll
+      - name: Build with 11ty
+        run: npm install && npm run build
+        working-directory: ./website
         uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./website/
-          destination: ./website/_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
