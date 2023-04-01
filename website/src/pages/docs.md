@@ -6,8 +6,8 @@ sortOrder: 2
 
 ### Importing the NPM Package Metadata
 
-TODO
+&#128679; &#128679; &#128679; Under construction &#128679; &#128679; &#128679; 
 
 ### Database Schema
 
-TODO
+&#128679; &#128679; &#128679; Under construction &#128679; &#128679; &#128679; 
