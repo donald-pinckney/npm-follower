@@ -142,3 +142,7 @@ cargo run --release --bin download_queuer
 
 After all present-day tarballs have been inserted into the `download_tasks` table, there should be around ~25 million rows (~28 GB).
 
+
+# The website for the datasets (dependencies.science)
+
+The repo for dependencies.science is separate, please see [this repo](https://github.com/donald-pinckney/dependencies.science)
