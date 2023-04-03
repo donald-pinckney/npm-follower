@@ -7,19 +7,25 @@ then
     exit 1
 fi
 
+tmp_backup_dir=/var/lib/postgresql/exports-npm-follower/metadata_external-tmp
 local_backup_dir=/var/lib/postgresql/exports-npm-follower/metadata_external
 cur_time=$(date -u --iso-8601=seconds)
 
-echo "Starting export of external metadata to: $local_backup_dir/$cur_time/"
-
+echo "Starting export of external metadata to: $tmp_backup_dir/$cur_time/"
 table_params=('-t' '__diesel_schema_migrations' '-t' 'dependencies' '-t' 'downloaded_tarballs' '-t' 'ghsa' '-t' 'packages' '-t' 'versions' '-t' 'vulnerabilities')
+pg_dump -j 2 -F d -f $tmp_backup_dir/$cur_time/ "${table_params[@]}" --no-acl npm_data
 
+echo "Creating tar file of dump"
+tar cvf "$tmp_backup_dir/$cur_time.tar" "$tmp_backup_dir/$cur_time/"
+chmod g-w "$tmp_backup_dir/$cur_time.tar"
 
-pg_dump -j 2 -F d -f $local_backup_dir/$cur_time/ "${table_params[@]}" --no-acl npm_data
+echo "Cleaning up dump dir"
+rm -rf "$tmp_backup_dir/$cur_time/"
 
-tar cvf "$local_backup_dir/$cur_time.tar" "$local_backup_dir/$cur_time/"
-rm -rf "$local_backup_dir/$cur_time/"
-chmod g-w "$local_backup_dir/$cur_time.tar"
+echo "Moving tar file to final location"
+mv "$tmp_backup_dir/$cur_time.tar" "$local_backup_dir/$cur_time.tar"
+
+echo "Creating symlink to latest backup"
 ln -sf "$cur_time.tar" "$local_backup_dir/latest.tar"
 
 
