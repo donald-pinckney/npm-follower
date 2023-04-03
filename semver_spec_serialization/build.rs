@@ -10,7 +10,7 @@ fn npm_install() {
 
     let output = Command::new("npm")
         .current_dir("js_parser")
-        .arg("install")
+        .arg("ci")
         .output()
         .expect("failed to execute npm subprocess");
     if !output.status.success() {
