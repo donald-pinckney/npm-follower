@@ -52,6 +52,8 @@ struct Update {
 }
 
 fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
+    create_dst_table(&mut conn).unwrap();
+
     let mut last = None;
     let mut num_processed = 0;
 
@@ -109,6 +111,21 @@ fn process_diff_all_updates(mut conn: DbConnection, chunk_size: i64) {
 
         println!("Wrote {} rows in {:?}!", len_table, time.elapsed());
     }
+}
+
+fn create_dst_table(conn: &mut DbConnection) -> Result<(), diesel::result::Error> {
+    let create_table_query = r#"
+        CREATE TABLE metadata_analysis.update_dep_changes (
+            from_id BIGINT NOT NULL,
+            to_id BIGINT NOT NULL,
+            did_add_dep BOOLEAN NOT NULL,
+            did_remove_dep BOOLEAN NOT NULL,
+            did_change_dep_constraint BOOLEAN NOT NULL,
+            PRIMARY KEY (from_id, to_id)
+        )
+    "#;
+    conn.execute(diesel::sql_query(create_table_query))?;
+    Ok(())
 }
 
 fn dep_update_changes(
