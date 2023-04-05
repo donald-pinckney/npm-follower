@@ -1,0 +1,6 @@
+[submodule "lru-rs"]
+	path = lru-rs
+	url = https://github.com/donald-pinckney/lru-rs
+[submodule "deepsize"]
+	path = deepsize
+	url = https://github.com/donald-pinckney/deepsize
