@@ -5,7 +5,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 echo "Building database_exporting binary..."
 pushd $SCRIPT_DIR
-cargo install --path . --root . --force
+~/.cargo/bin/cargo install --path . --root . --force
 rm .crates.toml
 rm .crates2.json
 popd

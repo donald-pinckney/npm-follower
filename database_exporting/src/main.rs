@@ -61,8 +61,9 @@ fn main() -> io::Result<()> {
     cmd.arg("--no-acl").arg("npm_data");
 
     println!(
-        "Current time: {}",
-        now.format(&iso8601::Iso8601::DEFAULT).unwrap()
+        "Current time: {} ({})",
+        now.format(&iso8601::Iso8601::DEFAULT).unwrap(),
+        now_str
     );
     println!(
         "Starting export of external metadata to: {}",

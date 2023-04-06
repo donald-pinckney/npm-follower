@@ -1,1 +1,1 @@
-0 0 * * 0 cd ~/npm-follower && ./database_exporting/export_metadata_external.sh
+0 0 * * 0 cd ~/npm-follower && ./database_exporting/cron-main.sh
