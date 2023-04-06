@@ -1,8 +1,15 @@
 #!/bin/bash
 set -e
 
-echo "Starting export of external metadata."
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-tmux new-session -d -s export_metadata_external_session "sudo su -c \"bash $SCRIPT_DIR/_impl_export_metadata_external.sh\" postgres"
-# sudo su -c "bash $SCRIPT_DIR/_impl_export_metadata_external.sh" postgres
+
+echo "Building database_exporting binary..."
+pushd $SCRIPT_DIR
+cargo install --path . --root . --force
+rm .crates.toml
+rm .crates2.json
+popd
+
+echo "Starting export of external metadata."
+# tmux new-session -d -s export_metadata_external_session "sudo su -c \"$SCRIPT_DIR/bin/database_exporting\" postgres"
+sudo su -c "$SCRIPT_DIR/bin/database_exporting" postgres

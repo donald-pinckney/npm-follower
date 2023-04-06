@@ -6,3 +6,4 @@ scratch/
 /scratch_data/
 .secret.env
 diff_log_builder/logs
+database_exporting/bin
