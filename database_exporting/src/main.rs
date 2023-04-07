@@ -43,21 +43,24 @@ fn main() -> io::Result<()> {
     let local_backup_tar = local_backup_base.join(format!("{}.tar", now_str));
     let local_backup_latest = local_backup_base.join("latest.tar");
 
-    let table_params = vec![
-        "__diesel_schema_migrations",
-        "dependencies",
-        "downloaded_tarballs",
-        "ghsa",
-        "packages",
-        "versions",
-        "vulnerabilities",
+    let exclude_table_params = vec![
+        "change_log",
+        "diff_log",
+        "download_tasks",
+        "internal_diff_log_state",
+        "internal_state",
+        "possibly_malware_versions",
+        "security_replaced_versions",
     ];
+
     let mut cmd = Command::new("pg_dump");
     cmd.args(["-j", "2", "-F", "d", "-f"]).arg(&tmp_backup_dir);
 
-    for param in table_params {
-        cmd.arg("-t").arg(param);
+    cmd.arg("--schema=public");
+    for param in exclude_table_params {
+        cmd.arg("-T").arg(param);
     }
+
     cmd.arg("--no-acl").arg("npm_data");
 
     println!(
