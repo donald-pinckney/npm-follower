@@ -72,6 +72,7 @@ fn main() -> io::Result<()> {
         "Starting export of external metadata to: {}",
         tmp_backup_dir.display()
     );
+    println!("+ {:?}", cmd);
     cmd.spawn()?.wait()?;
 
     println!("Creating tar file of dump");
