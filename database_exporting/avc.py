@@ -73,25 +73,30 @@ class DirectAddOperation(VirtualAddOperation):
 
 
 class Avc(object):
-    def __init__(self, initialize: bool):
+    def __init__(self, data_dir: Optional[str], initialize: bool):
         # Find top level directory of git repository at cwd
 
         try:
             toplevel = subprocess.run(["git", "rev-parse", "--show-toplevel"],
                                       check=True, capture_output=True).stdout
-            self.toplevel = toplevel.decode("utf-8").strip()
+            self.repo_toplevel = toplevel.decode("utf-8").strip()
         except subprocess.CalledProcessError:
             print("Not in a git repository")
             raise
 
-        self.avc_dir = os.path.join(self.toplevel, ".avc")
+        self.avc_dir = os.path.join(self.repo_toplevel, ".avc")
         self.global_db_path = os.path.join(self.avc_dir, "global_state.db")
         self.local_db_path = os.path.join(self.avc_dir, "local_state.db")
         self.blobs_dir = os.path.join(self.avc_dir, "blobs")
         self.git_operations_path = os.path.join(
             self.avc_dir, "git_operations.json")
+        self.config_path = os.path.join(self.avc_dir, "config.json")
 
         if initialize:
+            self.data_toplevel = data_dir
+            assert self.data_toplevel is not None
+            assert os.path.exists(self.data_toplevel)
+
             if os.path.exists(self.avc_dir):
                 print(f"{self.avc_dir} directory already exists")
                 raise Exception("Directory already exists")
@@ -104,8 +109,11 @@ class Avc(object):
             self.global_db_conn.row_factory = sqlite3.Row
             self.local_db_conn.row_factory = sqlite3.Row
 
+            with open(self.config_path, "w") as f:
+                json.dump({"data_toplevel": self.data_toplevel}, f)
+
             try:
-                with open(os.path.join(self.toplevel, ".gitignore"), "r") as f:
+                with open(os.path.join(self.repo_toplevel, ".gitignore"), "r") as f:
                     lines = f.readlines()
                     not_ignored = "/.avc/local_state.db" not in lines
             except FileNotFoundError:
@@ -114,7 +122,7 @@ class Avc(object):
             if not_ignored:
                 print("Adding /.avc/local_state.db to .gitignore")
                 print("Adding /.avc/git_operations.json to .gitignore")
-                with open(os.path.join(self.toplevel, ".gitignore"), "a") as f:
+                with open(os.path.join(self.repo_toplevel, ".gitignore"), "a") as f:
                     f.write("/.avc/local_state.db\n")
                     f.write("/.avc/git_operations.json\n")
 
@@ -138,6 +146,10 @@ class Avc(object):
             self.local_db_conn = sqlite3.connect(self.local_db_path)
             self.global_db_conn.row_factory = sqlite3.Row
             self.local_db_conn.row_factory = sqlite3.Row
+
+            with open(self.config_path, "r") as f:
+                config = json.load(f)
+                self.data_toplevel = config["data_toplevel"]
 
     def initialize_db(self):
         self.global_db_conn.executescript("""
@@ -225,7 +237,8 @@ class Avc(object):
             print("Cannot add files while HEAD is not equal to main")
             raise Exception("HEAD is not equal to main")
 
-        repo_file_path = os.path.relpath(local_file_path, self.toplevel)
+        remote_repo_file_path = os.path.relpath(
+            local_file_path, self.data_toplevel)
 
         local_file_path = os.path.abspath(local_file_path)
 
@@ -244,9 +257,9 @@ class Avc(object):
         local_cur = self.local_db_conn.cursor()
 
         committed_num_bytes: Optional[int] = self.get_committed_file_size(
-            repo_file_path)
+            remote_repo_file_path)
         staged_row: Optional[Tuple[str, int, int]] = local_cur.execute(
-            "SELECT type, start_offset, num_bytes FROM staged_changes WHERE path = ?", (repo_file_path,)).fetchone()
+            "SELECT type, start_offset, num_bytes FROM staged_changes WHERE path = ?", (remote_repo_file_path,)).fetchone()
 
         if committed_num_bytes is None:
             # Then we are creating this file
@@ -258,12 +271,12 @@ class Avc(object):
                     UPDATE staged_changes
                     SET num_bytes = ?
                     WHERE path = ?
-                """, (new_num_bytes, repo_file_path))
+                """, (new_num_bytes, remote_repo_file_path))
             else:
                 local_cur.execute("""
                     INSERT INTO staged_changes (path, type, start_offset, num_bytes, backing_path, backing_offset)
                     VALUES (?, "create", 0, ?, ?, 0)
-                """, (repo_file_path, num_bytes, local_file_path))
+                """, (remote_repo_file_path, num_bytes, local_file_path))
         else:
             if num_bytes <= committed_num_bytes:
                 print(
@@ -278,12 +291,12 @@ class Avc(object):
                     UPDATE staged_changes
                     SET num_bytes = ?
                     WHERE path = ?
-                """, (new_num_bytes, repo_file_path))
+                """, (new_num_bytes, remote_repo_file_path))
             else:
                 local_cur.execute("""
                     INSERT INTO staged_changes (path, type, start_offset, num_bytes, backing_path, backing_offset)
                     VALUES (?, "append", ?, ?, ?, ?)
-                """, (repo_file_path, committed_num_bytes, num_bytes - committed_num_bytes, local_file_path, committed_num_bytes))
+                """, (remote_repo_file_path, committed_num_bytes, num_bytes - committed_num_bytes, local_file_path, committed_num_bytes))
 
         self.local_db_conn.commit()
 
@@ -461,32 +474,32 @@ class Avc(object):
             self.global_db_conn.close()
 
 
-def main_init():
-    Avc(initialize=True)
+def main_init(data_dir: str):
+    Avc(data_dir=data_dir, initialize=True)
 
 
 def main_status():
-    avc = Avc(initialize=False)
+    avc = Avc(data_dir=None, initialize=False)
     avc.status()
 
 
 def main_add(path: str, num_bytes: Optional[int] = None):
-    avc = Avc(initialize=False)
+    avc = Avc(data_dir=None, initialize=False)
     avc.add(path, num_bytes)
 
 
 def main_reset_staged():
-    avc = Avc(initialize=False)
+    avc = Avc(data_dir=None, initialize=False)
     avc.reset_staged()
 
 
 def main_abort_last_commit():
-    avc = Avc(initialize=False)
+    avc = Avc(data_dir=None, initialize=False)
     avc.abort_last_commit()
 
 
 def main_build_git_commit(dry_run: bool):
-    avc = Avc(initialize=False)
+    avc = Avc(data_dir=None, initialize=False)
     avc.build_git_commit(dry_run)
     print("You now MUST push the operations in the followeing file to the remote:")
     print(avc.git_operations_path)
@@ -502,7 +515,8 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="subcommand")
     subparsers.required = True
-    subparsers.add_parser("init")
+    init_parser = subparsers.add_parser("init")
+    init_parser.add_argument("data-dir")
     subparsers.add_parser("status")
     add_parser = subparsers.add_parser("add")
     add_parser.add_argument("path")
@@ -514,7 +528,7 @@ def main():
     subparsers.add_parser("abort-last-commit")
     args = parser.parse_args()
     if args.subcommand == "init":
-        main_init()
+        main_init(args.data_dir)
     elif args.subcommand == "status":
         main_status()
     elif args.subcommand == "add":
