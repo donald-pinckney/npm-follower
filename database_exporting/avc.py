@@ -93,8 +93,8 @@ class Avc(object):
         self.config_path = os.path.join(self.avc_dir, "config.json")
 
         if initialize:
+            assert data_dir is not None
             self.data_toplevel = data_dir
-            assert self.data_toplevel is not None
             assert os.path.exists(self.data_toplevel)
 
             if os.path.exists(self.avc_dir):
@@ -149,7 +149,7 @@ class Avc(object):
 
             with open(self.config_path, "r") as f:
                 config = json.load(f)
-                self.data_toplevel = config["data_toplevel"]
+                self.data_toplevel: str = config["data_toplevel"]
 
     def initialize_db(self):
         self.global_db_conn.executescript("""
@@ -237,10 +237,13 @@ class Avc(object):
             print("Cannot add files while HEAD is not equal to main")
             raise Exception("HEAD is not equal to main")
 
-        remote_repo_file_path = os.path.relpath(
-            local_file_path, self.data_toplevel)
+        if os.path.isabs(local_file_path):
+            print(f"{local_file_path} is an absolute path, but it must be a path relative to the data toplevel ({self.data_toplevel})")
+            raise Exception("Absolute path")
 
-        local_file_path = os.path.abspath(local_file_path)
+        remote_repo_file_path = local_file_path
+        local_file_path = os.path.normpath(
+            os.path.join(self.data_toplevel, local_file_path))
 
         s = os.stat(local_file_path)
         if not stat.S_ISREG(s.st_mode):
