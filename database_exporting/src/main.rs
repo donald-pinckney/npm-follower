@@ -1,4 +1,5 @@
 use std::{
+    ffi::OsStr,
     fs, io,
     path::{Path, PathBuf},
     process::Command,
@@ -17,6 +18,15 @@ const FORMATTER: iso8601::Iso8601<
     },
 > = iso8601::Iso8601;
 
+fn load_hf_token() -> String {
+    let mut tokens_path = std::env::current_dir().unwrap();
+    tokens_path.pop();
+    tokens_path.push(".secret.env");
+    dotenvy::from_filename(".secret.env").expect("failed to load .secret.env.");
+    let hf_token = std::env::var("HF_TOKEN").expect("HF_TOKEN env var not set");
+    hf_token
+}
+
 fn main() -> io::Result<()> {
     let user = get_user_by_uid(get_current_uid()).unwrap();
     if user.name().to_string_lossy() != "postgres" {
@@ -25,6 +35,8 @@ fn main() -> io::Result<()> {
             "This program must be run as the postgres user",
         ));
     }
+
+    let hf_token = load_hf_token();
 
     let tmp_backup_base: PathBuf =
         "/var/lib/postgresql/exports-npm-follower/metadata_external-tmp".into();
@@ -51,6 +63,12 @@ fn main() -> io::Result<()> {
         "internal_state",
         "possibly_malware_versions",
         "security_replaced_versions",
+        // "packages",
+        // "versions",
+        // "dependencies",
+        // "ghsa",
+        // "vulnerabilities",
+        // "downloaded_tarballs",
     ];
 
     let mut cmd = Command::new("pg_dump");
@@ -74,6 +92,17 @@ fn main() -> io::Result<()> {
     );
     println!("+ {:?}", cmd);
     cmd.spawn()?.wait()?;
+
+    println!("Exporting redis data");
+    let mut export_script_path = std::env::current_dir()?;
+    export_script_path.pop();
+    export_script_path.push("blob_idx_server");
+    export_script_path.push("export_redis.sh");
+    assert!(Command::new("sudo")
+        .arg(export_script_path)
+        .current_dir(&tmp_backup_dir)
+        .status()?
+        .success());
 
     println!("Creating tar file of dump");
     Command::new("tar")
@@ -128,6 +157,27 @@ fn main() -> io::Result<()> {
         .arg(&local_backup_latest)
         .spawn()?
         .wait()?;
+
+    println!("Uploading to huggingface.co");
+
+    let mut upload_script_path = std::env::current_dir()?;
+    upload_script_path.push("hf_upload.py");
+    let repo_path_dated = Path::new("db_dumps").join(local_backup_tar.file_name().unwrap());
+    let repo_path_latest = Path::new("db_dumps").join(local_backup_latest.file_name().unwrap());
+
+    const REPO_NAME: &str = "donald-pinckney/npm-follower-data";
+    assert!(Command::new("python3")
+        .args([
+            upload_script_path.as_os_str(),
+            OsStr::new(&hf_token),
+            OsStr::new(REPO_NAME),
+            local_backup_tar.as_os_str(),
+            repo_path_dated.as_os_str(),
+            local_backup_latest.as_os_str(),
+            repo_path_latest.as_os_str(),
+        ])
+        .status()?
+        .success());
 
     Ok(())
 }

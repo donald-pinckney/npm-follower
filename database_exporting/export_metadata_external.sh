@@ -12,4 +12,6 @@ popd
 
 echo "Starting export of external metadata."
 # tmux new-session -d -s export_metadata_external_session "sudo su -c \"$SCRIPT_DIR/bin/database_exporting\" postgres"
+
+cd $SCRIPT_DIR
 sudo su -c "$SCRIPT_DIR/bin/database_exporting" postgres
