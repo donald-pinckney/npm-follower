@@ -2,7 +2,7 @@
 
 # change these to be your own users
 FOLLOWER_USER="federico"
-CARGO_PATH="$PATH:/home/$FOLLOWER_USER/.cargo/bin/cargo"
+CARGO_PATH="/home/$FOLLOWER_USER/.cargo/bin/cargo"
 
 # change to increase/decrease number of workers
 NUM_XFER_WORKERS=2
