@@ -516,7 +516,7 @@ def main():
     subparsers = parser.add_subparsers(dest="subcommand")
     subparsers.required = True
     init_parser = subparsers.add_parser("init")
-    init_parser.add_argument("data-dir")
+    init_parser.add_argument("--data-dir")
     subparsers.add_parser("status")
     add_parser = subparsers.add_parser("add")
     add_parser.add_argument("path")
@@ -528,7 +528,7 @@ def main():
     subparsers.add_parser("abort-last-commit")
     args = parser.parse_args()
     if args.subcommand == "init":
-        main_init(args.data_dir)
+        main_init(args.data_dir if args.data_dir else ".")
     elif args.subcommand == "status":
         main_status()
     elif args.subcommand == "add":
