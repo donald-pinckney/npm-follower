@@ -51,6 +51,12 @@ fn main() -> io::Result<()> {
         "internal_state",
         "possibly_malware_versions",
         "security_replaced_versions",
+        // "packages",
+        // "versions",
+        // "dependencies",
+        // "ghsa",
+        // "vulnerabilities",
+        // "downloaded_tarballs",
     ];
 
     let mut cmd = Command::new("pg_dump");
@@ -74,6 +80,17 @@ fn main() -> io::Result<()> {
     );
     println!("+ {:?}", cmd);
     cmd.spawn()?.wait()?;
+
+    println!("Exporting redis data");
+    let mut export_script_path = std::env::current_dir()?;
+    export_script_path.pop();
+    export_script_path.push("blob_idx_server");
+    export_script_path.push("export_redis.sh");
+    assert!(Command::new("sudo")
+        .arg(export_script_path)
+        .current_dir(&tmp_backup_dir)
+        .status()?
+        .success());
 
     println!("Creating tar file of dump");
     Command::new("tar")
