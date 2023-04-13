@@ -1,0 +1,12 @@
+[Unit]
+Description=Service for the npm-follower that schedules jobs on the cluster and manages blob filesystem
+
+[Service]
+Type=simple
+StandardOutput=journal
+StandardError=journal
+
+ExecStart=/home/federico/npm-follower/services/job_scheduler_start.sh
+
+[Install]
+WantedBy=default.target

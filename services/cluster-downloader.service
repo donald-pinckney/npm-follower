@@ -1,0 +1,12 @@
+[Unit]
+Description=Service for the npm-follower downloader running in cluster mode
+
+[Service]
+Type=simple
+StandardOutput=journal
+StandardError=journal
+
+ExecStart=/home/federico/npm-follower/services/cluster_downloader_start.sh
+
+[Install]
+WantedBy=default.target
