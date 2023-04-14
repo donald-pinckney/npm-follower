@@ -5,7 +5,6 @@ import sys
 import io
 import os
 import bisect
-import cfut
 from tqdm.contrib.concurrent import process_map  # or thread_map
 # from multiprocessing import Pool
 from huggingface_hub import HfApi, CommitOperationAdd, CommitOperationDelete
@@ -147,12 +146,8 @@ class SlicedFileReader(io.BufferedIOBase):
             self.cumulative_lengths.append(
                 self.cumulative_lengths[-1] + source.num_bytes)
 
-        self.f = None
-        self.f_offset_lazy = 0
-        self.now_closed = False
-
-        # self.f = open(sources[self.current_source].local_path, "rb")
-        # self.f.seek(sources[self.current_source].offset)
+        self.f = open(sources[self.current_source].local_path, "rb")
+        self.f.seek(sources[self.current_source].offset)
 
         # self.file = file
         # self.start = start
@@ -162,43 +157,30 @@ class SlicedFileReader(io.BufferedIOBase):
         # self.f = open(file, "rb")
         # self.f.seek(start)
 
-    def get_f(self):
-        if self.f is None:
-            assert self.f_offset_lazy is not None
-            self.f = open(self.sources[self.current_source].local_path, "rb")
-            self.f.seek(
-                self.sources[self.current_source].offset + self.f_offset_lazy)
-        return self.f
-
-    def lazy_f_seek(self, offset):
-        if self.f is None:
-            self.f_offset_lazy = offset
-            return self.sources[self.current_source].offset + offset
-        else:
-            new_offset = self.f.seek(offset)
-            self.f_offset_lazy = None
-            return new_offset
-
     def __getstate__(self):
         # Copy the object's state from self.__dict__ which contains
         # all our instance attributes. Always use the dict.copy()
         # method to avoid modifying the original state.
         state = self.__dict__.copy()
         # Remove the unpicklable entries.
-
-        if self.f is not None:
-            state['f_offset_lazy'] = self.f.tell(
-            ) - self.sources[self.current_source].offset
-            self.f.close()
-
-        state['f'] = None
-
+        state['f_tell'] = self.f.tell()
+        del state['f']
         return state
 
     def __setstate__(self, state):
         # Restore instance attributes.
+        f_tell = state['f_tell']
+        del state['f_tell']
 
         self.__dict__.update(state)
+        # Restore the previously opened file's state. To do so, we need to
+        # reopen it and seek.
+
+        f = open(self.sources[self.current_source].local_path, "rb")
+        f.seek(f_tell)
+
+        # Finally, save the file.
+        self.f = f
 
     def find_source_idx(self, offset):
         i = bisect.bisect_right(self.cumulative_lengths, offset)
@@ -211,11 +193,7 @@ class SlicedFileReader(io.BufferedIOBase):
             return idx
 
     def tell(self) -> int:
-        if self.f is None:
-            assert self.f_offset_lazy is not None
-            return self.cumulative_lengths[self.current_source] + self.f_offset_lazy
-        else:
-            return self.cumulative_lengths[self.current_source] + self.get_f().tell() - self.sources[self.current_source].offset
+        return self.cumulative_lengths[self.current_source] + self.f.tell() - self.sources[self.current_source].offset
 
     # offset - self.cumulative_lengths[self.current_source] + self.sources[self.current_source].offset = self.f.tell()
     def seek(self, offset: int, whence: int = 0) -> int:
@@ -224,15 +202,14 @@ class SlicedFileReader(io.BufferedIOBase):
             if dst_source_idx is None:
                 dst_source_idx = len(self.sources) - 1
             if dst_source_idx != self.current_source:
-                if self.f is not None:
-                    self.f.close()
-                    self.f = None
-                # self.f = open(self.sources[dst_source_idx].local_path, "rb")
+                self.f.close()
+                self.f = open(self.sources[dst_source_idx].local_path, "rb")
                 self.current_source = dst_source_idx
 
-            source_offset = offset - self.cumulative_lengths[dst_source_idx]
-            new_pos = self.lazy_f_seek(source_offset)
-            # new_pos = self.f.seek(source_offset, whence)  # ok
+            source_offset = offset + \
+                self.sources[dst_source_idx].offset - \
+                self.cumulative_lengths[dst_source_idx]
+            new_pos = self.f.seek(source_offset, whence)
             return new_pos + self.cumulative_lengths[dst_source_idx] - self.sources[dst_source_idx].offset
         elif whence == 1:  # TODO: is this bad performance?
             return self.seek(self.tell() + offset, 0)
@@ -259,12 +236,12 @@ class SlicedFileReader(io.BufferedIOBase):
 
             current_source_remaining = self.sources[self.current_source].num_bytes + \
                 self.sources[self.current_source].offset - \
-                self.get_f().tell()
+                self.f.tell()
 
             assert current_source_remaining > 0
             to_read = min(remaining, current_source_remaining)
 
-            tmp_bytes = self.get_f().read(to_read)
+            tmp_bytes = self.f.read(to_read)
             assert len(tmp_bytes) == to_read
             num_read += to_read
             buffer.extend(tmp_bytes)
@@ -275,23 +252,19 @@ class SlicedFileReader(io.BufferedIOBase):
                 cur_source_idx = len(self.sources) - 1
 
             if cur_source_idx != self.current_source:
-                if self.f is not None:
-                    self.f.close()
-                    self.f = None
+                self.f.close()
+                self.f = open(self.sources[cur_source_idx].local_path, "rb")
+                self.f.seek(self.sources[cur_source_idx].offset)
                 self.current_source = cur_source_idx
-                self.lazy_f_seek(0)
 
         return buffer  # maybe i need to do bytes(buffer)
 
     def close(self) -> None:
-        if self.f is not None:
-            self.f.close()
-            self.f = None
-        self.now_closed = True
+        return self.f.close()
 
     @property
     def closed(self) -> bool:
-        return self.now_closed
+        return self.f.closed
 
 
 def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]) -> CommitOperationAdd:
@@ -310,42 +283,11 @@ def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOpe
 
 
 def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]]) -> List[CommitOperationAdd]:
-
-    ops = ops[:10]
-
     repo_paths = set()
     for op in ops:
         if op.repo_path in repo_paths:
             raise ValueError(f"Duplicate repo path: {op.repo_path}")
         repo_paths.add(op.repo_path)
-
-    # sbatch_lines = [
-    #     "#SBATCH --time=00:30:00",
-    #     "#SBATCH --partition=express",
-    #     "#SBATCH --mem=8G",
-    #     # This rules out the few nodes that are older than Haswell.
-    #     # https://rc-docs.northeastern.edu/en/latest/hardware/hardware_overview.html#using-the-constraint-flag
-    #     "#SBATCH --constraint=haswell|broadwell|skylake_avx512|zen2|zen|cascadelake",
-    #     f'#SBATCH --cpus-per-task=12',
-    #     # "module load discovery nodejs",
-    #     # "export PATH=$PATH:/home/a.guha/bin:/work/arjunguha-research-group/software/bin",
-    # ]
-
-    # print(f'Will run on {len(pkgs)} configurations.')
-    # if self.max_groups == -1:
-    #     pkg_chunks = [[p] for p in pkgs]
-    # else:
-    #     pkg_chunks = list(chunked_or_distributed(pkgs,
-    #                                              max_groups=self.max_groups, optimal_group_size=self.cpus_per_task))
-    #     pkg_chunks = [list(c) for c in pkg_chunks]
-    # print(
-    #     f'Running with {len(pkg_chunks)} chunks, each of size {len(pkg_chunks[0])}')
-
-    # hf_ops = []
-
-    # with cfut.SlurmExecutor(additional_setup_lines=self.sbatch_lines, keep_logs=False) as executor:
-    #     for chunk_result in executor.map(self.run_chunk, pkg_chunks):
-    #         hf_ops.extend(chunk_result)
 
     hf_ops = process_map(build_hf_operation, ops, max_workers=12, chunksize=1)
 
