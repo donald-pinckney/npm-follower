@@ -5,7 +5,8 @@ import sys
 import io
 import os
 import bisect
-from multiprocessing import Pool
+from tqdm.contrib.concurrent import process_map  # or thread_map
+# from multiprocessing import Pool
 from huggingface_hub import HfApi, CommitOperationAdd, CommitOperationDelete
 
 
@@ -288,8 +289,7 @@ def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.Concatenatin
             raise ValueError(f"Duplicate repo path: {op.repo_path}")
         repo_paths.add(op.repo_path)
 
-    with Pool(12) as p:
-        hf_ops = p.map(build_hf_operation, ops)
+    hf_ops = process_map(build_hf_operation, ops, max_workers=12)
 
     return hf_ops
 
