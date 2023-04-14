@@ -263,7 +263,7 @@ def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.Concatenatin
             raise ValueError(f"Duplicate repo path: {op.repo_path}")
         repo_paths.add(op.repo_path)
 
-    with Pool(48) as p:
+    with Pool(12) as p:
         hf_ops = p.map(build_hf_operation, ops)
 
     return hf_ops
