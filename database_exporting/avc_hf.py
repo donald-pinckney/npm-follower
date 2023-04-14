@@ -156,6 +156,31 @@ class SlicedFileReader(io.BufferedIOBase):
         # self.f = open(file, "rb")
         # self.f.seek(start)
 
+    def __getstate__(self):
+        # Copy the object's state from self.__dict__ which contains
+        # all our instance attributes. Always use the dict.copy()
+        # method to avoid modifying the original state.
+        state = self.__dict__.copy()
+        # Remove the unpicklable entries.
+        state['f_tell'] = self.f.tell()
+        del state['f']
+        return state
+
+    def __setstate__(self, state):
+        # Restore instance attributes.
+        f_tell = state['f_tell']
+        del state['f_tell']
+
+        self.__dict__.update(state)
+        # Restore the previously opened file's state. To do so, we need to
+        # reopen it and seek.
+
+        f = open(self.sources[self.current_source].local_path, "rb")
+        f.seek(f_tell)
+
+        # Finally, save the file.
+        self.f = f
+
     def find_source_idx(self, offset):
         i = bisect.bisect_right(self.cumulative_lengths, offset)
         idx = i - 1
