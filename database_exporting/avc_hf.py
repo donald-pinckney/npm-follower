@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 import avc
 import json
 import sys
@@ -240,7 +240,7 @@ class SlicedFileReader(io.BufferedIOBase):
         return self.f.closed
 
 
-def build_hf_operation(op: avc.DirectAddOperation | avc.ConcatenatingAddOperation) -> CommitOperationAdd:
+def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]) -> CommitOperationAdd:
     if isinstance(op, avc.DirectAddOperation):
         return CommitOperationAdd(op.repo_path, op.local_path)
     elif isinstance(op, avc.ConcatenatingAddOperation):
@@ -252,7 +252,7 @@ def build_hf_operation(op: avc.DirectAddOperation | avc.ConcatenatingAddOperatio
         raise ValueError(f"Unknown operation type: {op}")
 
 
-def build_hf_operations(ops: List[avc.DirectAddOperation | avc.ConcatenatingAddOperation]) -> List[CommitOperationAdd]:
+def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]]) -> List[CommitOperationAdd]:
     hf_ops = []
     repo_paths = set()
     for op in ops:
