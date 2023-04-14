@@ -258,6 +258,8 @@ def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.Concatenatin
     for op in ops:
         if op.repo_path in repo_paths:
             raise ValueError(f"Duplicate repo path: {op.repo_path}")
+        print("Building:")
+        print(op)
         hf_ops.append(build_hf_operation(op))
         repo_paths.add(op.repo_path)
     return hf_ops
