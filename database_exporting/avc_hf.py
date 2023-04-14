@@ -343,7 +343,7 @@ def main():
             # https://rc-docs.northeastern.edu/en/latest/hardware/hardware_overview.html#using-the-constraint-flag
             "#SBATCH --constraint=haswell|broadwell|skylake_avx512|zen2|zen|cascadelake",
             f'#SBATCH --cpus-per-task=12',
-            # "module load discovery nodejs",
+            "module load discovery",
             # "export PATH=$PATH:/home/a.guha/bin:/work/arjunguha-research-group/software/bin",
         ]
 
@@ -357,9 +357,12 @@ def main():
         done_count = 0
 
         with cfut.SlurmExecutor(additional_setup_lines=sbatch_lines, additional_import_paths=sys.path, keep_logs=True, debug=True) as executor:
-            for chunk_result in executor.map(run_chunk, op_chunks):
-                done_count += 1
-                print(f"{done_count} / {len(op_chunks)}: {chunk_result}")
+            # executor.submit
+            for chunk in op_chunks:
+                executor.submit(run_chunk, chunk)
+            # for chunk_result in executor.map(run_chunk, op_chunks):
+            #     done_count += 1
+            #     print(f"{done_count} / {len(op_chunks)}: {chunk_result}")
     else:
         run_chunk(ops)
 
