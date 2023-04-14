@@ -5,6 +5,8 @@ import sys
 import io
 import os
 import bisect
+import cfut
+from more_itertools import chunked, distribute
 from tqdm.contrib.concurrent import process_map  # or thread_map
 # from multiprocessing import Pool
 from huggingface_hub import HfApi, CommitOperationAdd, CommitOperationDelete
@@ -283,25 +285,13 @@ def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOpe
 
 
 def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]]) -> List[CommitOperationAdd]:
-    repo_paths = set()
-    for op in ops:
-        if op.repo_path in repo_paths:
-            raise ValueError(f"Duplicate repo path: {op.repo_path}")
-        repo_paths.add(op.repo_path)
-
     hf_ops = process_map(build_hf_operation, ops, max_workers=12, chunksize=1)
 
     return hf_ops
 
 
-def main():
-
-    # f = SlicedFileReader("upload_file.py", 0, 40)
-    # print(f.read())
-
-    ops = load_operations()
-    # print(ops)
-    hf_ops = build_hf_operations(ops)
+def run_chunk(op_chunk):
+    hf_ops = build_hf_operations(op_chunk)
     # print(hf_ops)
 
     api = HfApi()
@@ -311,6 +301,64 @@ def main():
         operations=hf_ops,
         commit_message="test",
     )
+
+    return 'ok'
+
+
+def chunked_or_distributed(
+        items,
+        max_groups: int,
+        optimal_group_size: int):
+    """Divide *items* into at most *max_groups*. If possible, produces fewer
+    than *max_groups*, but with at most *optimal_group_size* items in each
+    group."""
+    if len(items) / optimal_group_size <= max_groups:
+        return chunked(items, optimal_group_size)
+    else:
+        return distribute(max_groups, items)
+
+
+def main():
+    # f = SlicedFileReader("upload_file.py", 0, 40)
+    # print(f.read())
+
+    ops = load_operations()
+    # print(ops)
+
+    repo_paths = set()
+    for op in ops:
+        if op.repo_path in repo_paths:
+            raise ValueError(f"Duplicate repo path: {op.repo_path}")
+        repo_paths.add(op.repo_path)
+
+    if len(ops) > 20:
+        sbatch_lines = [
+            "#SBATCH --time=02:00:00",
+            "#SBATCH --partition=express",
+            "#SBATCH --mem=8G",
+            # This rules out the few nodes that are older than Haswell.
+            # https://rc-docs.northeastern.edu/en/latest/hardware/hardware_overview.html#using-the-constraint-flag
+            "#SBATCH --constraint=haswell|broadwell|skylake_avx512|zen2|zen|cascadelake",
+            f'#SBATCH --cpus-per-task=12',
+            # "module load discovery nodejs",
+            # "export PATH=$PATH:/home/a.guha/bin:/work/arjunguha-research-group/software/bin",
+        ]
+
+        print(f'Will run on {len(ops)} ops.')
+        op_chunks = list(chunked_or_distributed(
+            ops, max_groups=30, optimal_group_size=12))
+        op_chunks = [list(c) for c in op_chunks]
+        print(
+            f'Running with {len(op_chunks)} chunks, each of size {len(op_chunks[0])}')
+
+        done_count = 0
+
+        with cfut.SlurmExecutor(additional_setup_lines=sbatch_lines, keep_logs=True, debug=True) as executor:
+            for chunk_result in executor.map(run_chunk, op_chunks):
+                done_count += 1
+                print(f"{done_count} / {len(op_chunks)}: {chunk_result}")
+    else:
+        run_chunk(ops)
 
 
 if __name__ == "__main__":
