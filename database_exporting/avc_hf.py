@@ -334,37 +334,38 @@ def main():
             raise ValueError(f"Duplicate repo path: {op.repo_path}")
         repo_paths.add(op.repo_path)
 
-    if len(ops) > 20:
-        sbatch_lines = [
-            "#SBATCH --time=02:00:00",
-            "#SBATCH --partition=short",
-            "#SBATCH --mem=8G",
-            # This rules out the few nodes that are older than Haswell.
-            # https://rc-docs.northeastern.edu/en/latest/hardware/hardware_overview.html#using-the-constraint-flag
-            "#SBATCH --constraint=haswell|broadwell|skylake_avx512|zen2|zen|cascadelake",
-            f'#SBATCH --cpus-per-task=12',
-            "module load discovery",
-            # "export PATH=$PATH:/home/a.guha/bin:/work/arjunguha-research-group/software/bin",
-        ]
+    # if len(ops) > 20:
+    #     sbatch_lines = [
+    #         "#SBATCH --time=02:00:00",
+    #         "#SBATCH --partition=short",
+    #         "#SBATCH --mem=8G",
+    #         # This rules out the few nodes that are older than Haswell.
+    #         # https://rc-docs.northeastern.edu/en/latest/hardware/hardware_overview.html#using-the-constraint-flag
+    #         "#SBATCH --constraint=haswell|broadwell|skylake_avx512|zen2|zen|cascadelake",
+    #         f'#SBATCH --cpus-per-task=12',
+    #         "module load discovery",
+    #         # "export PATH=$PATH:/home/a.guha/bin:/work/arjunguha-research-group/software/bin",
+    #     ]
 
-        print(f'Will run on {len(ops)} ops.')
-        op_chunks = list(chunked_or_distributed(
-            ops, max_groups=30, optimal_group_size=12))
-        op_chunks = [list(c) for c in op_chunks]
-        print(
-            f'Running with {len(op_chunks)} chunks, each of size {len(op_chunks[0])}')
+    #     print(f'Will run on {len(ops)} ops.')
+    #     op_chunks = list(chunked_or_distributed(
+    #         ops, max_groups=30, optimal_group_size=12))
+    #     op_chunks = [list(c) for c in op_chunks]
+    #     print(
+    #         f'Running with {len(op_chunks)} chunks, each of size {len(op_chunks[0])}')
 
-        done_count = 0
+    #     done_count = 0
 
-        with cfut.SlurmExecutor(additional_setup_lines=sbatch_lines, additional_import_paths=sys.path, keep_logs=True, debug=True) as executor:
-            # executor.submit
-            for chunk in op_chunks:
-                executor.submit(run_chunk, chunk)
-            # for chunk_result in executor.map(run_chunk, op_chunks):
-            #     done_count += 1
-            #     print(f"{done_count} / {len(op_chunks)}: {chunk_result}")
-    else:
-        run_chunk(ops)
+    #     with cfut.SlurmExecutor(additional_setup_lines=sbatch_lines, additional_import_paths=sys.path, keep_logs=True, debug=True) as executor:
+    #         # executor.submit
+    #         # for chunk in op_chunks:
+    #         #     executor.submit(run_chunk, chunk)
+    #         for chunk_result in executor.map(run_chunk, op_chunks):
+    #             done_count += 1
+    #             print(f"{done_count} / {len(op_chunks)}: {chunk_result}")
+    # else:
+
+    run_chunk(ops)
 
 
 if __name__ == "__main__":
