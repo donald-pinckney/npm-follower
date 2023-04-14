@@ -353,7 +353,7 @@ def main():
 
         done_count = 0
 
-        with cfut.SlurmExecutor(additional_setup_lines=sbatch_lines, keep_logs=True, debug=True) as executor:
+        with cfut.SlurmExecutor(additional_setup_lines=sbatch_lines, additional_import_paths=sys.path, keep_logs=True, debug=True) as executor:
             for chunk_result in executor.map(run_chunk, op_chunks):
                 done_count += 1
                 print(f"{done_count} / {len(op_chunks)}: {chunk_result}")
