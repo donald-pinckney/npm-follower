@@ -289,7 +289,7 @@ def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.Concatenatin
             raise ValueError(f"Duplicate repo path: {op.repo_path}")
         repo_paths.add(op.repo_path)
 
-    hf_ops = process_map(build_hf_operation, ops, max_workers=12)
+    hf_ops = process_map(build_hf_operation, ops, max_workers=12, chunksize=1)
 
     return hf_ops
 
