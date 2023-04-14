@@ -12,7 +12,7 @@ def load_operations():
     if len(sys.argv) > 1:
         path = sys.argv[1]
     else:
-        a = avc.Avc(False)
+        a = avc.Avc(data_dir=None, initialize=False)
         path = a.git_operations_path
 
     with open(path, "r") as f:
@@ -275,7 +275,7 @@ def main():
 
     api = HfApi()
     api.create_commit(
-        repo_id="donald-pinckney/npm-follower-tarballs-test",
+        repo_id="donald-pinckney/npm-follower-data",
         repo_type="dataset",
         operations=hf_ops,
         commit_message="test",
