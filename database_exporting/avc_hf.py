@@ -5,8 +5,8 @@ import sys
 import io
 import os
 import bisect
-import cfut
-from more_itertools import chunked, distribute
+# import cfut
+# from more_itertools import chunked, distribute
 from tqdm.contrib.concurrent import process_map  # or thread_map
 # from multiprocessing import Pool
 from huggingface_hub import HfApi, CommitOperationAdd, CommitOperationDelete
@@ -322,8 +322,8 @@ def main():
     # f = SlicedFileReader("upload_file.py", 0, 40)
     # print(f.read())
 
-    sys.path.insert(0, os.path.join(
-        os.environ['HOME'], "npm-follower/database_exporting"))
+    # sys.path.insert(0, os.path.join(
+    #     os.environ['HOME'], "npm-follower/database_exporting"))
 
     ops = load_operations()
     # print(ops)
