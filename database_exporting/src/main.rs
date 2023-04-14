@@ -104,6 +104,12 @@ fn main() -> io::Result<()> {
         .status()?
         .success());
 
+    assert!(Command::new("sudo")
+        .args(["chown", "postgres:postgres", "redis.zip"])
+        .current_dir(&tmp_backup_dir)
+        .status()?
+        .success());
+
     println!("Creating tar file of dump");
     Command::new("tar")
         .current_dir(&tmp_backup_base)
