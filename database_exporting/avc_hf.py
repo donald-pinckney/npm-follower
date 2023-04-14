@@ -5,6 +5,7 @@ import sys
 import io
 import os
 import bisect
+from multiprocessing import Pool
 from huggingface_hub import HfApi, CommitOperationAdd, CommitOperationDelete
 
 
@@ -241,6 +242,9 @@ class SlicedFileReader(io.BufferedIOBase):
 
 
 def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]) -> CommitOperationAdd:
+    print("Building:")
+    print(op)
+
     if isinstance(op, avc.DirectAddOperation):
         return CommitOperationAdd(op.repo_path, op.local_path)
     elif isinstance(op, avc.ConcatenatingAddOperation):
@@ -253,15 +257,15 @@ def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOpe
 
 
 def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]]) -> List[CommitOperationAdd]:
-    hf_ops = []
     repo_paths = set()
     for op in ops:
         if op.repo_path in repo_paths:
             raise ValueError(f"Duplicate repo path: {op.repo_path}")
-        print("Building:")
-        print(op)
-        hf_ops.append(build_hf_operation(op))
         repo_paths.add(op.repo_path)
+
+    with Pool(48) as p:
+        hf_ops = p.map(build_hf_operation, ops)
+
     return hf_ops
 
 
