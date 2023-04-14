@@ -322,6 +322,9 @@ def main():
     # f = SlicedFileReader("upload_file.py", 0, 40)
     # print(f.read())
 
+    sys.path.insert(0, os.path.join(
+        os.environ['HOME'], "npm-follower/database_exporting"))
+
     ops = load_operations()
     # print(ops)
 
