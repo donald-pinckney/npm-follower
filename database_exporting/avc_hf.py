@@ -334,7 +334,7 @@ def main():
     if len(ops) > 20:
         sbatch_lines = [
             "#SBATCH --time=02:00:00",
-            "#SBATCH --partition=express",
+            "#SBATCH --partition=short",
             "#SBATCH --mem=8G",
             # This rules out the few nodes that are older than Haswell.
             # https://rc-docs.northeastern.edu/en/latest/hardware/hardware_overview.html#using-the-constraint-flag
