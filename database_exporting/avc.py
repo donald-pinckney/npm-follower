@@ -9,7 +9,7 @@ import platform
 import hashlib
 import json
 from abc import ABC, abstractmethod
-from typing import List, NamedTuple, Optional, Tuple
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple
 
 
 class ReadSource(NamedTuple):
@@ -161,6 +161,7 @@ class Avc(object):
             CREATE INDEX commits_parent_idx ON commits (parent_id);
             CREATE TABLE commit_changes (
                 commit_id VARCHAR NOT NULL,
+                batch_id INTEGER NOT NULL,
                 path VARCHAR NOT NULL,
                 type VARCHAR NOT NULL,
                 start_offset INTEGER NOT NULL,
@@ -168,7 +169,7 @@ class Avc(object):
                 blob_name VARCHAR NOT NULL,
                 blob_offset INTEGER NOT NULL,
                 FOREIGN KEY (commit_id) REFERENCES commits (id),
-                PRIMARY KEY (commit_id, path)
+                PRIMARY KEY (commit_id, batch_id, path)
             );
             CREATE TABLE remote_refs (
                 name VARCHAR PRIMARY KEY NOT NULL,
@@ -221,7 +222,7 @@ class Avc(object):
 
         while commit_id is not None:
             global_cur.execute(
-                "SELECT start_offset, num_bytes FROM commit_changes WHERE commit_id = ? AND path = ?", (commit_id, repo_file_path))
+                "SELECT start_offset, num_bytes FROM commit_changes WHERE commit_id = ? AND path = ? ORDER BY batch_id DESC", (commit_id, repo_file_path))
             row = global_cur.fetchone()
             if row is not None:
                 return row[0] + row[1]
@@ -318,10 +319,10 @@ class Avc(object):
             raise Exception("HEAD is not equal to main")
 
         # 1. Get staged changes
-        all_staged_changes: list[sqlite3.Row] = self.local_db_conn.execute("""
+        all_staged_changes: List[Dict[str, Any]] = [dict(s) for s in self.local_db_conn.execute("""
             SELECT path, type, start_offset, num_bytes, backing_path, backing_offset
             FROM staged_changes
-        """).fetchall()
+        """).fetchall()]
 
         if len(all_staged_changes) == 0:
             print("No staged changes")
@@ -350,6 +351,38 @@ class Avc(object):
         append_staged_changes = [
             s for s in all_staged_changes if s["type"] == "append"]
 
+        # 3a. Transform all create changes over 48 GB into create and append changes
+        for s in create_staged_changes:
+            assert s["start_offset"] == 0
+            if s["num_bytes"] > 48000000:
+                append_staged_changes.append({
+                    "path": s["path"],
+                    "type": "append",
+                    "start_offset": 48000000,
+                    "num_bytes": s["num_bytes"] - 48000000,
+                    "backing_path": s["backing_path"],
+                    "backing_offset": s["backing_offset"] + 48000000,
+                })
+                s["num_bytes"] = 48000000
+
+        # 3b. Transform all append changes over 48 GB into separate append changes
+        i = 0
+        while i < len(append_staged_changes):
+            s = append_staged_changes[i]
+            if s["num_bytes"] > 48000000:
+                append_staged_changes.append({
+                    "path": s["path"],
+                    "type": "append",
+                    "start_offset": s["start_offset"] + 48000000,
+                    "num_bytes": s["num_bytes"] - 48000000,
+                    "backing_path": s["backing_path"],
+                    "backing_offset": s["backing_offset"] + 48000000,
+                })
+                s["num_bytes"] = 48000000
+            i += 1
+
+        # 3c. Prepare to allocate blobs
+
         blob_id = 0
 
         def alloc_blob():
@@ -362,48 +395,73 @@ class Avc(object):
             return os.path.join(".avc", "blobs", blob_id)
 
         required_git_operations: List[VirtualAddOperation] = []
+        all_commit_changes: List[Tuple[str, int,
+                                       str, str, int, int, str, int]] = []
+        current_batch_id = 0
 
-        create_commit_changes = []
-        for s in create_staged_changes:
-            assert s["start_offset"] == 0
-            blob_name = alloc_blob()
-            blob_path = get_blob_path(blob_name)
-            create_commit_changes.append((
-                commit_id,
-                s["path"],
-                "create",
-                0,
-                s["num_bytes"],
-                blob_name,
-                0
-            ))
-            required_git_operations.append(ConcatenatingAddOperation(blob_path, [ReadSource(
-                s["backing_path"], s["backing_offset"], s["num_bytes"])]))
+        # 3d. Build create commit changes
 
-        append_commit_changes = []
-        if len(append_staged_changes) > 0:
-            append_blob_name = alloc_blob()
-            append_blob_path = get_blob_path(append_blob_name)
+        if len(create_staged_changes) > 0:
+            for s in create_staged_changes:
+                assert s["start_offset"] == 0
+                assert s["num_bytes"] <= 48000000
 
-            read_sources = []
-
-            append_blob_offset = 0
-            for s in append_staged_changes:
-                append_commit_changes.append((
+                blob_name = alloc_blob()
+                blob_path = get_blob_path(blob_name)
+                all_commit_changes.append((
                     commit_id,
+                    current_batch_id,
                     s["path"],
-                    "append",
-                    s["start_offset"],
+                    "create",
+                    0,
                     s["num_bytes"],
-                    append_blob_name,
-                    append_blob_offset
+                    blob_name,
+                    0
                 ))
-                read_sources.append(ReadSource(
-                    s["backing_path"], s["backing_offset"], s["num_bytes"]))
-                append_blob_offset += s["num_bytes"]
+                required_git_operations.append(ConcatenatingAddOperation(blob_path, [ReadSource(
+                    s["backing_path"], s["backing_offset"], s["num_bytes"])]))
 
-            required_git_operations.append(
-                ConcatenatingAddOperation(append_blob_path, read_sources))
+            current_batch_id += 1
+
+        # 3e. Build append commit changes
+
+        current_blob_name = None
+        current_blob_size = 0
+        current_blob_read_sources: List[ReadSource] = []
+
+        for s in append_staged_changes:
+            if current_blob_name is None:
+                current_blob_name = alloc_blob()
+                current_blob_size = 0
+                current_blob_read_sources = []
+            elif current_blob_size + s["num_bytes"] > 48000000:
+                assert current_blob_size > 0
+                assert len(current_blob_read_sources) > 0
+                assert current_blob_name is not None
+
+                current_blob_path = get_blob_path(current_blob_name)
+                required_git_operations.append(ConcatenatingAddOperation(
+                    current_blob_path, current_blob_read_sources))
+
+                current_blob_name = alloc_blob()
+                current_blob_size = 0
+                current_blob_read_sources = []
+
+            all_commit_changes.append((
+                commit_id,
+                current_batch_id,
+                s["path"],
+                "append",
+                s["start_offset"],
+                s["num_bytes"],
+                current_blob_name,
+                current_blob_size
+            ))
+            current_blob_read_sources.append(ReadSource(
+                s["backing_path"], s["backing_offset"], s["num_bytes"]))
+            current_blob_size += s["num_bytes"]
+
+            current_batch_id += 1
 
         if not dry_run:
             # 4. Write changes to global DB
@@ -412,9 +470,9 @@ class Avc(object):
                 VALUES (?, ?)
             """, (commit_id, parent_id))
             self.global_db_conn.executemany("""
-                INSERT INTO commit_changes (commit_id, path, type, start_offset, num_bytes, blob_name, blob_offset)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, create_commit_changes + append_commit_changes)
+                INSERT INTO commit_changes (commit_id, batch_id, path, type, start_offset, num_bytes, blob_name, blob_offset)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, all_commit_changes)
             self.global_db_conn.execute("""
                 UPDATE remote_refs SET commit_id = ?
                 WHERE name = 'main'
