@@ -351,34 +351,36 @@ class Avc(object):
         append_staged_changes = [
             s for s in all_staged_changes if s["type"] == "append"]
 
+        MAX_SIZE = 48000000000
         # 3a. Transform all create changes over 48 GB into create and append changes
+
         for s in create_staged_changes:
             assert s["start_offset"] == 0
-            if s["num_bytes"] > 48000000:
+            if s["num_bytes"] > MAX_SIZE:
                 append_staged_changes.append({
                     "path": s["path"],
                     "type": "append",
-                    "start_offset": 48000000,
-                    "num_bytes": s["num_bytes"] - 48000000,
+                    "start_offset": MAX_SIZE,
+                    "num_bytes": s["num_bytes"] - MAX_SIZE,
                     "backing_path": s["backing_path"],
-                    "backing_offset": s["backing_offset"] + 48000000,
+                    "backing_offset": s["backing_offset"] + MAX_SIZE,
                 })
-                s["num_bytes"] = 48000000
+                s["num_bytes"] = MAX_SIZE
 
         # 3b. Transform all append changes over 48 GB into separate append changes
         i = 0
         while i < len(append_staged_changes):
             s = append_staged_changes[i]
-            if s["num_bytes"] > 48000000:
+            if s["num_bytes"] > MAX_SIZE:
                 append_staged_changes.append({
                     "path": s["path"],
                     "type": "append",
-                    "start_offset": s["start_offset"] + 48000000,
-                    "num_bytes": s["num_bytes"] - 48000000,
+                    "start_offset": s["start_offset"] + MAX_SIZE,
+                    "num_bytes": s["num_bytes"] - MAX_SIZE,
                     "backing_path": s["backing_path"],
-                    "backing_offset": s["backing_offset"] + 48000000,
+                    "backing_offset": s["backing_offset"] + MAX_SIZE,
                 })
-                s["num_bytes"] = 48000000
+                s["num_bytes"] = MAX_SIZE
             i += 1
 
         # 3c. Prepare to allocate blobs
@@ -404,7 +406,7 @@ class Avc(object):
         if len(create_staged_changes) > 0:
             for s in create_staged_changes:
                 assert s["start_offset"] == 0
-                assert s["num_bytes"] <= 48000000
+                assert s["num_bytes"] <= MAX_SIZE
 
                 blob_name = alloc_blob()
                 blob_path = get_blob_path(blob_name)
@@ -434,7 +436,7 @@ class Avc(object):
                 current_blob_name = alloc_blob()
                 current_blob_size = 0
                 current_blob_read_sources = []
-            elif current_blob_size + s["num_bytes"] > 48000000:
+            elif current_blob_size + s["num_bytes"] > MAX_SIZE:
                 assert current_blob_size > 0
                 assert len(current_blob_read_sources) > 0
                 assert current_blob_name is not None
