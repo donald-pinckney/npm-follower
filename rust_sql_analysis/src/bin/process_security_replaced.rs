@@ -23,13 +23,19 @@ struct SecurityReplaced {
 // queries all security_replaced rows. it's ok to query all, because the number of rows is
 // "small".
 const QUERY: &str = r#"
-SELECT id, package_id, semver from security_replaced_versions
+SELECT id, package_id, semver FROM metadata_analysis.security_replaced_versions
 "#;
 
 fn main() {
     utils::check_no_concurrent_processes("process_security_replaced");
     dotenvy::dotenv().ok();
     let mut conn: DbConnection = DbConnection::connect();
+
+    let create_table_query = diesel::sql_query(
+        "CREATE TABLE metadata_analysis.possibly_malware_versions (package_id BIGINT, version_id BIGINT, tarball_url TEXT)"
+    );
+    conn.execute(create_table_query).unwrap();
+
     let q = diesel::sql_query(QUERY);
     let mut res: Vec<SecurityReplaced> = conn.load(q).unwrap();
     // reverse the order, so that we can process the most recent ones first
@@ -102,7 +108,7 @@ fn main() {
             // insert into possibly_malware_versions
             let query = diesel::sql_query(
                 format!(
-                    "INSERT INTO possibly_malware_versions (package_id, id, tarball_url) VALUES ({}, {}, '{}') ON CONFLICT DO NOTHING",
+                    "INSERT INTO metadata_analysis.possibly_malware_versions (package_id, version_id, tarball_url) VALUES ({}, {}, '{}') ON CONFLICT DO NOTHING",
                     ver.package_id, ver.id, ver.tarball_url
                 )
             );

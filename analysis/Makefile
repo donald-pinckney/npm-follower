@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -118,6 +118,19 @@ clean_prepare_diffs_to_compute:
 	if [ -f makefile_state/prepare_diffs_to_compute.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/prepare_diffs_to_compute.sql; else true; fi
 	rm -f makefile_state/prepare_diffs_to_compute.touch
 
+# -------- security_replaced_versions --------
+makefile_state/security_replaced_versions.touch: makefile_state/setup_analysis.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/security_replaced_versions.sql
+	touch makefile_state/security_replaced_versions.touch
+
+.PHONY: security_replaced_versions
+security_replaced_versions: makefile_state/security_replaced_versions.touch
+
+.PHONY: clean_security_replaced_versions
+clean_security_replaced_versions: 
+	if [ -f makefile_state/security_replaced_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/security_replaced_versions.sql; else true; fi
+	rm -f makefile_state/security_replaced_versions.touch
+
 # -------- setup_analysis --------
 makefile_state/setup_analysis.touch: 
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/setup_analysis.sql
@@ -127,7 +140,7 @@ makefile_state/setup_analysis.touch:
 setup_analysis: makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
-clean_setup_analysis: clean_constraint_types clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_version_ordering_validation clean_vulnerable_versions
+clean_setup_analysis: clean_constraint_types clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_security_replaced_versions clean_version_ordering_validation clean_vulnerable_versions
 	if [ -f makefile_state/setup_analysis.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql; else true; fi
 	rm -f makefile_state/setup_analysis.touch
 

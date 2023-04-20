@@ -1,0 +1,1 @@
+drop table metadata_analysis.security_replaced_versions;

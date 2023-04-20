@@ -22,6 +22,7 @@ fn main() -> Result<(), std::io::Error> {
         ("deps_stats", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"]),
         ("subsampled_possible_install_deps", vec!["possible_install_deps"]),
         ("subsampled_updates", vec!["build_updates"]),
+        ("security_replaced_versions", vec!["setup_analysis"])
     ]
     .into_iter()
     .collect();
