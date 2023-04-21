@@ -238,6 +238,9 @@ class Avc(object):
         return self.global_db_conn.execute(
             "SELECT commit_id FROM remote_refs WHERE name = 'main'").fetchone()[0]
 
+    def get_parent(self, commit_id: str) -> Optional[str]:
+        return self.global_db_conn.execute("SELECT parent_id FROM commits WHERE id = ?", (commit_id,)).fetchone()[0]
+
     def get_committed_file_size(self, repo_file_path: str) -> Optional[int]:
         commit_id = self.get_head()
 
@@ -553,6 +556,19 @@ class Avc(object):
         """, (commit_id,))
         self.global_db_conn.commit()
 
+    def fast_forward(self):
+        commits_to_apply = []
+        head_ref = self.get_head()
+        main_ref = self.get_main()
+        while main_ref != head_ref:
+            if main_ref is None:
+                raise Exception("head is not an ancestor of main")
+            commits_to_apply.insert(0, main_ref)
+            main_ref = self.get_parent(main_ref)
+
+        print("Now applying commits:")
+        print(commits_to_apply)
+
     def __del__(self):
         if hasattr(self, "local_db_conn"):
             self.local_db_conn.close()
@@ -595,6 +611,11 @@ def main_build_git_commit(dry_run: bool):
     print(avc.git_operations_path)
 
 
+def main_fast_forward():
+    avc = Avc(data_dir=None, initialize=False)
+    avc.fast_forward()
+
+
 def main():
     # Define an argument parser that accepts 4 subcommands: init, status, add, commit.
     # The init command accepts no arguments
@@ -609,6 +630,7 @@ def main():
     init_parser.add_argument("--data-dir")
     subparsers.add_parser("cloned")
     subparsers.add_parser("status")
+    subparsers.add_parser("fast-forward")
     add_parser = subparsers.add_parser("add")
     add_parser.add_argument("path")
     add_parser.add_argument("--num-bytes", type=int)
@@ -634,6 +656,8 @@ def main():
     #     main_confirm_push()
     elif args.subcommand == "abort-last-commit":
         main_abort_last_commit()
+    elif args.subcommand == "fast-forward":
+        main_fast_forward()
     else:
         raise Exception("Invalid subcommand")
 
