@@ -557,7 +557,15 @@ class Avc(object):
         self.global_db_conn.commit()
 
     def fast_forward(self):
-        commits_to_apply = []
+        all_staged_changes: List[Dict[str, Any]] = [dict(s) for s in self.local_db_conn.execute("""
+            SELECT path, type, start_offset, num_bytes, backing_path, backing_offset
+            FROM staged_changes
+        """).fetchall()]
+
+        if len(all_staged_changes) != 0:
+            raise Exception("Cannot fast-forward with staged changes")
+
+        commits_to_apply: List[str] = []
         head_ref = self.get_head()
         main_ref = self.get_main()
         while main_ref != head_ref:
@@ -568,6 +576,30 @@ class Avc(object):
 
         print("Now applying commits:")
         print(commits_to_apply)
+
+        for c in commits_to_apply:
+            print(f"Applying {c}")
+            self.apply_commit(c)
+
+    def apply_commit(self, commit_id: str):
+
+        all_commit_changes: List[Dict[str, Any]] = [dict(s) for s in self.global_db_conn.execute("""
+            SELECT path, type, start_offset, num_bytes, blob_name, blob_offset
+            FROM commit_changes
+            WHERE commit_id = ?
+            ORDER BY batch_id
+        """, (commit_id,)).fetchall()]
+
+        assert len(all_commit_changes) > 0
+
+        print(all_commit_changes)
+
+        # self.local_db_conn.execute("""
+        #     UPDATE local_refs SET commit_id = ?
+        #     WHERE name = 'HEAD'
+        # """, (commit_id,))
+
+        # self.local_db_conn.commit()
 
     def __del__(self):
         if hasattr(self, "local_db_conn"):
