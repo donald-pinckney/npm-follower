@@ -594,6 +594,36 @@ class Avc(object):
 
         print(all_commit_changes)
 
+        planned_io_operations_rev = []
+        for c in reversed(all_commit_changes):
+            rel_dst = c["path"]
+            abs_dst = os.path.join(self.data_toplevel, rel_dst)
+            t = c["type"]
+            start_offset = c["start_offset"]
+            num_bytes = c["num_bytes"]
+            blob_name = c["blob_name"]
+            blob_offset = c["blob_offset"]
+            blob_path = os.path.join(self.blobs_dir, blob_name)
+
+            if t == "create":
+                assert blob_offset == 0
+                assert start_offset == 0
+                assert num_bytes == os.path.getsize(blob_path)
+                planned_io_operations_rev.append(
+                    ("move", [blob_path, abs_dst]))
+            elif t == "append":
+                planned_io_operations_rev.append(("delete", [blob_path]))
+                planned_io_operations_rev.append(
+                    ("append_bytes", [blob_path, blob_offset, num_bytes, abs_dst, start_offset]))
+            else:
+                raise Exception(f"Unknown change type: {t}")
+
+        planned_io_operations = list(reversed(planned_io_operations_rev))
+        del planned_io_operations_rev
+
+        for op in planned_io_operations:
+            print(op)
+
         # self.local_db_conn.execute("""
         #     UPDATE local_refs SET commit_id = ?
         #     WHERE name = 'HEAD'
