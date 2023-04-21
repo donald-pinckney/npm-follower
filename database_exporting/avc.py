@@ -73,7 +73,7 @@ class DirectAddOperation(VirtualAddOperation):
 
 
 class Avc(object):
-    def __init__(self, data_dir: Optional[str], initialize: bool):
+    def __init__(self, data_dir: Optional[str], initialize: bool, cloned: bool = False):
         # Find top level directory of git repository at cwd
 
         try:
@@ -92,18 +92,40 @@ class Avc(object):
             self.avc_dir, "git_operations.json")
         self.config_path = os.path.join(self.avc_dir, "config.json")
 
-        if initialize:
-            assert data_dir is not None
-            self.data_toplevel = data_dir
+        if initialize or cloned:
+            if cloned:
+                self.data_toplevel = data_dir if data_dir is not None else self.repo_toplevel
+            else:
+                assert data_dir is not None
+                self.data_toplevel = data_dir
+
             assert os.path.exists(self.data_toplevel)
 
-            if os.path.exists(self.avc_dir):
-                print(f"{self.avc_dir} directory already exists")
-                raise Exception("Directory already exists")
+            if cloned:
+                if not os.path.exists(self.avc_dir):
+                    print(f"{self.avc_dir} directory does not exist")
+                    raise Exception("Directory does not exist")
+                if not os.path.exists(self.global_db_path):
+                    print(f"{self.global_db_path} file does not exist")
+                    raise Exception("File does not exist")
+                if os.path.exists(self.local_db_path):
+                    print(f"{self.local_db_path} file already exists")
+                    raise Exception("File already exists")
+                if not os.path.exists(self.blobs_dir):
+                    print(f"{self.blobs_dir} directory does not exist")
+                    raise Exception("Directory does not exist")
+                if os.path.exists(self.config_path):
+                    print(f"{self.config_path} file already exists")
+                    raise Exception("File already exists")
+            else:
+                if os.path.exists(self.avc_dir):
+                    print(f"{self.avc_dir} directory already exists")
+                    raise Exception("Directory already exists")
 
-            # Create .avc directory and subdirectories
-            os.mkdir(self.avc_dir)
-            os.mkdir(self.blobs_dir)
+                # Create .avc directory and subdirectories
+                os.mkdir(self.avc_dir)
+                os.mkdir(self.blobs_dir)
+
             self.global_db_conn = sqlite3.connect(self.global_db_path)
             self.local_db_conn = sqlite3.connect(self.local_db_path)
             self.global_db_conn.row_factory = sqlite3.Row
@@ -126,7 +148,7 @@ class Avc(object):
                     f.write("/.avc/local_state.db\n")
                     f.write("/.avc/git_operations.json\n")
 
-            self.initialize_db()
+            self.initialize_db(cloned)
 
         else:
             if not os.path.exists(self.avc_dir):
@@ -151,33 +173,34 @@ class Avc(object):
                 config = json.load(f)
                 self.data_toplevel: str = config["data_toplevel"]
 
-    def initialize_db(self):
-        self.global_db_conn.executescript("""
-            BEGIN;
-            CREATE TABLE commits (
-                id VARCHAR PRIMARY KEY NOT NULL,
-                parent_id VARCHAR
-            );
-            CREATE INDEX commits_parent_idx ON commits (parent_id);
-            CREATE TABLE commit_changes (
-                commit_id VARCHAR NOT NULL,
-                batch_id INTEGER NOT NULL,
-                path VARCHAR NOT NULL,
-                type VARCHAR NOT NULL,
-                start_offset INTEGER NOT NULL,
-                num_bytes INTEGER NOT NULL,
-                blob_name VARCHAR NOT NULL,
-                blob_offset INTEGER NOT NULL,
-                FOREIGN KEY (commit_id) REFERENCES commits (id),
-                PRIMARY KEY (commit_id, batch_id, path)
-            );
-            CREATE TABLE remote_refs (
-                name VARCHAR PRIMARY KEY NOT NULL,
-                commit_id VARCHAR
-            );
-            INSERT INTO remote_refs (name, commit_id) VALUES ("main", NULL);
-            COMMIT;
-        """)
+    def initialize_db(self, cloned: bool):
+        if not cloned:
+            self.global_db_conn.executescript("""
+                BEGIN;
+                CREATE TABLE commits (
+                    id VARCHAR PRIMARY KEY NOT NULL,
+                    parent_id VARCHAR
+                );
+                CREATE INDEX commits_parent_idx ON commits (parent_id);
+                CREATE TABLE commit_changes (
+                    commit_id VARCHAR NOT NULL,
+                    batch_id INTEGER NOT NULL,
+                    path VARCHAR NOT NULL,
+                    type VARCHAR NOT NULL,
+                    start_offset INTEGER NOT NULL,
+                    num_bytes INTEGER NOT NULL,
+                    blob_name VARCHAR NOT NULL,
+                    blob_offset INTEGER NOT NULL,
+                    FOREIGN KEY (commit_id) REFERENCES commits (id),
+                    PRIMARY KEY (commit_id, batch_id, path)
+                );
+                CREATE TABLE remote_refs (
+                    name VARCHAR PRIMARY KEY NOT NULL,
+                    commit_id VARCHAR
+                );
+                INSERT INTO remote_refs (name, commit_id) VALUES ("main", NULL);
+                COMMIT;
+            """)
 
         self.local_db_conn.executescript("""
             BEGIN;
@@ -541,6 +564,10 @@ def main_init(data_dir: str):
     Avc(data_dir=data_dir, initialize=True)
 
 
+def main_cloned():
+    Avc(data_dir=None, initialize=True, cloned=True)
+
+
 def main_status():
     avc = Avc(data_dir=None, initialize=False)
     avc.status()
@@ -580,6 +607,7 @@ def main():
     subparsers.required = True
     init_parser = subparsers.add_parser("init")
     init_parser.add_argument("--data-dir")
+    subparsers.add_parser("cloned")
     subparsers.add_parser("status")
     add_parser = subparsers.add_parser("add")
     add_parser.add_argument("path")
@@ -592,6 +620,8 @@ def main():
     args = parser.parse_args()
     if args.subcommand == "init":
         main_init(args.data_dir if args.data_dir else ".")
+    elif args.subcommand == "cloned":
+        main_cloned()
     elif args.subcommand == "status":
         main_status()
     elif args.subcommand == "add":
