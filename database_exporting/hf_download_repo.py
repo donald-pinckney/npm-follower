@@ -2,6 +2,7 @@ import shutil
 from huggingface_hub import snapshot_download
 import sys
 import os
+import hf_verify_download
 
 MAX_WORKERS = 32
 
@@ -25,3 +26,5 @@ for root, dirs, files in os.walk(dst_dir):
             shutil.move(target, fp)
 
 shutil.rmtree(tmp_cache_dir)
+
+hf_verify_download.main(dst_dir)
