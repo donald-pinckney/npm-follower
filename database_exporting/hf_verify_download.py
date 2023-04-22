@@ -12,7 +12,6 @@ api = HfApi()
 data_info = api.dataset_info(
     repo_id=REPO_ID, revision=REVISION, files_metadata=True)
 repo_files = data_info.siblings
-print(repo_files)
 
 to_redownload = []
 for rf in repo_files:
