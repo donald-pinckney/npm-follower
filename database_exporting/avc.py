@@ -650,7 +650,7 @@ class Avc(object):
                 curr_size = os.path.getsize(dst)
 
                 if not os.path.exists(src):
-                    assert curr_size >= src_offset + num_bytes
+                    assert curr_size >= dst_offset + num_bytes
                     print(
                         f"WARNING: tried to append non-existent file ({src}), but it seems we already have enough bytes")
                     continue
