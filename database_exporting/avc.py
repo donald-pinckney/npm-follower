@@ -73,7 +73,7 @@ class DirectAddOperation(VirtualAddOperation):
 
 
 class Avc(object):
-    def __init__(self, data_dir: Optional[str], initialize: bool):
+    def __init__(self, data_dir: Optional[str], initialize: bool, cloned: bool = False):
         # Find top level directory of git repository at cwd
 
         try:
@@ -92,18 +92,40 @@ class Avc(object):
             self.avc_dir, "git_operations.json")
         self.config_path = os.path.join(self.avc_dir, "config.json")
 
-        if initialize:
-            assert data_dir is not None
-            self.data_toplevel = data_dir
+        if initialize or cloned:
+            if cloned:
+                self.data_toplevel = data_dir if data_dir is not None else self.repo_toplevel
+            else:
+                assert data_dir is not None
+                self.data_toplevel = data_dir
+
             assert os.path.exists(self.data_toplevel)
 
-            if os.path.exists(self.avc_dir):
-                print(f"{self.avc_dir} directory already exists")
-                raise Exception("Directory already exists")
+            if cloned:
+                if not os.path.exists(self.avc_dir):
+                    print(f"{self.avc_dir} directory does not exist")
+                    raise Exception("Directory does not exist")
+                if not os.path.exists(self.global_db_path):
+                    print(f"{self.global_db_path} file does not exist")
+                    raise Exception("File does not exist")
+                if os.path.exists(self.local_db_path):
+                    print(f"{self.local_db_path} file already exists")
+                    raise Exception("File already exists")
+                if not os.path.exists(self.blobs_dir):
+                    print(f"{self.blobs_dir} directory does not exist")
+                    raise Exception("Directory does not exist")
+                if os.path.exists(self.config_path):
+                    print(f"{self.config_path} file already exists")
+                    raise Exception("File already exists")
+            else:
+                if os.path.exists(self.avc_dir):
+                    print(f"{self.avc_dir} directory already exists")
+                    raise Exception("Directory already exists")
 
-            # Create .avc directory and subdirectories
-            os.mkdir(self.avc_dir)
-            os.mkdir(self.blobs_dir)
+                # Create .avc directory and subdirectories
+                os.mkdir(self.avc_dir)
+                os.mkdir(self.blobs_dir)
+
             self.global_db_conn = sqlite3.connect(self.global_db_path)
             self.local_db_conn = sqlite3.connect(self.local_db_path)
             self.global_db_conn.row_factory = sqlite3.Row
@@ -126,7 +148,7 @@ class Avc(object):
                     f.write("/.avc/local_state.db\n")
                     f.write("/.avc/git_operations.json\n")
 
-            self.initialize_db()
+            self.initialize_db(cloned)
 
         else:
             if not os.path.exists(self.avc_dir):
@@ -151,33 +173,34 @@ class Avc(object):
                 config = json.load(f)
                 self.data_toplevel: str = config["data_toplevel"]
 
-    def initialize_db(self):
-        self.global_db_conn.executescript("""
-            BEGIN;
-            CREATE TABLE commits (
-                id VARCHAR PRIMARY KEY NOT NULL,
-                parent_id VARCHAR
-            );
-            CREATE INDEX commits_parent_idx ON commits (parent_id);
-            CREATE TABLE commit_changes (
-                commit_id VARCHAR NOT NULL,
-                batch_id INTEGER NOT NULL,
-                path VARCHAR NOT NULL,
-                type VARCHAR NOT NULL,
-                start_offset INTEGER NOT NULL,
-                num_bytes INTEGER NOT NULL,
-                blob_name VARCHAR NOT NULL,
-                blob_offset INTEGER NOT NULL,
-                FOREIGN KEY (commit_id) REFERENCES commits (id),
-                PRIMARY KEY (commit_id, batch_id, path)
-            );
-            CREATE TABLE remote_refs (
-                name VARCHAR PRIMARY KEY NOT NULL,
-                commit_id VARCHAR
-            );
-            INSERT INTO remote_refs (name, commit_id) VALUES ("main", NULL);
-            COMMIT;
-        """)
+    def initialize_db(self, cloned: bool):
+        if not cloned:
+            self.global_db_conn.executescript("""
+                BEGIN;
+                CREATE TABLE commits (
+                    id VARCHAR PRIMARY KEY NOT NULL,
+                    parent_id VARCHAR
+                );
+                CREATE INDEX commits_parent_idx ON commits (parent_id);
+                CREATE TABLE commit_changes (
+                    commit_id VARCHAR NOT NULL,
+                    batch_id INTEGER NOT NULL,
+                    path VARCHAR NOT NULL,
+                    type VARCHAR NOT NULL,
+                    start_offset INTEGER NOT NULL,
+                    num_bytes INTEGER NOT NULL,
+                    blob_name VARCHAR NOT NULL,
+                    blob_offset INTEGER NOT NULL,
+                    FOREIGN KEY (commit_id) REFERENCES commits (id),
+                    PRIMARY KEY (commit_id, batch_id, path)
+                );
+                CREATE TABLE remote_refs (
+                    name VARCHAR PRIMARY KEY NOT NULL,
+                    commit_id VARCHAR
+                );
+                INSERT INTO remote_refs (name, commit_id) VALUES ("main", NULL);
+                COMMIT;
+            """)
 
         self.local_db_conn.executescript("""
             BEGIN;
@@ -214,6 +237,9 @@ class Avc(object):
     def get_main(self) -> Optional[str]:
         return self.global_db_conn.execute(
             "SELECT commit_id FROM remote_refs WHERE name = 'main'").fetchone()[0]
+
+    def get_parent(self, commit_id: str) -> Optional[str]:
+        return self.global_db_conn.execute("SELECT parent_id FROM commits WHERE id = ?", (commit_id,)).fetchone()[0]
 
     def get_committed_file_size(self, repo_file_path: str) -> Optional[int]:
         commit_id = self.get_head()
@@ -465,6 +491,11 @@ class Avc(object):
 
             current_batch_id += 1
 
+        if current_blob_name is not None and len(current_blob_read_sources) > 0:
+            current_blob_path = get_blob_path(current_blob_name)
+            required_git_operations.append(ConcatenatingAddOperation(
+                current_blob_path, current_blob_read_sources))
+
         if not dry_run:
             # 4. Write changes to global DB
             self.global_db_conn.execute("""
@@ -530,6 +561,118 @@ class Avc(object):
         """, (commit_id,))
         self.global_db_conn.commit()
 
+    def fast_forward(self):
+        all_staged_changes: List[Dict[str, Any]] = [dict(s) for s in self.local_db_conn.execute("""
+            SELECT path, type, start_offset, num_bytes, backing_path, backing_offset
+            FROM staged_changes
+        """).fetchall()]
+
+        if len(all_staged_changes) != 0:
+            raise Exception("Cannot fast-forward with staged changes")
+
+        commits_to_apply: List[str] = []
+        head_ref = self.get_head()
+        main_ref = self.get_main()
+        while main_ref != head_ref:
+            if main_ref is None:
+                raise Exception("head is not an ancestor of main")
+            commits_to_apply.insert(0, main_ref)
+            main_ref = self.get_parent(main_ref)
+
+        print("Now applying commits:")
+        print(commits_to_apply)
+
+        for c in commits_to_apply:
+            print(f"Applying {c}")
+            self.apply_commit(c)
+
+    def apply_commit(self, commit_id: str):
+
+        all_commit_changes: List[Dict[str, Any]] = [dict(s) for s in self.global_db_conn.execute("""
+            SELECT path, type, start_offset, num_bytes, blob_name, blob_offset
+            FROM commit_changes
+            WHERE commit_id = ?
+            ORDER BY batch_id
+        """, (commit_id,)).fetchall()]
+
+        assert len(all_commit_changes) > 0
+
+        # print(all_commit_changes)
+
+        planned_io_operations_rev = []
+        deleted_set = set()
+        for c in reversed(all_commit_changes):
+            rel_dst = c["path"]
+            abs_dst = os.path.join(self.data_toplevel, rel_dst)
+            t = c["type"]
+            start_offset = c["start_offset"]
+            num_bytes = c["num_bytes"]
+            blob_name = c["blob_name"]
+            blob_offset = c["blob_offset"]
+            blob_path = os.path.join(self.blobs_dir, blob_name)
+
+            if t == "create":
+                # print(abs_dst, blob_path, num_bytes)
+                assert blob_offset == 0
+                assert start_offset == 0
+                assert num_bytes == os.path.getsize(blob_path)
+                planned_io_operations_rev.append(
+                    ("move", [blob_path, abs_dst]))
+            elif t == "append":
+                if blob_path not in deleted_set:
+                    deleted_set.add(blob_path)
+                    planned_io_operations_rev.append(("delete", [blob_path]))
+                planned_io_operations_rev.append(
+                    ("append_bytes", [blob_path, blob_offset, num_bytes, abs_dst, start_offset]))
+            else:
+                raise Exception(f"Unknown change type: {t}")
+
+        planned_io_operations = list(reversed(planned_io_operations_rev))
+        del planned_io_operations_rev
+
+        for op in planned_io_operations:
+            print(op)
+            t, args = op
+
+            if t == "move":
+                src, dst = args[0], args[1]
+                os.rename(src, dst)
+            elif t == "delete":
+                path = args[0]
+                # if not os.path.exists(path):
+                #     print(
+                #         f"WARNING: tried to delete non-existent file ({path})")
+                #     continue
+                os.remove(path)
+            elif t == "append_bytes":
+                src, src_offset, num_bytes, dst, dst_offset = args
+
+                curr_size = os.path.getsize(dst)
+
+                # if not os.path.exists(src):
+                #     assert curr_size >= dst_offset + num_bytes
+                #     print(
+                #         f"WARNING: tried to append non-existent file ({src}), but it seems we already have enough bytes")
+                #     continue
+
+                assert dst_offset == curr_size
+
+                with open(src, "rb") as f:
+                    f.seek(src_offset)
+                    data = f.read(num_bytes)
+
+                assert len(data) == num_bytes
+
+                with open(dst, "ab") as f:
+                    f.write(data)
+
+        self.local_db_conn.execute("""
+            UPDATE local_refs SET commit_id = ?
+            WHERE name = 'HEAD'
+        """, (commit_id,))
+
+        self.local_db_conn.commit()
+
     def __del__(self):
         if hasattr(self, "local_db_conn"):
             self.local_db_conn.close()
@@ -539,6 +682,10 @@ class Avc(object):
 
 def main_init(data_dir: str):
     Avc(data_dir=data_dir, initialize=True)
+
+
+def main_cloned():
+    Avc(data_dir=None, initialize=True, cloned=True)
 
 
 def main_status():
@@ -568,6 +715,11 @@ def main_build_git_commit(dry_run: bool):
     print(avc.git_operations_path)
 
 
+def main_fast_forward():
+    avc = Avc(data_dir=None, initialize=False)
+    avc.fast_forward()
+
+
 def main():
     # Define an argument parser that accepts 4 subcommands: init, status, add, commit.
     # The init command accepts no arguments
@@ -580,7 +732,9 @@ def main():
     subparsers.required = True
     init_parser = subparsers.add_parser("init")
     init_parser.add_argument("--data-dir")
+    subparsers.add_parser("cloned")
     subparsers.add_parser("status")
+    subparsers.add_parser("fast-forward")
     add_parser = subparsers.add_parser("add")
     add_parser.add_argument("path")
     add_parser.add_argument("--num-bytes", type=int)
@@ -592,6 +746,8 @@ def main():
     args = parser.parse_args()
     if args.subcommand == "init":
         main_init(args.data_dir if args.data_dir else ".")
+    elif args.subcommand == "cloned":
+        main_cloned()
     elif args.subcommand == "status":
         main_status()
     elif args.subcommand == "add":
@@ -604,6 +760,8 @@ def main():
     #     main_confirm_push()
     elif args.subcommand == "abort-last-commit":
         main_abort_last_commit()
+    elif args.subcommand == "fast-forward":
+        main_fast_forward()
     else:
         raise Exception("Invalid subcommand")
 
