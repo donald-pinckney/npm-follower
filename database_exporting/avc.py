@@ -639,11 +639,22 @@ class Avc(object):
                 os.rename(src, dst)
             elif t == "delete":
                 path = args[0]
+                if not os.path.exists(path):
+                    print(
+                        f"WARNING: tried to delete non-existent file ({path})")
+                    continue
                 os.remove(path)
             elif t == "append_bytes":
                 src, src_offset, num_bytes, dst, dst_offset = args
 
                 curr_size = os.path.getsize(dst)
+
+                if not os.path.exists(src):
+                    assert curr_size >= src_offset + num_bytes
+                    print(
+                        f"WARNING: tried to append non-existent file ({src}), but it seems we already have enough bytes")
+                    continue
+
                 assert dst_offset == curr_size
 
                 with open(src, "rb") as f:
