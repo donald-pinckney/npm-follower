@@ -305,17 +305,17 @@ def run_chunk(op_chunk):
     return 'ok'
 
 
-def chunked_or_distributed(
-        items,
-        max_groups: int,
-        optimal_group_size: int):
-    """Divide *items* into at most *max_groups*. If possible, produces fewer
-    than *max_groups*, but with at most *optimal_group_size* items in each
-    group."""
-    if len(items) / optimal_group_size <= max_groups:
-        return chunked(items, optimal_group_size)
-    else:
-        return distribute(max_groups, items)
+# def chunked_or_distributed(
+#         items,
+#         max_groups: int,
+#         optimal_group_size: int):
+#     """Divide *items* into at most *max_groups*. If possible, produces fewer
+#     than *max_groups*, but with at most *optimal_group_size* items in each
+#     group."""
+#     if len(items) / optimal_group_size <= max_groups:
+#         return chunked(items, optimal_group_size)
+#     else:
+#         return distribute(max_groups, items)
 
 
 def main():

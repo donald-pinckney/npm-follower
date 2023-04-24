@@ -606,6 +606,7 @@ class Avc(object):
             blob_path = os.path.join(self.blobs_dir, blob_name)
 
             if t == "create":
+                print(abs_dst, blob_path, num_bytes)
                 assert blob_offset == 0
                 assert start_offset == 0
                 assert num_bytes == os.path.getsize(blob_path)
