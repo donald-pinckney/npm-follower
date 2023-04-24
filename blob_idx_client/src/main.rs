@@ -25,7 +25,10 @@ use tokio::{
 
 #[tokio::main]
 async fn main() {
+    // The .secret.env has higher priority than .env, so we load it first
+    dotenvy::from_filename(".secret.env").expect("failed to load .secret.env. Please create it");
     dotenvy::dotenv().ok();
+
     let args: Vec<String> = std::env::args().collect();
     // args[1] is either "write" or "read"
     if args.len() < 3 {
@@ -123,6 +126,8 @@ async fn check_req_failed(resp: reqwest::Response) -> Result<reqwest::Response, 
 async fn read_slice(tarball_url_key: String) -> Result<BlobStorageSlice, ClientError> {
     let blob_api_url = std::env::var("BLOB_API_URL").expect("BLOB_API_URL must be set");
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY must be set");
+
+    println!("api key = {}", blob_api_key);
 
     let client = make_client()
         .map_err(|e| ClientError::ReqwestError(format!("Failed to build client: {}", e)))?;
