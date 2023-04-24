@@ -3,6 +3,8 @@ from huggingface_hub import snapshot_download
 import sys
 import os
 import hf_verify_download
+import subprocess
+import avc
 
 MAX_WORKERS = 32
 
@@ -28,3 +30,12 @@ for root, dirs, files in os.walk(dst_dir):
 shutil.rmtree(tmp_cache_dir)
 
 hf_verify_download.main(dst_dir)
+
+# Run git init in the dst_dir directory
+subprocess.run(["git", "init"], cwd=dst_dir)
+
+# Init avc
+avc.main_cloned()
+
+# Fast-forward avc
+avc.main_fast_forward()
