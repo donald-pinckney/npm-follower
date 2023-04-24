@@ -442,9 +442,18 @@ async fn cp_main(args: Vec<String>) -> Result<(), ClientError> {
     let tmp_path = read_and_send_main(args[0..3].to_vec()).await?;
 
     // Now move the file to the destination path
-    tokio::fs::rename(tmp_path, dst_path).await?;
-
-    Ok(())
+    match tokio::fs::rename(&tmp_path, dst_path).await {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            if e.kind().to_string() == "cross-device link or rename" {
+                tokio::fs::copy(&tmp_path, dst_path).await?;
+                tokio::fs::remove_file(tmp_path).await?;
+                Ok(())
+            } else {
+                Err(e.into())
+            }
+        }
+    }
 }
 
 async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
