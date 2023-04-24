@@ -592,9 +592,10 @@ class Avc(object):
 
         assert len(all_commit_changes) > 0
 
-        print(all_commit_changes)
+        # print(all_commit_changes)
 
         planned_io_operations_rev = []
+        deleted_set = set()
         for c in reversed(all_commit_changes):
             rel_dst = c["path"]
             abs_dst = os.path.join(self.data_toplevel, rel_dst)
@@ -606,14 +607,16 @@ class Avc(object):
             blob_path = os.path.join(self.blobs_dir, blob_name)
 
             if t == "create":
-                print(abs_dst, blob_path, num_bytes)
+                # print(abs_dst, blob_path, num_bytes)
                 assert blob_offset == 0
                 assert start_offset == 0
                 assert num_bytes == os.path.getsize(blob_path)
                 planned_io_operations_rev.append(
                     ("move", [blob_path, abs_dst]))
             elif t == "append":
-                planned_io_operations_rev.append(("delete", [blob_path]))
+                if blob_path not in deleted_set:
+                    deleted_set.add(blob_path)
+                    planned_io_operations_rev.append(("delete", [blob_path]))
                 planned_io_operations_rev.append(
                     ("append_bytes", [blob_path, blob_offset, num_bytes, abs_dst, start_offset]))
             else:
