@@ -32,7 +32,7 @@ async fn main() {
     let args: Vec<String> = std::env::args().collect();
     // args[1] is either "write" or "read"
     if args.len() < 3 {
-        eprintln!("Usage: {} [write|read|compute|store] ...", args[0]);
+        eprintln!("Usage: {} [write|read|cp|compute|store] ...", args[0]);
         std::process::exit(1);
     }
     let resp = match args[1].as_str() {
@@ -46,6 +46,10 @@ async fn main() {
         },
         "read" => match read_and_send_main(args).await {
             Ok(o) => ClientResponse::Message(serde_json::Value::String(o)),
+            Err(e) => ClientResponse::Error(e),
+        },
+        "cp" => match cp_main(args).await {
+            Ok(_) => ClientResponse::Message(serde_json::json!({})),
             Err(e) => ClientResponse::Error(e),
         },
         "compute" => match compute_run_bin(args).await {
@@ -426,6 +430,21 @@ async fn read_and_send_main(args: Vec<String>) -> Result<String, ClientError> {
     let tarball_url_key = &args[2];
     let tmp_dir_root = format!("/scratch/{}", std::env::var("USER").unwrap());
     read_and_send(tarball_url_key.to_string(), &tmp_dir_root).await
+}
+
+async fn cp_main(args: Vec<String>) -> Result<(), ClientError> {
+    if args.len() != 4 {
+        eprintln!("Usage: {} cp <tarball url key> <destination path>", args[0]);
+        std::process::exit(1);
+    }
+
+    let dst_path = &args[3];
+    let tmp_path = read_and_send_main(args[0..3].to_vec()).await?;
+
+    // Now move the file to the destination path
+    tokio::fs::rename(tmp_path, dst_path).await?;
+
+    Ok(())
 }
 
 async fn download_and_write(args: Vec<String>) -> Result<(), ClientError> {
