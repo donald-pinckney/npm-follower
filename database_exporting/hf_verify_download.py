@@ -8,8 +8,7 @@ import hashlib
 
 
 REPO_ID = "nuprl/npm-follower-data"
-REVISION = "main"
-# REVISION = "v1.0.0-apr-17-2023"
+REVISION = "v1.0.1-apr-23-2023"
 
 
 def file_sha256sum(filename):

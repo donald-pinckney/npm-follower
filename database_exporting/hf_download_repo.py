@@ -11,7 +11,7 @@ MAX_WORKERS = 32
 dst_dir = sys.argv[1]
 tmp_cache_dir = "__tmp_hf_cache/"
 
-snapshot_download(repo_id="nuprl/npm-follower-data", repo_type="dataset", revision="v1.0.0-apr-17-2023",
+snapshot_download(repo_id="nuprl/npm-follower-data", repo_type="dataset", revision="v1.0.1-apr-23-2023",
                   local_dir=dst_dir, local_dir_use_symlinks=True, cache_dir=tmp_cache_dir, max_workers=MAX_WORKERS)
 
 
@@ -30,12 +30,3 @@ for root, dirs, files in os.walk(dst_dir):
 shutil.rmtree(tmp_cache_dir)
 
 hf_verify_download.main(dst_dir)
-
-# Run git init in the dst_dir directory
-subprocess.run(["git", "init"], cwd=dst_dir)
-
-# Init avc
-avc.main_cloned()
-
-# Fast-forward avc
-avc.main_fast_forward()
