@@ -491,6 +491,11 @@ class Avc(object):
 
             current_batch_id += 1
 
+        if current_blob_name is not None and len(current_blob_read_sources) > 0:
+            current_blob_path = get_blob_path(current_blob_name)
+            required_git_operations.append(ConcatenatingAddOperation(
+                current_blob_path, current_blob_read_sources))
+
         if not dry_run:
             # 4. Write changes to global DB
             self.global_db_conn.execute("""
