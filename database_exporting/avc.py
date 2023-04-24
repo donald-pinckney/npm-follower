@@ -627,13 +627,35 @@ class Avc(object):
 
         for op in planned_io_operations:
             print(op)
+            t, args = op
 
-        # self.local_db_conn.execute("""
-        #     UPDATE local_refs SET commit_id = ?
-        #     WHERE name = 'HEAD'
-        # """, (commit_id,))
+            if t == "move":
+                src, dst = args[0], args[1]
+                os.rename(src, dst)
+            elif t == "delete":
+                path = args[0]
+                os.remove(path)
+            elif t == "append_bytes":
+                src, src_offset, num_bytes, dst, dst_offset = args
 
-        # self.local_db_conn.commit()
+                curr_size = os.path.getsize(dst)
+                assert dst_offset == curr_size
+
+                with open(src, "rb") as f:
+                    f.seek(src_offset)
+                    data = f.read(num_bytes)
+
+                assert len(data) == num_bytes
+
+                with open(dst, "ab") as f:
+                    f.write(data)
+
+        self.local_db_conn.execute("""
+            UPDATE local_refs SET commit_id = ?
+            WHERE name = 'HEAD'
+        """, (commit_id,))
+
+        self.local_db_conn.commit()
 
     def __del__(self):
         if hasattr(self, "local_db_conn"):
