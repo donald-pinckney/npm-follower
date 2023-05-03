@@ -38,7 +38,9 @@ jobs:
     - name: Install Diesel
       run: cargo install diesel_cli --no-default-features --features postgres
     - name: Setup Diesel
-      run: cd postgres_db && diesel setup
+      run: cd postgres_db && diesel setup --locked-schema
+    - name: Check Other `tarball_analysis` Schema is Up-to-Date
+      run: cd postgres_db && diesel print-schema --config-file diesel_tarball_analysis.toml | diff src/schema/schema_tarball_analysis.rs -
     - name: Check
       run: cargo check --verbose
     - name: Clippy
