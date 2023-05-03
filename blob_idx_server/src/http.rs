@@ -42,13 +42,22 @@ impl HTTP {
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let addr = SocketAddr::from_str(&format!("{}:{}", self.host, self.port))?;
 
+        let max_workers = job_config.max_comp_worker_jobs + job_config.max_xfer_worker_jobs;
+        let job_manager = if max_workers > 0 {
+            Some(Arc::new(JobManager::init(job_config).await))
+        } else {
+            None
+        };
+
+        let blob = Arc::new(BlobStorage::init(blob_config).await);
+
         let server = Server::bind(&addr).serve(MakeSvc {
-            blob: Arc::new(BlobStorage::init(blob_config).await),
-            job_manager: Arc::new(JobManager::init(job_config).await),
+            blob,
+            job_manager,
             api_key: self.api_key,
         });
 
-        println!("Listening on http://{}", addr);
+        println!("Listening on http://{addr}");
 
         server.with_graceful_shutdown(shutdown_signal).await?;
         Ok(())
@@ -58,7 +67,7 @@ impl HTTP {
 /// Represents a service for the hyper http server
 struct Svc {
     blob_store: Arc<BlobStorage>,
-    job_manager: Arc<JobManager>,
+    job_manager: Option<Arc<JobManager>>,
     api_key: String,
 }
 
@@ -212,9 +221,10 @@ impl Service<Request<Body>> for Svc {
                         "blob/keep_alive_lock" => {
                             routes::blob::keep_alive_lock(blob_store, try_from_str(&body)?).await
                         }
-                        "job/submit" => {
-                            routes::job::submit_job(job_manager, try_from_str(&body)?).await
-                        }
+                        "job/submit" => match job_manager {
+                            Some(man) => routes::job::submit_job(man, try_from_str(&body)?).await,
+                            None => Err(HTTPError::Job(JobError::NoJobManager)),
+                        },
                         p => Err(HTTPError::InvalidPath(p.to_string())),
                     },
                     "GET" => match path.as_str() {
@@ -339,7 +349,7 @@ mod routes {
 #[derive(Clone)]
 struct MakeSvc {
     blob: Arc<BlobStorage>,
-    job_manager: Arc<JobManager>,
+    job_manager: Option<Arc<JobManager>>,
     api_key: String,
 }
 
