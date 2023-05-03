@@ -453,13 +453,11 @@ impl EntryProcessor {
             .map(|x| self.db.get_dependency_by_id(conn, *x))
             .collect();
 
-        // Assert that the version is in normal state
-        assert_eq!(
-            current_data.current_version_state_type,
-            VersionStateType::Normal
-        );
-
         // Assert that deps didn't change
+        assert_eq!(
+            current_prod_deps.len(),
+            new_pack_data.prod_dependencies.len()
+        );
         for (old, new) in current_prod_deps
             .iter()
             .zip(new_pack_data.prod_dependencies)
@@ -467,10 +465,15 @@ impl EntryProcessor {
             assert_dep_eq(old, &new);
         }
 
+        assert_eq!(current_dev_deps.len(), new_pack_data.dev_dependencies.len());
         for (old, new) in current_dev_deps.iter().zip(new_pack_data.dev_dependencies) {
             assert_dep_eq(old, &new);
         }
 
+        assert_eq!(
+            current_peer_deps.len(),
+            new_pack_data.peer_dependencies.len()
+        );
         for (old, new) in current_peer_deps
             .iter()
             .zip(new_pack_data.peer_dependencies)
@@ -478,6 +481,10 @@ impl EntryProcessor {
             assert_dep_eq(old, &new);
         }
 
+        assert_eq!(
+            current_optional_deps.len(),
+            new_pack_data.optional_dependencies.len()
+        );
         for (old, new) in current_optional_deps
             .iter()
             .zip(new_pack_data.optional_dependencies)
@@ -512,7 +519,45 @@ impl EntryProcessor {
             );
         }
 
-        // Assert that extra metadata didn't change
+        // If the version state changed from Deleted -> Normal,
+        // we need to update the state, and also update dependency counts accordingly.
+        if current_data.current_version_state_type != VersionStateType::Normal {
+            // We don't handle cases other than Deleted -> Normal
+            assert_eq!(
+                current_data.current_version_state_type,
+                VersionStateType::Deleted
+            );
+
+            let add_prod_deps: Vec<_> = current_prod_deps
+                .into_iter()
+                .map(|x| x.mark_as_add(DependencyType::Prod).as_new())
+                .collect();
+
+            let add_dev_deps: Vec<_> = current_dev_deps
+                .into_iter()
+                .map(|x| x.mark_as_add(DependencyType::Dev).as_new())
+                .collect();
+
+            let add_peer_deps: Vec<_> = current_peer_deps
+                .into_iter()
+                .map(|x| x.mark_as_add(DependencyType::Peer).as_new())
+                .collect();
+
+            let add_optional_deps: Vec<_> = current_optional_deps
+                .into_iter()
+                .map(|x| x.mark_as_add(DependencyType::Optional).as_new())
+                .collect();
+
+            self.insert_or_inc_dependencies(conn, add_prod_deps);
+            self.insert_or_inc_dependencies(conn, add_dev_deps);
+            self.insert_or_inc_dependencies(conn, add_peer_deps);
+            self.insert_or_inc_dependencies(conn, add_optional_deps);
+
+            self.db
+                .undelete_to_normal_version(conn, version_id, seq, diff_entry_id, None)
+        }
+
+        // If extra metadata changed, update it
         let new_extra_metadata = Value::Object(new_pack_data.extra_metadata.into_iter().collect());
         if current_data.extra_metadata != new_extra_metadata {
             self.db

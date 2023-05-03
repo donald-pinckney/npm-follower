@@ -79,6 +79,39 @@ impl Dependency {
         }
     }
 
+    pub fn mark_as_add(self, dep_type: DependencyType) -> Dependency {
+        match dep_type {
+            DependencyType::Prod => Dependency {
+                prod_freq_count: 1,
+                dev_freq_count: 0,
+                peer_freq_count: 0,
+                optional_freq_count: 0,
+                ..self
+            },
+            DependencyType::Dev => Dependency {
+                prod_freq_count: 0,
+                dev_freq_count: 1,
+                peer_freq_count: 0,
+                optional_freq_count: 0,
+                ..self
+            },
+            DependencyType::Peer => Dependency {
+                prod_freq_count: 0,
+                dev_freq_count: 0,
+                peer_freq_count: 1,
+                optional_freq_count: 0,
+                ..self
+            },
+            DependencyType::Optional => Dependency {
+                prod_freq_count: 0,
+                dev_freq_count: 0,
+                peer_freq_count: 0,
+                optional_freq_count: 1,
+                ..self
+            },
+        }
+    }
+
     pub fn as_new(self) -> NewDependency {
         NewDependency {
             dst_package_name: self.dst_package_name,
