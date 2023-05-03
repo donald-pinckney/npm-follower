@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::connection::QueryRunner;
 
-use super::schema::diff_analysis;
+use super::schema::tarball_analysis::diff_analysis;
 use diesel::{upsert::excluded, Queryable};
 
 use diesel::prelude::*;
@@ -110,7 +110,7 @@ pub fn insert_batch_diff_analysis<R: QueryRunner>(
 }
 
 pub fn count_diff_analysis<R: QueryRunner>(conn: &mut R) -> Result<i64, diesel::result::Error> {
-    use crate::schema::diff_analysis::dsl::*;
+    use crate::schema::tarball_analysis::diff_analysis::dsl::*;
     let count = conn.get_result(diff_analysis.count())?;
     Ok(count)
 }
@@ -120,7 +120,7 @@ pub fn query_table<R: QueryRunner>(
     limit: Option<i64>,
     last: Option<(i64, i64)>,
 ) -> Result<Vec<DiffAnalysis>, diesel::result::Error> {
-    use super::schema::diff_analysis::dsl::*;
+    use super::schema::tarball_analysis::diff_analysis::dsl::*;
     let results: Vec<DiffAnalysisSql> = match (limit, last) {
         (Some(limit), Some(last)) => conn.load(
             diff_analysis

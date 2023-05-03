@@ -1,0 +1,3 @@
+DROP SCHEMA IF EXISTS solving_analysis CASCADE;
+DROP SCHEMA IF EXISTS tarball_analysis CASCADE;
+DROP SCHEMA IF EXISTS metadata_analysis CASCADE;

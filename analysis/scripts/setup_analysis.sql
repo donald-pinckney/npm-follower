@@ -1,4 +1,4 @@
-CREATE SCHEMA metadata_analysis;
+CREATE SCHEMA IF NOT EXISTS metadata_analysis;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA metadata_analysis
 GRANT ALL ON TABLES TO pinckney,

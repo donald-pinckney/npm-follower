@@ -2,6 +2,7 @@
 # see diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "src/schema/schema_public.rs"
-patch_file = "src/schema/schema_public.patch"
+schema = "tarball_analysis"
+file = "src/schema/schema_tarball_analysis.rs"
+#patch_file = "src/schema/schema_tarball_analysis.patch"
 #import_types = ["diesel::sql_types::*", "crate::custom_types::sql_type_names::*"]
