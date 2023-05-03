@@ -59,10 +59,7 @@ pub fn get_version_by_id<R: QueryRunner>(conn: &mut R, version_id: i64) -> Versi
     conn.get_result(query).expect("Error getting package")
 }
 
-pub fn get_versions_by_package_id<R: QueryRunner>(
-    conn: &mut R,
-    package_id: i64,
-) -> Vec<Version> {
+pub fn get_versions_by_package_id<R: QueryRunner>(conn: &mut R, package_id: i64) -> Vec<Version> {
     let query = versions::table.filter(versions::package_id.eq(package_id));
     conn.get_results(query).expect("Error getting package")
 }
