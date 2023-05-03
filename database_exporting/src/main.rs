@@ -23,8 +23,7 @@ fn load_hf_token() -> String {
     tokens_path.pop();
     tokens_path.push(".secret.env");
     dotenvy::from_filename(".secret.env").expect("failed to load .secret.env.");
-    let hf_token = std::env::var("HF_TOKEN").expect("HF_TOKEN env var not set");
-    hf_token
+    std::env::var("HF_TOKEN").expect("HF_TOKEN env var not set")
 }
 
 fn main() -> io::Result<()> {
