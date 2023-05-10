@@ -17,6 +17,7 @@ fn main() -> Result<(), std::io::Error> {
         ("prepare_diffs_to_compute", vec!["build_updates"]),
         ("possible_direct_dev_deps", vec!["setup_analysis"]),
         ("possible_direct_runtime_deps", vec!["setup_analysis"]),
+        ("possible_version_direct_runtime_deps", vec!["setup_analysis"]),
         ("possible_transitive_runtime_deps", vec!["possible_direct_runtime_deps"]),
         ("possible_install_deps", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps"]),
         ("deps_stats", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"]),
