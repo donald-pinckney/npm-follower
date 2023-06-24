@@ -28,7 +28,7 @@ query QueryAllGHSA($cursor: String) {
           }
         }
         ghsaId
-        vulnerabilities(first: 100) {
+        vulnerabilities(first: 100, ecosystem: NPM) {
           nodes {
             vulnerableVersionRange
             package {
