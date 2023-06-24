@@ -2,6 +2,8 @@ use super::connection::DbConnection;
 use super::schema;
 use super::schema::ghsa;
 use super::schema::vulnerabilities;
+use super::schema::cwes;
+use super::schema::ghsa_cwe_relation;
 use crate::connection::QueryRunner;
 use crate::custom_types::Semver;
 use chrono::{DateTime, Utc};
@@ -47,6 +49,22 @@ struct GhsaVulnerabilityRow {
     vulnerable_version_upper_bound: Option<Semver>,
     vulnerable_version_upper_bound_inclusive: bool,
     first_patched_version: Option<Semver>,
+}
+
+#[derive(Insertable, Debug, Clone)]
+#[diesel(table_name = cwes)]
+pub struct Cwe {
+    pub id: String,
+    pub name: String,
+    pub description: String
+}
+
+
+#[derive(Insertable, Debug, Clone)]
+#[diesel(table_name = ghsa_cwe_relation)]
+pub struct GhsaCweRelation {
+    pub ghsa_id: String,
+    pub cwe_id: String
 }
 
 pub fn insert_ghsa<R>(conn: &mut R, advisory: Ghsa, vulns: Vec<GhsaVulnerability>)
@@ -123,4 +141,67 @@ pub fn query_ghsa_by_id(conn: &mut DbConnection, ghsa_id: &str) -> (Ghsa, Vec<Gh
         .collect();
 
     (adv, vulns)
+}
+
+const INSERT_CHUNK_SIZE: usize = 256;
+
+pub fn insert_cwes<R>(conn: &mut R, cwes_to_insert: Vec<Cwe>)
+where
+    R: QueryRunner,
+{
+    let mut chunk_iter = cwes_to_insert.chunks_exact(INSERT_CHUNK_SIZE);
+    for chunk in &mut chunk_iter {
+        insert_cwes_chunk(conn, chunk);
+    }
+
+    insert_cwes_chunk(conn, chunk_iter.remainder());
+}
+
+
+fn insert_cwes_chunk<R>(conn: &mut R, cwes_to_insert: &[Cwe])
+where
+    R: QueryRunner,
+{
+    use schema::cwes::dsl::*;
+
+    let insert_cwes_query = diesel::insert_into(cwes)
+        .values(cwes_to_insert)
+        .on_conflict(id)
+        .do_update()
+        .set((
+            name.eq(excluded(name)),
+            description.eq(excluded(description))
+        ));
+
+    conn.execute(insert_cwes_query)
+        .expect("Failed to insert cwes");
+}
+
+
+pub fn associate_ghsa_to_cwe<R>(conn: &mut R, assoc: Vec<GhsaCweRelation>)
+where
+    R: QueryRunner,
+{
+    let mut chunk_iter = assoc.chunks_exact(INSERT_CHUNK_SIZE);
+    for chunk in &mut chunk_iter {
+        associate_ghsa_to_cwe_chunk(conn, chunk);
+    }
+
+    associate_ghsa_to_cwe_chunk(conn, chunk_iter.remainder());
+}
+
+fn associate_ghsa_to_cwe_chunk<R>(conn: &mut R, assoc: &[GhsaCweRelation])
+where
+    R: QueryRunner,
+{
+    use schema::ghsa_cwe_relation::dsl::*;
+
+    // TODO: batch
+    let insert_rels = diesel::insert_into(ghsa_cwe_relation)
+        .values(assoc)
+        .on_conflict((ghsa_id, cwe_id))
+        .do_nothing();
+
+    conn.execute(insert_rels)
+        .expect("Failed to insert rels");
 }

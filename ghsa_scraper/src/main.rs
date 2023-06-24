@@ -5,7 +5,7 @@ use postgres_db::{
 };
 use semver_spec_serialization::ParseSemverError;
 
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 
 use graphql_client::{GraphQLQuery, Response};
 use serde::{Deserialize, Serialize};
@@ -40,7 +40,6 @@ pub struct Advisory {
     pub updated_at: DateTime,
     pub published_at: DateTime,
     pub cvss: Option<Cvss>,
-    pub classification: AdvisoryClassification,
     pub cwes: CweNodes,
     pub vulnerabilities: VulnNodes,
 }
@@ -50,13 +49,6 @@ pub struct Advisory {
 pub struct Cvss {
     pub score: f32,
     pub vector_string: Option<String>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "UPPERCASE")]
-pub enum AdvisoryClassification {
-    General,
-    Malware
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -171,6 +163,9 @@ fn insert_ghsa<R>(conn: &mut R, vulns: Vec<SecurityVulnerability>)
 where
     R: QueryRunner,
 {
+    let mut ghsa_cwe_pairs: HashSet<(String, String)> = HashSet::new();
+    let mut cwe_info: HashMap<String, (String, String)> = HashMap::new();
+    
     for vuln in vulns {
         let vulnerabilities: Vec<GhsaVulnerability> = vuln
             .advisory
@@ -217,6 +212,14 @@ where
             .unwrap()
             .with_timezone(&chrono::Utc);
 
+        vuln.advisory.cwes.nodes.into_iter().for_each(|cwe_node| {
+            ghsa_cwe_pairs.insert((vuln.advisory.ghsa_id.clone(), cwe_node.cwe_id.clone()));
+            cwe_info.insert(
+                cwe_node.cwe_id,
+                (cwe_node.name, cwe_node.description),
+            );
+        });
+
         let ghsa_db_struct = postgres_db::ghsa::Ghsa {
             id: vuln.advisory.ghsa_id,
             severity: vuln.severity,
@@ -246,6 +249,25 @@ where
         };
         postgres_db::ghsa::insert_ghsa(conn, ghsa_db_struct, vulnerabilities);
     }
+
+
+    let cwes_to_insert: Vec<_> = cwe_info.into_iter().map(|(id, (name, description))| {
+        postgres_db::ghsa::Cwe {
+            id,
+            name,
+            description
+        }
+    }).collect();
+
+    let ghsa_cwe_relations_to_insert: Vec<_> = ghsa_cwe_pairs.into_iter().map(|(ghsa_id, cwe_id)| {
+        postgres_db::ghsa::GhsaCweRelation {
+            ghsa_id,
+            cwe_id
+        }
+    }).collect();
+
+    postgres_db::ghsa::insert_cwes(conn, cwes_to_insert);
+    postgres_db::ghsa::associate_ghsa_to_cwe(conn, ghsa_cwe_relations_to_insert);
 }
 
 #[tokio::main]
