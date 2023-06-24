@@ -1,7 +1,7 @@
-diff --git a/postgres_db/src/schema.rs b/postgres_db/src/schema.rs
-index 7e5f007..065c5ad 100644
---- a/postgres_db/src/schema.rs
-+++ b/postgres_db/src/schema.rs
+diff --git a/postgres_db/src/schema/schema_public.rs b/postgres_db/src/schema/schema_public.rs
+index d81e3c6..fea6b47 100644
+--- a/postgres_db/src/schema/schema_public.rs
++++ b/postgres_db/src/schema/schema_public.rs
 @@ -22,13 +22,13 @@ pub mod sql_types {
      pub struct ParsedSpecStruct;
  
@@ -17,7 +17,7 @@ index 7e5f007..065c5ad 100644
      #[derive(diesel::sql_types::SqlType)]
      #[diesel(postgres_type(name = "version_state"))]
      pub struct VersionState;
-@@ -120,26 +120,26 @@ diesel::table! {
+@@ -128,13 +128,13 @@ diesel::table! {
          severity -> Text,
          description -> Text,
          summary -> Text,
@@ -32,6 +32,7 @@ index 7e5f007..065c5ad 100644
  }
  
  diesel::table! {
+@@ -148,13 +148,13 @@ diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::InternalDiffLogVersionState;
  
@@ -46,7 +47,7 @@ index 7e5f007..065c5ad 100644
  diesel::table! {
      internal_state (key) {
          key -> Varchar,
-@@ -154,13 +154,13 @@ diesel::table! {
+@@ -169,13 +169,13 @@ diesel::table! {
      use super::sql_types::PackageState;
  
      packages (id) {
@@ -61,7 +62,7 @@ index 7e5f007..065c5ad 100644
          other_dist_tags -> Nullable<Jsonb>,
          other_time_data -> Nullable<Jsonb>,
          unpublished_data -> Nullable<Jsonb>,
-@@ -176,22 +176,22 @@ diesel::table! {
+@@ -191,22 +191,22 @@ diesel::table! {
  
      versions (id) {
          id -> Int8,
@@ -89,7 +90,7 @@ index 7e5f007..065c5ad 100644
  diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::SemverStruct;
-@@ -206,12 +206,13 @@ diesel::table! {
+@@ -221,12 +221,13 @@ diesel::table! {
          vulnerable_version_upper_bound_inclusive -> Bool,
          first_patched_version -> Nullable<SemverStruct>,
      }
@@ -101,5 +102,5 @@ index 7e5f007..065c5ad 100644
  
  diesel::allow_tables_to_appear_in_same_query!(
      change_log,
+     cwes,
      dependencies,
-     diff_log,

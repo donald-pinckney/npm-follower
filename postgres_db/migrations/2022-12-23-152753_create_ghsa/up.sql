@@ -39,3 +39,15 @@ CREATE TABLE vulnerabilities (
     vulnerable_version_upper_bound_inclusive
   )
 );
+
+CREATE TABLE cwes (
+  id TEXT PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL
+);
+
+CREATE TABLE ghsa_cwe_relation (
+  ghsa_id TEXT NOT NULL,
+  cwe_id TEXT NOT NULL,
+  PRIMARY KEY (ghsa_id, cwe_id)
+);

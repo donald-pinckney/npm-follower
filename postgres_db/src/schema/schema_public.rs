@@ -47,6 +47,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    cwes (id) {
+        id -> Text,
+        name -> Text,
+        description -> Text,
+    }
+}
+
+diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::ParsedSpecStruct;
 
@@ -126,6 +134,13 @@ diesel::table! {
         refs -> Array<Text>,
         cvss_score -> Nullable<Float4>,
         cvss_vector -> Nullable<Text>,
+    }
+}
+
+diesel::table! {
+    ghsa_cwe_relation (ghsa_id, cwe_id) {
+        ghsa_id -> Text,
+        cwe_id -> Text,
     }
 }
 
@@ -214,11 +229,13 @@ diesel::joinable!(vulnerabilities -> ghsa (ghsa_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     change_log,
+    cwes,
     dependencies,
     diff_log,
     download_tasks,
     downloaded_tarballs,
     ghsa,
+    ghsa_cwe_relation,
     internal_diff_log_state,
     internal_state,
     packages,
