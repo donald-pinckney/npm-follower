@@ -18,6 +18,14 @@ query QueryAllGHSA($cursor: String) {
           vectorString
           score
         }
+        classification
+        cwes(first: 100) {
+          nodes {
+            cweId
+            description
+            name
+          }
+        }
         ghsaId
         vulnerabilities(first: 100) {
           nodes {
