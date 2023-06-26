@@ -36,7 +36,7 @@ jobs:
         redis version: '7.0.7'
         number of databases: 16
     - name: Install Diesel
-      run: cargo install diesel_cli --no-default-features --features postgres
+      run: cargo install diesel_cli@2.0.1 --no-default-features --features postgres
     - name: Setup Diesel
       run: cd postgres_db && diesel setup --locked-schema
     # - name: Check Other `tarball_analysis` Schema is Up-to-Date
