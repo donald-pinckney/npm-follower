@@ -1,9 +1,9 @@
 use super::connection::DbConnection;
 use super::schema;
-use super::schema::ghsa;
-use super::schema::vulnerabilities;
 use super::schema::cwes;
+use super::schema::ghsa;
 use super::schema::ghsa_cwe_relation;
+use super::schema::vulnerabilities;
 use crate::connection::QueryRunner;
 use crate::custom_types::Semver;
 use chrono::{DateTime, Utc};
@@ -56,15 +56,14 @@ struct GhsaVulnerabilityRow {
 pub struct Cwe {
     pub id: String,
     pub name: String,
-    pub description: String
+    pub description: String,
 }
-
 
 #[derive(Insertable, Debug, Clone)]
 #[diesel(table_name = ghsa_cwe_relation)]
 pub struct GhsaCweRelation {
     pub ghsa_id: String,
-    pub cwe_id: String
+    pub cwe_id: String,
 }
 
 pub fn insert_ghsa<R>(conn: &mut R, advisory: Ghsa, vulns: Vec<GhsaVulnerability>)
@@ -157,7 +156,6 @@ where
     insert_cwes_chunk(conn, chunk_iter.remainder());
 }
 
-
 fn insert_cwes_chunk<R>(conn: &mut R, cwes_to_insert: &[Cwe])
 where
     R: QueryRunner,
@@ -170,13 +168,12 @@ where
         .do_update()
         .set((
             name.eq(excluded(name)),
-            description.eq(excluded(description))
+            description.eq(excluded(description)),
         ));
 
     conn.execute(insert_cwes_query)
         .expect("Failed to insert cwes");
 }
-
 
 pub fn associate_ghsa_to_cwe<R>(conn: &mut R, assoc: Vec<GhsaCweRelation>)
 where
@@ -202,6 +199,5 @@ where
         .on_conflict((ghsa_id, cwe_id))
         .do_nothing();
 
-    conn.execute(insert_rels)
-        .expect("Failed to insert rels");
+    conn.execute(insert_rels).expect("Failed to insert rels");
 }

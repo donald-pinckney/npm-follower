@@ -38,7 +38,6 @@ pub fn set_tarball_transfer_last<R: QueryRunner>(url: String, seq: i64, conn: &m
     set_key_value_int_state("tarball_transfer_last_seq", seq, conn);
 }
 
-
 fn query_key_value_int_state<R: QueryRunner>(the_key: &str, conn: &mut R) -> Option<i64> {
     use schema::internal_state::dsl::*;
 
