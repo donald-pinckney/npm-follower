@@ -24,6 +24,11 @@ class ReadSource(NamedTuple):
             "num_bytes": self.num_bytes
         }
 
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.local_path == other.local_path and self.offset == other.offset and self.num_bytes == other.num_bytes
+        return False
+
 
 class VirtualAddOperation(ABC):
     @abstractmethod
@@ -55,6 +60,12 @@ class ConcatenatingAddOperation(VirtualAddOperation):
             "sources": [source.to_json() for source in self.sources]
         }
 
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.repo_path == other.repo_path and self.sources == other.sources
+        return False
+
+
 
 class DirectAddOperation(VirtualAddOperation):
     def __init__(self, repo_path: str, local_path: str):
@@ -70,6 +81,11 @@ class DirectAddOperation(VirtualAddOperation):
             "repo_path": self.repo_path,
             "local_path": self.local_path
         }
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.repo_path == other.repo_path and self.local_path == other.local_path
+        return False
 
 
 class Avc(object):

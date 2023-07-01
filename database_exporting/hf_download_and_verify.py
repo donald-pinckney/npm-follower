@@ -8,7 +8,7 @@ import hashlib
 
 
 REPO_ID = "nuprl/npm-follower-data"
-REVISION = "v1.0.1-apr-23-2023"
+REVISION = "v1.0.2-jul-1-2023"
 
 
 def file_sha256sum(filename):
@@ -35,6 +35,7 @@ def check_valid(rf_and_local):
         src_url = hf_hub_url(REPO_ID, filename=rf.rfilename,
                              repo_type="dataset", revision=REVISION)
         return (src_url, rf.rfilename)
+        # return None
 
     disk_bytes = os.path.getsize(dst_path)
     if num_bytes != disk_bytes:
@@ -78,21 +79,39 @@ def main(dst_dir):
     to_redownload = process_map(
         check_valid, rf_and_locals, max_workers=8, chunksize=4)
     to_redownload = [d for d in to_redownload if d is not None]
+    to_redownload = [d[1] for d in to_redownload]
 
-    print(f"Re-downloading {len(to_redownload)} files")
+    print(f"Re-downloading {len(to_redownload)} files:")
+    print(to_redownload)
 
-    for src_url, rp in to_redownload:
-        dst_path = os.path.join(dst_dir, rp)
-        # Delete dst_path first
-        if os.path.exists(dst_path):
-            os.remove(dst_path)
+    redownload_urls(dst_dir, to_redownload)
 
-        # Use curl to download the file
-        tok = HfFolder().get_token()
-        headers = {"authorization": f"Bearer {tok}", "user-agent": ""}
 
-        subprocess.run(["curl", "-L", "-o", dst_path, src_url,
-                        "-H", f"authorization: Bearer {tok}"])
+def redownload_urls(dst_dir, rps):
+    MAX_WORKERS = 8
+
+    tmp_cache_dir = "__tmp_hf_cache/"
+
+    snapshot_download(repo_id=REPO_ID, repo_type="dataset", revision=REVISION,
+                    local_dir=dst_dir, local_dir_use_symlinks=True, cache_dir=tmp_cache_dir, max_workers=MAX_WORKERS, allow_patterns=rps)
+
+
+    for root, dirs, files in os.walk(dst_dir):
+        for d in dirs:
+            dp = os.path.join(root, d)
+            assert not os.path.islink(dp)
+
+        for f in files:
+            fp = os.path.join(root, f)
+            if os.path.islink(fp):
+                target_rel = os.readlink(fp)
+                target = os.path.normpath(os.path.join(os.path.dirname(fp), target_rel))
+                print(f"link: {fp} -> {target}")
+                os.unlink(fp)
+                shutil.move(target, fp)
+
+    shutil.rmtree(tmp_cache_dir)
+
 
 
 if __name__ == "__main__":

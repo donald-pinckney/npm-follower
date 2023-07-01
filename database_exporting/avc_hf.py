@@ -6,136 +6,10 @@ import io
 import os
 import bisect
 # import cfut
-# from more_itertools import chunked, distribute
+from more_itertools import chunked
 from tqdm.contrib.concurrent import process_map  # or thread_map
 # from multiprocessing import Pool
 from huggingface_hub import HfApi, CommitOperationAdd, CommitOperationDelete
-
-
-def load_operations():
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-    else:
-        a = avc.Avc(data_dir=None, initialize=False)
-        path = a.git_operations_path
-
-    with open(path, "r") as f:
-        operations = json.load(f)
-    return [avc.VirtualAddOperation.from_json(o) for o in operations]
-
-
-# class LoggingWrapper(io.BufferedIOBase):
-#     def __init__(self, wrappee):
-#         self.wrappee = wrappee
-
-#     def __getattr__(self, name):
-#         print(f"getattr: {name}")
-#         return getattr(self.wrappee, name)
-
-#     def seek(self, offset: int, whence: int = 0) -> int:
-#         ret = self.wrappee.seek(offset, whence)
-#         print(f"seek: {offset}, {whence}, ret = {ret}")
-#         return ret
-
-#     def read(self, size: int = -1) -> bytes:
-#         ret = self.wrappee.read(size)
-#         print(f"read: {size}, len(ret) = {len(ret)}")
-#         return ret
-
-#     def fileno(self) -> int:
-#         print("fileno")
-#         return self.wrappee.fileno()
-
-#     def truncate(self, size: int | None = ...) -> int:
-#         print(f"truncate: {size}")
-#         return super().truncate(size)
-
-#     def close(self) -> None:
-#         print("close")
-#         return self.wrappee.close()
-
-#     @property
-#     def closed(self) -> bool:
-#         ret = self.wrappee.closed
-#         print("closed, ret = ", ret)
-#         return ret
-
-#     def readable(self) -> bool:
-#         print("readable")
-#         return self.wrappee.readable()
-
-#     def writable(self) -> bool:
-#         print("writable")
-#         return self.wrappee.writable()
-
-#     def seekable(self) -> bool:
-#         print("seekable")
-#         return self.wrappee.seekable()
-
-#     def isatty(self) -> bool:
-#         print("isatty")
-#         return self.wrappee.isatty()
-
-#     def flush(self) -> None:
-#         print("flush")
-#         return self.wrappee.flush()
-
-#     def detach(self) -> None:
-#         print("detach")
-#         return self.wrappee.detach()
-
-#     def __enter__(self):
-#         print("__enter__")
-#         return self.wrappee.__enter__()
-
-#     def __exit__(self, exc_type, exc_value, traceback):
-#         print("__exit__")
-#         return self.wrappee.__exit__(exc_type, exc_value, traceback)
-
-#     def __iter__(self):
-#         print("__iter__")
-#         return self.wrappee.__iter__()
-
-#     def __next__(self) -> bytes:
-#         print("__next__")
-#         return self.wrappee.__next__()
-
-#     def readline(self, size=-1):
-#         print(f"readline: {size}")
-#         return self.wrappee.readline(size)
-
-#     def readlines(self, hint=-1):
-#         print(f"readlines: {hint}")
-#         return self.wrappee.readlines(hint)
-
-#     def tell(self) -> int:
-#         ret = self.wrappee.tell()
-#         print("tell, ret = ", ret)
-#         return ret
-
-#     def writelines(self, lines):
-#         print(f"writelines: {lines}")
-#         return self.wrappee.writelines(lines)
-
-#     def readinto(self, b):
-#         print(f"readinto: {b}")
-#         return self.wrappee.readinto(b)
-
-#     def write(self, b):
-#         print(f"write: {b}")
-#         return self.wrappee.write(b)
-
-#     def readall(self):
-#         print("readall")
-#         return self.wrappee.readall()
-
-#     def read1(self, n):
-#         print(f"read1: {n}")
-#         return self.wrappee.read1(n)
-
-#     def readinto1(self, b):
-#         print(f"readinto1: {b}")
-#         return self.wrappee.readinto1(b)
 
 
 class SlicedFileReader(io.BufferedIOBase):
@@ -269,6 +143,38 @@ class SlicedFileReader(io.BufferedIOBase):
         return self.f.closed
 
 
+
+def load_operations():
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    else:
+        a = avc.Avc(data_dir=None, initialize=False)
+        path = a.git_operations_path
+
+    with open(path, "r") as f:
+        operations = json.load(f)
+    operations = [avc.VirtualAddOperation.from_json(o) for o in operations]
+
+    if os.path.isfile('completed_git_operations.json'):
+        with open('completed_git_operations.json', 'r') as f:
+            completed_ops = [avc.VirtualAddOperation.from_json(oj) for oj in json.load(f)]
+    else:
+        completed_ops = []
+
+    filtered_out_ops = [o for o in operations if o in completed_ops]
+    remaining_ops = [o for o in operations if o not in completed_ops]
+
+    print("Filtered out ops:")
+    print(filtered_out_ops)
+
+    print("Remaining ops:")
+    print(remaining_ops)
+    # sys.exit(0)
+    return remaining_ops
+    
+
+
+
 def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]) -> CommitOperationAdd:
     print("Building:")
     print(op)
@@ -285,14 +191,28 @@ def build_hf_operation(op: Union[avc.DirectAddOperation, avc.ConcatenatingAddOpe
 
 
 def build_hf_operations(ops: List[Union[avc.DirectAddOperation, avc.ConcatenatingAddOperation]]) -> List[CommitOperationAdd]:
-    hf_ops = process_map(build_hf_operation, ops, max_workers=12, chunksize=1)
+    hf_ops = list(process_map(build_hf_operation, ops, max_workers=12, chunksize=1))
 
     return hf_ops
 
+def run_chunks(op_chunks):
+    for c in op_chunks:
+        run_chunk(c)
+
+        if os.path.isfile('completed_git_operations.json'):
+            with open('completed_git_operations.json', 'r') as f:
+                completed_ops = [avc.VirtualAddOperation.from_json(oj) for oj in json.load(f)]
+        else:
+            completed_ops = []
+        
+        completed_ops += c
+        with open('completed_git_operations.json', 'w') as f:
+            json.dump([o.to_json() for o in completed_ops], f, indent=4)
+
+            
 
 def run_chunk(op_chunk):
     hf_ops = build_hf_operations(op_chunk)
-    # print(hf_ops)
 
     api = HfApi()
     api.create_commit(
@@ -300,22 +220,11 @@ def run_chunk(op_chunk):
         repo_type="dataset",
         operations=hf_ops,
         commit_message="test",
+        num_threads=4
     )
 
     return 'ok'
 
-
-# def chunked_or_distributed(
-#         items,
-#         max_groups: int,
-#         optimal_group_size: int):
-#     """Divide *items* into at most *max_groups*. If possible, produces fewer
-#     than *max_groups*, but with at most *optimal_group_size* items in each
-#     group."""
-#     if len(items) / optimal_group_size <= max_groups:
-#         return chunked(items, optimal_group_size)
-#     else:
-#         return distribute(max_groups, items)
 
 
 def main():
@@ -365,7 +274,10 @@ def main():
     #             print(f"{done_count} / {len(op_chunks)}: {chunk_result}")
     # else:
 
-    run_chunk(ops)
+    op_chunks = list(chunked(ops, 4))
+    op_chunks = [list(c) for c in op_chunks]
+
+    run_chunks(op_chunks)
 
 
 if __name__ == "__main__":
