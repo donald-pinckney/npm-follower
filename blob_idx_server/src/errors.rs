@@ -27,6 +27,8 @@ pub enum JobError {
     ClientError(ClientError),
     /// The output of the client wasn't parsable.
     ClientOutputNotParsable(String),
+    /// There is no Job manager instantiated.
+    NoJobManager,
 }
 
 /// Errors that the client can return. This enum is serialized to JSON and sent to the server.
@@ -105,6 +107,7 @@ impl std::fmt::Display for JobError {
             JobError::ClientOutputNotParsable(s) => {
                 write!(f, "Client output not parsable: {}", s)
             }
+            JobError::NoJobManager => write!(f, "No job manager instantiated"),
         }
     }
 }

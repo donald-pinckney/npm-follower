@@ -38,14 +38,6 @@ pub fn set_tarball_transfer_last<R: QueryRunner>(url: String, seq: i64, conn: &m
     set_key_value_int_state("tarball_transfer_last_seq", seq, conn);
 }
 
-pub fn query_gha_pointer<R: QueryRunner>(conn: &mut R) -> Option<String> {
-    query_key_value_string_state("gha_pointer", conn)
-}
-
-pub fn set_gha_pointer<R: QueryRunner>(pointer: String, conn: &mut R) {
-    set_key_value_string_state("gha_pointer", pointer, conn);
-}
-
 fn query_key_value_int_state<R: QueryRunner>(the_key: &str, conn: &mut R) -> Option<i64> {
     use schema::internal_state::dsl::*;
 

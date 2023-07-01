@@ -47,6 +47,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    cwes (id) {
+        id -> Text,
+        name -> Text,
+        description -> Text,
+    }
+}
+
+diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::ParsedSpecStruct;
 
@@ -62,14 +70,6 @@ diesel::table! {
         optional_freq_count -> Int8,
         md5digest -> Text,
         md5digest_with_version -> Text,
-    }
-}
-
-diesel::table! {
-    tarball_analysis.diff_analysis (from_id, to_id) {
-        from_id -> Int8,
-        to_id -> Int8,
-        job_result -> Jsonb,
     }
 }
 
@@ -134,6 +134,13 @@ diesel::table! {
         refs -> Array<Text>,
         cvss_score -> Nullable<Float4>,
         cvss_vector -> Nullable<Text>,
+    }
+}
+
+diesel::table! {
+    ghsa_cwe_relation (ghsa_id, cwe_id) {
+        ghsa_id -> Text,
+        cwe_id -> Text,
     }
 }
 
@@ -222,12 +229,13 @@ diesel::joinable!(vulnerabilities -> ghsa (ghsa_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     change_log,
+    cwes,
     dependencies,
-    diff_analysis,
     diff_log,
     download_tasks,
     downloaded_tarballs,
     ghsa,
+    ghsa_cwe_relation,
     internal_diff_log_state,
     internal_state,
     packages,

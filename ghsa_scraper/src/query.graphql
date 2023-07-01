@@ -18,8 +18,17 @@ query QueryAllGHSA($cursor: String) {
           vectorString
           score
         }
+        # Don't scrape classification, it's not useful because it is GENERAL even for malware.
+        # classification 
+        cwes(first: 100) {
+          nodes {
+            cweId
+            description
+            name
+          }
+        }
         ghsaId
-        vulnerabilities(first: 100) {
+        vulnerabilities(first: 100, ecosystem: NPM) {
           nodes {
             vulnerableVersionRange
             package {

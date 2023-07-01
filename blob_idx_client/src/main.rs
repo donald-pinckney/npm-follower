@@ -4,6 +4,11 @@ use blob_idx_server::job::ClientResponse;
 // NOTE: we can print to stderr for debugging purposes, but we should not print to stdout
 // because we rely on the output of the client to be JSON.
 
+fn print_usage_exit() -> ! {
+    eprintln!("Usage: blob_idx_client [write|read|cp|compute|store] ...");
+    std::process::exit(1);
+}
+
 #[tokio::main]
 async fn main() {
     // The .secret.env has higher priority than .env, so we load it first
@@ -13,8 +18,7 @@ async fn main() {
     let args: Vec<String> = std::env::args().collect();
     // args[1] is either "write" or "read"
     if args.len() < 3 {
-        eprintln!("Usage: {} [write|read|cp|compute|store] ...", args[0]);
-        std::process::exit(1);
+        print_usage_exit();
     }
     let resp = match args[1].as_str() {
         "write" => match download_and_write(args).await {
@@ -42,8 +46,7 @@ async fn main() {
             Err(e) => ClientResponse::Error(e),
         },
         _ => {
-            eprintln!("Usage: {} [write|read|compute] ...", args[0]);
-            std::process::exit(1);
+            print_usage_exit();
         }
     };
     println!("{}", serde_json::to_string(&resp).unwrap());

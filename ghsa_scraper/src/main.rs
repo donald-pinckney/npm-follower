@@ -5,7 +5,7 @@ use postgres_db::{
 };
 use semver_spec_serialization::ParseSemverError;
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use graphql_client::{GraphQLQuery, Response};
 use serde::{Deserialize, Serialize};
@@ -40,6 +40,7 @@ pub struct Advisory {
     pub updated_at: DateTime,
     pub published_at: DateTime,
     pub cvss: Option<Cvss>,
+    pub cwes: CweNodes,
     pub vulnerabilities: VulnNodes,
 }
 
@@ -72,6 +73,20 @@ pub struct VulnNode {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct CweNodes {
+    pub nodes: Vec<CweNode>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CweNode {
+    pub cwe_id: String,
+    pub description: String,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Package {
     pub name: String,
 }
@@ -92,14 +107,14 @@ pub enum GQLError {
     Serde(#[from] serde_json::Error),
 }
 
-pub async fn scrape_ghsa(
-    token: &str,
-    mut cursor: Option<String>,
-) -> Result<(Vec<SecurityVulnerability>, Option<String>), GQLError> {
+pub async fn scrape_ghsa(token: &str) -> Result<Vec<SecurityVulnerability>, GQLError> {
     let mut scraped_vulns: Vec<SecurityVulnerability> = vec![];
     let mut ghsa_ids = HashSet::new(); // to avoid dups, graphql is flaky
+    let mut cursor: Option<String> = Option::None;
     loop {
-        let query = QueryAllGHSA::build_query(query_all_ghsa::Variables { cursor });
+        let query = QueryAllGHSA::build_query(query_all_ghsa::Variables {
+            cursor: cursor.clone(),
+        });
         let res = reqwest::Client::new()
             .post("https://api.github.com/graphql")
             .bearer_auth(token.to_string())
@@ -127,8 +142,8 @@ pub async fn scrape_ghsa(
         let num_vulns = vulns.len();
         println!("Scraped {} vulns", num_vulns);
         println!(
-            "Cursor: {:?}",
-            data.security_vulnerabilities.page_info.end_cursor
+            "Cursor: {:?}\nNew Cursor: {:?}",
+            cursor, data.security_vulnerabilities.page_info.end_cursor
         );
         cursor = data.security_vulnerabilities.page_info.end_cursor;
         for vuln in vulns {
@@ -140,19 +155,18 @@ pub async fn scrape_ghsa(
         if !data.security_vulnerabilities.page_info.has_next_page {
             break;
         }
-
-        // if true {
-        //     break;
-        // }
     }
     println!("In total, found {} vulns", scraped_vulns.len());
-    Ok((scraped_vulns, cursor))
+    Ok(scraped_vulns)
 }
 
 fn insert_ghsa<R>(conn: &mut R, vulns: Vec<SecurityVulnerability>)
 where
     R: QueryRunner,
 {
+    let mut ghsa_cwe_pairs: HashSet<(String, String)> = HashSet::new();
+    let mut cwe_info: HashMap<String, (String, String)> = HashMap::new();
+
     for vuln in vulns {
         let vulnerabilities: Vec<GhsaVulnerability> = vuln
             .advisory
@@ -199,6 +213,11 @@ where
             .unwrap()
             .with_timezone(&chrono::Utc);
 
+        vuln.advisory.cwes.nodes.into_iter().for_each(|cwe_node| {
+            ghsa_cwe_pairs.insert((vuln.advisory.ghsa_id.clone(), cwe_node.cwe_id.clone()));
+            cwe_info.insert(cwe_node.cwe_id, (cwe_node.name, cwe_node.description));
+        });
+
         let ghsa_db_struct = postgres_db::ghsa::Ghsa {
             id: vuln.advisory.ghsa_id,
             severity: vuln.severity,
@@ -228,6 +247,23 @@ where
         };
         postgres_db::ghsa::insert_ghsa(conn, ghsa_db_struct, vulnerabilities);
     }
+
+    let cwes_to_insert: Vec<_> = cwe_info
+        .into_iter()
+        .map(|(id, (name, description))| postgres_db::ghsa::Cwe {
+            id,
+            name,
+            description,
+        })
+        .collect();
+
+    let ghsa_cwe_relations_to_insert: Vec<_> = ghsa_cwe_pairs
+        .into_iter()
+        .map(|(ghsa_id, cwe_id)| postgres_db::ghsa::GhsaCweRelation { ghsa_id, cwe_id })
+        .collect();
+
+    postgres_db::ghsa::insert_cwes(conn, cwes_to_insert);
+    postgres_db::ghsa::associate_ghsa_to_cwe(conn, ghsa_cwe_relations_to_insert);
 }
 
 #[tokio::main]
@@ -235,25 +271,16 @@ async fn main() {
     utils::check_no_concurrent_processes("ghsa_scraper");
     dotenvy::from_filename(".secret.env").expect("failed to load .secret.env. To setup GHSA scraping, run:\necho \"export GITHUB_TOKEN=<TYPE API TOKEN HERE>\" >> .secret.env\n\nThe token must be a Github PAT with read:packages permission.\n\n");
 
-    let mut conn = DbConnection::connect();
     let github_token = std::env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN env var not set");
 
-    let last_cursor = postgres_db::internal_state::query_gha_pointer(&mut conn);
+    let vulns = scrape_ghsa(&github_token).await.unwrap_or_else(|e| {
+        println!("Error: {}", e);
+        std::process::exit(1);
+    });
 
-    let (vulns, next_cursor) = scrape_ghsa(&github_token, last_cursor)
-        .await
-        .unwrap_or_else(|e| {
-            println!("Error: {}", e);
-            std::process::exit(1);
-        });
-
+    let mut conn = DbConnection::connect();
     conn.run_psql_transaction(|mut conn| {
         insert_ghsa(&mut conn, vulns);
-
-        if let Some(cur) = next_cursor {
-            postgres_db::internal_state::set_gha_pointer(cur, &mut conn);
-        }
-
         Ok(((), true))
     })
     .unwrap();

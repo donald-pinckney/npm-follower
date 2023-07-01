@@ -43,8 +43,12 @@ echo "5/9) saving redis database"
 redis-cli SAVE
 
 echo "6/9) copying redis db files to zip file"
-zip -r redis.zip /var/lib/redis/dump.rdb /var/lib/redis/appendonlydir/
+pushd /var/lib/redis/
+zip -r redis.zip dump.rdb appendonlydir/
 chown redis:redis redis.zip
+popd
+
+mv /var/lib/redis/redis.zip redis.zip
 
 echo "7/9) restoring auto-aof-rewrite-percentage"
 redis-cli CONFIG SET auto-aof-rewrite-percentage 100

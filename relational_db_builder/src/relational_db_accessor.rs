@@ -285,6 +285,23 @@ impl RelationalDbAccessor {
         postgres_db::versions::delete_version(conn, version_id, seq, diff_entry_id, delete_time);
     }
 
+    pub fn undelete_to_normal_version<R: QueryRunner>(
+        &mut self,
+        conn: &mut R,
+        version_id: i64,
+        seq: i64,
+        diff_entry_id: i64,
+        undelete_time: Option<DateTime<Utc>>,
+    ) {
+        postgres_db::versions::undelete_to_normal_version(
+            conn,
+            version_id,
+            seq,
+            diff_entry_id,
+            undelete_time,
+        );
+    }
+
     pub fn flush_caches<R>(&mut self, conn: &mut R)
     where
         R: QueryRunner,

@@ -59,10 +59,7 @@ pub fn get_version_by_id<R: QueryRunner>(conn: &mut R, version_id: i64) -> Versi
     conn.get_result(query).expect("Error getting package")
 }
 
-pub fn get_versions_by_package_id<R: QueryRunner>(
-    conn: &mut R,
-    package_id: i64,
-) -> Vec<Version> {
+pub fn get_versions_by_package_id<R: QueryRunner>(conn: &mut R, package_id: i64) -> Vec<Version> {
     let query = versions::table.filter(versions::package_id.eq(package_id));
     conn.get_results(query).expect("Error getting package")
 }
@@ -180,6 +177,36 @@ pub fn delete_version<R>(
     ));
 
     conn.execute(update_query).expect("Error deleting version");
+}
+
+pub fn undelete_to_normal_version<R>(
+    conn: &mut R,
+    version_id: i64,
+    seq: i64,
+    diff_entry_id: i64,
+    undelete_time: Option<DateTime<Utc>>,
+) where
+    R: QueryRunner,
+{
+    use super::schema::versions::dsl::*;
+
+    let mut current_data = get_version_by_id(conn, version_id);
+    current_data
+        .version_state_history
+        .push(VersionStateTimePoint {
+            seq,
+            diff_entry_id,
+            state: VersionStateType::Normal,
+            estimated_time: undelete_time,
+        });
+
+    let update_query = diesel::update(versions.find(version_id)).set((
+        current_version_state_type.eq(VersionStateType::Normal),
+        version_state_history.eq(current_data.version_state_history),
+    ));
+
+    conn.execute(update_query)
+        .expect("Error undeleting version");
 }
 
 // pub fn delete_versions_not_in(conn: &mut DbConnection, pkg_id: i64, vers: Vec<&Semver>) {
