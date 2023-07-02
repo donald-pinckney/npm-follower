@@ -3,69 +3,136 @@ use std::{collections::BTreeMap, fs::File};
 
 const PSQL_COMMAND: &str = "psql -d npm_data -v ON_ERROR_STOP=1 -a -f";
 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+enum StepType {
+    Sql,
+    Rust,
+}
+
+impl StepType {
+    fn generate_shell_cmd(&self, step_name: &'static str) -> String {
+        match self {
+            StepType::Sql => format!("{} sql/{}.sql", PSQL_COMMAND, step_name),
+            StepType::Rust => format!("cd rust; cargo run --release --bin {}", step_name),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct AnalysisStep {
+    name: &'static str,
+    step_type: StepType,
+}
+
+trait SqlOrRust {
+    fn sql(&self) -> AnalysisStep;
+    fn rust(&self) -> AnalysisStep;
+}
+
+impl SqlOrRust for &'static str {
+    fn sql(&self) -> AnalysisStep {
+        AnalysisStep {
+            name: self,
+            step_type: StepType::Sql,
+        }
+    }
+
+    fn rust(&self) -> AnalysisStep {
+        AnalysisStep {
+            name: self,
+            step_type: StepType::Rust,
+        }
+    }
+}
+
+struct AnalysisDag {
+    steps: BTreeMap<&'static str, (StepType, Vec<&'static str>)>,
+}
+
+impl AnalysisDag {
+    fn new() -> Self {
+        AnalysisDag {
+            steps: BTreeMap::new(),
+        }
+    }
+
+    fn add_step(&mut self, step: AnalysisStep, depends_on: Vec<&'static str>) {
+        self.steps.insert(step.name, (step.step_type, depends_on));
+    }
+
+    fn get_step_type(&self, step: &'static str) -> StepType {
+        self.steps[step].0
+    }
+
+    fn get_dependencies(&self, step: &'static str) -> Vec<&'static str> {
+        self.steps[step].1.clone()
+    }
+
+    fn get_all_step_names(&self) -> Vec<&'static str> {
+        self.steps.keys().cloned().collect()
+    }
+
+    fn get_reverse_dependencies(&self, step: &'static str) -> Vec<&'static str> {
+        self.steps
+            .iter()
+            .filter(|(_, deps)| deps.1.contains(&step))
+            .map(|(step, _)| *step)
+            .collect()
+    }
+
+    fn assert_closure(&self) {
+        for (step, depends_on) in self.steps.iter() {
+            for d in &depends_on.1 {
+                assert!(
+                    self.steps.contains_key(d),
+                    "Step {} depends on {}, but {} is not a step",
+                    step,
+                    d,
+                    d
+                );
+            }
+        }
+    }
+}
+
 fn main() -> Result<(), std::io::Error> {
+    let mut dependencies: AnalysisDag = AnalysisDag::new();
+
     #[rustfmt::skip]
-    let dependencies: BTreeMap<&'static str, Vec<&'static str>> = [
-        ("setup_analysis", vec![]),
-        ("constraint_types", vec!["setup_analysis"]),
-        ("unique_package_deps", vec!["constraint_types"]),
-        ("version_ordering_validation", vec!["setup_analysis"]),
-        ("build_updates", vec!["version_ordering_validation"]),
-        ("find_patches", vec!["build_updates"]),
-        ("vulnerable_versions", vec!["setup_analysis"]),
-        ("vuln_intro_updates", vec!["vulnerable_versions", "build_updates"]),
-        ("prepare_diffs_to_compute", vec!["build_updates"]),
-        ("possible_direct_dev_deps", vec!["setup_analysis"]),
-        ("possible_direct_runtime_deps", vec!["setup_analysis"]),
-        ("possible_version_direct_runtime_deps", vec!["setup_analysis"]),
-        ("possible_transitive_runtime_deps", vec!["possible_direct_runtime_deps"]),
-        ("possible_install_deps", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps"]),
-        ("deps_stats", vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"]),
-        ("subsampled_possible_install_deps", vec!["possible_install_deps"]),
-        ("subsampled_updates", vec!["build_updates"]),
-        ("security_replaced_versions", vec!["setup_analysis"])
-    ]
-    .into_iter()
-    .collect();
+    {
+        dependencies.add_step("setup_analysis".sql(), vec![]);
+        dependencies.add_step("constraint_types".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("unique_package_deps".sql(), vec!["constraint_types"]);
+        dependencies.add_step("version_ordering_validation".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("build_updates".sql(), vec!["version_ordering_validation"]);
+        dependencies.add_step("find_patches".sql(), vec!["build_updates"]);
+        dependencies.add_step("vulnerable_versions".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("vuln_intro_updates".sql(), vec!["vulnerable_versions", "build_updates"]);
+        dependencies.add_step("prepare_diffs_to_compute".sql(), vec!["build_updates"]);
+        dependencies.add_step("possible_direct_dev_deps".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("possible_direct_runtime_deps".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("possible_version_direct_runtime_deps".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("possible_transitive_runtime_deps".sql(), vec!["possible_direct_runtime_deps"]);
+        dependencies.add_step("possible_install_deps".sql(), vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps"]);
+        dependencies.add_step("deps_stats".sql(), vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"]);
+        dependencies.add_step("subsampled_possible_install_deps".sql(), vec!["possible_install_deps"]);
+        dependencies.add_step("subsampled_updates".sql(), vec!["build_updates"]);
+        dependencies.add_step("security_replaced_versions".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("possibly_malware_versions".rust(), vec!["security_replaced_versions"]);
+    };
 
     // Check that dependencies is closed
-    for deps in dependencies.values() {
-        for d in deps {
-            assert!(dependencies.contains_key(d))
-        }
-    }
-
-    let mut reverse_dependencies: BTreeMap<&'static str, Vec<&'static str>> = dependencies
-        .iter()
-        .flat_map(|(step, depends_on)| depends_on.iter().map(move |dep| (dep, step)))
-        .fold(BTreeMap::new(), |mut acc, (k, v)| {
-            acc.entry(k).or_insert_with(Vec::new).push(v);
-            acc
-        });
-
-    for node in dependencies.keys() {
-        if !reverse_dependencies.contains_key(node) {
-            reverse_dependencies.insert(node, vec![]);
-        }
-    }
+    dependencies.assert_closure();
 
     let mut output_file = File::create("Makefile")?;
 
     writeln!(output_file, ".PHONY: all")?;
-    let all_nodes: Vec<_> = dependencies.keys().cloned().collect();
+    let all_nodes: Vec<_> = dependencies.get_all_step_names();
     writeln!(output_file, "all: {}", all_nodes.join(" "))?;
     writeln!(output_file)?;
 
-    // writeln!(output_file, ".PHONY: clean")?;
-    // let all_clean_nodes: Vec<_> = dependencies
-    //     .keys()
-    //     .cloned()
-    //     .map(|n| format!("clean_{}", n))
-    //     .collect();
-    // writeln!(output_file, "clean: {}", all_clean_nodes.join(" "))?;
-    // writeln!(output_file)?;
-
-    for (step, depends_on) in dependencies {
+    for step in all_nodes {
+        let depends_on = dependencies.get_dependencies(step);
         let mut depends_on_sorted = depends_on.clone();
         depends_on_sorted.sort();
 
@@ -77,7 +144,11 @@ fn main() -> Result<(), std::io::Error> {
 
         writeln!(output_file, "# -------- {} --------", step)?;
         writeln!(output_file, "makefile_state/{}.touch: {}", step, deps)?;
-        writeln!(output_file, "\t{} scripts/{}.sql", PSQL_COMMAND, step)?;
+        writeln!(
+            output_file,
+            "\t{}",
+            dependencies.get_step_type(step).generate_shell_cmd(step)
+        )?;
         writeln!(output_file, "\ttouch makefile_state/{}.touch", step)?;
         writeln!(output_file)?;
         writeln!(output_file, ".PHONY: {}", step)?;
@@ -85,7 +156,8 @@ fn main() -> Result<(), std::io::Error> {
 
         writeln!(output_file)?;
         writeln!(output_file, ".PHONY: clean_{}", step)?;
-        let mut rev_deps_sorted: Vec<_> = reverse_dependencies[step]
+        let mut rev_deps_sorted: Vec<_> = dependencies
+            .get_reverse_dependencies(step)
             .iter()
             .map(|rd| format!("clean_{}", rd))
             .collect();
