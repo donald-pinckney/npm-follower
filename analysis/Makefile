@@ -1,9 +1,9 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malware_versions prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/build_updates.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/build_updates.sql
 	touch makefile_state/build_updates.touch
 
 .PHONY: build_updates
@@ -16,7 +16,7 @@ clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute clean_sub
 
 # -------- constraint_types --------
 makefile_state/constraint_types.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/constraint_types.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/constraint_types.sql
 	touch makefile_state/constraint_types.touch
 
 .PHONY: constraint_types
@@ -29,7 +29,7 @@ clean_constraint_types: clean_unique_package_deps
 
 # -------- deps_stats --------
 makefile_state/deps_stats.touch: makefile_state/possible_direct_dev_deps.touch makefile_state/possible_direct_runtime_deps.touch makefile_state/possible_install_deps.touch makefile_state/possible_transitive_runtime_deps.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/deps_stats.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/deps_stats.sql
 	touch makefile_state/deps_stats.touch
 
 .PHONY: deps_stats
@@ -42,7 +42,7 @@ clean_deps_stats:
 
 # -------- find_patches --------
 makefile_state/find_patches.touch: makefile_state/build_updates.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/find_patches.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/find_patches.sql
 	touch makefile_state/find_patches.touch
 
 .PHONY: find_patches
@@ -55,7 +55,7 @@ clean_find_patches:
 
 # -------- possible_direct_dev_deps --------
 makefile_state/possible_direct_dev_deps.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_direct_dev_deps.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/possible_direct_dev_deps.sql
 	touch makefile_state/possible_direct_dev_deps.touch
 
 .PHONY: possible_direct_dev_deps
@@ -68,7 +68,7 @@ clean_possible_direct_dev_deps: clean_deps_stats clean_possible_install_deps
 
 # -------- possible_direct_runtime_deps --------
 makefile_state/possible_direct_runtime_deps.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_direct_runtime_deps.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/possible_direct_runtime_deps.sql
 	touch makefile_state/possible_direct_runtime_deps.touch
 
 .PHONY: possible_direct_runtime_deps
@@ -81,7 +81,7 @@ clean_possible_direct_runtime_deps: clean_deps_stats clean_possible_install_deps
 
 # -------- possible_install_deps --------
 makefile_state/possible_install_deps.touch: makefile_state/possible_direct_dev_deps.touch makefile_state/possible_direct_runtime_deps.touch makefile_state/possible_transitive_runtime_deps.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_install_deps.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/possible_install_deps.sql
 	touch makefile_state/possible_install_deps.touch
 
 .PHONY: possible_install_deps
@@ -94,7 +94,7 @@ clean_possible_install_deps: clean_deps_stats clean_subsampled_possible_install_
 
 # -------- possible_transitive_runtime_deps --------
 makefile_state/possible_transitive_runtime_deps.touch: makefile_state/possible_direct_runtime_deps.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_transitive_runtime_deps.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/possible_transitive_runtime_deps.sql
 	touch makefile_state/possible_transitive_runtime_deps.touch
 
 .PHONY: possible_transitive_runtime_deps
@@ -107,7 +107,7 @@ clean_possible_transitive_runtime_deps: clean_deps_stats clean_possible_install_
 
 # -------- possible_version_direct_runtime_deps --------
 makefile_state/possible_version_direct_runtime_deps.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/possible_version_direct_runtime_deps.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/possible_version_direct_runtime_deps.sql
 	touch makefile_state/possible_version_direct_runtime_deps.touch
 
 .PHONY: possible_version_direct_runtime_deps
@@ -118,9 +118,22 @@ clean_possible_version_direct_runtime_deps:
 	if [ -f makefile_state/possible_version_direct_runtime_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_version_direct_runtime_deps.sql; else true; fi
 	rm -f makefile_state/possible_version_direct_runtime_deps.touch
 
+# -------- possibly_malware_versions --------
+makefile_state/possibly_malware_versions.touch: makefile_state/security_replaced_versions.touch
+	cd rust; cargo run --release --bin possibly_malware_versions
+	touch makefile_state/possibly_malware_versions.touch
+
+.PHONY: possibly_malware_versions
+possibly_malware_versions: makefile_state/possibly_malware_versions.touch
+
+.PHONY: clean_possibly_malware_versions
+clean_possibly_malware_versions: 
+	if [ -f makefile_state/possibly_malware_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possibly_malware_versions.sql; else true; fi
+	rm -f makefile_state/possibly_malware_versions.touch
+
 # -------- prepare_diffs_to_compute --------
 makefile_state/prepare_diffs_to_compute.touch: makefile_state/build_updates.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/prepare_diffs_to_compute.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/prepare_diffs_to_compute.sql
 	touch makefile_state/prepare_diffs_to_compute.touch
 
 .PHONY: prepare_diffs_to_compute
@@ -133,20 +146,20 @@ clean_prepare_diffs_to_compute:
 
 # -------- security_replaced_versions --------
 makefile_state/security_replaced_versions.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/security_replaced_versions.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/security_replaced_versions.sql
 	touch makefile_state/security_replaced_versions.touch
 
 .PHONY: security_replaced_versions
 security_replaced_versions: makefile_state/security_replaced_versions.touch
 
 .PHONY: clean_security_replaced_versions
-clean_security_replaced_versions: 
+clean_security_replaced_versions: clean_possibly_malware_versions
 	if [ -f makefile_state/security_replaced_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/security_replaced_versions.sql; else true; fi
 	rm -f makefile_state/security_replaced_versions.touch
 
 # -------- setup_analysis --------
 makefile_state/setup_analysis.touch: 
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/setup_analysis.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/setup_analysis.sql
 	touch makefile_state/setup_analysis.touch
 
 .PHONY: setup_analysis
@@ -159,7 +172,7 @@ clean_setup_analysis: clean_constraint_types clean_possible_direct_dev_deps clea
 
 # -------- subsampled_possible_install_deps --------
 makefile_state/subsampled_possible_install_deps.touch: makefile_state/possible_install_deps.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/subsampled_possible_install_deps.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/subsampled_possible_install_deps.sql
 	touch makefile_state/subsampled_possible_install_deps.touch
 
 .PHONY: subsampled_possible_install_deps
@@ -172,7 +185,7 @@ clean_subsampled_possible_install_deps:
 
 # -------- subsampled_updates --------
 makefile_state/subsampled_updates.touch: makefile_state/build_updates.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/subsampled_updates.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/subsampled_updates.sql
 	touch makefile_state/subsampled_updates.touch
 
 .PHONY: subsampled_updates
@@ -185,7 +198,7 @@ clean_subsampled_updates:
 
 # -------- unique_package_deps --------
 makefile_state/unique_package_deps.touch: makefile_state/constraint_types.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/unique_package_deps.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/unique_package_deps.sql
 	touch makefile_state/unique_package_deps.touch
 
 .PHONY: unique_package_deps
@@ -198,7 +211,7 @@ clean_unique_package_deps:
 
 # -------- version_ordering_validation --------
 makefile_state/version_ordering_validation.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/version_ordering_validation.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/version_ordering_validation.sql
 	touch makefile_state/version_ordering_validation.touch
 
 .PHONY: version_ordering_validation
@@ -211,7 +224,7 @@ clean_version_ordering_validation: clean_build_updates
 
 # -------- vuln_intro_updates --------
 makefile_state/vuln_intro_updates.touch: makefile_state/build_updates.touch makefile_state/vulnerable_versions.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/vuln_intro_updates.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/vuln_intro_updates.sql
 	touch makefile_state/vuln_intro_updates.touch
 
 .PHONY: vuln_intro_updates
@@ -224,7 +237,7 @@ clean_vuln_intro_updates:
 
 # -------- vulnerable_versions --------
 makefile_state/vulnerable_versions.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f scripts/vulnerable_versions.sql
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/vulnerable_versions.sql
 	touch makefile_state/vulnerable_versions.touch
 
 .PHONY: vulnerable_versions
