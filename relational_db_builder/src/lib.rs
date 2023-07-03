@@ -90,7 +90,7 @@ impl EntryProcessor {
                 created,
                 modified,
                 other_dist_tags,
-                extra_version_times: _,
+                extra_version_times,
             } => {
                 assert_eq!(latest, None);
                 NewPackage {
@@ -106,7 +106,12 @@ impl EntryProcessor {
                     created: Some(created),
                     modified: Some(modified),
                     other_dist_tags: Some(Value::Object(other_dist_tags)),
-                    other_time_data: None,
+                    other_time_data: Some(
+                        serde_json::to_value(
+                            postgres_db::serde_non_string_key_serialization::BTreeMapSerializedAsString::new(extra_version_times),
+                        )
+                        .unwrap()
+                    ),
                     unpublished_data: None,
                 }
             }
@@ -181,7 +186,7 @@ impl EntryProcessor {
                     created,
                     modified,
                     other_dist_tags,
-                    extra_version_times: _,
+                    extra_version_times,
                 } => {
                     let latest_id = latest.map(|latest_semver| {
                         self.db
@@ -203,7 +208,12 @@ impl EntryProcessor {
                         created: Some(created),
                         modified: Some(modified),
                         other_dist_tags: Some(Value::Object(other_dist_tags)),
-                        other_time_data: None,
+                        other_time_data: Some(
+                            serde_json::to_value(
+                                postgres_db::serde_non_string_key_serialization::BTreeMapSerializedAsString::new(extra_version_times),
+                            )
+                            .unwrap()
+                        ),
                         unpublished_data: None,
                     }
                 }
