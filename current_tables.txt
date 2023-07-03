@@ -33,12 +33,11 @@ pure metadata analysis tables:
  metadata_analysis  | vulnerable_versions                           | table       | pinckney | permanent   | heap          | 9352 kB    | analysis/scripts/vulnerable_versions.sql
  metadata_analysis  | update_did_change_json_scripts                | table       | pinckney | permanent   | heap          | 7510 MB    | analysis/scripts/did_change_json_scripts.sql
  metadata_analysis  | update_dep_changes                            | table       | federico | permanent   | heap          | 826 MB     | rust_sql_analysis/src/bin/process_diff_all_updates.rs   inserts, but doesn't create
+ metadata_analysis  | possibly_malicious_packages                   | table       | federico | permanent   | heap          | 1232 kB    | analysis/rust/src/bin/possibly_malicious_packages.rs
+ metadata_analysis  | security_replaced_versions                    | table       | federico | permanent   | heap          | 4912 kB    | analysis/scripts/security_replaced_versions.sql
 
 
-experimental stuff:
 
- public             | possibly_malware_versions                     | table       | federico | permanent   | heap          | 1232 kB    | rust_sql_analysis/src/bin/process_security_replaced.rs on federico's fork
- public             | security_replaced_versions                    | table       | federico | permanent   | heap          | 4912 kB    | analysis/scripts/generate_security_replaced_table.sql on federico's fork
 
 
 job inputs or state for tarball analysis:

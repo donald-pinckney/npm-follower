@@ -60,7 +60,7 @@ fn main() -> io::Result<()> {
         "download_tasks",
         "internal_diff_log_state",
         "internal_state",
-        "possibly_malware_versions",
+        "possibly_malicious_packages",
         "security_replaced_versions",
         // "packages",
         // "versions",
