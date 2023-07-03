@@ -52,7 +52,10 @@ fn main() {
         {
             Some(u) => u,
             None => {
-                println!("!! No npm user for version {}", version.id);
+                println!(
+                    "!! No npm user for version {}. Excluding package from malware set.",
+                    version.id
+                );
                 continue;
             }
         };
@@ -64,7 +67,7 @@ fn main() {
             .map(|s| s == "npmjs.com" || s == "microsoft.com");
         if has_npm_domain != Some(true) {
             println!(
-                "!! Version {} is not published by npm, but {}.",
+                "!! Version {} is not published by npm, but {}. Excluding package from malware set.",
                 version.id, npm_user
             );
             continue;
@@ -81,11 +84,6 @@ fn main() {
         }
 
         for ver in versions {
-            let name = ver
-                .extra_metadata
-                .get("name")
-                .and_then(|n| n.as_str())
-                .unwrap_or("NONE");
             let state = &ver.current_version_state_type;
 
             // check if the version is deleted/unpublished
@@ -93,16 +91,6 @@ fn main() {
                 continue;
             }
 
-            // check if we have downloaded the package
-            if postgres_db::download_tarball::get_tarball_by_url(&mut conn, &ver.tarball_url)
-                .is_none()
-            {
-                println!("!! Tarball {} is not downloaded", ver.tarball_url);
-                continue;
-            }
-
-            println!("Semver: {}", ver.semver);
-            println!("Name: {}", name);
             // insert into possibly_malicious_packages
             let query = diesel::sql_query(
                 format!(
