@@ -32,7 +32,7 @@ fn main() {
     let mut conn: DbConnection = DbConnection::connect();
 
     let create_table_query = diesel::sql_query(
-        "CREATE TABLE metadata_analysis.possibly_malware_versions (package_id BIGINT, version_id BIGINT, tarball_url TEXT)"
+        "CREATE TABLE metadata_analysis.possibly_malicious_packages (package_id BIGINT, version_id BIGINT, tarball_url TEXT)"
     );
     conn.execute(create_table_query).unwrap();
 
@@ -105,10 +105,10 @@ fn main() {
 
             println!("Semver: {}", ver.semver);
             println!("Name: {}", name);
-            // insert into possibly_malware_versions
+            // insert into possibly_malicious_packages
             let query = diesel::sql_query(
                 format!(
-                    "INSERT INTO metadata_analysis.possibly_malware_versions (package_id, version_id, tarball_url) VALUES ({}, {}, '{}') ON CONFLICT DO NOTHING",
+                    "INSERT INTO metadata_analysis.possibly_malicious_packages (package_id, version_id, tarball_url) VALUES ({}, {}, '{}') ON CONFLICT DO NOTHING",
                     ver.package_id, ver.id, ver.tarball_url
                 )
             );

@@ -1,0 +1,1 @@
+drop table metadata_analysis.possibly_malicious_packages;

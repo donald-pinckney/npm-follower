@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malware_versions prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -118,18 +118,18 @@ clean_possible_version_direct_runtime_deps:
 	if [ -f makefile_state/possible_version_direct_runtime_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_version_direct_runtime_deps.sql; else true; fi
 	rm -f makefile_state/possible_version_direct_runtime_deps.touch
 
-# -------- possibly_malware_versions --------
-makefile_state/possibly_malware_versions.touch: makefile_state/security_replaced_versions.touch
-	cd rust; cargo run --release --bin possibly_malware_versions
-	touch makefile_state/possibly_malware_versions.touch
+# -------- possibly_malicious_packages --------
+makefile_state/possibly_malicious_packages.touch: makefile_state/security_replaced_versions.touch
+	cd rust; cargo run --release --bin possibly_malicious_packages
+	touch makefile_state/possibly_malicious_packages.touch
 
-.PHONY: possibly_malware_versions
-possibly_malware_versions: makefile_state/possibly_malware_versions.touch
+.PHONY: possibly_malicious_packages
+possibly_malicious_packages: makefile_state/possibly_malicious_packages.touch
 
-.PHONY: clean_possibly_malware_versions
-clean_possibly_malware_versions: 
-	if [ -f makefile_state/possibly_malware_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possibly_malware_versions.sql; else true; fi
-	rm -f makefile_state/possibly_malware_versions.touch
+.PHONY: clean_possibly_malicious_packages
+clean_possibly_malicious_packages: 
+	if [ -f makefile_state/possibly_malicious_packages.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possibly_malicious_packages.sql; else true; fi
+	rm -f makefile_state/possibly_malicious_packages.touch
 
 # -------- prepare_diffs_to_compute --------
 makefile_state/prepare_diffs_to_compute.touch: makefile_state/build_updates.touch
@@ -153,7 +153,7 @@ makefile_state/security_replaced_versions.touch: makefile_state/setup_analysis.t
 security_replaced_versions: makefile_state/security_replaced_versions.touch
 
 .PHONY: clean_security_replaced_versions
-clean_security_replaced_versions: clean_possibly_malware_versions
+clean_security_replaced_versions: clean_possibly_malicious_packages
 	if [ -f makefile_state/security_replaced_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/security_replaced_versions.sql; else true; fi
 	rm -f makefile_state/security_replaced_versions.touch
 
