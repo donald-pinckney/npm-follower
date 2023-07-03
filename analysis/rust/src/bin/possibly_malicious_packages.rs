@@ -1,12 +1,10 @@
 use diesel::prelude::*;
-use rust_sql_analysis::process_diff_analysis;
+
 use serde::{Deserialize, Serialize};
 
 use postgres_db::{
     connection::{DbConnection, QueryRunner},
     custom_types::{Semver, VersionStateType},
-    diff_analysis::{DiffAnalysis, DiffAnalysisJobResult},
-    schema::sql_types::SemverStruct,
     versions::Version,
 };
 
@@ -89,11 +87,11 @@ fn main() {
                 .and_then(|n| n.as_str())
                 .unwrap_or("NONE");
             let state = &ver.current_version_state_type;
+
             // check if the version is deleted/unpublished
-            match state {
-                VersionStateType::Normal => continue,
-                _ => {}
-            };
+            if state == &VersionStateType::Normal {
+                continue;
+            }
 
             // check if we have downloaded the package
             if postgres_db::download_tarball::get_tarball_by_url(&mut conn, &ver.tarball_url)
