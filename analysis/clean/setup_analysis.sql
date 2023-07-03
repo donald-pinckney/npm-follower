@@ -1,1 +1,1 @@
-DROP SCHEMA IF EXISTS metadata_analysis CASCADE;
+-- DROP SCHEMA IF EXISTS metadata_analysis CASCADE;
