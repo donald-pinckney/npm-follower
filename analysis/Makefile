@@ -211,7 +211,7 @@ clean_unique_package_deps:
 
 # -------- unpublished_versions --------
 makefile_state/unpublished_versions.touch: makefile_state/setup_analysis.touch
-	cd rust; cargo run --release --bin unpublished_versions
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/unpublished_versions.sql
 	touch makefile_state/unpublished_versions.touch
 
 .PHONY: unpublished_versions

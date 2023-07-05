@@ -119,7 +119,7 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("subsampled_updates".sql(), vec!["build_updates"]);
         dependencies.add_step("security_replaced_versions".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possibly_malicious_packages".rust(), vec!["security_replaced_versions"]);
-        dependencies.add_step("unpublished_versions".rust(), vec!["setup_analysis"]);
+        dependencies.add_step("unpublished_versions".sql(), vec!["setup_analysis"]);
     };
 
     // Check that dependencies is closed

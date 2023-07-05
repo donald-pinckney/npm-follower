@@ -42,7 +42,7 @@ GRANT USAGE ON SCHEMA metadata_analysis TO data_analyzer;
 
 
 
-CREATE OR REPLACE TYPE metadata_analysis.update_type AS ENUM ('zero_to_something', 'bug', 'minor', 'major');
+CREATE TYPE metadata_analysis.update_type AS ENUM ('zero_to_something', 'bug', 'minor', 'major');
 
 CREATE OR REPLACE FUNCTION metadata_analysis.determine_update_type(semver, semver) RETURNS metadata_analysis.update_type AS $$ -- $1 = from
     -- $2 = to
