@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps version_ordering_validation vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions version_ordering_validation vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -166,7 +166,7 @@ makefile_state/setup_analysis.touch:
 setup_analysis: makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
-clean_setup_analysis: clean_constraint_types clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_possible_version_direct_runtime_deps clean_security_replaced_versions clean_version_ordering_validation clean_vulnerable_versions
+clean_setup_analysis: clean_constraint_types clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_possible_version_direct_runtime_deps clean_security_replaced_versions clean_unpublished_versions clean_version_ordering_validation clean_vulnerable_versions
 	if [ -f makefile_state/setup_analysis.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql; else true; fi
 	rm -f makefile_state/setup_analysis.touch
 
@@ -208,6 +208,19 @@ unique_package_deps: makefile_state/unique_package_deps.touch
 clean_unique_package_deps: 
 	if [ -f makefile_state/unique_package_deps.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/unique_package_deps.sql; else true; fi
 	rm -f makefile_state/unique_package_deps.touch
+
+# -------- unpublished_versions --------
+makefile_state/unpublished_versions.touch: makefile_state/setup_analysis.touch
+	cd rust; cargo run --release --bin unpublished_versions
+	touch makefile_state/unpublished_versions.touch
+
+.PHONY: unpublished_versions
+unpublished_versions: makefile_state/unpublished_versions.touch
+
+.PHONY: clean_unpublished_versions
+clean_unpublished_versions: 
+	if [ -f makefile_state/unpublished_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/unpublished_versions.sql; else true; fi
+	rm -f makefile_state/unpublished_versions.touch
 
 # -------- version_ordering_validation --------
 makefile_state/version_ordering_validation.touch: makefile_state/setup_analysis.touch
