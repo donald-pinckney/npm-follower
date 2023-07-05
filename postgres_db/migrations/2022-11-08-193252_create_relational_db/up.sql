@@ -311,7 +311,7 @@ CREATE TABLE packages (
       created IS NOT NULL AND 
       modified IS NOT NULL AND
       other_dist_tags IS NOT NULL AND
-      other_time_data IS NULL AND
+      -- other_time_data IS NULL AND
       unpublished_data IS NULL
     ) OR
     (
@@ -320,7 +320,7 @@ CREATE TABLE packages (
       created IS NOT NULL AND 
       modified IS NOT NULL AND
       -- other_dist_tags IS NULL AND            ;;  could be NULL or not, if we had data previously
-      other_time_data IS NOT NULL AND -- ???
+      -- other_time_data IS NOT NULL AND -- ???
       unpublished_data IS NOT NULL
     ) OR 
     (
