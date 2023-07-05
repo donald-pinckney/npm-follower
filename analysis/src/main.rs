@@ -110,7 +110,7 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("vuln_intro_updates".sql(), vec!["vulnerable_versions", "build_updates"]);
         dependencies.add_step("prepare_diffs_to_compute".sql(), vec!["build_updates"]);
         dependencies.add_step("possible_direct_dev_deps".sql(), vec!["setup_analysis"]);
-        dependencies.add_step("possible_direct_any_deps".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("possible_direct_any_deps_non_deleted".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_direct_runtime_deps".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_version_direct_runtime_deps".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_transitive_runtime_deps".sql(), vec!["possible_direct_runtime_deps"]);
