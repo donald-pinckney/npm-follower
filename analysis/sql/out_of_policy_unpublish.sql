@@ -18,4 +18,19 @@ from
 where
     (uv.v).prerelease IS NULL
     and (uv.v).build IS NULL
-    and delete_delay > '3 day'
+    and delete_delay > '3 day';
+
+ALTER TABLE
+    metadata_analysis.out_of_policy_unpublish
+ADD
+    PRIMARY KEY (version_id);
+
+ANALYZE metadata_analysis.out_of_policy_unpublish;
+
+GRANT
+SELECT
+    ON metadata_analysis.out_of_policy_unpublish TO data_analyzer;
+
+GRANT ALL ON metadata_analysis.out_of_policy_unpublish TO pinckney;
+
+GRANT ALL ON metadata_analysis.out_of_policy_unpublish TO federico;
