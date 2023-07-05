@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions version_ordering_validation vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches out_of_policy_unpublish possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions version_ordering_validation vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -53,6 +53,19 @@ clean_find_patches:
 	if [ -f makefile_state/find_patches.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/find_patches.sql; else true; fi
 	rm -f makefile_state/find_patches.touch
 
+# -------- out_of_policy_unpublish --------
+makefile_state/out_of_policy_unpublish.touch: makefile_state/possible_direct_any_deps_non_deleted.touch makefile_state/unpublished_versions.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/out_of_policy_unpublish.sql
+	touch makefile_state/out_of_policy_unpublish.touch
+
+.PHONY: out_of_policy_unpublish
+out_of_policy_unpublish: makefile_state/out_of_policy_unpublish.touch
+
+.PHONY: clean_out_of_policy_unpublish
+clean_out_of_policy_unpublish: 
+	if [ -f makefile_state/out_of_policy_unpublish.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/out_of_policy_unpublish.sql; else true; fi
+	rm -f makefile_state/out_of_policy_unpublish.touch
+
 # -------- possible_direct_any_deps_non_deleted --------
 makefile_state/possible_direct_any_deps_non_deleted.touch: makefile_state/setup_analysis.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/possible_direct_any_deps_non_deleted.sql
@@ -62,7 +75,7 @@ makefile_state/possible_direct_any_deps_non_deleted.touch: makefile_state/setup_
 possible_direct_any_deps_non_deleted: makefile_state/possible_direct_any_deps_non_deleted.touch
 
 .PHONY: clean_possible_direct_any_deps_non_deleted
-clean_possible_direct_any_deps_non_deleted: 
+clean_possible_direct_any_deps_non_deleted: clean_out_of_policy_unpublish
 	if [ -f makefile_state/possible_direct_any_deps_non_deleted.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possible_direct_any_deps_non_deleted.sql; else true; fi
 	rm -f makefile_state/possible_direct_any_deps_non_deleted.touch
 
@@ -231,7 +244,7 @@ makefile_state/unpublished_versions.touch: makefile_state/setup_analysis.touch
 unpublished_versions: makefile_state/unpublished_versions.touch
 
 .PHONY: clean_unpublished_versions
-clean_unpublished_versions: 
+clean_unpublished_versions: clean_out_of_policy_unpublish
 	if [ -f makefile_state/unpublished_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/unpublished_versions.sql; else true; fi
 	rm -f makefile_state/unpublished_versions.touch
 

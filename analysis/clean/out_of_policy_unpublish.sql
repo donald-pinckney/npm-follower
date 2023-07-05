@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS metadata_analysis.out_of_policy_unpublish;
