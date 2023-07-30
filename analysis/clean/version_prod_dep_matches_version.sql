@@ -1,0 +1,5 @@
+DROP FUNCTION metadata_analysis.semver_lt;
+
+DROP FUNCTION metadata_analysis.version_comp_exclude_betas;
+
+DROP VIEW metadata_analysis.version_prod_dep_matches_version
