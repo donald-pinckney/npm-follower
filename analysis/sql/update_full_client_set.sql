@@ -160,7 +160,7 @@ ANALYZE dep_version_match_rel;
 create table metadata_analysis.update_full_client_set AS (
   select 
   distinct on (client.package_id)
-  dep_match_v.dep_id, dep_match_v.v_id as lib_v, up.package_id as lib_p, up.to_id as lib_v2, up.from_created as lib_v_t, up.to_created as lib_v2_t, client.id as cli_v, client.package_id as cli_p, client.semver as cli_sem, client.created as cli_t
+  dep_match_v.dep_id, dep_match_v.v_id as lib_v, up.package_id as lib_p, up.to_id as lib_v2, up.from_created as lib_v_t, up.to_created as lib_v2_t, client.id as cli_v, client.package_id as cli_p, client.semver as cli_sem, client.created as cli_t, ROW(dep_match_v.dep_id, up.to_id) IN (SELECT * from dep_version_match_rel) as auto_update
   from dep_version_match_rel dep_match_v
   inner join U up
   on up.from_id = dep_match_v.v_id
@@ -170,3 +170,5 @@ create table metadata_analysis.update_full_client_set AS (
   on client.id = v.version_id and client.created < up.to_created and (client.semver).prerelease is null and (client.semver).build is null 
   order by client.package_id, client.created DESC
 );
+
+
