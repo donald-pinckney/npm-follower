@@ -1,0 +1,1 @@
+DROP TABLE metadata_analysis.package_avg_sizes;

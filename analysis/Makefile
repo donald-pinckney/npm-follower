@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches out_of_policy_unpublish possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions version_ordering_validation version_prod_dep_matches_version vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches out_of_policy_unpublish package_avg_sizes possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions version_ordering_validation version_prod_dep_matches_version vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -65,6 +65,19 @@ out_of_policy_unpublish: makefile_state/out_of_policy_unpublish.touch
 clean_out_of_policy_unpublish: 
 	if [ -f makefile_state/out_of_policy_unpublish.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/out_of_policy_unpublish.sql; else true; fi
 	rm -f makefile_state/out_of_policy_unpublish.touch
+
+# -------- package_avg_sizes --------
+makefile_state/package_avg_sizes.touch: makefile_state/setup_analysis.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/package_avg_sizes.sql
+	touch makefile_state/package_avg_sizes.touch
+
+.PHONY: package_avg_sizes
+package_avg_sizes: makefile_state/package_avg_sizes.touch
+
+.PHONY: clean_package_avg_sizes
+clean_package_avg_sizes: 
+	if [ -f makefile_state/package_avg_sizes.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/package_avg_sizes.sql; else true; fi
+	rm -f makefile_state/package_avg_sizes.touch
 
 # -------- possible_direct_any_deps_non_deleted --------
 makefile_state/possible_direct_any_deps_non_deleted.touch: makefile_state/setup_analysis.touch
@@ -192,7 +205,7 @@ makefile_state/setup_analysis.touch:
 setup_analysis: makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
-clean_setup_analysis: clean_constraint_types clean_possible_direct_any_deps_non_deleted clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_possible_version_direct_runtime_deps clean_security_replaced_versions clean_unpublished_versions clean_version_ordering_validation clean_version_prod_dep_matches_version clean_vulnerable_versions
+clean_setup_analysis: clean_constraint_types clean_package_avg_sizes clean_possible_direct_any_deps_non_deleted clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_possible_version_direct_runtime_deps clean_security_replaced_versions clean_unpublished_versions clean_version_ordering_validation clean_version_prod_dep_matches_version clean_vulnerable_versions
 	if [ -f makefile_state/setup_analysis.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql; else true; fi
 	rm -f makefile_state/setup_analysis.touch
 

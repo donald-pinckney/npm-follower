@@ -123,7 +123,7 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("unpublished_versions".sql(), vec!["setup_analysis"]);
         dependencies.add_step("out_of_policy_unpublish".sql(), vec!["unpublished_versions", "possible_direct_any_deps_non_deleted"]);
         dependencies.add_step("version_prod_dep_matches_version".sql(), vec!["setup_analysis"]);
-        
+        dependencies.add_step("package_avg_sizes".sql(), vec!["setup_analysis"]);
     };
 
     // Check that dependencies is closed
