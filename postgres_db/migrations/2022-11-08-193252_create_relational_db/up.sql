@@ -375,6 +375,8 @@ CREATE TABLE versions (
 
 ALTER TABLE packages ADD CONSTRAINT fkey_packages_dist_tag_latest_version FOREIGN KEY (dist_tag_latest_version) REFERENCES versions(id);
 CREATE INDEX versions_package_id_idx ON versions (package_id);
+-- CREATE INDEX versions_idx_semver_non_beta ON versions ((semver).prerelease is null and (semver).build is null);
+CREATE INDEX versions_idx_created ON versions (created);
 
 
 CREATE TABLE dependencies (
@@ -405,6 +407,3 @@ CREATE INDEX dependencies_dst_package_id_if_exists_idx ON dependencies (dst_pack
 CREATE INDEX dependencies_md5digest_idx ON dependencies (md5digest) WHERE dst_package_id_if_exists IS NULL;
 -- CREATE INDEX dependencies_md5digest_with_version_idx ON dependencies (md5digest_with_version);
 ALTER TABLE dependencies ADD CONSTRAINT dependencies_md5digest_with_version_unique UNIQUE (md5digest_with_version);
-
-
-CREATE INDEX dependencies_idx_from_id ON dependencies (dst_package_id_if_exists);

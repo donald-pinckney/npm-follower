@@ -122,8 +122,9 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("possibly_malicious_packages".rust(), vec!["security_replaced_versions"]);
         dependencies.add_step("unpublished_versions".sql(), vec!["setup_analysis"]);
         dependencies.add_step("out_of_policy_unpublish".sql(), vec!["unpublished_versions", "possible_direct_any_deps_non_deleted"]);
-        dependencies.add_step("version_prod_dep_matches_version".sql(), vec!["setup_analysis"]);
         dependencies.add_step("package_avg_sizes".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("version_unnest_prod_dependencies".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("update_full_client_set".sql(), vec!["deps_stats", "build_updates", "version_unnest_prod_dependencies"]);
     };
 
     // Check that dependencies is closed

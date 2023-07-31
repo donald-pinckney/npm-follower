@@ -192,6 +192,8 @@ GRANT ALL ON metadata_analysis.all_dep_counts TO federico;
 ALTER TABLE metadata_analysis.all_dep_counts
 ADD PRIMARY KEY (pkg, count_type);
 
+CREATE INDEX metadata_analysis_all_dep_counts_idx ON metadata_analysis.all_dep_counts (pkg);
+
 ANALYZE metadata_analysis.all_dep_counts;
 
 

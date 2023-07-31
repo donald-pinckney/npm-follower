@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches out_of_policy_unpublish package_avg_sizes possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions version_ordering_validation version_prod_dep_matches_version vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches out_of_policy_unpublish package_avg_sizes possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions update_full_client_set version_ordering_validation version_unnest_prod_dependencies vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -10,7 +10,7 @@ makefile_state/build_updates.touch: makefile_state/version_ordering_validation.t
 build_updates: makefile_state/build_updates.touch
 
 .PHONY: clean_build_updates
-clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute clean_subsampled_updates clean_vuln_intro_updates
+clean_build_updates: clean_find_patches clean_prepare_diffs_to_compute clean_subsampled_updates clean_update_full_client_set clean_vuln_intro_updates
 	if [ -f makefile_state/build_updates.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/build_updates.sql; else true; fi
 	rm -f makefile_state/build_updates.touch
 
@@ -36,7 +36,7 @@ makefile_state/deps_stats.touch: makefile_state/possible_direct_dev_deps.touch m
 deps_stats: makefile_state/deps_stats.touch
 
 .PHONY: clean_deps_stats
-clean_deps_stats: 
+clean_deps_stats: clean_update_full_client_set
 	if [ -f makefile_state/deps_stats.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/deps_stats.sql; else true; fi
 	rm -f makefile_state/deps_stats.touch
 
@@ -205,7 +205,7 @@ makefile_state/setup_analysis.touch:
 setup_analysis: makefile_state/setup_analysis.touch
 
 .PHONY: clean_setup_analysis
-clean_setup_analysis: clean_constraint_types clean_package_avg_sizes clean_possible_direct_any_deps_non_deleted clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_possible_version_direct_runtime_deps clean_security_replaced_versions clean_unpublished_versions clean_version_ordering_validation clean_version_prod_dep_matches_version clean_vulnerable_versions
+clean_setup_analysis: clean_constraint_types clean_package_avg_sizes clean_possible_direct_any_deps_non_deleted clean_possible_direct_dev_deps clean_possible_direct_runtime_deps clean_possible_version_direct_runtime_deps clean_security_replaced_versions clean_unpublished_versions clean_version_ordering_validation clean_version_unnest_prod_dependencies clean_vulnerable_versions
 	if [ -f makefile_state/setup_analysis.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/setup_analysis.sql; else true; fi
 	rm -f makefile_state/setup_analysis.touch
 
@@ -261,6 +261,19 @@ clean_unpublished_versions: clean_out_of_policy_unpublish
 	if [ -f makefile_state/unpublished_versions.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/unpublished_versions.sql; else true; fi
 	rm -f makefile_state/unpublished_versions.touch
 
+# -------- update_full_client_set --------
+makefile_state/update_full_client_set.touch: makefile_state/build_updates.touch makefile_state/deps_stats.touch makefile_state/version_unnest_prod_dependencies.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/update_full_client_set.sql
+	touch makefile_state/update_full_client_set.touch
+
+.PHONY: update_full_client_set
+update_full_client_set: makefile_state/update_full_client_set.touch
+
+.PHONY: clean_update_full_client_set
+clean_update_full_client_set: 
+	if [ -f makefile_state/update_full_client_set.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/update_full_client_set.sql; else true; fi
+	rm -f makefile_state/update_full_client_set.touch
+
 # -------- version_ordering_validation --------
 makefile_state/version_ordering_validation.touch: makefile_state/setup_analysis.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/version_ordering_validation.sql
@@ -274,18 +287,18 @@ clean_version_ordering_validation: clean_build_updates
 	if [ -f makefile_state/version_ordering_validation.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/version_ordering_validation.sql; else true; fi
 	rm -f makefile_state/version_ordering_validation.touch
 
-# -------- version_prod_dep_matches_version --------
-makefile_state/version_prod_dep_matches_version.touch: makefile_state/setup_analysis.touch
-	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/version_prod_dep_matches_version.sql
-	touch makefile_state/version_prod_dep_matches_version.touch
+# -------- version_unnest_prod_dependencies --------
+makefile_state/version_unnest_prod_dependencies.touch: makefile_state/setup_analysis.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/version_unnest_prod_dependencies.sql
+	touch makefile_state/version_unnest_prod_dependencies.touch
 
-.PHONY: version_prod_dep_matches_version
-version_prod_dep_matches_version: makefile_state/version_prod_dep_matches_version.touch
+.PHONY: version_unnest_prod_dependencies
+version_unnest_prod_dependencies: makefile_state/version_unnest_prod_dependencies.touch
 
-.PHONY: clean_version_prod_dep_matches_version
-clean_version_prod_dep_matches_version: 
-	if [ -f makefile_state/version_prod_dep_matches_version.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/version_prod_dep_matches_version.sql; else true; fi
-	rm -f makefile_state/version_prod_dep_matches_version.touch
+.PHONY: clean_version_unnest_prod_dependencies
+clean_version_unnest_prod_dependencies: clean_update_full_client_set
+	if [ -f makefile_state/version_unnest_prod_dependencies.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/version_unnest_prod_dependencies.sql; else true; fi
+	rm -f makefile_state/version_unnest_prod_dependencies.touch
 
 # -------- vuln_intro_updates --------
 makefile_state/vuln_intro_updates.touch: makefile_state/build_updates.touch makefile_state/vulnerable_versions.touch

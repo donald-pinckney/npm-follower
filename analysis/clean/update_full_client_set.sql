@@ -1,5 +1,3 @@
-DROP VIEW metadata_analysis.version_prod_dep_matches_version;
-
+drop table metadata_analysis.update_full_client_set;
 DROP FUNCTION metadata_analysis.version_comp_exclude_betas;
-
 DROP FUNCTION metadata_analysis.semver_lt;

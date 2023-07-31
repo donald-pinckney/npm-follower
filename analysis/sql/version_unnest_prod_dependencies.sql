@@ -1,0 +1,8 @@
+CREATE TABLE metadata_analysis.version_unnest_prod_dependencies AS
+SELECT DISTINCT id as version_id, unnest(prod_dependencies) as prod_dep_id from versions;
+
+CREATE INDEX metadata_analysis_version_unnest_prod_dependencies_idx ON metadata_analysis.version_unnest_prod_dependencies (prod_dep_id);
+CREATE INDEX metadata_analysis_version_unnest_prod_dependencies_idx2 ON metadata_analysis.version_unnest_prod_dependencies (version_id);
+
+
+ANALYZE metadata_analysis.version_unnest_prod_dependencies;
