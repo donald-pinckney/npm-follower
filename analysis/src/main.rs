@@ -125,6 +125,7 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("package_avg_sizes".sql(), vec!["setup_analysis"]);
         dependencies.add_step("version_unnest_prod_dependencies".sql(), vec!["setup_analysis"]);
         dependencies.add_step("update_full_client_set".sql(), vec!["deps_stats", "build_updates", "version_unnest_prod_dependencies"]);
+        dependencies.add_step("prep_breaking_change_tests".sql(), vec!["update_full_client_set", "deps_stats"]);
     };
 
     // Check that dependencies is closed

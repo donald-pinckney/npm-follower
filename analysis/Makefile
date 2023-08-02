@@ -1,5 +1,5 @@
 .PHONY: all
-all: build_updates constraint_types deps_stats find_patches out_of_policy_unpublish package_avg_sizes possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions update_full_client_set version_ordering_validation version_unnest_prod_dependencies vuln_intro_updates vulnerable_versions
+all: build_updates constraint_types deps_stats find_patches out_of_policy_unpublish package_avg_sizes possible_direct_any_deps_non_deleted possible_direct_dev_deps possible_direct_runtime_deps possible_install_deps possible_transitive_runtime_deps possible_version_direct_runtime_deps possibly_malicious_packages prep_breaking_change_tests prepare_diffs_to_compute security_replaced_versions setup_analysis subsampled_possible_install_deps subsampled_updates unique_package_deps unpublished_versions update_full_client_set version_ordering_validation version_unnest_prod_dependencies vuln_intro_updates vulnerable_versions
 
 # -------- build_updates --------
 makefile_state/build_updates.touch: makefile_state/version_ordering_validation.touch
@@ -36,7 +36,7 @@ makefile_state/deps_stats.touch: makefile_state/possible_direct_dev_deps.touch m
 deps_stats: makefile_state/deps_stats.touch
 
 .PHONY: clean_deps_stats
-clean_deps_stats: clean_update_full_client_set
+clean_deps_stats: clean_prep_breaking_change_tests clean_update_full_client_set
 	if [ -f makefile_state/deps_stats.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/deps_stats.sql; else true; fi
 	rm -f makefile_state/deps_stats.touch
 
@@ -170,6 +170,19 @@ clean_possibly_malicious_packages:
 	if [ -f makefile_state/possibly_malicious_packages.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/possibly_malicious_packages.sql; else true; fi
 	rm -f makefile_state/possibly_malicious_packages.touch
 
+# -------- prep_breaking_change_tests --------
+makefile_state/prep_breaking_change_tests.touch: makefile_state/deps_stats.touch makefile_state/update_full_client_set.touch
+	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/prep_breaking_change_tests.sql
+	touch makefile_state/prep_breaking_change_tests.touch
+
+.PHONY: prep_breaking_change_tests
+prep_breaking_change_tests: makefile_state/prep_breaking_change_tests.touch
+
+.PHONY: clean_prep_breaking_change_tests
+clean_prep_breaking_change_tests: 
+	if [ -f makefile_state/prep_breaking_change_tests.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/prep_breaking_change_tests.sql; else true; fi
+	rm -f makefile_state/prep_breaking_change_tests.touch
+
 # -------- prepare_diffs_to_compute --------
 makefile_state/prepare_diffs_to_compute.touch: makefile_state/build_updates.touch
 	psql -d npm_data -v ON_ERROR_STOP=1 -a -f sql/prepare_diffs_to_compute.sql
@@ -270,7 +283,7 @@ makefile_state/update_full_client_set.touch: makefile_state/build_updates.touch 
 update_full_client_set: makefile_state/update_full_client_set.touch
 
 .PHONY: clean_update_full_client_set
-clean_update_full_client_set: 
+clean_update_full_client_set: clean_prep_breaking_change_tests
 	if [ -f makefile_state/update_full_client_set.touch ]; then psql -d npm_data -v ON_ERROR_STOP=1 -a -f clean/update_full_client_set.sql; else true; fi
 	rm -f makefile_state/update_full_client_set.touch
 
