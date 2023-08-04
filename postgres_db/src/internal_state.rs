@@ -38,12 +38,12 @@ pub fn set_tarball_transfer_last<R: QueryRunner>(url: String, seq: i64, conn: &m
     set_key_value_int_state("tarball_transfer_last_seq", seq, conn);
 }
 
-pub fn query_download_metrics_pkg_seq(conn: &DbConnection) -> Option<i64> {
-    query_key_value_state("download_metrics_pkg_seq", conn)
+pub fn query_download_metrics_pkg_seq<R: QueryRunner>(conn: &mut R) -> Option<i64> {
+    query_key_value_int_state("download_metrics_pkg_seq", conn)
 }
 
-pub fn set_download_metrics_pkg_seq(seq: i64, conn: &DbConnection) {
-    set_key_value_state("download_metrics_pkg_seq", seq, conn);
+pub fn set_download_metrics_pkg_seq<R: QueryRunner>(seq: i64, conn: &mut R) {
+    set_key_value_int_state("download_metrics_pkg_seq", seq, conn);
 }
 
 fn query_key_value_int_state<R: QueryRunner>(the_key: &str, conn: &mut R) -> Option<i64> {
