@@ -1,3 +1,7 @@
+use std::collections::HashMap;
+
+use chrono::NaiveDate;
+use chrono::{DateTime, Utc};
 use diesel::sql_types::Array;
 use diesel::sql_types::Text;
 use serde::{Deserialize, Serialize};
@@ -218,6 +222,12 @@ pub enum DiffTypeEnum {
     DeleteVersion,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DownloadCount {
+    pub count: i64,
+    pub date: NaiveDate,
+}
+
 pub mod sql_types {
     // #[derive(SqlType, QueryId)]
     // #[diesel(postgres_type(name = "semver_struct"))] // or should it be semver (domain)?
@@ -254,6 +264,10 @@ pub mod sql_types {
     // #[derive(SqlType)]
     // #[diesel(postgres_type(name = "internal_diff_log_version_state"))]
     // pub struct InternalDiffLogVersionStateSql;
+
+    #[derive(SqlType, QueryId)]
+    #[postgres(type_name = "download_count_struct")]
+    pub struct DownloadCountSql;
 }
 
 // #[allow(non_camel_case_types)]
@@ -268,8 +282,9 @@ pub mod sql_types {
 //     pub type Internal_diff_log_version_state = super::sql_types::InternalDiffLogVersionStateSql;
 // }
 
-mod diff_log;
+mod download_count;
 mod download_failed;
+mod diff_log;
 mod helpers;
 mod package_metadata;
 pub use package_metadata::{
