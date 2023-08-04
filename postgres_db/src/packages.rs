@@ -57,7 +57,6 @@ pub struct PackageUpdate {
     unpublished_data: Option<Option<Value>>,
 }
 
-
 impl Package {
     pub fn diff(&self, new: NewPackage) -> PackageUpdate {
         let mut update = PackageUpdate {
@@ -144,7 +143,6 @@ impl Package {
     }
 }
 
-
 pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) -> Package {
     let query = insert_into(packages::table)
         .values(&package)
@@ -163,17 +161,6 @@ pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) -> 
         other_time_data: package.other_time_data,
         unpublished_data: package.unpublished_data,
     }
-}
-
-pub fn maybe_get_package_by_id<R: QueryRunner>(
-    conn: &mut R,
-    pkg_id: i64,
-) -> Option<Package> {
-    let query = packages::table
-        .filter(packages::id.eq(pkg_id));
-    conn.first(query)
-        .optional()
-        .expect("Error getting package")
 }
 
 /// Gets the next id, that's greater than the given id. Returns None if there are no more packages.
