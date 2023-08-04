@@ -6,6 +6,10 @@ pub mod sql_types {
     pub struct DiffType;
 
     #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "download_count_struct"))]
+    pub struct DownloadCountStruct;
+
+    #[derive(diesel::sql_types::SqlType)]
     #[diesel(postgres_type(name = "internal_diff_log_version_state"))]
     pub struct InternalDiffLogVersionState;
 
@@ -86,6 +90,19 @@ diesel::table! {
         package_only_packument -> Nullable<Jsonb>,
         v -> Nullable<SemverStruct>,
         version_packument -> Nullable<Jsonb>,
+    }
+}
+
+diesel::table! {
+    use diesel::sql_types::*;
+    use super::sql_types::DownloadCountStruct;
+
+    download_metrics (id) {
+        id -> Int8,
+        package_id -> Int8,
+        download_counts -> Array<Nullable<DownloadCountStruct>>,
+        total_downloads -> Int8,
+        latest_date -> Date,
     }
 }
 
@@ -232,6 +249,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     cwes,
     dependencies,
     diff_log,
+    download_metrics,
     download_tasks,
     downloaded_tarballs,
     ghsa,
