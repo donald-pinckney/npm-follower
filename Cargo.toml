@@ -21,7 +21,8 @@ members = [
     "cluster_compute_jobs/size_analysis",
     "cluster_compute_jobs/size_analysis/size_analysis_client",
     "analysis/rust",
-    "database_exporting"
+    "database_exporting",
+    "download_metrics"
 ]
 
 [profile.bench]

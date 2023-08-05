@@ -167,7 +167,7 @@ pub async fn download_to_cluster(
     let blob_api_key = std::env::var("BLOB_API_KEY").expect("BLOB_API_KEY not set");
     let client = reqwest::Client::new();
 
-    let req_chunk_size = ((TASKS_CHUNK_SIZE as usize) / num_parallel_dl) + 1; // make chunk smaller due to cluster overhead
+    let req_chunk_size = (TASKS_CHUNK_SIZE / num_parallel_dl) + 1; // make chunk smaller due to cluster overhead
 
     // get all tasks with no failed downloads if retry_failed is false
     let tasks_len = get_total_tasks_num(conn, retry_failed);
@@ -187,7 +187,7 @@ pub async fn download_to_cluster(
     while !tasks.is_empty() {
         let mut handles = vec![];
 
-        for (worker_id, chunk) in tasks.chunks(req_chunk_size as usize).enumerate() {
+        for (worker_id, chunk) in tasks.chunks(req_chunk_size).enumerate() {
             let blob_api_url = blob_api_url.clone();
             let blob_api_key = blob_api_key.clone();
             let client = client.clone();

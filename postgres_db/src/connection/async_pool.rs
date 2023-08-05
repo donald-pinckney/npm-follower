@@ -13,10 +13,12 @@ use diesel::PgConnection;
 #[derive(Clone)]
 pub struct DbConnection {
     pool: Pool<DieselConnectionManager<PgConnection>>,
+    dl_redis: Option<redis::Client>,
 }
 
 pub struct DbConnectionInTransaction<'conn> {
     conn: &'conn mut DieselConnection<PgConnection>,
+    dl_redis: Option<&'conn mut redis::Client>,
 }
 
 #[cfg(not(test))]
@@ -35,7 +37,10 @@ impl DbConnection {
             .await
             .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
 
-        DbConnection { pool }
+        let dl_redis_url = env::var("DL_REDIS_URL").expect("DL_REDIS_URL must be set");
+        let dl_redis = redis::Client::open(dl_redis_url).ok();
+
+        DbConnection { pool, dl_redis }
     }
 }
 
@@ -59,7 +64,10 @@ impl DbConnection {
                     .build()
                     .unwrap();
 
-                let borrowed_self = DbConnectionInTransaction { conn: trans_conn };
+                let borrowed_self = DbConnectionInTransaction {
+                    conn: trans_conn,
+                    dl_redis: self.dl_redis.as_mut(),
+                };
                 let (result, should_commit) = rt.block_on(transaction(borrowed_self))?;
 
                 res = Some(result);
@@ -222,5 +230,13 @@ impl<'conn> super::QueryRunner for DbConnectionInTransaction<'conn> {
 
     fn batch_execute(&mut self, query: &str) -> QueryResult<()> {
         self.conn.batch_execute(query)
+    }
+
+    fn get_dl_redis(&self) -> redis::Connection {
+        self.dl_redis
+            .as_ref()
+            .expect("DL Redis not configured")
+            .get_connection()
+            .expect("Failed to connect to DL redis")
     }
 }

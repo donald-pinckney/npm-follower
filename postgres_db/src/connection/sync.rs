@@ -7,10 +7,12 @@ use diesel::PgConnection;
 
 pub struct DbConnection {
     conn: PgConnection,
+    dl_redis: Option<redis::Client>,
 }
 
 pub struct DbConnectionInTransaction<'conn> {
     conn: &'conn mut PgConnection,
+    dl_redis: Option<&'conn mut redis::Client>,
 }
 
 #[cfg(not(test))]
@@ -24,7 +26,11 @@ impl DbConnection {
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         let conn = PgConnection::establish(&database_url)
             .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
-        DbConnection { conn }
+
+        let dl_redis_url = env::var("DL_REDIS_URL").expect("DL_REDIS_URL must be set");
+        let dl_redis = redis::Client::open(dl_redis_url).ok();
+
+        DbConnection { conn, dl_redis }
     }
 }
 
@@ -38,7 +44,10 @@ impl DbConnection {
         let maybe_err = self
             .conn
             .transaction(|trans_conn| {
-                let borrowed_self = DbConnectionInTransaction { conn: trans_conn };
+                let borrowed_self = DbConnectionInTransaction {
+                    conn: trans_conn,
+                    dl_redis: self.dl_redis.as_mut(),
+                };
                 let (result, should_commit) = transaction(borrowed_self)?;
 
                 res = Some(result);
@@ -88,6 +97,8 @@ pub trait QueryRunner {
         Limit<Q>: LoadQuery<'query, PgConnection, U>;
 
     fn batch_execute(&mut self, query: &str) -> QueryResult<()>;
+
+    fn get_dl_redis(&self) -> redis::Connection;
 }
 
 impl QueryRunner for DbConnection {
@@ -140,6 +151,14 @@ impl QueryRunner for DbConnection {
 
     fn batch_execute(&mut self, query: &str) -> QueryResult<()> {
         self.conn.batch_execute(query)
+    }
+
+    fn get_dl_redis(&self) -> redis::Connection {
+        self.dl_redis
+            .as_ref()
+            .expect("DL Redis not configured")
+            .get_connection()
+            .expect("Failed to connect to DL redis")
     }
 }
 
@@ -194,6 +213,14 @@ impl<'conn> QueryRunner for DbConnectionInTransaction<'conn> {
     fn batch_execute(&mut self, query: &str) -> QueryResult<()> {
         self.conn.batch_execute(query)
     }
+
+    fn get_dl_redis(&self) -> redis::Connection {
+        self.dl_redis
+            .as_ref()
+            .expect("DL Redis not configured")
+            .get_connection()
+            .expect("Failed to connect to DL redis")
+    }
 }
 
 pub mod testing {
@@ -241,7 +268,10 @@ pub mod testing {
         // 3. Connect
         let conn = PgConnection::establish(&database_url)
             .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
-        DbConnection { conn }
+        DbConnection {
+            conn,
+            dl_redis: None,
+        }
     }
 
     pub fn using_test_db<F, R>(f: F) -> R

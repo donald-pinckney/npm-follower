@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use diesel::sql_types::Array;
 use diesel::sql_types::Text;
 use serde::{Deserialize, Serialize};
@@ -218,6 +219,12 @@ pub enum DiffTypeEnum {
     DeleteVersion,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DownloadCount {
+    pub count: i64,
+    pub date: NaiveDate,
+}
+
 pub mod sql_types {
     // #[derive(SqlType, QueryId)]
     // #[diesel(postgres_type(name = "semver_struct"))] // or should it be semver (domain)?
@@ -269,6 +276,7 @@ pub mod sql_types {
 // }
 
 mod diff_log;
+mod download_count;
 mod download_failed;
 mod helpers;
 mod package_metadata;

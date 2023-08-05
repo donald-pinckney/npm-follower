@@ -45,6 +45,6 @@ pub fn using_temp_table<F>(
 
     f(conn);
 
-    let drop_query = sql_query(&format!("DROP TABLE {}", table_name));
+    let drop_query = sql_query(format!("DROP TABLE {}", table_name));
     conn.execute(drop_query).unwrap();
 }

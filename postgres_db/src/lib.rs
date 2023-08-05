@@ -18,6 +18,7 @@ pub mod versions;
 
 pub mod connection;
 pub mod custom_types;
+pub mod download_metrics;
 
 pub mod serde_non_string_key_serialization;
 

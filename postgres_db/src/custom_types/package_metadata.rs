@@ -7,12 +7,16 @@ use diesel::pg::PgValue;
 use diesel::serialize::ToSql;
 use diesel::serialize::{self, IsNull, Output, WriteTuple};
 use diesel::sql_types::{Int8, Nullable, Record, Timestamptz};
+use serde::Deserialize;
+use serde::Serialize;
 use std::io::Write;
 
 use crate::schema::sql_types::PackageState;
 use crate::schema::sql_types::PackageStateEnum;
 
-#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone, DeepSizeOf)]
+#[derive(
+    Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone, DeepSizeOf, Serialize, Deserialize,
+)]
 #[diesel(sql_type = PackageStateEnum)]
 pub enum PackageStateType {
     Normal,
@@ -44,7 +48,9 @@ impl FromSql<PackageStateEnum, Pg> for PackageStateType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone, DeepSizeOf)]
+#[derive(
+    Debug, PartialEq, Eq, FromSqlRow, AsExpression, Clone, DeepSizeOf, Serialize, Deserialize,
+)]
 #[diesel(sql_type = PackageState)]
 pub struct PackageStateTimePoint {
     pub state: PackageStateType,

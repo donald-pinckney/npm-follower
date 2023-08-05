@@ -6,12 +6,14 @@ use chrono::DateTime;
 use chrono::Utc;
 use deepsize::DeepSizeOf;
 use diesel::insert_into;
+use diesel::Queryable;
+use serde::{Deserialize, Serialize};
+
 use diesel::prelude::*;
 use diesel::Insertable;
-use diesel::Queryable;
 use serde_json::Value;
 
-#[derive(Queryable, Debug, DeepSizeOf)]
+#[derive(Queryable, Debug, DeepSizeOf, Serialize, Deserialize, PartialEq, Eq)]
 #[diesel(table_name = packages)]
 pub struct Package {
     pub id: i64,
@@ -160,14 +162,29 @@ pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) -> 
     }
 }
 
+/// Gets the next id, that's greater than the given id. Returns None if there are no more packages.
+/// This is needed because ids are not necessarily sequential.
+pub fn query_next_pkg_id<R: QueryRunner>(conn: &mut R, pkg_id: i64) -> Option<i64> {
+    use super::schema::packages::dsl::*;
+
+    let query = packages.filter(id.gt(pkg_id)).order(id.asc()).select(id);
+
+    conn.first(query).optional().expect("Error loading package")
+}
+
 pub fn update_package<R: QueryRunner>(conn: &mut R, package_id: i64, update: PackageUpdate) {
     let query = diesel::update(packages::table.filter(packages::id.eq(package_id))).set(update);
     conn.execute(query).expect("Error updating package");
 }
 
 pub fn get_package<R: QueryRunner>(conn: &mut R, package_id: i64) -> Package {
+    maybe_get_package(conn, package_id)
+        .unwrap_or_else(|| panic!("Package with id {} not found", package_id))
+}
+
+pub fn maybe_get_package<R: QueryRunner>(conn: &mut R, package_id: i64) -> Option<Package> {
     let query = packages::table.filter(packages::id.eq(package_id));
-    conn.get_result(query).expect("Error getting package")
+    conn.first(query).optional().expect("Error getting package")
 }
 
 pub fn get_package_by_name<R: QueryRunner>(conn: &mut R, package_name: &str) -> Package {
