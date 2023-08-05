@@ -264,10 +264,6 @@ pub mod sql_types {
     // #[derive(SqlType)]
     // #[diesel(postgres_type(name = "internal_diff_log_version_state"))]
     // pub struct InternalDiffLogVersionStateSql;
-
-    #[derive(SqlType, QueryId)]
-    #[postgres(type_name = "download_count_struct")]
-    pub struct DownloadCountSql;
 }
 
 // #[allow(non_camel_case_types)]

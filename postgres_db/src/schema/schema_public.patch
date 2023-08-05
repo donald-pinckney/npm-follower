@@ -1,8 +1,8 @@
 diff --git a/postgres_db/src/schema/schema_public.rs b/postgres_db/src/schema/schema_public.rs
-index d81e3c6..fea6b47 100644
+index 22fb0c7..cbd74a4 100644
 --- a/postgres_db/src/schema/schema_public.rs
 +++ b/postgres_db/src/schema/schema_public.rs
-@@ -22,13 +22,13 @@ pub mod sql_types {
+@@ -26,13 +26,13 @@ pub mod sql_types {
      pub struct ParsedSpecStruct;
  
      #[derive(diesel::sql_types::SqlType)]
@@ -17,7 +17,22 @@ index d81e3c6..fea6b47 100644
      #[derive(diesel::sql_types::SqlType)]
      #[diesel(postgres_type(name = "version_state"))]
      pub struct VersionState;
-@@ -128,13 +128,13 @@ diesel::table! {
+@@ -97,13 +97,13 @@ diesel::table! {
+     use diesel::sql_types::*;
+     use super::sql_types::DownloadCountStruct;
+ 
+     download_metrics (id) {
+         id -> Int8,
+         package_id -> Int8,
+-        download_counts -> Array<Nullable<DownloadCountStruct>>,
++        download_counts -> Array<DownloadCountStruct>,
+         total_downloads -> Int8,
+         latest_date -> Date,
+     }
+ }
+ 
+ diesel::table! {
+@@ -145,13 +145,13 @@ diesel::table! {
          severity -> Text,
          description -> Text,
          summary -> Text,
@@ -32,7 +47,7 @@ index d81e3c6..fea6b47 100644
  }
  
  diesel::table! {
-@@ -148,13 +148,13 @@ diesel::table! {
+@@ -165,13 +165,13 @@ diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::InternalDiffLogVersionState;
  
@@ -47,7 +62,7 @@ index d81e3c6..fea6b47 100644
  diesel::table! {
      internal_state (key) {
          key -> Varchar,
-@@ -169,13 +169,13 @@ diesel::table! {
+@@ -186,13 +186,13 @@ diesel::table! {
      use super::sql_types::PackageState;
  
      packages (id) {
@@ -62,7 +77,7 @@ index d81e3c6..fea6b47 100644
          other_dist_tags -> Nullable<Jsonb>,
          other_time_data -> Nullable<Jsonb>,
          unpublished_data -> Nullable<Jsonb>,
-@@ -191,22 +191,22 @@ diesel::table! {
+@@ -208,22 +208,22 @@ diesel::table! {
  
      versions (id) {
          id -> Int8,
@@ -90,7 +105,7 @@ index d81e3c6..fea6b47 100644
  diesel::table! {
      use diesel::sql_types::*;
      use super::sql_types::SemverStruct;
-@@ -221,12 +221,13 @@ diesel::table! {
+@@ -238,12 +238,13 @@ diesel::table! {
          vulnerable_version_upper_bound_inclusive -> Bool,
          first_patched_version -> Nullable<SemverStruct>,
      }

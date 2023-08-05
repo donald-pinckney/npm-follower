@@ -100,7 +100,7 @@ diesel::table! {
     download_metrics (id) {
         id -> Int8,
         package_id -> Int8,
-        download_counts -> Array<Nullable<DownloadCountStruct>>,
+        download_counts -> Array<DownloadCountStruct>,
         total_downloads -> Int8,
         latest_date -> Date,
     }

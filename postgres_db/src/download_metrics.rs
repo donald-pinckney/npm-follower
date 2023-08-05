@@ -4,7 +4,7 @@ use chrono::NaiveDate;
 use redis::Commands;
 
 use super::schema::download_metrics;
-use crate::{custom_types::DownloadCount, packages::QueriedPackage, DbConnection};
+use crate::{connection::QueryRunner, custom_types::DownloadCount, packages::Package};
 use diesel::prelude::*;
 
 #[derive(Insertable, Clone, Queryable, Debug)]
@@ -32,7 +32,7 @@ impl DownloadMetric {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Queryable)]
 pub struct QueriedDownloadMetric {
     pub id: i64,
     pub package_id: i64,
@@ -41,22 +41,22 @@ pub struct QueriedDownloadMetric {
     pub latest_date: NaiveDate,
 }
 
-impl<ST, SB: diesel::backend::Backend> Queryable<ST, SB> for QueriedDownloadMetric
-where
-    (i64, i64, Vec<DownloadCount>, i64, NaiveDate): diesel::deserialize::FromSqlRow<ST, SB>,
-{
-    type Row = (i64, i64, Vec<DownloadCount>, i64, NaiveDate);
+// impl<ST, SB: diesel::backend::Backend> Queryable<ST, SB> for QueriedDownloadMetric
+// where
+//     (i64, i64, Vec<DownloadCount>, i64, NaiveDate): diesel::deserialize::FromSqlRow<ST, SB>,
+// {
+//     type Row = (i64, i64, Vec<DownloadCount>, i64, NaiveDate);
 
-    fn build(row: Self::Row) -> Self {
-        QueriedDownloadMetric {
-            id: row.0,
-            package_id: row.1,
-            download_counts: row.2,
-            total_downloads: row.3,
-            latest_date: row.4,
-        }
-    }
-}
+//     fn build(row: Self::Row) -> Self {
+//         QueriedDownloadMetric {
+//             id: row.0,
+//             package_id: row.1,
+//             download_counts: row.2,
+//             total_downloads: row.3,
+//             latest_date: row.4,
+//         }
+//     }
+// }
 
 impl From<QueriedDownloadMetric> for DownloadMetric {
     fn from(qdm: QueriedDownloadMetric) -> Self {
@@ -69,18 +69,19 @@ impl From<QueriedDownloadMetric> for DownloadMetric {
     }
 }
 
-pub fn insert_download_metric(conn: &DbConnection, metrics: DownloadMetric) -> i64 {
+pub fn insert_download_metric<R: QueryRunner>(conn: &mut R, metrics: DownloadMetric) -> i64 {
     use super::schema::download_metrics::dsl::*;
 
-    diesel::insert_into(download_metrics)
-        .values(metrics)
-        .on_conflict_do_nothing()
-        .get_result::<QueriedDownloadMetric>(&conn.conn)
-        .unwrap_or_else(|e| panic!("Error inserting download metric, {:?}", e))
-        .id
+    conn.get_result::<_, QueriedDownloadMetric>(
+        diesel::insert_into(download_metrics)
+            .values(metrics)
+            .on_conflict_do_nothing(),
+    )
+    .unwrap_or_else(|e| panic!("Error inserting download metric, {:?}", e))
+    .id
 }
 
-pub fn update_metric_by_id(conn: &DbConnection, metric_id: i64, metric: DownloadMetric) {
+pub fn update_metric_by_id<R: QueryRunner>(conn: &mut R, metric_id: i64, metric: DownloadMetric) {
     use super::schema::download_metrics::dsl::*;
 
     diesel::update(download_metrics.find(metric_id))
@@ -96,33 +97,32 @@ pub fn update_metric_by_id(conn: &DbConnection, metric_id: i64, metric: Download
 
 /// Queries all download metrics with latest date being less than or equal the given date.
 /// The query is limited to the given limit.
-pub fn query_metric_latest_less_than(
-    conn: &DbConnection,
+pub fn query_metric_latest_less_than<R: QueryRunner>(
+    conn: &mut R,
     date: NaiveDate,
     limit: i64,
 ) -> Vec<QueriedDownloadMetric> {
     use super::schema::download_metrics::dsl::*;
 
-    download_metrics
-        .filter(latest_date.le(date))
-        .limit(limit)
-        .load::<QueriedDownloadMetric>(&conn.conn)
-        .unwrap_or_else(|e| panic!("Error querying download metrics, {:?}", e))
+    conn.load::<_, QueriedDownloadMetric>(
+        download_metrics.filter(latest_date.le(date)).limit(limit),
+    )
+    .unwrap_or_else(|e| panic!("Error querying download metrics, {:?}", e))
 }
 
 /// Queries redis for the list of packages that have been rate-limited
-pub fn query_rate_limited_packages(conn: &DbConnection) -> Vec<QueriedPackage> {
+pub fn query_rate_limited_packages<R: QueryRunner>(conn: &mut R) -> Vec<Package> {
     let mut con = conn.get_redis();
 
     let data: HashSet<String> = con.smembers("rate-limited").unwrap();
 
     data.into_iter()
-        .map(|s| serde_json::from_str::<QueriedPackage>(&s).unwrap())
+        .map(|s| serde_json::from_str::<Package>(&s).unwrap())
         .collect()
 }
 
 /// Removes a package from the rate-limited packages set in redis
-pub fn remove_rate_limited_package(conn: &DbConnection, package: &QueriedPackage) {
+pub fn remove_rate_limited_package<R: QueryRunner>(conn: &mut R, package: &Package) {
     let mut con = conn.get_redis();
 
     let _: () = con
@@ -131,7 +131,7 @@ pub fn remove_rate_limited_package(conn: &DbConnection, package: &QueriedPackage
 }
 
 /// Removes a list of packages from the rate-limited packages set in redis
-pub fn remove_rate_limited_packages(conn: &DbConnection, package: &Vec<QueriedPackage>) {
+pub fn remove_rate_limited_packages<R: QueryRunner>(conn: &mut R, package: &Vec<Package>) {
     let mut con = conn.get_redis();
 
     for p in package {
@@ -142,7 +142,7 @@ pub fn remove_rate_limited_packages(conn: &DbConnection, package: &Vec<QueriedPa
 }
 
 /// Adds a package to the set of rate-limited packages
-pub fn add_rate_limited_package(conn: &DbConnection, package: &QueriedPackage) {
+pub fn add_rate_limited_package<R: QueryRunner>(conn: &mut R, package: &Package) {
     let mut con = conn.get_redis();
 
     let data = serde_json::to_string(&package).unwrap();
@@ -151,7 +151,7 @@ pub fn add_rate_limited_package(conn: &DbConnection, package: &QueriedPackage) {
 }
 
 /// Adds a list of packages to the set of rate-limited packages
-pub fn add_rate_limited_packages(conn: &DbConnection, packages: &[QueriedPackage]) {
+pub fn add_rate_limited_packages<R: QueryRunner>(conn: &mut R, packages: &[Package]) {
     let mut con = conn.get_redis();
 
     let data: Vec<String> = packages
