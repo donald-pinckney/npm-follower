@@ -84,14 +84,13 @@ pub fn insert_download_metric<R: QueryRunner>(conn: &mut R, metrics: DownloadMet
 pub fn update_metric_by_id<R: QueryRunner>(conn: &mut R, metric_id: i64, metric: DownloadMetric) {
     use super::schema::download_metrics::dsl::*;
 
-    diesel::update(download_metrics.find(metric_id))
+    conn.execute(diesel::update(download_metrics.find(metric_id))
         .set((
             package_id.eq(metric.package_id),
             download_counts.eq(metric.download_counts),
             total_downloads.eq(metric.total_downloads),
             latest_date.eq(metric.latest_date),
-        ))
-        .execute(&conn.conn)
+        )))
         .unwrap_or_else(|e| panic!("Error updating download metric, {:?}", e));
 }
 
@@ -112,7 +111,7 @@ pub fn query_metric_latest_less_than<R: QueryRunner>(
 
 /// Queries redis for the list of packages that have been rate-limited
 pub fn query_rate_limited_packages<R: QueryRunner>(conn: &mut R) -> Vec<Package> {
-    let mut con = conn.get_redis();
+    let mut con = conn.get_dl_redis();
 
     let data: HashSet<String> = con.smembers("rate-limited").unwrap();
 
@@ -123,7 +122,7 @@ pub fn query_rate_limited_packages<R: QueryRunner>(conn: &mut R) -> Vec<Package>
 
 /// Removes a package from the rate-limited packages set in redis
 pub fn remove_rate_limited_package<R: QueryRunner>(conn: &mut R, package: &Package) {
-    let mut con = conn.get_redis();
+    let mut con = conn.get_dl_redis();
 
     let _: () = con
         .srem("rate-limited", serde_json::to_string(package).unwrap())
@@ -132,7 +131,7 @@ pub fn remove_rate_limited_package<R: QueryRunner>(conn: &mut R, package: &Packa
 
 /// Removes a list of packages from the rate-limited packages set in redis
 pub fn remove_rate_limited_packages<R: QueryRunner>(conn: &mut R, package: &Vec<Package>) {
-    let mut con = conn.get_redis();
+    let mut con = conn.get_dl_redis();
 
     for p in package {
         let _: () = con
@@ -143,7 +142,7 @@ pub fn remove_rate_limited_packages<R: QueryRunner>(conn: &mut R, package: &Vec<
 
 /// Adds a package to the set of rate-limited packages
 pub fn add_rate_limited_package<R: QueryRunner>(conn: &mut R, package: &Package) {
-    let mut con = conn.get_redis();
+    let mut con = conn.get_dl_redis();
 
     let data = serde_json::to_string(&package).unwrap();
 
@@ -152,7 +151,7 @@ pub fn add_rate_limited_package<R: QueryRunner>(conn: &mut R, package: &Package)
 
 /// Adds a list of packages to the set of rate-limited packages
 pub fn add_rate_limited_packages<R: QueryRunner>(conn: &mut R, packages: &[Package]) {
-    let mut con = conn.get_redis();
+    let mut con = conn.get_dl_redis();
 
     let data: Vec<String> = packages
         .iter()
