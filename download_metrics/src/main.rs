@@ -6,23 +6,27 @@ use download_metrics::api::QueryTaskHandle;
 use download_metrics::api::API;
 use download_metrics::LOWER_BOUND_DATE;
 use download_metrics::UPPER_BOUND_DATE;
+use postgres_db::connection::DbConnection;
+use postgres_db::custom_types::PackageStateType;
 use postgres_db::download_metrics::QueriedDownloadMetric;
-use postgres_db::{download_metrics::DownloadMetric, packages::QueriedPackage, DbConnection};
+use postgres_db::packages::Package;
+use postgres_db::download_metrics::DownloadMetric;
 use utils::check_no_concurrent_processes;
 
 #[tokio::main]
 async fn main() {
     check_no_concurrent_processes("download_metrics");
+
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() != 2 {
         eprintln!("Usage: {} <insert|update>", args[0]);
         std::process::exit(1);
     }
-    let conn = postgres_db::connect();
+    let mut conn = DbConnection::connect();
 
     match args[1].as_str() {
-        "insert" => insert_from_packages(&conn).await,
-        "update" => update_from_packages(&conn).await,
+        "insert" => insert_from_packages(&mut conn).await,
+        "update" => update_from_packages(&mut conn).await,
         _ => {
             eprintln!("Usage: {} <insert|update>", args[0]);
             std::process::exit(1);
@@ -30,7 +34,7 @@ async fn main() {
     }
 }
 
-async fn update_from_packages(conn: &DbConnection) {
+async fn update_from_packages(conn: &mut DbConnection) {
     let mut metrics = query_metrics_older_than_a_week(conn);
     let api = API::default();
 
@@ -41,9 +45,7 @@ async fn update_from_packages(conn: &DbConnection) {
         let mut lookup_table: HashMap<i64, DownloadMetric> = HashMap::new();
 
         for metric in metrics {
-            let pkg = postgres_db::packages::query_pkg_by_id(conn, metric.package_id)
-                .expect("coulnd't find package from metric's package_id");
-
+            let pkg = postgres_db::packages::get_package(conn, metric.package_id);
             let lower_bound_date = metric.latest_date;
 
             let metric_id = metric.id;
@@ -97,11 +99,11 @@ async fn update_from_packages(conn: &DbConnection) {
             metrics_to_upd.push((id, metric));
         }
 
-        conn.run_psql_transaction(|| {
+        conn.run_psql_transaction(|mut conn| {
             for (id, metric) in metrics_to_upd {
-                postgres_db::download_metrics::update_metric_by_id(conn, id, metric);
+                postgres_db::download_metrics::update_metric_by_id(&mut conn, id, metric);
             }
-            Ok(())
+            Ok(((), true))
         })
         .expect("couldn't run transaction");
 
@@ -112,14 +114,14 @@ async fn update_from_packages(conn: &DbConnection) {
 }
 
 /// Queries all metrics older than a week. The query is limited to 128 results.
-fn query_metrics_older_than_a_week(conn: &DbConnection) -> Vec<QueriedDownloadMetric> {
+fn query_metrics_older_than_a_week(conn: &mut DbConnection) -> Vec<QueriedDownloadMetric> {
     let week_ago = get_a_week_ago(&LOWER_BOUND_DATE, &UPPER_BOUND_DATE) - chrono::Duration::days(7);
     println!("querying metrics older than {}", week_ago);
     postgres_db::download_metrics::query_metric_latest_less_than(conn, week_ago, 128)
 }
 
 /// Inserts new download metric rows by using the `packages` table and querying npm
-async fn insert_from_packages(conn: &DbConnection) {
+async fn insert_from_packages(conn: &mut DbConnection) {
     let mut pkg_id = postgres_db::internal_state::query_download_metrics_pkg_seq(conn).unwrap_or(1);
 
     println!("starting inserting metrics from pkg_id: {}", pkg_id);
@@ -140,7 +142,7 @@ async fn insert_from_packages(conn: &DbConnection) {
         redo_rl = Vec::new();
 
         while normal_packages.len() < 128 && scoped_packages.len() < 128 {
-            let pkg = postgres_db::packages::query_pkg_by_id(conn, chunk_pkg_id);
+            let pkg = postgres_db::packages::maybe_get_package(conn, chunk_pkg_id);
             match pkg {
                 None => {
                     // could be that ids are not contiguous, so we need to get the next id
@@ -173,7 +175,7 @@ async fn insert_from_packages(conn: &DbConnection) {
             }
         }
 
-        let mut download_metrics: Vec<(DownloadMetric, QueriedPackage)> = Vec::new();
+        let mut download_metrics: Vec<(DownloadMetric, Package)> = Vec::new();
         let mut scoped_handles: Vec<QueryTaskHandle> = Vec::new();
 
         // normal packages can be queried in bulk
@@ -257,16 +259,16 @@ async fn insert_from_packages(conn: &DbConnection) {
             };
         }
 
-        conn.run_psql_transaction(|| {
-            let rate_limited = postgres_db::download_metrics::query_rate_limited_packages(conn);
+        conn.run_psql_transaction(|mut conn| {
+            let rate_limited = postgres_db::download_metrics::query_rate_limited_packages(&mut conn);
             for (metric, pkg) in download_metrics {
                 if !rate_limited.is_empty() && rate_limited.contains(&pkg) {
-                    postgres_db::download_metrics::remove_rate_limited_package(conn, &pkg);
+                    postgres_db::download_metrics::remove_rate_limited_package(&mut conn, &pkg);
                 }
-                postgres_db::download_metrics::insert_download_metric(conn, metric);
+                postgres_db::download_metrics::insert_download_metric(&mut conn, metric);
             }
-            postgres_db::internal_state::set_download_metrics_pkg_seq(chunk_pkg_id, conn);
-            Ok(())
+            postgres_db::internal_state::set_download_metrics_pkg_seq(chunk_pkg_id, &mut conn);
+            Ok(((), true))
         })
         .expect("failed to insert download metrics");
 
@@ -277,17 +279,8 @@ async fn insert_from_packages(conn: &DbConnection) {
 }
 
 /// Helper to check if a package has normal metadata
-fn has_normal_metadata(pkg: &QueriedPackage) -> bool {
-    use postgres_db::custom_types::PackageMetadata;
-    matches!(
-        pkg.metadata,
-        PackageMetadata::Normal {
-            dist_tag_latest_version: _,
-            created: _,
-            modified: _,
-            other_dist_tags: _,
-        }
-    )
+fn has_normal_metadata(pkg: &Package) -> bool {
+    pkg.current_package_state_type == PackageStateType::Normal
 }
 
 /// Returns the earliest date that matches a week given the epoch, using the same logic as npm

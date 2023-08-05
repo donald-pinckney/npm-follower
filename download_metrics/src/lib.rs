@@ -2,23 +2,23 @@ use api::{ApiError, ApiResult};
 use chrono::NaiveDate;
 use lazy_static::lazy_static;
 use postgres_db::{
-    custom_types::DownloadCount, download_metrics::DownloadMetric, packages::QueriedPackage,
+    custom_types::DownloadCount, download_metrics::DownloadMetric, packages::Package
 };
 
 pub mod api;
 
 lazy_static!(
-    pub static ref LOWER_BOUND_DATE: NaiveDate = chrono::NaiveDate::from_ymd(2015, 1, 10);
+    pub static ref LOWER_BOUND_DATE: NaiveDate = chrono::NaiveDate::from_ymd_opt(2015, 1, 10).unwrap();
     // NOTE: we remove three days because:
     //  1. we remove 1 day beacuse of time zones
     //  2. we remove 1 day because the data of "today" is not yet complete
     //  3. we remove 1 other day because NPM's api only publishes data for "today" the day after
-    pub static ref UPPER_BOUND_DATE: NaiveDate = chrono::Utc::now().date().naive_utc()
+    pub static ref UPPER_BOUND_DATE: NaiveDate = chrono::Utc::now().date_naive()
                                                  - chrono::Duration::days(3);
 );
 
 pub async fn make_download_metric(
-    pkg: &QueriedPackage,
+    pkg: &Package,
     api_result: &ApiResult,
 ) -> Result<DownloadMetric, ApiError> {
     // we need to convert the results into DownloadMetric, merging daily results

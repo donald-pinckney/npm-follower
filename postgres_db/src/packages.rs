@@ -6,7 +6,6 @@ use chrono::DateTime;
 use chrono::Utc;
 use deepsize::DeepSizeOf;
 use diesel::insert_into;
-use diesel::pg::upsert::excluded;
 use diesel::Queryable;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +13,7 @@ use diesel::prelude::*;
 use diesel::Insertable;
 use serde_json::Value;
 
-#[derive(Queryable, Debug, DeepSizeOf)]
+#[derive(Queryable, Debug, DeepSizeOf, Serialize, Deserialize, PartialEq, Eq)]
 #[diesel(table_name = packages)]
 pub struct Package {
     pub id: i64,
@@ -184,8 +183,12 @@ pub fn update_package<R: QueryRunner>(conn: &mut R, package_id: i64, update: Pac
 }
 
 pub fn get_package<R: QueryRunner>(conn: &mut R, package_id: i64) -> Package {
+    maybe_get_package(conn, package_id).unwrap_or_else(|| panic!("Package with id {} not found", package_id))
+}
+
+pub fn maybe_get_package<R: QueryRunner>(conn: &mut R, package_id: i64) -> Option<Package> {
     let query = packages::table.filter(packages::id.eq(package_id));
-    conn.get_result(query).expect("Error getting package")
+    conn.first(query).optional().expect("Error getting package")
 }
 
 pub fn get_package_by_name<R: QueryRunner>(conn: &mut R, package_name: &str) -> Package {

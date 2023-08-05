@@ -6,7 +6,7 @@ use diesel::{
 
 use crate::schema::sql_types::DownloadCountStruct;
 
-use super::{DownloadCount};
+use super::DownloadCount;
 
 impl ToSql<DownloadCountStruct, Pg> for DownloadCount {
     fn to_sql(

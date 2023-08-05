@@ -1,5 +1,5 @@
 use chrono::NaiveDate;
-use postgres_db::{download_metrics::DownloadMetric, packages::QueriedPackage};
+use postgres_db::{download_metrics::DownloadMetric, packages::Package};
 use serde::Deserialize;
 use std::{collections::HashMap, sync::Arc};
 use tokio::{
@@ -18,9 +18,9 @@ pub struct API {
     pub client: reqwest::Client,
 }
 
-pub type QueryTaskHandle = JoinHandle<(Result<DownloadMetric, ApiError>, QueriedPackage)>;
+pub type QueryTaskHandle = JoinHandle<(Result<DownloadMetric, ApiError>, Package)>;
 pub type BulkQueryTaskHandle =
-    JoinHandle<(Result<Vec<DownloadMetric>, ApiError>, Vec<QueriedPackage>)>;
+    JoinHandle<(Result<Vec<DownloadMetric>, ApiError>, Vec<Package>)>;
 
 impl API {
     pub fn new(pool_size: u32) -> API {
@@ -34,7 +34,7 @@ impl API {
 
     pub fn spawn_bulk_query_task(
         self,
-        pkgs: Vec<QueriedPackage>,
+        pkgs: Vec<Package>,
         lbound: chrono::NaiveDate,
         rbound: chrono::NaiveDate,
     ) -> BulkQueryTaskHandle {
@@ -56,7 +56,7 @@ impl API {
 
     pub fn spawn_query_task(
         self,
-        pkg: QueriedPackage,
+        pkg: Package,
         lbound: chrono::NaiveDate,
         rbound: chrono::NaiveDate,
     ) -> QueryTaskHandle {
@@ -162,11 +162,11 @@ impl API {
     /// Performs a regular query in npm download metrics api for each package given
     async fn query_npm_metrics(
         self,
-        pkg: &QueriedPackage,
+        pkg: &Package,
         lbound: &NaiveDate,
         rbound: &NaiveDate,
     ) -> Result<ApiResult, ApiError> {
-        fn formatter(pkg: &QueriedPackage) -> String {
+        fn formatter(pkg: &Package) -> String {
             pkg.name.clone()
         }
         fn merger(api_result: &mut ApiResult, result: ApiResult) {
@@ -183,14 +183,14 @@ impl API {
     /// Can only handle 128 packages at a time, and can't query scoped packages
     async fn bulkquery_npm_metrics(
         self,
-        pkgs: &Vec<QueriedPackage>,
+        pkgs: &Vec<Package>,
         lbound: &NaiveDate,
         rbound: &NaiveDate,
     ) -> Result<BulkApiResult, ApiError> {
         assert!(pkgs.len() <= 128);
 
         #[allow(clippy::ptr_arg)]
-        fn formatter(pkgs: &Vec<QueriedPackage>) -> String {
+        fn formatter(pkgs: &Vec<Package>) -> String {
             pkgs.iter()
                 .map(|pkg| pkg.name.to_string())
                 .collect::<Vec<String>>()
