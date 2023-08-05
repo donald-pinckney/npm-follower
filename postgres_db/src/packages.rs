@@ -167,14 +167,9 @@ pub fn insert_new_package<R: QueryRunner>(conn: &mut R, package: NewPackage) -> 
 pub fn query_next_pkg_id<R: QueryRunner>(conn: &mut R, pkg_id: i64) -> Option<i64> {
     use super::schema::packages::dsl::*;
 
-    let query = packages
-        .filter(id.gt(pkg_id))
-        .order(id.asc())
-        .select(id);
+    let query = packages.filter(id.gt(pkg_id)).order(id.asc()).select(id);
 
-    conn.first(query)
-        .optional()
-        .expect("Error loading package")
+    conn.first(query).optional().expect("Error loading package")
 }
 
 pub fn update_package<R: QueryRunner>(conn: &mut R, package_id: i64, update: PackageUpdate) {
@@ -183,7 +178,8 @@ pub fn update_package<R: QueryRunner>(conn: &mut R, package_id: i64, update: Pac
 }
 
 pub fn get_package<R: QueryRunner>(conn: &mut R, package_id: i64) -> Package {
-    maybe_get_package(conn, package_id).unwrap_or_else(|| panic!("Package with id {} not found", package_id))
+    maybe_get_package(conn, package_id)
+        .unwrap_or_else(|| panic!("Package with id {} not found", package_id))
 }
 
 pub fn maybe_get_package<R: QueryRunner>(conn: &mut R, package_id: i64) -> Option<Package> {

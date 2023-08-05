@@ -8,9 +8,9 @@ use download_metrics::LOWER_BOUND_DATE;
 use download_metrics::UPPER_BOUND_DATE;
 use postgres_db::connection::DbConnection;
 use postgres_db::custom_types::PackageStateType;
+use postgres_db::download_metrics::DownloadMetric;
 use postgres_db::download_metrics::QueriedDownloadMetric;
 use postgres_db::packages::Package;
-use postgres_db::download_metrics::DownloadMetric;
 use utils::check_no_concurrent_processes;
 
 #[tokio::main]
@@ -260,7 +260,8 @@ async fn insert_from_packages(conn: &mut DbConnection) {
         }
 
         conn.run_psql_transaction(|mut conn| {
-            let rate_limited = postgres_db::download_metrics::query_rate_limited_packages(&mut conn);
+            let rate_limited =
+                postgres_db::download_metrics::query_rate_limited_packages(&mut conn);
             for (metric, pkg) in download_metrics {
                 if !rate_limited.is_empty() && rate_limited.contains(&pkg) {
                     postgres_db::download_metrics::remove_rate_limited_package(&mut conn, &pkg);

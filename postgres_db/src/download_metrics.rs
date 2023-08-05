@@ -84,14 +84,13 @@ pub fn insert_download_metric<R: QueryRunner>(conn: &mut R, metrics: DownloadMet
 pub fn update_metric_by_id<R: QueryRunner>(conn: &mut R, metric_id: i64, metric: DownloadMetric) {
     use super::schema::download_metrics::dsl::*;
 
-    conn.execute(diesel::update(download_metrics.find(metric_id))
-        .set((
-            package_id.eq(metric.package_id),
-            download_counts.eq(metric.download_counts),
-            total_downloads.eq(metric.total_downloads),
-            latest_date.eq(metric.latest_date),
-        )))
-        .unwrap_or_else(|e| panic!("Error updating download metric, {:?}", e));
+    conn.execute(diesel::update(download_metrics.find(metric_id)).set((
+        package_id.eq(metric.package_id),
+        download_counts.eq(metric.download_counts),
+        total_downloads.eq(metric.total_downloads),
+        latest_date.eq(metric.latest_date),
+    )))
+    .unwrap_or_else(|e| panic!("Error updating download metric, {:?}", e));
 }
 
 /// Queries all download metrics with latest date being less than or equal the given date.

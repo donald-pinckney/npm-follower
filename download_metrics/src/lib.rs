@@ -2,7 +2,7 @@ use api::{ApiError, ApiResult};
 use chrono::NaiveDate;
 use lazy_static::lazy_static;
 use postgres_db::{
-    custom_types::DownloadCount, download_metrics::DownloadMetric, packages::Package
+    custom_types::DownloadCount, download_metrics::DownloadMetric, packages::Package,
 };
 
 pub mod api;

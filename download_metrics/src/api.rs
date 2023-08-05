@@ -19,8 +19,7 @@ pub struct API {
 }
 
 pub type QueryTaskHandle = JoinHandle<(Result<DownloadMetric, ApiError>, Package)>;
-pub type BulkQueryTaskHandle =
-    JoinHandle<(Result<Vec<DownloadMetric>, ApiError>, Vec<Package>)>;
+pub type BulkQueryTaskHandle = JoinHandle<(Result<Vec<DownloadMetric>, ApiError>, Vec<Package>)>;
 
 impl API {
     pub fn new(pool_size: u32) -> API {

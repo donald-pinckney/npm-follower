@@ -13,12 +13,12 @@ use diesel::PgConnection;
 #[derive(Clone)]
 pub struct DbConnection {
     pool: Pool<DieselConnectionManager<PgConnection>>,
-    dl_redis: Option<redis::Client>
+    dl_redis: Option<redis::Client>,
 }
 
 pub struct DbConnectionInTransaction<'conn> {
     conn: &'conn mut DieselConnection<PgConnection>,
-    dl_redis: Option<&'conn mut redis::Client>
+    dl_redis: Option<&'conn mut redis::Client>,
 }
 
 #[cfg(not(test))]
@@ -64,7 +64,10 @@ impl DbConnection {
                     .build()
                     .unwrap();
 
-                let borrowed_self = DbConnectionInTransaction { conn: trans_conn, dl_redis: self.dl_redis.as_mut() };
+                let borrowed_self = DbConnectionInTransaction {
+                    conn: trans_conn,
+                    dl_redis: self.dl_redis.as_mut(),
+                };
                 let (result, should_commit) = rt.block_on(transaction(borrowed_self))?;
 
                 res = Some(result);
@@ -231,9 +234,9 @@ impl<'conn> super::QueryRunner for DbConnectionInTransaction<'conn> {
 
     fn get_dl_redis(&self) -> redis::Connection {
         self.dl_redis
-             .as_ref()
-             .expect("DL Redis not configured")
-             .get_connection()
-             .expect("Failed to connect to DL redis")
+            .as_ref()
+            .expect("DL Redis not configured")
+            .get_connection()
+            .expect("Failed to connect to DL redis")
     }
 }

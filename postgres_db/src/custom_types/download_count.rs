@@ -1,7 +1,8 @@
 use diesel::{
+    deserialize::{self, FromSql},
     pg::{Pg, PgValue},
-    serialize::{WriteTuple, ToSql, Output, self},
-    sql_types::{BigInt, Date, Record}, deserialize::{FromSql, self},
+    serialize::{self, Output, ToSql, WriteTuple},
+    sql_types::{BigInt, Date, Record},
 };
 
 use crate::schema::sql_types::DownloadCountStruct;
@@ -9,10 +10,7 @@ use crate::schema::sql_types::DownloadCountStruct;
 use super::DownloadCount;
 
 impl ToSql<DownloadCountStruct, Pg> for DownloadCount {
-    fn to_sql(
-        &self,
-        out: &mut Output<Pg>,
-    ) -> serialize::Result {
+    fn to_sql(&self, out: &mut Output<Pg>) -> serialize::Result {
         WriteTuple::<(Date, BigInt)>::write_tuple(&(self.date, self.count), out)
     }
 }

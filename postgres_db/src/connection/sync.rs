@@ -7,12 +7,12 @@ use diesel::PgConnection;
 
 pub struct DbConnection {
     conn: PgConnection,
-    dl_redis: Option<redis::Client>
+    dl_redis: Option<redis::Client>,
 }
 
 pub struct DbConnectionInTransaction<'conn> {
     conn: &'conn mut PgConnection,
-    dl_redis: Option<&'conn mut redis::Client>
+    dl_redis: Option<&'conn mut redis::Client>,
 }
 
 #[cfg(not(test))]
@@ -44,7 +44,10 @@ impl DbConnection {
         let maybe_err = self
             .conn
             .transaction(|trans_conn| {
-                let borrowed_self = DbConnectionInTransaction { conn: trans_conn, dl_redis: self.dl_redis.as_mut() };
+                let borrowed_self = DbConnectionInTransaction {
+                    conn: trans_conn,
+                    dl_redis: self.dl_redis.as_mut(),
+                };
                 let (result, should_commit) = transaction(borrowed_self)?;
 
                 res = Some(result);
@@ -152,10 +155,10 @@ impl QueryRunner for DbConnection {
 
     fn get_dl_redis(&self) -> redis::Connection {
         self.dl_redis
-             .as_ref()
-             .expect("DL Redis not configured")
-             .get_connection()
-             .expect("Failed to connect to DL redis")
+            .as_ref()
+            .expect("DL Redis not configured")
+            .get_connection()
+            .expect("Failed to connect to DL redis")
     }
 }
 
@@ -213,10 +216,10 @@ impl<'conn> QueryRunner for DbConnectionInTransaction<'conn> {
 
     fn get_dl_redis(&self) -> redis::Connection {
         self.dl_redis
-             .as_ref()
-             .expect("DL Redis not configured")
-             .get_connection()
-             .expect("Failed to connect to DL redis")
+            .as_ref()
+            .expect("DL Redis not configured")
+            .get_connection()
+            .expect("Failed to connect to DL redis")
     }
 }
 
@@ -265,7 +268,10 @@ pub mod testing {
         // 3. Connect
         let conn = PgConnection::establish(&database_url)
             .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
-        DbConnection { conn, dl_redis: None }
+        DbConnection {
+            conn,
+            dl_redis: None,
+        }
     }
 
     pub fn using_test_db<F, R>(f: F) -> R

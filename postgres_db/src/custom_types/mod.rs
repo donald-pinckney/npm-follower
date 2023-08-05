@@ -275,9 +275,9 @@ pub mod sql_types {
 //     pub type Internal_diff_log_version_state = super::sql_types::InternalDiffLogVersionStateSql;
 // }
 
+mod diff_log;
 mod download_count;
 mod download_failed;
-mod diff_log;
 mod helpers;
 mod package_metadata;
 pub use package_metadata::{
