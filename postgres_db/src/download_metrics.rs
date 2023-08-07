@@ -12,7 +12,6 @@ use diesel::prelude::*;
 pub struct DownloadMetric {
     pub package_id: i64,
     pub download_counts: Vec<DownloadCount>,
-    pub total_downloads: i64,
     pub latest_date: NaiveDate,
 }
 
@@ -20,13 +19,11 @@ impl DownloadMetric {
     pub fn new(
         package_id: i64,
         download_counts: Vec<DownloadCount>,
-        total_downloads: i64,
         latest_date: NaiveDate,
     ) -> DownloadMetric {
         DownloadMetric {
             package_id,
             download_counts,
-            total_downloads,
             latest_date,
         }
     }
@@ -37,7 +34,6 @@ pub struct QueriedDownloadMetric {
     pub id: i64,
     pub package_id: i64,
     pub download_counts: Vec<DownloadCount>,
-    pub total_downloads: i64,
     pub latest_date: NaiveDate,
 }
 
@@ -63,7 +59,6 @@ impl From<QueriedDownloadMetric> for DownloadMetric {
         DownloadMetric {
             package_id: qdm.package_id,
             download_counts: qdm.download_counts,
-            total_downloads: qdm.total_downloads,
             latest_date: qdm.latest_date,
         }
     }
@@ -87,7 +82,6 @@ pub fn update_metric_by_id<R: QueryRunner>(conn: &mut R, metric_id: i64, metric:
     conn.execute(diesel::update(download_metrics.find(metric_id)).set((
         package_id.eq(metric.package_id),
         download_counts.eq(metric.download_counts),
-        total_downloads.eq(metric.total_downloads),
         latest_date.eq(metric.latest_date),
     )))
     .unwrap_or_else(|e| panic!("Error updating download metric, {:?}", e));

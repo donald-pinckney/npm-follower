@@ -95,7 +95,6 @@ async fn update_from_packages(conn: &mut DbConnection) {
                 .into_iter()
                 .chain(metric.download_counts.into_iter())
                 .collect();
-            metric.total_downloads += older_metric.total_downloads;
             metrics_to_upd.push((id, metric));
         }
 
@@ -321,7 +320,7 @@ fn pretty_print_metric(metric: &DownloadMetric) {
     println!("latest: {:?}", metric.latest_date);
     println!("counts:");
     for dl in &metric.download_counts {
-        print!("{}: {}, ", dl.date, dl.count);
+        print!("{}: {:?}, ", dl.date, dl.count);
     }
     println!();
 }

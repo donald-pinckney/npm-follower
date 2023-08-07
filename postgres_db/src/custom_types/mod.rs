@@ -221,7 +221,7 @@ pub enum DiffTypeEnum {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DownloadCount {
-    pub count: i64,
+    pub count: Option<i64>,
     pub date: NaiveDate,
 }
 

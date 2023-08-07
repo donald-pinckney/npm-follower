@@ -242,6 +242,8 @@ fn parse_resp<T: for<'a> Deserialize<'a>>(text: String) -> Result<T, ApiError> {
         Ok(result) => result,
         Err(e) => {
             // get the error message from the response
+            eprintln!("error: {:?}", e);
+            eprintln!("about to deserialize: {}", text);
             let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
             let error = match json_map.get("error") {
                 Some(error) => error,
@@ -268,7 +270,7 @@ pub struct ApiResult {
 #[derive(Deserialize, Debug, Clone)]
 pub struct ApiResultDownload {
     pub day: String,
-    pub downloads: i64,
+    pub downloads: Option<i64>,
 }
 
 #[derive(Debug)]

@@ -25,13 +25,12 @@ pub async fn make_download_metric(
     // into weekly results
     let mut weekly_results: Vec<DownloadCount> = Vec::new();
     let mut i = 0;
-    let mut total_downloads = 0;
 
     loop {
-        let mut weekly_count = api_result.downloads[i].downloads;
+        let mut weekly_count: Option<i64> = api_result.downloads[i].downloads;
         let mut j = i + 1;
         while j < api_result.downloads.len() && j < i + 7 {
-            weekly_count += api_result.downloads[j].downloads;
+            weekly_count = weekly_count.and_then(|wc| api_result.downloads[j].downloads.map(|cc| wc + cc));
             j += 1;
         }
 
@@ -41,15 +40,14 @@ pub async fn make_download_metric(
         // we set i to j so that we skip the days we already counted
         i = j;
 
-        total_downloads += weekly_count;
 
         let count = DownloadCount {
             date,
             count: weekly_count,
         };
 
-        // we don't insert zero counts
-        if weekly_count > 0 {
+        // we don't insert zero counts or null counts
+        if matches!(weekly_count, Some(x) if x > 0) {
             weekly_results.push(count);
         }
 
@@ -60,7 +58,6 @@ pub async fn make_download_metric(
             return Ok(DownloadMetric::new(
                 pkg.id,
                 weekly_results,
-                total_downloads,
                 latest,
             ));
         }
