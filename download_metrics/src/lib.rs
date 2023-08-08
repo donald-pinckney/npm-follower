@@ -54,7 +54,7 @@ pub async fn make_download_metric(
         if i >= api_result.downloads.len() {
             // we still want to know the latest, even if it's zero and we didn't insert it
             let latest = date;
-            println!("did package {}", pkg.name);
+            // println!("did package {}", pkg.name);
             return Ok(DownloadMetric::new(
                 pkg.id,
                 weekly_results,

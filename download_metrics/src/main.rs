@@ -316,11 +316,11 @@ fn get_a_week_ago(lbound: &chrono::NaiveDate, rbound: &chrono::NaiveDate) -> Nai
 }
 
 fn pretty_print_metric(metric: &DownloadMetric) {
-    println!("id: {}", metric.package_id);
-    println!("latest: {:?}", metric.latest_date);
-    println!("counts:");
-    for dl in &metric.download_counts {
-        print!("{}: {:?}, ", dl.date, dl.count);
-    }
-    println!();
+    // println!("id: {}", metric.package_id);
+    // println!("latest: {:?}", metric.latest_date);
+    // println!("counts:");
+    // for dl in &metric.download_counts {
+    //     print!("{}: {:?}, ", dl.date, dl.count);
+    // }
+    // println!();
 }

@@ -125,10 +125,10 @@ impl API {
 
             let query_thing = formatter(thing_to_query);
 
-            println!(
-                "Querying {} from {} to {}",
-                query_thing, rel_lbound, rel_rbound
-            );
+            // println!(
+            //     "Querying {} from {} to {}",
+            //     query_thing, rel_lbound, rel_rbound
+            // );
 
             let query = format!(
                 "https://api.npmjs.org/downloads/range/{}:{}/{}",
@@ -186,6 +186,19 @@ impl API {
         lbound: &NaiveDate,
         rbound: &NaiveDate,
     ) -> Result<BulkApiResult, ApiError> {
+
+        // We can't do a bulk query with only 1 package, since thats the same
+        // as a regular query, and then it won't be deserialized correctly.
+        // Instead, handle that case as a normal query.
+        if pkgs.len() == 1 {
+            let pkg = &pkgs[0];
+            let api_result = self.query_npm_metrics(pkg, lbound, rbound).await?;
+            let mut map = HashMap::new();
+            map.insert(pkg.name.clone(), Some(api_result));
+            return Ok(map);
+        }
+
+        assert!(2 <= pkgs.len());
         assert!(pkgs.len() <= 128);
 
         #[allow(clippy::ptr_arg)]
@@ -237,24 +250,35 @@ impl Default for API {
     }
 }
 
+fn serde_panic_fn<T>(text: &str, e: serde_json::Error) -> ! {
+    println!("failed to deserialize into type: {}", std::any::type_name::<T>());
+    println!("failed to deserialize: {}", text);
+    println!("error: {:?}", e);
+    std::process::exit(1);
+    // panic!("error deserializing");
+}
+
+// impl TypeName {
+//     fn type_name() -> &'static str {
+//         std::any::type_name::<Self>()
+//     }
+// }
+
 fn parse_resp<T: for<'a> Deserialize<'a>>(text: String) -> Result<T, ApiError> {
-    Ok(match serde_json::from_str(&text) {
-        Ok(result) => result,
-        Err(e) => {
-            // get the error message from the response
-            eprintln!("error: {:?}", e);
-            eprintln!("about to deserialize: {}", text);
-            let json_map = serde_json::from_str::<HashMap<String, String>>(&text)?;
-            let error = match json_map.get("error") {
-                Some(error) => error,
-                None => return Err(ApiError::Other(e.to_string())),
-            };
+    let json = serde_json::from_str::<serde_json::Value>(&text).unwrap_or_else(|e| serde_panic_fn::<T>(&text, e));
+    
+    if let Some(json_map) = json.as_object() {
+        if let Some(error) = json_map.get("error") {
+            let error = error.as_str().unwrap_or_else(|| panic!("error is not a string, it is: {:?}", error));
             if error.contains("not found") {
                 return Err(ApiError::DoesNotExist);
+            } else {
+                return Err(ApiError::Other(error.to_string()));
             }
-            return Err(ApiError::Other(error.to_string()));
         }
-    })
+    }
+
+    Ok(serde_json::from_str(&text).unwrap_or_else(|e| serde_panic_fn::<T>(&text, e)))
 }
 
 pub type BulkApiResult = HashMap<String, Option<ApiResult>>;
@@ -276,7 +300,6 @@ pub struct ApiResultDownload {
 #[derive(Debug)]
 pub enum ApiError {
     Reqwest(reqwest::Error),
-    Serde(serde_json::Error),
     Io(std::io::Error),
     DoesNotExist,
     Other(String), // where String is the error message
@@ -286,12 +309,6 @@ pub enum ApiError {
 impl From<reqwest::Error> for ApiError {
     fn from(err: reqwest::Error) -> Self {
         ApiError::Reqwest(err)
-    }
-}
-
-impl From<serde_json::Error> for ApiError {
-    fn from(err: serde_json::Error) -> Self {
-        ApiError::Serde(err)
     }
 }
 
@@ -305,7 +322,6 @@ impl std::fmt::Display for ApiError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ApiError::Reqwest(err) => write!(f, "reqwest error: {}", err),
-            ApiError::Serde(err) => write!(f, "serde error: {}", err),
             ApiError::Io(err) => write!(f, "io error: {}", err),
             ApiError::RateLimit => write!(f, "rate-limited"),
             ApiError::DoesNotExist => write!(f, "package does not exist"),
