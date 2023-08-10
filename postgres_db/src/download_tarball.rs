@@ -25,6 +25,8 @@ pub struct DownloadedTarball {
 
     pub tgz_local_path: Option<String>,
     pub blob_storage_key: Option<String>,
+
+    pub num_bytes: Option<i64>,
 }
 
 impl DownloadedTarball {
@@ -32,6 +34,7 @@ impl DownloadedTarball {
         task: &DownloadTask,
         tgz_local_path: Option<String>,
         blob_storage_key: Option<String>,
+        num_bytes: Option<i64>,
     ) -> Self {
         Self {
             tarball_url: task.url.clone(),
@@ -45,18 +48,19 @@ impl DownloadedTarball {
             npm_signature: task.npm_signature.clone(),
             tgz_local_path,
             blob_storage_key,
+            num_bytes
         }
     }
     /// Creates the downloaded tarball struct from the given download task and local path (full
     /// path to file). Sets the time of download to now.
-    pub fn from_task(task: &DownloadTask, local_path: String) -> DownloadedTarball {
-        Self::from_task_help(task, Some(local_path), None)
+    pub fn from_task(task: &DownloadTask, local_path: String, num_bytes: i64) -> DownloadedTarball {
+        Self::from_task_help(task, Some(local_path), None, Some(num_bytes))
     }
 
     /// Creates the downloaded tarball struct from the given download task and blob storage key.
     /// Sets the time of download to now.
-    pub fn from_task_blob(task: &DownloadTask, blob_key: String) -> DownloadedTarball {
-        Self::from_task_help(task, None, Some(blob_key))
+    pub fn from_task_blob(task: &DownloadTask, blob_key: String, num_bytes: Option<i64>) -> DownloadedTarball {
+        Self::from_task_help(task, None, Some(blob_key), num_bytes)
     }
 }
 
