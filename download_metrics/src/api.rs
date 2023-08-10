@@ -135,6 +135,7 @@ impl API {
                 rel_lbound, rel_rbound, query_thing
             );
 
+            println!("Querying {}", query);
             let resp = self.send_query(&query).await?;
 
             if resp.status() == 429 {
