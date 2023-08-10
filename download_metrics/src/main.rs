@@ -164,9 +164,14 @@ async fn insert_from_packages(conn: &mut DbConnection) {
                 Some(pkg) => {
                     if has_normal_metadata(&pkg) {
                         if pkg.name.starts_with('@') {
-                            scoped_packages.push(pkg);
+                            // postgres_db::download_metrics::add_rate_limited_package(conn, &pkg);
+                            // scoped_packages.push(pkg);
                         } else {
-                            normal_packages.push(pkg);
+                            if postgres_db::download_metrics::has_metrics_for_package_id(conn, pkg.id) {
+                                println!("Package {} already has metrics, skipping", pkg.name);
+                            } else {
+                                normal_packages.push(pkg);
+                            }
                         }
                     }
                     chunk_pkg_id += 1;
