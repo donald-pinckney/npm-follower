@@ -15,7 +15,7 @@ CREATE TABLE downloaded_tarballs (
   tgz_local_path TEXT,
   blob_storage_key TEXT,
 
-  num_bytes BIGINT,
+  num_bytes BIGINT NOT NULL,
 
   CONSTRAINT check_at_least_one_storage CHECK (
     tgz_local_path IS NOT NULL OR blob_storage_key IS NOT NULL

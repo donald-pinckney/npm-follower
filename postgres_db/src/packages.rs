@@ -13,7 +13,7 @@ use diesel::prelude::*;
 use diesel::Insertable;
 use serde_json::Value;
 
-#[derive(Queryable, Debug, DeepSizeOf, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Queryable, Debug, DeepSizeOf, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[diesel(table_name = packages)]
 pub struct Package {
     pub id: i64,
