@@ -130,7 +130,7 @@ async fn insert_from_packages(conn: &mut DbConnection) {
 
     // therefore we run in chunks of 128 packages (+ scoped packages, max 128 too for consistency)
 
-    let api = API::new(6);
+    let api = API::new(4);
     let mut finished = false; // we break the loop if we have no more packages to query
     let mut redo_rl = postgres_db::download_metrics::query_rate_limited_packages(conn);
     while !finished {
@@ -162,17 +162,15 @@ async fn insert_from_packages(conn: &mut DbConnection) {
                     }
                 }
                 Some(pkg) => {
-                    if has_normal_metadata(&pkg) {
+                    let has_metrics = postgres_db::download_metrics::has_metrics_for_package_id(conn, pkg.id);
+                    if has_normal_metadata(&pkg) && !has_metrics {
                         if pkg.name.starts_with('@') {
-                            // postgres_db::download_metrics::add_rate_limited_package(conn, &pkg);
-                            // scoped_packages.push(pkg);
+                            scoped_packages.push(pkg);
                         } else {
-                            if postgres_db::download_metrics::has_metrics_for_package_id(conn, pkg.id) {
-                                println!("Package {} already has metrics, skipping", pkg.name);
-                            } else {
-                                normal_packages.push(pkg);
-                            }
+                            normal_packages.push(pkg);
                         }
+                    } else if has_metrics {
+                        println!("Package {} already has metrics, skipping", pkg.name);
                     }
                     chunk_pkg_id += 1;
                 }
@@ -258,6 +256,12 @@ async fn insert_from_packages(conn: &mut DbConnection) {
                             .collect::<Vec<_>>()
                             .join(", ")
                     );
+                }
+                (Err(ApiError::DoesNotExist), pkgs) => {
+                    println!("Error: {:?} do not exist", pkgs);
+                    for p in pkgs {
+                        postgres_db::download_metrics::remove_rate_limited_package(conn, &p);
+                    }
                 }
                 (Err(e), pkgs) => panic!("Error: {} with pkgs: {:?}", e, pkgs),
             };
