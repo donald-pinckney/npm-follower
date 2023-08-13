@@ -69,14 +69,32 @@ impl API {
     }
 
     /// Sends a query with reqwest, taking account of the rate limit pool.
-    async fn send_query(&self, query: &str) -> Result<reqwest::Response, ApiError> {
+    async fn send_query(&self, query: &str) -> Result<(Option<String>, bool), ApiError> {
         {
             self.rl_lock.lock().await;
         }
         let permit = self.pool.acquire().await.unwrap();
-        let resp = self.client.get(query).send().await?;
+
+        for _ in 0..10 {
+            let resp: reqwest::Response = self.client.get(query).send().await?;
+            if resp.status() == 429 {
+                drop(permit);
+                return Ok((None, true))
+            } else {
+                let text = resp.text().await?;
+                if text.trim() == "" {
+                    // sleep for 10 seconds
+                    println!("Empty response, sleeping for 10 seconds before retry");
+                    tokio::time::sleep(std::time::Duration::from_secs(10)).await;
+                } else {
+                    drop(permit);
+                    return Ok((Some(text), false));
+                }
+            }
+        }
+        
         drop(permit);
-        Ok(resp)
+        Ok((None, true))
     }
 
     /// When we are getting rate limited, this function is called, and it handles the sleep.
@@ -97,7 +115,7 @@ impl API {
 
     /// Abstraction to remove duplicate code between the bulk and single query functions.
     async fn query_abstraction<T, R: for<'a> Deserialize<'a>, M>(
-        self,
+        &self,
         thing_to_query: &T,
         formatter: fn(&T) -> String,
         merger: M,
@@ -136,13 +154,13 @@ impl API {
             );
 
             println!("Querying {}", query);
-            let resp = self.send_query(&query).await?;
+            let (resp_text, is_rate_limited) = self.send_query(&query).await?;
 
-            if resp.status() == 429 {
+            if is_rate_limited {
                 self.handle_rate_limit().await;
                 return Err(ApiError::RateLimit);
             }
-            let text = resp.text().await?;
+            let text = resp_text.unwrap();
 
             let result: R = parse_resp(text)?;
 
@@ -161,7 +179,7 @@ impl API {
 
     /// Performs a regular query in npm download metrics api for each package given
     async fn query_npm_metrics(
-        self,
+        &self,
         pkg: &Package,
         lbound: &NaiveDate,
         rbound: &NaiveDate,
@@ -183,6 +201,59 @@ impl API {
     /// Can only handle 128 packages at a time, and can't query scoped packages
     async fn bulkquery_npm_metrics(
         self,
+        pkgs: &Vec<Package>,
+        lbound: &NaiveDate,
+        rbound: &NaiveDate,
+    ) -> Result<BulkApiResult, ApiError> {
+
+        // The request CAN NOT contain the pattern 'javascript.*window.*onerror' or 'javascript.*onerror.*window'
+        // because cloudflare will block that.
+        // This is a workaround for that.
+
+        let javascript_pkg_indices: Vec<_> = pkgs.iter().enumerate().filter_map(|(i, pkg)| {
+            if pkg.name.contains("javascript") {
+                Some(i)
+            } else {
+                None
+            }
+        }).collect();
+
+        let window_pkg_indices: Vec<_> = pkgs.iter().enumerate().filter_map(|(i, pkg)| {
+            if pkg.name.contains("window") {
+                Some(i)
+            } else {
+                None
+            }
+        }).collect();
+
+        let onerror_pkg_indices: Vec<_> = pkgs.iter().enumerate().filter_map(|(i, pkg)| {
+            if pkg.name.contains("onerror") {
+                Some(i)
+            } else {
+                None
+            }
+        }).collect();
+
+        if !javascript_pkg_indices.is_empty() && !window_pkg_indices.is_empty() && !onerror_pkg_indices.is_empty() {
+            let javascript_pkgs = javascript_pkg_indices.iter().map(|i| pkgs[*i].clone()).collect::<Vec<_>>();
+            let non_javascript_pkgs = pkgs.iter().filter(|pkg| {
+                !pkg.name.contains("javascript")
+            }).cloned().collect::<Vec<_>>();
+
+            let mut map = self.real_bulkquery_npm_metrics(&javascript_pkgs, lbound, rbound).await?;
+            let other_map = self.real_bulkquery_npm_metrics(&non_javascript_pkgs, lbound, rbound).await?;
+
+            for (pkg_name, api_result) in other_map {
+                map.insert(pkg_name, api_result);
+            }
+            return Ok(map)
+        }
+
+        self.real_bulkquery_npm_metrics(pkgs, lbound, rbound).await
+    }
+
+    async fn real_bulkquery_npm_metrics(
+        &self,
         pkgs: &Vec<Package>,
         lbound: &NaiveDate,
         rbound: &NaiveDate,
@@ -269,8 +340,7 @@ fn parse_resp<T: for<'a> Deserialize<'a>>(text: String) -> Result<T, ApiError> {
     let json = serde_json::from_str::<serde_json::Value>(&text).unwrap_or_else(|e| serde_panic_fn::<T>(&text, e));
     
     if let Some(json_map) = json.as_object() {
-        if let Some(error) = json_map.get("error") {
-            let error = error.as_str().unwrap_or_else(|| panic!("error is not a string, it is: {:?}", error));
+        if let Some(error) = json_map.get("error").and_then(|e| e.as_str()) {
             if error.contains("not found") {
                 return Err(ApiError::DoesNotExist);
             } else {
