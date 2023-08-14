@@ -82,9 +82,9 @@ impl API {
                 return Ok((None, true))
             } else {
                 let text = resp.text().await?;
-                if text.trim() == "" {
+                if text.trim() == "" || text.trim() == "Internal Server Error" {
                     // sleep for 10 seconds
-                    println!("Empty response, sleeping for 10 seconds before retry");
+                    println!("received bad response: {}, sleeping for 10 seconds before retry", text);
                     tokio::time::sleep(std::time::Duration::from_secs(10)).await;
                 } else {
                     drop(permit);
