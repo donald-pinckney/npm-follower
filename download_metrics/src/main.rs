@@ -130,7 +130,7 @@ async fn insert_from_packages(conn: &mut DbConnection) {
 
     // therefore we run in chunks of 128 packages (+ scoped packages, max 128 too for consistency)
 
-    let api = API::new(5);
+    let api = API::new(4);
     let mut finished = false; // we break the loop if we have no more packages to query
     let mut redo_rl = postgres_db::download_metrics::query_rate_limited_packages(conn);
     while !finished {

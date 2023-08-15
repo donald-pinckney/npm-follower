@@ -64,17 +64,15 @@ impl From<QueriedDownloadMetric> for DownloadMetric {
     }
 }
 
-pub fn insert_download_metric<R: QueryRunner>(conn: &mut R, metrics: DownloadMetric) -> i64 {
+pub fn insert_download_metric<R: QueryRunner>(conn: &mut R, metrics: DownloadMetric) {
     use super::schema::download_metrics::dsl::*;
 
-    conn.get_result::<_, i64>(
+    conn.execute(
         diesel::insert_into(download_metrics)
             .values(metrics)
-            .returning(id)
             .on_conflict_do_nothing(),
     )
-    .unwrap_or_else(|e| panic!("Error inserting download metric, {:?}", e))
-
+    .unwrap_or_else(|e| panic!("Error inserting download metric, {:?}", e));
 }
 
 pub fn update_metric_by_id<R: QueryRunner>(conn: &mut R, metric_id: i64, metric: DownloadMetric) {

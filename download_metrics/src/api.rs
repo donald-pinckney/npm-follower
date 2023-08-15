@@ -75,16 +75,45 @@ impl API {
         }
         let permit = self.pool.acquire().await.unwrap();
 
-        for _ in 0..10 {
-            let resp: reqwest::Response = self.client.get(query).send().await?;
+        let max_retries = 10;
+        for retry_count in 0..max_retries {
+            let resp_result = self.client.get(query).send().await;
+            let resp = match resp_result {
+                Err(err) => {
+                    let err_str = format!("{}", err);
+                    if err_str.contains("connection closed before message completed")
+                        && retry_count < max_retries - 1
+                    {
+                        // sleep for 10 seconds
+                        println!(
+                            "received bad response: {:?}, sleeping for 10 seconds before retry",
+                            Err::<(), _>(err)
+                        );
+                        tokio::time::sleep(std::time::Duration::from_secs(10)).await;
+                        continue;
+                    } else {
+                        return Err(ApiError::Reqwest(err));
+                    }
+                }
+                Ok(resp) => resp,
+            };
+
             if resp.status() == 429 {
                 drop(permit);
-                return Ok((None, true))
+                return Ok((None, true));
             } else {
                 let text = resp.text().await?;
-                if text.trim() == "" || text.trim() == "Internal Server Error" {
+                let trimmed = text.trim();
+                if trimmed.is_empty()
+                    || trimmed == "Internal Server Error"
+                    || trimmed.contains("524 Origin Time-out")
+                    || trimmed.contains("502 Bad Gateway")
+                {
                     // sleep for 10 seconds
-                    println!("received bad response: {}, sleeping for 10 seconds before retry", text);
+                    println!(
+                        "received bad response: {}, sleeping for 10 seconds before retry",
+                        text
+                    );
                     tokio::time::sleep(std::time::Duration::from_secs(10)).await;
                 } else {
                     drop(permit);
@@ -92,7 +121,7 @@ impl API {
                 }
             }
         }
-        
+
         drop(permit);
         Ok((None, true))
     }
@@ -205,48 +234,71 @@ impl API {
         lbound: &NaiveDate,
         rbound: &NaiveDate,
     ) -> Result<BulkApiResult, ApiError> {
-
         // The request CAN NOT contain the pattern 'javascript.*window.*onerror' or 'javascript.*onerror.*window'
         // because cloudflare will block that.
         // This is a workaround for that.
 
-        let javascript_pkg_indices: Vec<_> = pkgs.iter().enumerate().filter_map(|(i, pkg)| {
-            if pkg.name.contains("javascript") {
-                Some(i)
-            } else {
-                None
-            }
-        }).collect();
+        let javascript_pkg_indices: Vec<_> = pkgs
+            .iter()
+            .enumerate()
+            .filter_map(|(i, pkg)| {
+                if pkg.name.contains("javascript") {
+                    Some(i)
+                } else {
+                    None
+                }
+            })
+            .collect();
 
-        let window_pkg_indices: Vec<_> = pkgs.iter().enumerate().filter_map(|(i, pkg)| {
-            if pkg.name.contains("window") {
-                Some(i)
-            } else {
-                None
-            }
-        }).collect();
+        let window_pkg_indices: Vec<_> = pkgs
+            .iter()
+            .enumerate()
+            .filter_map(|(i, pkg)| {
+                if pkg.name.contains("window") {
+                    Some(i)
+                } else {
+                    None
+                }
+            })
+            .collect();
 
-        let onerror_pkg_indices: Vec<_> = pkgs.iter().enumerate().filter_map(|(i, pkg)| {
-            if pkg.name.contains("onerror") {
-                Some(i)
-            } else {
-                None
-            }
-        }).collect();
+        let onerror_pkg_indices: Vec<_> = pkgs
+            .iter()
+            .enumerate()
+            .filter_map(|(i, pkg)| {
+                if pkg.name.contains("onerror") {
+                    Some(i)
+                } else {
+                    None
+                }
+            })
+            .collect();
 
-        if !javascript_pkg_indices.is_empty() && !window_pkg_indices.is_empty() && !onerror_pkg_indices.is_empty() {
-            let javascript_pkgs = javascript_pkg_indices.iter().map(|i| pkgs[*i].clone()).collect::<Vec<_>>();
-            let non_javascript_pkgs = pkgs.iter().filter(|pkg| {
-                !pkg.name.contains("javascript")
-            }).cloned().collect::<Vec<_>>();
+        if !javascript_pkg_indices.is_empty()
+            && !window_pkg_indices.is_empty()
+            && !onerror_pkg_indices.is_empty()
+        {
+            let javascript_pkgs = javascript_pkg_indices
+                .iter()
+                .map(|i| pkgs[*i].clone())
+                .collect::<Vec<_>>();
+            let non_javascript_pkgs = pkgs
+                .iter()
+                .filter(|pkg| !pkg.name.contains("javascript"))
+                .cloned()
+                .collect::<Vec<_>>();
 
-            let mut map = self.real_bulkquery_npm_metrics(&javascript_pkgs, lbound, rbound).await?;
-            let other_map = self.real_bulkquery_npm_metrics(&non_javascript_pkgs, lbound, rbound).await?;
+            let mut map = self
+                .real_bulkquery_npm_metrics(&javascript_pkgs, lbound, rbound)
+                .await?;
+            let other_map = self
+                .real_bulkquery_npm_metrics(&non_javascript_pkgs, lbound, rbound)
+                .await?;
 
             for (pkg_name, api_result) in other_map {
                 map.insert(pkg_name, api_result);
             }
-            return Ok(map)
+            return Ok(map);
         }
 
         self.real_bulkquery_npm_metrics(pkgs, lbound, rbound).await
@@ -258,7 +310,6 @@ impl API {
         lbound: &NaiveDate,
         rbound: &NaiveDate,
     ) -> Result<BulkApiResult, ApiError> {
-
         // We can't do a bulk query with only 1 package, since thats the same
         // as a regular query, and then it won't be deserialized correctly.
         // Instead, handle that case as a normal query.
@@ -323,7 +374,10 @@ impl Default for API {
 }
 
 fn serde_panic_fn<T>(text: &str, e: serde_json::Error) -> ! {
-    println!("failed to deserialize into type: {}", std::any::type_name::<T>());
+    println!(
+        "failed to deserialize into type: {}",
+        std::any::type_name::<T>()
+    );
     println!("failed to deserialize: {}", text);
     println!("error: {:?}", e);
     std::process::exit(1);
@@ -337,8 +391,9 @@ fn serde_panic_fn<T>(text: &str, e: serde_json::Error) -> ! {
 // }
 
 fn parse_resp<T: for<'a> Deserialize<'a>>(text: String) -> Result<T, ApiError> {
-    let json = serde_json::from_str::<serde_json::Value>(&text).unwrap_or_else(|e| serde_panic_fn::<T>(&text, e));
-    
+    let json = serde_json::from_str::<serde_json::Value>(&text)
+        .unwrap_or_else(|e| serde_panic_fn::<T>(&text, e));
+
     if let Some(json_map) = json.as_object() {
         if let Some(error) = json_map.get("error").and_then(|e| e.as_str()) {
             if error.contains("not found") {
