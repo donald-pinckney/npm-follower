@@ -170,7 +170,7 @@ async fn insert_from_packages(conn: &mut DbConnection) {
                             normal_packages.push(pkg);
                         }
                     } else if has_metrics {
-                        println!("Package {} already has metrics, skipping", pkg.name);
+                        // println!("Package {} already has metrics, skipping", pkg.name);
                     }
                     chunk_pkg_id += 1;
                 }
