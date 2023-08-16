@@ -30,7 +30,8 @@ pub async fn make_download_metric(
         let mut weekly_count: Option<i64> = api_result.downloads[i].downloads;
         let mut j = i + 1;
         while j < api_result.downloads.len() && j < i + 7 {
-            weekly_count = weekly_count.and_then(|wc| api_result.downloads[j].downloads.map(|cc| wc + cc));
+            weekly_count =
+                weekly_count.and_then(|wc| api_result.downloads[j].downloads.map(|cc| wc + cc));
             j += 1;
         }
 
@@ -39,7 +40,6 @@ pub async fn make_download_metric(
 
         // we set i to j so that we skip the days we already counted
         i = j;
-
 
         let count = DownloadCount {
             date,
@@ -55,11 +55,7 @@ pub async fn make_download_metric(
             // we still want to know the latest, even if it's zero and we didn't insert it
             let latest = date;
             // println!("did package {}", pkg.name);
-            return Ok(DownloadMetric::new(
-                pkg.id,
-                weekly_results,
-                latest,
-            ));
+            return Ok(DownloadMetric::new(pkg.id, weekly_results, latest));
         }
     }
 }

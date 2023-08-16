@@ -162,7 +162,8 @@ async fn insert_from_packages(conn: &mut DbConnection) {
                     }
                 }
                 Some(pkg) => {
-                    let has_metrics = postgres_db::download_metrics::has_metrics_for_package_id(conn, pkg.id);
+                    let has_metrics =
+                        postgres_db::download_metrics::has_metrics_for_package_id(conn, pkg.id);
                     if has_normal_metadata(&pkg) && !has_metrics {
                         if pkg.name.starts_with('@') {
                             scoped_packages.push(pkg);

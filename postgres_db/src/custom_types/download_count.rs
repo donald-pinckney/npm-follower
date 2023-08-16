@@ -2,7 +2,7 @@ use diesel::{
     deserialize::{self, FromSql},
     pg::{Pg, PgValue},
     serialize::{self, Output, ToSql, WriteTuple},
-    sql_types::{BigInt, Date, Record, Nullable},
+    sql_types::{BigInt, Date, Nullable, Record},
 };
 
 use crate::schema::sql_types::DownloadCountStruct;
