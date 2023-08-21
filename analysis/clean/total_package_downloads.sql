@@ -1,0 +1,1 @@
+DROP TABLE metadata_analysis.total_package_downloads;
