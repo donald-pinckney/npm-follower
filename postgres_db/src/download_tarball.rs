@@ -48,7 +48,7 @@ impl DownloadedTarball {
             npm_signature: task.npm_signature.clone(),
             tgz_local_path,
             blob_storage_key,
-            num_bytes
+            num_bytes,
         }
     }
     /// Creates the downloaded tarball struct from the given download task and local path (full
@@ -59,7 +59,11 @@ impl DownloadedTarball {
 
     /// Creates the downloaded tarball struct from the given download task and blob storage key.
     /// Sets the time of download to now.
-    pub fn from_task_blob(task: &DownloadTask, blob_key: String, num_bytes: Option<i64>) -> DownloadedTarball {
+    pub fn from_task_blob(
+        task: &DownloadTask,
+        blob_key: String,
+        num_bytes: Option<i64>,
+    ) -> DownloadedTarball {
         Self::from_task_help(task, None, Some(blob_key), num_bytes)
     }
 }

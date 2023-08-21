@@ -101,22 +101,14 @@ pub fn query_metric_latest_less_than<R: QueryRunner>(
     .unwrap_or_else(|e| panic!("Error querying download metrics, {:?}", e))
 }
 
-
-pub fn has_metrics_for_package_id<R: QueryRunner>(
-    conn: &mut R,
-    p_id: i64,
-) -> bool {
+pub fn has_metrics_for_package_id<R: QueryRunner>(conn: &mut R, p_id: i64) -> bool {
     use super::schema::download_metrics::dsl::*;
 
-    conn.first::<_, i64>(
-        download_metrics.filter(package_id.eq(p_id)).select(id)
-    )
-    .optional()
-    .unwrap_or_else(|e| panic!("Error querying download metrics, {:?}", e))
-    .is_some()
+    conn.first::<_, i64>(download_metrics.filter(package_id.eq(p_id)).select(id))
+        .optional()
+        .unwrap_or_else(|e| panic!("Error querying download metrics, {:?}", e))
+        .is_some()
 }
-
-
 
 /// Queries redis for the list of packages that have been rate-limited
 pub fn query_rate_limited_packages<R: QueryRunner>(conn: &mut R) -> Vec<Package> {

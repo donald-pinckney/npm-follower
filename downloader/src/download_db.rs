@@ -47,7 +47,7 @@ pub async fn download_task(
             .to_str()
             .ok_or(DownloadError::BadlyFormattedUrl)?
             .to_string(),
-        n_bytes
+        n_bytes,
     );
 
     Ok(downloaded_tarball)
@@ -230,7 +230,7 @@ pub async fn download_to_cluster(
                         for url in urls.iter() {
                             let task = url_to_task.get(url.as_str()).unwrap();
                             let downloaded =
-                                DownloadedTarball::from_task_blob(task, url.to_string(), None);  // todo: get size
+                                DownloadedTarball::from_task_blob(task, url.to_string(), None); // todo: get size
                             tbs.push(Ok(downloaded));
                         }
                         Ok(tbs)
@@ -248,10 +248,11 @@ pub async fn download_to_cluster(
                             // we need to resubmit the job with the missing tarballs.
                             ClientError::BlobError(BlobError::AlreadyExists(url)) => {
                                 println!("[{}] Already downloaded {}", worker_id, url);
-                                tbs.push(Ok(DownloadedTarball::from_task_blob(  // todo: get size
+                                tbs.push(Ok(DownloadedTarball::from_task_blob(
+                                    // todo: get size
                                     url_to_task.get(&url).unwrap(),
                                     url.to_string(),
-                                    None
+                                    None,
                                 )));
 
                                 Ok(tbs)
@@ -274,8 +275,11 @@ pub async fn download_to_cluster(
 
                                 for url in urls.iter() {
                                     let task = url_to_task.get(url.as_str()).unwrap();
-                                    let downloaded =
-                                        DownloadedTarball::from_task_blob(task, url.to_string(), None); // todo: get size
+                                    let downloaded = DownloadedTarball::from_task_blob(
+                                        task,
+                                        url.to_string(),
+                                        None,
+                                    ); // todo: get size
                                     tbs.push(Ok(downloaded));
                                 }
                                 Ok(tbs)
