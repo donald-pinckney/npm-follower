@@ -1,10 +1,10 @@
 CREATE TABLE metadata_analysis.total_package_downloads AS
 
 with unnested_counts as (
-  select package_id, (unnest(download_counts)).counter as total_downloads from download_metrics
+  select package_id, (unnest(download_counts)).counter from download_metrics
 )
 
-select package_id, sum(total_downloads)
+select package_id, sum(counter) as total_downloads 
 from unnested_counts
 group by package_id
 ;
