@@ -112,7 +112,7 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("possible_direct_dev_deps".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_direct_any_deps_non_deleted".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_direct_runtime_deps".sql(), vec!["setup_analysis"]);
-        dependencies.add_step("possible_version_direct_runtime_deps".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("version_direct_runtime_deps".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_transitive_runtime_deps".sql(), vec!["possible_direct_runtime_deps"]);
         dependencies.add_step("possible_install_deps".sql(), vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps"]);
         dependencies.add_step("deps_stats".sql(), vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"]);

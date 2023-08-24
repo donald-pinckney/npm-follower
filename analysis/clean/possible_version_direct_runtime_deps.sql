@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS metadata_analysis.possible_version_direct_runtime_deps;
