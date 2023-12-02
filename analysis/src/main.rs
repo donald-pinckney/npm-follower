@@ -112,7 +112,7 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("possible_direct_dev_deps".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_direct_any_deps_non_deleted".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_direct_runtime_deps".sql(), vec!["setup_analysis"]);
-        dependencies.add_step("possible_version_direct_runtime_deps".sql(), vec!["setup_analysis"]);
+        dependencies.add_step("version_direct_runtime_deps".sql(), vec!["setup_analysis"]);
         dependencies.add_step("possible_transitive_runtime_deps".sql(), vec!["possible_direct_runtime_deps"]);
         dependencies.add_step("possible_install_deps".sql(), vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps"]);
         dependencies.add_step("deps_stats".sql(), vec!["possible_direct_dev_deps", "possible_direct_runtime_deps", "possible_transitive_runtime_deps", "possible_install_deps"]);
@@ -126,6 +126,7 @@ fn main() -> Result<(), std::io::Error> {
         dependencies.add_step("version_unnest_prod_dependencies".sql(), vec!["setup_analysis"]);
         dependencies.add_step("update_full_client_set".sql(), vec!["deps_stats", "build_updates", "version_unnest_prod_dependencies"]);
         dependencies.add_step("prep_breaking_change_tests".sql(), vec!["update_full_client_set", "deps_stats"]);
+        dependencies.add_step("total_package_downloads".sql(), vec!["setup_analysis"]);
     };
 
     // Check that dependencies is closed
