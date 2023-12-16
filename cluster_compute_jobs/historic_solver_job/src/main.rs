@@ -99,8 +99,6 @@ async fn main() {
     tokio::spawn(async move {
         let db = DbConnection::connect().await;
 
-        let nuke_cache_lock = nuke_cache_lock;
-
         let subprocess_semaphore =
             Arc::new(tokio::sync::Semaphore::new(CONFIG.num_threads as usize));
 
